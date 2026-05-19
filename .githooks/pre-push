@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+#
+# pre-push secret-scan gate
+# Owner:   Rock Lambros
+# Version: 1.0
+# Tool:    gitleaks (https://github.com/gitleaks/gitleaks)
+# Maps to: QC.1 / NIST SP 800-218 secret-scanning control.
+#
+# Scans only the commits being pushed and blocks the push if gitleaks
+# finds a secret. This is the client-side control. It is bypassable with
+# `git push --no-verify`; that is an accepted, logged risk, not a defect.
+# A non-bypassable server-side CI gate is a separate, deliberate add.
+#
+set -uo pipefail
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "pre-push: gitleaks not on PATH. Install it (brew install gitleaks) or, if you accept the risk, push with --no-verify." >&2
+  exit 1
+fi
+
+ZERO="0000000000000000000000000000000000000000"
+status=0
+
+# Each stdin line: <local ref> <local sha> <remote ref> <remote sha>
+while read -r local_ref local_sha remote_ref remote_sha; do
+  # Branch deletion has nothing to scan.
+  [ "${local_sha}" = "${ZERO}" ] && continue
+
+  if [ "${remote_sha}" = "${ZERO}" ]; then
+    # New remote branch: scan only commits not already on origin.
+    range="${local_sha} --not --remotes=origin"
+  else
+    range="${remote_sha}..${local_sha}"
+  fi
+
+  if ! gitleaks git . --no-banner --redact --log-opts="${range}"; then
+    echo "pre-push: gitleaks flagged a secret in ${local_ref} (${range}). Push blocked." >&2
+    status=1
+  fi
+done
+
+exit "${status}"
