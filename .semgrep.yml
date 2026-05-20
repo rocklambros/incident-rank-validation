@@ -1,6 +1,6 @@
 rules:
   - id: no-shell-invocation
-    patterns:
+    pattern-either:
       - pattern: subprocess.run(...)
       - pattern: subprocess.call(...)
       - pattern: subprocess.Popen(...)
@@ -20,7 +20,7 @@ rules:
         - tests/
 
   - id: no-dynamic-code
-    patterns:
+    pattern-either:
       - pattern: eval(...)
       - pattern: exec(...)
       - pattern: compile(...)
@@ -31,7 +31,7 @@ rules:
     severity: ERROR
 
   - id: no-unsafe-binary-deserialization
-    patterns:
+    pattern-either:
       - pattern: pickle.load(...)
       - pattern: pickle.loads(...)
       - pattern: marshal.load(...)
