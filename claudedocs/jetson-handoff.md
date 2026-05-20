@@ -6,7 +6,7 @@ Continuity bundle for moving `incident-rank-validation` development from the Mac
 
 ## 1. State at handoff (2026-05-20)
 
-- **HANDOFF.md** is at **v2.4** — the approved methodology spec. Four adversarial premortems have run against it.
+- **HANDOFF.md** is at **v2.5** — the approved methodology spec. Four adversarial premortems have run against it; v2.5 adds the explicit RunPod-vs-local-Jetson GPU rule (§7.5).
 - **Plan 1 v5** is in `docs/superpowers/plans/2026-05-19-engine-synthetic-cycle.md`. **30 tasks. No engine code has been written yet.**
 - **REVIEWERS.md**: Rock is sole reviewer (interim, single-author non-publishable per HANDOFF §4). PRE-PUBLISH CHECKLIST documented.
 - **Memory files** committed under `claudedocs/memory/`. Install instructions below.
