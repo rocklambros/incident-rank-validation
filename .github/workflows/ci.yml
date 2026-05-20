@@ -23,9 +23,13 @@ jobs:
           uv run incident-rank run-synthetic --cycle projects/synthetic/cycles/2026 --corpus-mode synthetic
           cp projects/synthetic/cycles/2026/results/coverage.json synthetic-coverage-${{ matrix.os }}.json
       - uses: actions/upload-artifact@v4
-        with: { name: synthetic-outputs-${{ matrix.os }}, path: "synthetic-coverage-*.json" }
+        with:
+          name: synthetic-outputs-${{ matrix.os }}
+          path: "synthetic-coverage-*.json"
       - uses: actions/upload-artifact@v4
-        with: { name: sbom-${{ matrix.os }}, path: "sbom.cyclonedx.json*" }
+        with:
+          name: sbom-${{ matrix.os }}
+          path: "sbom.cyclonedx.json*"
       - uses: gitleaks/gitleaks-action@v2
 
   cross-platform-diff:
