@@ -1,0 +1,49 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  checks:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    env: { JAX_ENABLE_X64: "true", JAX_PLATFORM_NAME: "cpu" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+        with: { version: "0.5.11" }
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run mypy engine tests
+      - run: uv run pytest -v
+      - run: uv run semgrep --config .semgrep.yml --error engine/
+      - run: uv run cyclonedx-py -o sbom.cyclonedx.json
+      - uses: sigstore/cosign-installer@v3
+      - run: cosign sign-blob --yes sbom.cyclonedx.json --output-signature sbom.cyclonedx.json.sig --output-certificate sbom.cyclonedx.json.crt
+      - run: |
+          uv run incident-rank run-synthetic --cycle projects/synthetic/cycles/2026 --corpus-mode synthetic
+          cp projects/synthetic/cycles/2026/results/coverage.json synthetic-coverage-${{ matrix.os }}.json
+      - uses: actions/upload-artifact@v4
+        with: { name: synthetic-outputs-${{ matrix.os }}, path: "synthetic-coverage-*.json" }
+      - uses: actions/upload-artifact@v4
+        with: { name: sbom-${{ matrix.os }}, path: "sbom.cyclonedx.json*" }
+      - uses: gitleaks/gitleaks-action@v2
+
+  cross-platform-diff:
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: synthetic-outputs-ubuntu-latest, path: linux/ }
+      - uses: actions/download-artifact@v4
+        with: { name: synthetic-outputs-macos-latest, path: macos/ }
+      - name: Compare cross-platform synthetic outputs (M5)
+        run: |
+          python - <<'PY'
+          import json, math, sys
+          a = json.loads(open("linux/synthetic-coverage-ubuntu-latest.json").read())
+          b = json.loads(open("macos/synthetic-coverage-macos-latest.json").read())
+          assert a["coverage_ratio"] == b["coverage_ratio"], "coverage_ratio differs"
+          assert sorted(a["measurable"]) == sorted(b["measurable"]), "measurable set differs"
+          assert sorted(a["frame_blind"]) == sorted(b["frame_blind"]), "frame_blind set differs"
+          print("Cross-platform synthetic outputs agree (M5).")
+          PY

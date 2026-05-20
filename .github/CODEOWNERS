@@ -1,0 +1,7 @@
+# Security-sensitive configs
+.gitleaks.toml @rocklambros
+.semgrep.yml @rocklambros
+.github/workflows/ @rocklambros
+SECURITY.md @rocklambros
+engine/safety/ @rocklambros
+engine/prereg/ @rocklambros
