@@ -39,7 +39,9 @@ jobs:
         with:
           name: sbom-${{ matrix.os }}
           path: "sbom.cyclonedx.json*"
-      - uses: gitleaks/gitleaks-action@v2
+      # gitleaks-action@v2 requires a paid GITLEAKS_LICENSE for org/user accounts.
+      # Primary control is the versioned pre-push gitleaks hook (commit 2063f39, HANDOFF §6 control 6).
+      # If a future cycle needs CI-side gitleaks, install the free binary directly and run `gitleaks detect`.
 
   cross-platform-diff:
     needs: checks
