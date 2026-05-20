@@ -1,11 +1,20 @@
 name: CI
-on: [push, pull_request]
+on:
+  pull_request:
+  push:
+    branches: [main]
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
 jobs:
   checks:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      id-token: write
     env: { JAX_ENABLE_X64: "true", JAX_PLATFORM_NAME: "cpu" }
     steps:
       - uses: actions/checkout@v4
@@ -16,17 +25,23 @@ jobs:
       - run: uv run mypy engine tests
       - run: uv run pytest -v
       - run: uv run semgrep --config .semgrep.yml --error engine/
-      - run: uv run cyclonedx-py -o sbom.cyclonedx.json
+      - run: uv run cyclonedx-py environment -o sbom.cyclonedx.json
       - uses: sigstore/cosign-installer@v3
       - run: cosign sign-blob --yes sbom.cyclonedx.json --output-signature sbom.cyclonedx.json.sig --output-certificate sbom.cyclonedx.json.crt
       - run: |
           uv run incident-rank run-synthetic --cycle projects/synthetic/cycles/2026 --corpus-mode synthetic
           cp projects/synthetic/cycles/2026/results/coverage.json synthetic-coverage-${{ matrix.os }}.json
       - uses: actions/upload-artifact@v4
-        with: { name: synthetic-outputs-${{ matrix.os }}, path: "synthetic-coverage-*.json" }
+        with:
+          name: synthetic-outputs-${{ matrix.os }}
+          path: "synthetic-coverage-*.json"
       - uses: actions/upload-artifact@v4
-        with: { name: sbom-${{ matrix.os }}, path: "sbom.cyclonedx.json*" }
-      - uses: gitleaks/gitleaks-action@v2
+        with:
+          name: sbom-${{ matrix.os }}
+          path: "sbom.cyclonedx.json*"
+      # gitleaks-action@v2 requires a paid GITLEAKS_LICENSE for org/user accounts.
+      # Primary control is the versioned pre-push gitleaks hook (commit 2063f39, HANDOFF §6 control 6).
+      # If a future cycle needs CI-side gitleaks, install the free binary directly and run `gitleaks detect`.
 
   cross-platform-diff:
     needs: checks
