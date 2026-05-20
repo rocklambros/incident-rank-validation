@@ -1,0 +1,44 @@
+rules:
+  - id: no-shell-invocation
+    pattern-either:
+      - pattern: subprocess.run(...)
+      - pattern: subprocess.call(...)
+      - pattern: subprocess.Popen(...)
+      - pattern: subprocess.check_call(...)
+      - pattern: subprocess.check_output(...)
+      - pattern: os.system(...)
+      - pattern: os.popen(...)
+    message: >
+      Shell invocation detected. Shell calls are disallowed in engine code
+      except in engine/prereg/git_timestamp.py (allowlisted).
+      Review and remove or justify this call.
+    languages: [python]
+    severity: ERROR
+    paths:
+      exclude:
+        - engine/prereg/git_timestamp.py
+        - engine/prereg/attestation.py
+        - tests/
+
+  - id: no-dynamic-code
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: exec(...)
+      - pattern: compile(...)
+    message: >
+      Dynamic code execution (eval/exec/compile) is disallowed.
+      Remove this call or replace with a safe alternative.
+    languages: [python]
+    severity: ERROR
+
+  - id: no-unsafe-binary-deserialization
+    pattern-either:
+      - pattern: pickle.load(...)
+      - pattern: pickle.loads(...)
+      - pattern: marshal.load(...)
+      - pattern: marshal.loads(...)
+    message: >
+      Unsafe binary deserialization (pickle/marshal) is disallowed.
+      Use a safe serialization format (JSON, TOML, numpy .npz) instead.
+    languages: [python]
+    severity: ERROR

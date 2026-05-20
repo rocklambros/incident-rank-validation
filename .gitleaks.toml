@@ -1,0 +1,19 @@
+# Extend gitleaks default ruleset with project-specific allowlist.
+# See: https://github.com/gitleaks/gitleaks
+
+title = "incident-rank-validation gitleaks config"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "generic-api-key"
+description = "Generic API Key — project override inheriting default detection"
+
+[allowlist]
+description = "Allow synthetic test data and known-safe paths"
+paths = [
+  "tests/",
+  "projects/synthetic/cycles/",
+  "projects/synthetic-stress/cycles/",
+]

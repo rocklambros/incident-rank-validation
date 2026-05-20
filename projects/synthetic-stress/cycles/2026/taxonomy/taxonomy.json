@@ -1,0 +1,16 @@
+{
+  "entries": [
+    {"entry_id": "STR01", "name": "Stress Entry One", "frame_blind": false},
+    {"entry_id": "STR02", "name": "Stress Entry Two", "frame_blind": false},
+    {"entry_id": "STR03", "name": "Stress Entry Three", "frame_blind": false},
+    {"entry_id": "STR04", "name": "Stress Entry Four", "frame_blind": true},
+    {"entry_id": "STR05", "name": "Stress Entry Five", "frame_blind": true},
+    {"entry_id": "STR06", "name": "Stress Entry Six", "frame_blind": true},
+    {"entry_id": "STR07", "name": "Stress Entry Seven", "frame_blind": true},
+    {"entry_id": "STR08", "name": "Stress Entry Eight", "frame_blind": true},
+    {"entry_id": "STR09", "name": "Stress Entry Nine", "frame_blind": true},
+    {"entry_id": "STR10", "name": "Stress Entry Ten", "frame_blind": false},
+    {"entry_id": "STR11", "name": "Stress Entry Eleven", "frame_blind": false},
+    {"entry_id": "STR12", "name": "Stress Entry Twelve", "frame_blind": false}
+  ]
+}

@@ -1,0 +1,19 @@
+[project]
+name = "synthetic-stress"
+cycle_id = "synthetic-stress-2026-001"
+tier_size = 5
+tier_boundaries = [5, 10]
+default_strata = ["stratum_a", "stratum_b"]
+measurability_minimum = 4
+measurability_minimum_rationale = "stress fixture: deliberately small measurable subset (3) to exercise N/A branch"
+prng_seed = 99
+
+[project.hyperparameters]
+prior_scale = 0.3
+concentration_shape = 7.0
+concentration_rate = 0.15
+ess_fraction = 0.5
+meaningful_kappa_n = 4
+
+[project.taxonomy]
+source = "cycles/2026/taxonomy/taxonomy.json"
