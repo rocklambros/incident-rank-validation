@@ -1,18 +1,18 @@
 [project]
 name = "owasp-llm"
-cycle_id = "REQUIRED"
-tier_size = 2  # REQUIRED: number of entries per tier for quadratic kappa
-default_strata = []  # REQUIRED: list of corpus strata
-measurability_minimum = 4  # REQUIRED: minimum measurable entries for kappa
-measurability_minimum_rationale = "REQUIRED"
-prng_seed = 0  # REQUIRED: seed for reproducibility
+cycle_id = "2026"
+tier_size = 5
+default_strata = ["security", "ai-harm"]
+measurability_minimum = 4
+measurability_minimum_rationale = "Weighted kappa over 3-tier structure requires >=4 entries to populate non-degenerately (HANDOFF §5.5)"
+prng_seed = 20260520
 
 [project.hyperparameters]
-prior_scale = 0.5  # REQUIRED: half-normal scale for entry-level effects
-concentration_shape = 5.0  # REQUIRED: Gamma shape for Dirichlet concentration
-concentration_rate = 0.1  # REQUIRED: Gamma rate for Dirichlet concentration
-ess_fraction = 0.4  # REQUIRED: minimum ESS as fraction of total draws
-meaningful_kappa_n = 4  # REQUIRED: minimum measurable entries for meaningful kappa
+prior_scale = 0.5
+concentration_shape = 5.0
+concentration_rate = 0.1
+ess_fraction = 0.4
+meaningful_kappa_n = 4
 
 [project.taxonomy]
-source = "REQUIRED"  # path to taxonomy JSON relative to project root
+source = "cycles/2026/taxonomy/taxonomy.json"
