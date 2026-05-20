@@ -16,6 +16,7 @@ import tomli
 
 from engine.adapters.base import CorpusAdapter
 from engine.adapters.synthetic import SyntheticAdapter
+from engine.adapters.synthetic_stress import SyntheticStressAdapter
 from engine.calibrate.beta import BetaPosterior, Calibration
 from engine.classify.stub import classify_stub
 from engine.decide.concordance import compute_concordance
@@ -119,8 +120,17 @@ def execute_synthetic_pipeline(
     flag_threshold_tau: float = hyper.get("flag_threshold_tau", 0.1)
     meaningful_kappa_n: int = hyper["meaningful_kappa_n"]
 
-    # 2. Build adapter
-    adapter = adapter_factory(seed=prng_seed)
+    # 2. Build adapter — select based on project name if caller didn't override
+    _ADAPTER_REGISTRY: dict[str, Callable[..., CorpusAdapter]] = {
+        "synthetic": SyntheticAdapter,
+        "synthetic-stress": SyntheticStressAdapter,
+    }
+    if adapter_factory is SyntheticAdapter:
+        project_name: str = proj["name"]
+        resolved_factory = _ADAPTER_REGISTRY.get(project_name, adapter_factory)
+    else:
+        resolved_factory = adapter_factory
+    adapter = resolved_factory(seed=prng_seed)
 
     # 3. Gather incidents
     incidents = tuple(adapter.iter_incidents())
