@@ -18,15 +18,19 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-  "pytest==8.3.4",
+  "pytest==9.0.3",
   "pytest-env==1.1.5",
   "pytest-xdist==3.6.1",
   "mypy==1.13.0",
   "ruff==0.8.4",
   "semgrep==1.99.0",
-  "cyclonedx-bom==4.6.1",
-  "setuptools==69.5.1",
+  "cyclonedx-bom==4.6.1",  # upstream blocker for lxml>=6 (CVE-2026-41066); upgrade requires cyclonedx-bom>=5
+  "setuptools==78.1.1",
 ]
+# Known transitive CVE blockers (deferred to a scoped dep-upgrade PR):
+#   lxml 5.4.0 (CVE-2026-41066, HIGH, XXE) — pinned by cyclonedx-python-lib<8 via cyclonedx-bom==4.6.1
+#   protobuf 4.25.9 (CVE-2026-0994, HIGH, recursion bypass) — pinned by opentelemetry-proto v1.25.0 via semgrep==1.99.0
+# Both require multi-package upgrades (cyclonedx-bom + semgrep) and re-validation; tracked as supply-chain residuals.
 
 [tool.uv]
 package = true
