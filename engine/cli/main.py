@@ -88,5 +88,8 @@ def decide(cycle: Path, corpus_mode: str) -> None:
     "--corpus-mode", type=click.Choice(["synthetic", "real"]), required=True
 )
 def run_synthetic(cycle: Path, corpus_mode: str) -> None:
-    """Run a synthetic end-to-end cycle (placeholder -- Task 25 implements)."""
-    click.echo("Synthetic pipeline: placeholder (Task 25 implements).")
+    """Run a synthetic end-to-end validation cycle."""
+    from engine.cli.synthetic import execute_synthetic_pipeline
+
+    execute_synthetic_pipeline(cycle, corpus_mode)
+    click.echo("Synthetic pipeline complete.")
