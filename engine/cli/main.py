@@ -4,11 +4,16 @@ from pathlib import Path
 
 import click
 
+from engine.cli.snapshot import vendor_snapshot_cmd
+
 
 @click.group()
 def cli() -> None:
     """incident-rank-validation CLI."""
     pass
+
+
+cli.add_command(vendor_snapshot_cmd)
 
 
 @cli.command()
