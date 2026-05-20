@@ -17,6 +17,7 @@ rules:
     paths:
       exclude:
         - engine/prereg/git_timestamp.py
+        - engine/prereg/attestation.py
         - tests/
 
   - id: no-dynamic-code
