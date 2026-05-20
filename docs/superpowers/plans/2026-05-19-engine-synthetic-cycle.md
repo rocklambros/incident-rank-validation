@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans. Steps use checkbox (`- [ ]`) syntax.
 
-**Goal:** Build the `incident-rank-validation` engine skeleton with a synthetic end-to-end cycle that proves the integrity machinery — phase-gated CLI, hash-locked + git-attested pre-registration, information-firewall discipline (HANDOFF v2.4 §6 control 11), frame-blind censoring, NUTS measurement-error inference with weighted overlap and a non-Bayesian robustness twin, transparency-first publication, selection-bias (Kruskal-Wallis) and robustness-spec cherry-picking disclosures, drift-signoff enforcement with persisted rationale, cross-cycle lineage refusal, Merkle-chained post-hoc register, cross-platform output-diff CI — before any real corpus data touches the system. GPU pinned to CPU for inference; GPU provisioned only at Stage-2 (Plan 5) under a committed RunPod plan (HANDOFF v2.4 §7.5).
+**Goal:** Build the `incident-rank-validation` engine skeleton with a synthetic end-to-end cycle that proves the integrity machinery — phase-gated CLI, hash-locked + git-attested pre-registration, information-firewall discipline (HANDOFF v2.5 §6 control 11), frame-blind censoring, NUTS measurement-error inference with weighted overlap and a non-Bayesian robustness twin, transparency-first publication, selection-bias (Kruskal-Wallis) and robustness-spec cherry-picking disclosures, drift-signoff enforcement with persisted rationale, cross-cycle lineage refusal, Merkle-chained post-hoc register, cross-platform output-diff CI — before any real corpus data touches the system. GPU pinned to CPU for inference; GPU provisioned only at Stage-2 (Plan 5) under a committed RunPod plan (HANDOFF v2.5 §7.5).
 
 **Architecture:** Python 3.12 package, phased CLI (`prereg → classify → calibrate → infer → decide → report`). Manifest carries hyperparameters, PRNG seed, rubric-drafting attestation, classifier-rule hash, attested reviewer signoffs (`signed_at` derived from `git log` of the attestation file; `viewed_results_before_signoff` self-declared per the discipline calibration). NUTS uses declared overlap *weights* (column-stochastic; self-loop rejected). Two synthetic projects (`synthetic` and `synthetic-stress`) exercise distinct kappa regimes (tier_size=2 binary; tier_size=5 with 3-tier quadratic) and untuned hyperparameter behavior. Reports include Kruskal-Wallis selection-bias disclosure (corrected v2.4) + robustness-spec direction-consistency + Merkle-chained post-hoc register.
 
@@ -12,7 +12,7 @@
 
 ## Source of truth
 
-`docs/HANDOFF.md` at v2.4 is the approved spec. v5 of this plan closes Premortem 3 findings M1–M23 inline. Coverage matrices for R1–R33 (v3 carry-forward), L1–L11 (v4 carry-forward), and M1–M23 (v5) are at the end of this file.
+`docs/HANDOFF.md` at v2.5 is the approved spec (v2.5 added the explicit RunPod-vs-local-Jetson GPU rule; methodology unchanged from v2.4). v5 of this plan closes Premortem 3 findings M1–M23 inline. Coverage matrices for R1–R33 (v3 carry-forward), L1–L11 (v4 carry-forward), and M1–M23 (v5) are at the end of this file.
 
 ## Methodological posture
 
@@ -42,7 +42,7 @@ incident-rank-validation/
 ├── .gitleaks.toml, .semgrep.yml
 ├── .github/{workflows/ci.yml, CODEOWNERS}
 ├── docs/
-│   ├── HANDOFF.md                     # v2.4
+│   ├── HANDOFF.md                     # v2.5
 │   ├── METHODOLOGY-CHANGELOG.md
 │   ├── METHODOLOGY-FAQ.md
 │   ├── SUCCESSOR-PRIMER.md
@@ -215,7 +215,7 @@ jobs:
 # Methodology changelog
 
 ## 0.1.0 (Plan 1 v5, 2026-05-20)
-- HANDOFF v2.4 compliant.
+- HANDOFF v2.5 compliant.
 - Lambda prior: HalfNormal(scale=0.5), rate-per-unit-stratum interpretation.
 - NB concentration prior: Gamma(5.0, 0.1), weakly informative toward Poisson.
 - Selection-bias statistic: Kruskal-Wallis (nominal verdict labels, not ordinal — v2.4 correction).
@@ -224,7 +224,7 @@ jobs:
 - GPU pinned to CPU; Stage-2 LLM classification on RunPod (Plan 5) with committed PROVISIONING-PLAN.md.
 - No methodology claims are made until a real cycle runs in Plan 5.
 
-## Plan 5 publication prerequisites (v2.4 §6 control 11 + M17 two-cycle parity)
+## Plan 5 publication prerequisites (v2.5 §6 control 11 + §7.5 GPU rule + M17 two-cycle parity)
 - External rubric reviewer + statistical reviewer identified, attested, signed_at precedes infer.
 - docs/PROVISIONING-PLAN.md committed before Stage-2 run.
 - Cycle output held for 30 days for reviewer audit before any external sharing (M17 two-cycle parity).
@@ -316,7 +316,7 @@ Identical to Plan v4 Task 4. CLI gating in Task 23 enforces M13 length-floor.
 ```python
 """Derive signoff timing from git history (M8).
 
-HANDOFF v2.4 §6 control 11(e) requires signoff to precede the first infer run.
+HANDOFF v2.5 §6 control 11(e) requires signoff to precede the first infer run.
 Self-declared `signed_at` strings are tamperable; git-derived timestamps are not
 (without rewriting history, which `verify_committed` would catch).
 """
@@ -548,7 +548,7 @@ Identical to Plan v4 Task 16.
 **M14:** Spearman ρ (v4) is replaced with Kruskal-Wallis H test — appropriate for nominal verdict labels.
 
 ```python
-"""Selection-bias quantification via Kruskal-Wallis (M14 / HANDOFF v2.4 §6.11(h))."""
+"""Selection-bias quantification via Kruskal-Wallis (M14 / HANDOFF v2.5 §6.11(h))."""
 
 from __future__ import annotations
 from dataclasses import dataclass
@@ -721,7 +721,7 @@ def quadratic_weighted_kappa(
 ```python
 """Multiplicity disclosure via empirical vote-permutation null.
 
-HANDOFF v2.4 §5.5 / §6.11(g) requires multiplicity disclosure.
+HANDOFF v2.5 §5.5 / §6.11(g) requires multiplicity disclosure.
 
 Null model choice (M15): we use vote-label permutation across entries to break
 the vote-incident relationship. This preserves the marginal rank distribution
@@ -1229,18 +1229,72 @@ name implies" (M14 selection bias, M18 robustness consistency). The same class
 of bug will recur if you trust the names.
 ```
 
-- [ ] **`docs/PROVISIONING-PLAN.md`** per v4 with M9 default cost ceiling:
+- [ ] **`docs/PROVISIONING-PLAN.md`** per v4 with M9 default cost ceiling AND the v2.5 GPU provider-selection rule:
 
 ```markdown
 # Provisioning plan (Plan 5 cycle)
 
+## GPU provider selection (HANDOFF v2.5 §7.5)
+
+**Default rule:** Use RunPod for any Stage-2 GPU workload that cannot complete on the local Jetson GPU in under 30 minutes wall time. Below 30 minutes the local Jetson wins on end-to-end latency (no upload, auth, or weight-transfer overhead). Above 30 minutes the RunPod per-iteration speed advantage (H100 / A100) dominates and the cost is worth it. The rule is per-workload, not per-cycle.
+
+| Workload class | Typical scale | Provider | Why |
+|---|---|---|---|
+| Full Stage-2 cycle classification (70B-class model) | ~7,000 incidents | **RunPod (REQUIRED)** | >50h on Jetson; >30 min threshold trivially met |
+| Stage-2 cycle with 8B-class model | ~7,000 incidents | **RunPod (REQUIRED)** | >10h on Jetson |
+| Ad-hoc adjudication batch | <200 incidents | local Jetson | typically <30 min |
+| Embedding-based rubric clustering | <5,000 vectors | local Jetson | typically <30 min |
+| Single-rule spot check | 10-50 incidents | local Jetson | typically <30 min |
+
+**Decision procedure (mechanical):**
+1. Estimate local Jetson wall time: (tokens/sec) × (tokens/incident) × (incidents). Commit estimate to `cycle/provenance/local_run_estimate.json` BEFORE the workload starts.
+2. If estimated wall time < 30 min, run local. Record the actual wall time on completion.
+3. If estimated wall time ≥ 30 min, provision RunPod per the rest of this plan.
+4. If estimate is wrong by ≥ 2× during execution, abort and re-provision on RunPod. Log the misestimate as a post-hoc analysis (HANDOFF §6 control 11(f), Merkle-chained per M16).
+
+**No CPU-bound workloads are GPU-provisioned regardless** (HANDOFF v2.5 §7.5): NUTS, vote bootstrap, twin, predictive sampling stay on CPU for reproducibility.
+
 ## Cost
-- **Per-cycle ceiling: $500 USD (default per M9; override here with explicit Rock authorization)**
+
+- **Per-cycle ceiling: $500 USD** (default per M9; override here with explicit Rock authorization)
 - Per-hour budget: <TBD>
 - Monitoring: RunPod billing API polled every 10 min; auto-shutoff at 1.2× ceiling
-- Override authorization: if ceiling > $500, REVIEWERS.md PRE-PUBLISH CHECKLIST must include "cost ceiling exceeded by $X, authorized by <name> on <date>".
+- Override authorization: if ceiling > $500, REVIEWERS.md PRE-PUBLISH CHECKLIST must include "cost ceiling exceeded by $X, authorized by <name> on <date>"
+- Local Jetson runs: $0 GPU cost (electricity ignored); only counted in cost ceiling if a RunPod fallback fires after a misestimate
+
+## GPU (RunPod, when triggered)
+
+- Provider: RunPod
+- GPU type: <TBD before Plan 5 cycle — prefer H100 80GB or H200 if available>
+- GPU count: <TBD — maximize parallelism within cost ceiling>
+- Region: <TBD — prefer US East for latency to model weights>
+
+## Model
+
+- Model identity: <TBD before Plan 5 — e.g., meta-llama/Llama-3.1-70B-Instruct>
+- Weight provenance hash: <SHA-256 of weight checkpoint, captured at cycle start>
+- Determinism: temperature=0, top_p=1.0, seed=<from PreregManifest.prng_seed>
+
+## Workload
+
+- Input: ambiguous incidents from corpus A (gold-set tagged)
+- Batch size: <TBD — balance throughput vs per-batch determinism>
+- Expected wall time: <TBD — target under per-cycle ceiling>
+
+## Outputs
+
+- Stage-2 assignments JSONL: cycle/results/stage2_assignments.jsonl
+- Stage-2 provenance: cycle/results/stage2_provenance.json (model_identity, weight_provenance_hash, prng_seed, batch_size, wall_time, cost, provider="runpod"|"local-jetson")
+- Hashes committed to PreregManifest before `decide` phase
+
+## Reproducibility
+
+- Pinned model version (no auto-upgrade)
+- Pinned weight checkpoint hash
+- Deterministic decoding (temperature=0, seed-pinned)
+- Batch determinism verified by re-running a 10-incident sample twice and asserting identical Assignment outputs
+- Cross-provider determinism: if a workload migrates from local Jetson to RunPod mid-cycle (after a misestimate abort), the entire workload re-runs on RunPod — partial-results carry-over is forbidden
 ```
-(plus the v4 base content for GPU, model, workload, reproducibility sections)
 
 - [ ] **Commit** — `docs: RUNBOOK + BOUNDARY-CASES + FAQ + SUCCESSOR-PRIMER (M9, M11, M23)`
 
@@ -1282,7 +1336,7 @@ Acceptance criteria (all must hold):
 - [ ] **Tag**
 
 ```bash
-git tag -a v0.1.0-plan1 -m "Plan 1 v5 acceptance: HANDOFF v2.4 compliant; R1-R33 + L1-L11 + M1-M23 closed"
+git tag -a v0.1.0-plan1 -m "Plan 1 v5 acceptance: HANDOFF v2.5 compliant; R1-R33 + L1-L11 + M1-M23 closed"
 ```
 
 - [ ] **METHODOLOGY-CHANGELOG.md** records Plan 5 prerequisites including M17 two-cycle parity.
