@@ -1,0 +1,18 @@
+[project]
+name = "synthetic"
+cycle_id = "synthetic-2026-001"
+tier_size = 2
+default_strata = ["stratum_a", "stratum_b"]
+measurability_minimum = 4
+measurability_minimum_rationale = "6 entries, 5 measurable (1 frame-blind); threshold above simple majority of measurable set"
+prng_seed = 42
+
+[project.hyperparameters]
+prior_scale = 0.5
+concentration_shape = 5.0
+concentration_rate = 0.1
+ess_fraction = 0.4
+meaningful_kappa_n = 4
+
+[project.taxonomy]
+source = "cycles/2026/taxonomy/taxonomy.json"
