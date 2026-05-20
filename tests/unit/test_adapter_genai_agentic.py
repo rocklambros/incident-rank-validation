@@ -336,3 +336,96 @@ class TestTextLengthCap:
         adapter = GenAIAgenticAdapter(snapshot_dir=snap, snapshot_date="2026-05-20")
         r = next(adapter.iter_incidents())
         assert r.text == "Short Also short"
+
+
+class TestSeverityDefaultDetection:
+    """HANDOFF §3: severity defaulted to 'Medium' is an artifact, not truth."""
+
+    def test_curated_medium_is_not_defaulted(
+        self, vendored_snapshot: Path
+    ) -> None:
+        """Curated records have human-confirmed severity — keep 'Medium'."""
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
+        )
+        inc_001 = next(
+            r for r in adapter.iter_incidents() if r.id == "INC-001"
+        )
+        # INC-001 is curated with severity High — kept as-is
+        assert inc_001.severity == "High"
+
+    def test_reviewed_medium_is_treated_as_unknown(
+        self, vendored_snapshot: Path
+    ) -> None:
+        """Non-curated 'Medium' severity is a source-ingest artifact → None."""
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
+        )
+        inc_002 = next(
+            r for r in adapter.iter_incidents() if r.id == "INC-002"
+        )
+        # INC-002 is reviewed (not curated) with severity Medium → defaulted → None
+        assert inc_002.severity is None
+
+
+class TestFutureDatedRowDrop:
+    """HANDOFF §4 Temporal: adapter drops rows dated after the snapshot date."""
+
+    def test_future_dated_rows_are_dropped(
+        self, vendored_snapshot: Path
+    ) -> None:
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
+        )
+        ids = {r.id for r in adapter.iter_incidents()}
+        assert "INC-005" not in ids  # dated 2027-01-01
+
+    def test_past_dated_rows_are_kept(
+        self, vendored_snapshot: Path
+    ) -> None:
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
+        )
+        ids = {r.id for r in adapter.iter_incidents()}
+        assert "INC-001" in ids  # dated 2024-03-15
+
+
+class TestContaminationQuarantine:
+    """HANDOFF §3 F2, §5.2: bare-LLM03 and double-default quarantine."""
+
+    def test_bare_llm03_record_is_emitted_but_flagged(
+        self, vendored_snapshot: Path
+    ) -> None:
+        """Quarantined records are still emitted — downstream routes to sink."""
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
+        )
+        inc_003 = next(
+            r for r in adapter.iter_incidents() if r.id == "INC-003"
+        )
+        assert inc_003.native_labels == ("LLM03",)
+        assert is_bare_llm03_contaminated(list(inc_003.native_labels))
+
+    def test_double_default_record_is_emitted_but_flagged(
+        self, vendored_snapshot: Path
+    ) -> None:
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
+        )
+        inc_004 = next(
+            r for r in adapter.iter_incidents() if r.id == "INC-004"
+        )
+        assert set(inc_004.native_labels) == {"LLM03", "ASI04"}
+        assert is_double_default_contaminated(list(inc_004.native_labels))
+
+    def test_clean_record_is_not_quarantined(
+        self, vendored_snapshot: Path
+    ) -> None:
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
+        )
+        inc_001 = next(
+            r for r in adapter.iter_incidents() if r.id == "INC-001"
+        )
+        assert not is_bare_llm03_contaminated(list(inc_001.native_labels))
+        assert not is_double_default_contaminated(list(inc_001.native_labels))
