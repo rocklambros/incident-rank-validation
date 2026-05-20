@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from engine.cli.snapshot import vendor_snapshot
+from engine.snapshot.drift import DriftReport, detect_drift
 from engine.snapshot.provenance import SnapshotProvenance
 
 
@@ -172,3 +173,44 @@ class TestVendorSnapshot:
             if ln.strip()
         ]
         assert json_data == jsonl_lines
+
+
+class TestDriftIntegration:
+
+    def test_first_snapshot_produces_baseline_report(
+        self, source_corpus: Path, dest_dir: Path
+    ) -> None:
+        """First snapshot has no predecessor — drift report exists but has no anomalies."""
+        result = vendor_snapshot(
+            source_path=source_corpus,
+            dest_base=dest_dir,
+            source_repo="test",
+            source_commit_sha="aaa",
+            adapter_version="0.1.0",
+        )
+        snapshot_jsonl = result.snapshot_dir / "incidents.jsonl"
+        assert snapshot_jsonl.exists(), "vendor_snapshot must write incidents.jsonl"
+        report = detect_drift(snapshot_jsonl, snapshot_jsonl)
+        assert isinstance(report, DriftReport)
+        assert report.requires_signoff is False
+        assert len(report.anomalies) == 0
+
+    def test_drift_detected_on_changed_snapshot(self, tmp_path: Path) -> None:
+        """A modified snapshot triggers drift anomalies."""
+        prev_path = tmp_path / "prev.jsonl"
+        curr_path = tmp_path / "curr.jsonl"
+
+        prev_lines = [
+            json.dumps({"owasp_llm": ["LLM03"]}) for _ in range(100)
+        ]
+        prev_path.write_text("\n".join(prev_lines))
+
+        curr_lines = [
+            json.dumps({"owasp_llm": ["LLM03"]}) for _ in range(200)
+        ]
+        curr_path.write_text("\n".join(curr_lines))
+
+        report = detect_drift(prev_path, curr_path)
+        assert isinstance(report, DriftReport)
+        assert report.requires_signoff is True
+        assert len(report.anomalies) > 0
