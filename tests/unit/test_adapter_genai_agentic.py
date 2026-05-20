@@ -17,6 +17,7 @@ from engine.adapters.genai_agentic_bias import (
     is_bare_llm03_contaminated,
     is_double_default_contaminated,
 )
+from engine.model.overlap import OverlapWeights
 from engine.schema import BiasProfile, IncidentRecord
 
 
@@ -429,3 +430,76 @@ class TestContaminationQuarantine:
         )
         assert not is_bare_llm03_contaminated(list(inc_001.native_labels))
         assert not is_double_default_contaminated(list(inc_001.native_labels))
+
+
+class TestAdapterInterface:
+    """All five CorpusAdapter ABC methods return valid data."""
+
+    def test_bias_profiles_cover_all_strata(
+        self, vendored_snapshot: Path
+    ) -> None:
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
+        )
+        profile_strata = {p.stratum for p in adapter.bias_profiles()}
+        record_strata = {r.corpus_stratum for r in adapter.iter_incidents()}
+        assert record_strata.issubset(profile_strata), (
+            f"Records have strata {record_strata} but profiles only cover {profile_strata}"
+        )
+
+    def test_stratum_sizes_are_positive(
+        self, vendored_snapshot: Path
+    ) -> None:
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
+        )
+        sizes = adapter.stratum_sizes()
+        assert len(sizes) > 0
+        for stratum, size in sizes.items():
+            assert size > 0, f"Stratum {stratum} has non-positive size {size}"
+
+    def test_stratum_size_gte_observed_count(
+        self, vendored_snapshot: Path
+    ) -> None:
+        """M3 sanity contract: stratum_size >= observed incident count."""
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
+        )
+        sizes = adapter.stratum_sizes()
+        counts: dict[str, int] = {}
+        for r in adapter.iter_incidents():
+            counts[r.corpus_stratum] = counts.get(r.corpus_stratum, 0) + 1
+        for stratum, count in counts.items():
+            assert sizes[stratum] >= count, (
+                f"M3 violation: stratum {stratum} size {sizes[stratum]} < count {count}"
+            )
+
+    def test_entry_definitions_returns_ten_entries(
+        self, vendored_snapshot: Path
+    ) -> None:
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
+        )
+        entries = adapter.entry_definitions()
+        assert len(entries) == 10
+
+    def test_entry_definitions_include_frame_blind_entries(
+        self, vendored_snapshot: Path
+    ) -> None:
+        """HANDOFF §3 F4: LLM04, LLM08, LLM10 are near-absent."""
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
+        )
+        entries = {e.entry_id: e for e in adapter.entry_definitions()}
+        assert entries["LLM04"].frame_blind is True
+        assert entries["LLM08"].frame_blind is True
+        assert entries["LLM10"].frame_blind is True
+
+    def test_overlap_weights_returns_valid_structure(
+        self, vendored_snapshot: Path
+    ) -> None:
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
+        )
+        ow = adapter.overlap_weights()
+        assert isinstance(ow, OverlapWeights)
