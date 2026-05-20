@@ -503,3 +503,116 @@ class TestAdapterInterface:
         )
         ow = adapter.overlap_weights()
         assert isinstance(ow, OverlapWeights)
+
+
+# ---------------------------------------------------------------------------
+# Real-snapshot integration tests (Task 7)
+# ---------------------------------------------------------------------------
+
+_VENDOR_BASE = Path("projects/owasp-llm/cycles/2026/corpora/genai_agentic")
+
+
+def _find_vendored_snapshot() -> Path | None:
+    """Find the vendored snapshot directory, or None if not yet vendored."""
+    if not _VENDOR_BASE.exists():
+        return None
+    subdirs = [d for d in _VENDOR_BASE.iterdir() if d.is_dir()]
+    if len(subdirs) != 1:
+        return None
+    return subdirs[0]
+
+
+@pytest.fixture()
+def real_snapshot() -> Path:
+    """Return the path to the real vendored snapshot, skip if not available."""
+    snap = _find_vendored_snapshot()
+    if snap is None:
+        pytest.skip("Vendored snapshot not available — run Task 3 first")
+    return snap
+
+
+class TestRealSnapshotIntegration:
+    """Tests against the actual vendored genai_agentic snapshot."""
+
+    EXPECTED_TOTAL_MIN = 7_000
+    EXPECTED_TOTAL_MAX = 9_000
+    EXPECTED_SECURITY_MIN = 6_500
+    EXPECTED_SECURITY_MAX = 8_500
+    EXPECTED_AI_HARM_MIN = 300
+    EXPECTED_AI_HARM_MAX = 500
+
+    def test_total_record_count_within_tolerance(
+        self, real_snapshot: Path
+    ) -> None:
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=real_snapshot, snapshot_date="2026-05-20"
+        )
+        total = sum(1 for _ in adapter.iter_incidents())
+        assert self.EXPECTED_TOTAL_MIN <= total <= self.EXPECTED_TOTAL_MAX, (
+            f"Total records {total} outside expected range "
+            f"[{self.EXPECTED_TOTAL_MIN}, {self.EXPECTED_TOTAL_MAX}]"
+        )
+
+    def test_security_stratum_count(self, real_snapshot: Path) -> None:
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=real_snapshot, snapshot_date="2026-05-20"
+        )
+        count = sum(
+            1 for r in adapter.iter_incidents() if r.corpus_stratum == "security"
+        )
+        assert self.EXPECTED_SECURITY_MIN <= count <= self.EXPECTED_SECURITY_MAX
+
+    def test_ai_harm_stratum_count(self, real_snapshot: Path) -> None:
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=real_snapshot, snapshot_date="2026-05-20"
+        )
+        count = sum(
+            1 for r in adapter.iter_incidents() if r.corpus_stratum == "ai-harm"
+        )
+        assert self.EXPECTED_AI_HARM_MIN <= count <= self.EXPECTED_AI_HARM_MAX
+
+    def test_every_stratum_has_a_bias_profile(
+        self, real_snapshot: Path
+    ) -> None:
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=real_snapshot, snapshot_date="2026-05-20"
+        )
+        profile_strata = {p.stratum for p in adapter.bias_profiles()}
+        record_strata = {r.corpus_stratum for r in adapter.iter_incidents()}
+        assert record_strata.issubset(profile_strata)
+
+    def test_snapshot_hash_is_stable(self, real_snapshot: Path) -> None:
+        """Content hash must be byte-stable across platforms."""
+        from engine.snapshot.hashing import snapshot_hash
+
+        h1 = snapshot_hash(real_snapshot / "incidents.json")
+        h2 = snapshot_hash(real_snapshot / "incidents.json")
+        assert h1 == h2
+        assert h1 == real_snapshot.name
+
+    def test_provenance_has_all_six_fields(self, real_snapshot: Path) -> None:
+        from engine.snapshot.provenance import SnapshotProvenance
+
+        prov = SnapshotProvenance.read(real_snapshot / "provenance.json")
+        assert prov.source_repo != ""
+        assert prov.source_commit_sha != ""
+        assert prov.pull_date != ""
+        assert prov.adapter_name == "genai_agentic"
+        assert prov.adapter_version != ""
+        assert prov.snapshot_hash == real_snapshot.name
+
+    def test_bare_llm03_contamination_count(
+        self, real_snapshot: Path
+    ) -> None:
+        """HANDOFF §3 F2: ~907 bare-LLM03 entries expected."""
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=real_snapshot, snapshot_date="2026-05-20"
+        )
+        contaminated = sum(
+            1
+            for r in adapter.iter_incidents()
+            if is_bare_llm03_contaminated(list(r.native_labels))
+        )
+        assert 700 <= contaminated <= 1200, (
+            f"Bare-LLM03 count {contaminated} outside expected range [700, 1200]"
+        )
