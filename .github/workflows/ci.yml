@@ -6,6 +6,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      id-token: write
     env: { JAX_ENABLE_X64: "true", JAX_PLATFORM_NAME: "cpu" }
     steps:
       - uses: actions/checkout@v4
@@ -16,7 +19,7 @@ jobs:
       - run: uv run mypy engine tests
       - run: uv run pytest -v
       - run: uv run semgrep --config .semgrep.yml --error engine/
-      - run: uv run cyclonedx-py -o sbom.cyclonedx.json
+      - run: uv run cyclonedx-py environment -o sbom.cyclonedx.json
       - uses: sigstore/cosign-installer@v3
       - run: cosign sign-blob --yes sbom.cyclonedx.json --output-signature sbom.cyclonedx.json.sig --output-certificate sbom.cyclonedx.json.crt
       - run: |
