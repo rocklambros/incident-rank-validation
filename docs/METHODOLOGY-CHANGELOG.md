@@ -1,5 +1,20 @@
 # Methodology Changelog
 
+## 0.2.0 (Plan 2, 2026-05-20)
+
+GenAI Agentic corpus A adapter, per-stratum bias profiles, snapshot vendoring.
+
+Key deliverables:
+- `engine/adapters/genai_agentic.py`: concrete adapter reading vendored snapshot, emitting canonical IncidentRecord instances.
+- `engine/adapters/genai_agentic_bias.py`: per-stratum BiasProfile declarations for "security" and "ai-harm" strata with quarantine rules for bare-LLM03 contamination (HANDOFF §3 F2).
+- `engine/cli/snapshot.py`: vendor-snapshot CLI command with content-addressed hashing and provenance.json (6 fields per HANDOFF §5.1).
+- Severity-default detection: source-ingest "Medium" default → `severity=None` (HANDOFF §3 Mixture).
+- Future-dated row drop per HANDOFF §4 Temporal.
+- Drift detector integration with vendored snapshot (JSONL format for drift.py compatibility).
+- Vendored snapshot at `projects/owasp-llm/cycles/2026/corpora/genai_agentic/<hash>/`.
+
+Methodology decision: this plan defines the stratum boundaries for Corpus A as the two values of the source `corpus` field ("security", "ai-harm"), each with a declared BiasProfile. This is a structural decision that constrains the Bayesian model's stratification in Plans 3–5. HANDOFF §4's "Corpus A is a mixture" row requires per-stratum bias profiles for corpus AND category — Plan 2 implements the corpus-level stratification; category-level stratification (per HANDOFF §3 Mixture) is deferred to Plan 3 where the rubric defines how categories interact with the measurement model. Entry definitions and overlap weights are provisional (2025 taxonomy placeholders) and MUST be replaced by the frozen 2026 rubric in Plan 3.
+
 ## Plan 1 v5 (2026-05-20)
 
 HANDOFF v2.5 compliant. Closures: R1-R33, L1-L11, M1-M23.

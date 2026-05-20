@@ -1,0 +1,8 @@
+{
+  "adapter_name": "genai_agentic",
+  "adapter_version": "0.2.0",
+  "pull_date": "2026-05-20",
+  "snapshot_hash": "24806f1a4f0917f85f7509d6cb2a34b12e56eb902714b37bc2b03a2cf1a246bb",
+  "source_commit_sha": "e474ce7d0a8b2510e487a6d76d2c70bfe8b05d90",
+  "source_repo": "genai_incidents"
+}
