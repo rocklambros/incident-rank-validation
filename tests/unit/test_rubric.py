@@ -7,6 +7,13 @@ from pathlib import Path
 import pytest
 
 from engine.prereg.adjudication import AdjudicationEntry, AdjudicationLog
+from engine.prereg.gates import (
+    is_publishable,
+    require_rubric_attestation,
+    require_rubric_hash,
+    require_rubric_hash_match,
+)
+from engine.prereg.manifest import PreregManifest
 from engine.prereg.rubric import BoundaryRule, Rubric, RubricEntry
 from engine.prereg.rubric_attestation import RubricDraftingAttestation
 from engine.prereg.rubric_io import (
@@ -17,6 +24,7 @@ from engine.prereg.rubric_io import (
     write_rubric,
     write_rubric_attestation,
 )
+from engine.prereg.signoff import ReviewerSignoff
 
 
 class TestRubricDataModel:
@@ -451,3 +459,153 @@ class TestRubricIO:
         assert loaded.rubric_hash == "abc123"
         assert len(loaded.entries) == 1
         assert loaded.entries[0].decision == "resolved:LLM01"
+
+
+def _make_signoff(
+    *,
+    name: str = "Alice",
+    path: str = "docs/REVIEWERS/alice-rubric.txt",
+    sha: str = "abc123",
+    ts: str = "2025-01-15T10:00:00+00:00",
+    viewed: bool = False,
+) -> ReviewerSignoff:
+    return ReviewerSignoff(
+        reviewer_name=name,
+        reviewer_affiliation="Example Org",
+        attestation_relative_path=path,
+        attestation_sha256=sha,
+        signed_at=ts,
+        viewed_results_before_signoff=viewed,
+    )
+
+
+def _make_test_manifest(**overrides: object) -> PreregManifest:
+    from typing import Any
+
+    defaults: dict[str, Any] = {
+        "engine_version": "0.3.0",
+        "engine_version_range_min": "0.3.0",
+        "engine_version_range_max": "0.3.0",
+        "cycle_id": "2026",
+        "taxonomy_hash": "aaa",
+        "snapshot_hash": "bbb",
+        "primary_spec": "negative_binomial_per_stratum",
+        "robustness_specs": ("poisson_flat",),
+        "flag_threshold_tau": 0.8,
+        "statistic": "weighted_cohens_kappa",
+        "measurability_minimum": 4,
+        "prior_scale": 0.5,
+        "concentration_shape": 5.0,
+        "concentration_rate": 0.1,
+        "ess_fraction": 0.4,
+        "meaningful_kappa_n": 4,
+        "prng_seed": 20260520,
+        "rubric_drafting_attestation": None,
+        "rubric_reviewer": None,
+        "statistical_reviewer": None,
+        "classifier_rule_hash": None,
+        "rubric_hash": None,
+        "post_hoc_register_path": None,
+    }
+    defaults.update(overrides)
+    return PreregManifest(**defaults)
+
+
+class TestGates:
+    """Tests for pre-classify gate checks."""
+
+    def test_require_rubric_attestation_passes(self) -> None:
+        m = _make_test_manifest(
+            rubric_drafting_attestation=RubricDraftingAttestation(
+                viewed_corpus_before_drafting=False,
+                viewed_corpus_details="",
+                viewed_vote_data_before_drafting=False,
+                viewed_vote_data_details="",
+            ),
+        )
+        require_rubric_attestation(m)  # should not raise
+
+    def test_require_rubric_attestation_fails_when_none(self) -> None:
+        m = _make_test_manifest(rubric_drafting_attestation=None)
+        with pytest.raises(ValueError, match="rubric drafting attestation required"):
+            require_rubric_attestation(m)
+
+    def test_require_rubric_hash_passes(self) -> None:
+        m = _make_test_manifest(rubric_hash="abc123")
+        require_rubric_hash(m)  # should not raise
+
+    def test_require_rubric_hash_fails_when_none(self) -> None:
+        m = _make_test_manifest(rubric_hash=None)
+        with pytest.raises(ValueError, match="rubric hash required"):
+            require_rubric_hash(m)
+
+    def test_is_publishable_true_with_external_reviewers(self) -> None:
+        m = _make_test_manifest(
+            rubric_reviewer=_make_signoff(name="External-A"),
+            statistical_reviewer=_make_signoff(
+                name="External-B",
+                path="docs/REVIEWERS/ext-b.txt",
+                sha="def456",
+            ),
+        )
+        assert is_publishable(m, ranking_author="Rock Lambros") is True
+
+    def test_is_publishable_false_when_reviewer_is_author(self) -> None:
+        m = _make_test_manifest(
+            rubric_reviewer=_make_signoff(name="Rock Lambros"),
+            statistical_reviewer=_make_signoff(
+                name="External-B",
+                path="docs/REVIEWERS/ext-b.txt",
+                sha="def456",
+            ),
+        )
+        assert is_publishable(m, ranking_author="Rock Lambros") is False
+
+    def test_is_publishable_false_when_statistical_is_author(self) -> None:
+        m = _make_test_manifest(
+            rubric_reviewer=_make_signoff(name="External-A"),
+            statistical_reviewer=_make_signoff(
+                name="Rock Lambros",
+                path="docs/REVIEWERS/rock.txt",
+                sha="ghi789",
+            ),
+        )
+        assert is_publishable(m, ranking_author="Rock Lambros") is False
+
+    def test_is_publishable_false_when_reviewer_missing(self) -> None:
+        m = _make_test_manifest(rubric_reviewer=None, statistical_reviewer=None)
+        assert is_publishable(m, ranking_author="Rock Lambros") is False
+
+    def test_is_publishable_name_normalization(self) -> None:
+        m = _make_test_manifest(
+            rubric_reviewer=_make_signoff(name="rock  lambros"),
+            statistical_reviewer=_make_signoff(
+                name="External-B",
+                path="docs/REVIEWERS/ext-b.txt",
+                sha="def456",
+            ),
+        )
+        assert is_publishable(m, ranking_author="Rock Lambros") is False
+
+    def test_require_rubric_hash_match_passes(self, tmp_path: Path) -> None:
+        r = _make_rubric()
+        p = tmp_path / "rubric.json"
+        write_rubric(r, p)
+        m = _make_test_manifest(rubric_hash=r.compute_hash())
+        require_rubric_hash_match(m, p)  # should not raise
+
+    def test_require_rubric_hash_match_fails_on_mismatch(self, tmp_path: Path) -> None:
+        r = _make_rubric()
+        p = tmp_path / "rubric.json"
+        write_rubric(r, p)
+        m = _make_test_manifest(rubric_hash="wrong_hash")
+        with pytest.raises(ValueError, match="rubric hash mismatch"):
+            require_rubric_hash_match(m, p)
+
+    def test_require_rubric_hash_match_fails_when_none(self, tmp_path: Path) -> None:
+        r = _make_rubric()
+        p = tmp_path / "rubric.json"
+        write_rubric(r, p)
+        m = _make_test_manifest(rubric_hash=None)
+        with pytest.raises(ValueError, match="rubric hash is None"):
+            require_rubric_hash_match(m, p)
