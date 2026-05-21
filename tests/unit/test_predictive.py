@@ -50,6 +50,7 @@ def _make_manifest(**overrides: Any) -> PreregManifest:
         "rubric_reviewer": None,
         "statistical_reviewer": None,
         "classifier_rule_hash": None,
+        "rubric_hash": None,
         "post_hoc_register_path": None,
     }
     defaults.update(overrides)
