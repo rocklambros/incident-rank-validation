@@ -474,14 +474,14 @@ class TestAdapterInterface:
                 f"M3 violation: stratum {stratum} size {sizes[stratum]} < count {count}"
             )
 
-    def test_entry_definitions_returns_ten_entries(
+    def test_entry_definitions_returns_twenty_entries(
         self, vendored_snapshot: Path
     ) -> None:
         adapter = GenAIAgenticAdapter(
             snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
         )
         entries = adapter.entry_definitions()
-        assert len(entries) == 10
+        assert len(entries) == 20
 
     def test_entry_definitions_include_frame_blind_entries(
         self, vendored_snapshot: Path
@@ -503,6 +503,39 @@ class TestAdapterInterface:
         )
         ow = adapter.overlap_weights()
         assert isinstance(ow, OverlapWeights)
+
+
+class TestEntryDefinitions:
+    """Entry definition expansion: 10 core + 6 NEW-* + 4 ROLL-* = 20 entries."""
+
+    def test_twenty_entries(self, vendored_snapshot: Path) -> None:
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
+        )
+        entries = adapter.entry_definitions()
+        assert len(entries) == 20
+
+    def test_frame_blind_entries(self, vendored_snapshot: Path) -> None:
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
+        )
+        entries = adapter.entry_definitions()
+        fb = {e.entry_id for e in entries if e.frame_blind}
+        assert fb == {"LLM04", "LLM08", "LLM10"}
+
+    def test_all_entry_ids_present(self, vendored_snapshot: Path) -> None:
+        adapter = GenAIAgenticAdapter(
+            snapshot_dir=vendored_snapshot, snapshot_date="2026-05-20"
+        )
+        entries = adapter.entry_definitions()
+        ids = {e.entry_id for e in entries}
+        expected = {
+            "LLM01", "LLM02", "LLM03", "LLM04", "LLM05",
+            "LLM06", "LLM07", "LLM08", "LLM09", "LLM10",
+            "NEW-PMP", "NEW-MTIE", "NEW-MA", "NEW-ITSCD", "NEW-WLA", "NEW-MSDA",
+            "ROLL-CMSB", "ROLL-LAPTF", "ROLL-SICG", "ROLL-CFAS",
+        }
+        assert ids == expected
 
 
 # ---------------------------------------------------------------------------
