@@ -1,0 +1,173 @@
+{
+  "rubric_hash": "2383f39825e4949251d514df49d1fed586874714aa9396fa24f3c0774534b120",
+  "entries": [
+    {
+      "entry_id_a": "LLM01",
+      "entry_id_b": "LLM02",
+      "decision": "resolved:LLM01",
+      "rationale": "Rule provides clear discriminator: primary mechanism is prompt manipulation \u2192 LLM01; primary goal is data extraction \u2192 LLM02.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM01",
+      "entry_id_b": "LLM05",
+      "decision": "resolved:LLM01",
+      "rationale": "Injection vector is LLM01; co-label with LLM05 only if downstream system also lacked output validation. Clear.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM01",
+      "entry_id_b": "LLM06",
+      "decision": "resolved:LLM01",
+      "rationale": "Injection-triggered unauthorized actions classify as LLM01. LLM06 applies to permission design flaws independent of injection.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM01",
+      "entry_id_b": "LLM07",
+      "decision": "resolved:LLM01",
+      "rationale": "Injection-mechanism disclosure is LLM01. Conversational probing or design-flaw exposure without injection is LLM07.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM01",
+      "entry_id_b": "NEW-MTIE",
+      "decision": "resolved:LLM01",
+      "rationale": "Normal input/retrieval injection is LLM01. MCP tool-definition injection at tool-load time is NEW-MTIE. Channel discriminates clearly.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM01",
+      "entry_id_b": "NEW-PMP",
+      "decision": "resolved:LLM01",
+      "rationale": "Single-session injection is LLM01. Memory persistence across sessions escalates to NEW-PMP. Persistence boundary is observable.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM02",
+      "entry_id_b": "LLM07",
+      "decision": "resolved:LLM02",
+      "rationale": "Regulated data (PII, credentials) \u2192 LLM02. System prompt/tool schemas/behavioral logic \u2192 LLM07. Data classification discriminates.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM02",
+      "entry_id_b": "LLM08",
+      "decision": "resolved:LLM02",
+      "rationale": "Mechanism is LLM08 (embedding/RAG), outcome is LLM02 (sensitive data disclosure). Co-label; data sensitivity is primary.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM02",
+      "entry_id_b": "NEW-ITSCD",
+      "decision": "ambiguous-both-labels",
+      "rationale": "Side-channel disclosure is a novel vector; boundary between inference-time side channels and established LLM02 leakage paths is not yet empirically stable.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM03",
+      "entry_id_b": "LLM04",
+      "decision": "resolved:LLM03",
+      "rationale": "Supply chain path compromise (repos, artifacts, transit) \u2192 LLM03. Training data content manipulation \u2192 LLM04. Attack surface discriminates.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM03",
+      "entry_id_b": "LLM05",
+      "decision": "resolved:LLM03",
+      "rationale": "Supply chain vector is LLM03 as root cause. Co-label with LLM05 only if downstream output validation also failed.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM04",
+      "entry_id_b": "LLM08",
+      "decision": "ambiguous-both-labels",
+      "rationale": "Document poisoning that propagates through RAG sits at genuine intersection of data poisoning (LLM04) and retrieval-geometry exploit (LLM08). Coders would split.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM04",
+      "entry_id_b": "LLM09",
+      "decision": "resolved:LLM04",
+      "rationale": "Poisoning mechanism is LLM04 as root cause. Hallucination/weak grounding without poisoning is LLM09. Poisoning presence discriminates.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM04",
+      "entry_id_b": "NEW-MA",
+      "decision": "resolved:LLM04",
+      "rationale": "Poisoned training data \u2192 LLM04. Misalignment from clean training (reward hacking, spec gaming) \u2192 NEW-MA. Data integrity discriminates.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM04",
+      "entry_id_b": "NEW-PMP",
+      "decision": "resolved:LLM04",
+      "rationale": "Training/fine-tuning pipeline access \u2192 LLM04. Runtime memory corruption via live interactions \u2192 NEW-PMP. Access requirement discriminates.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM05",
+      "entry_id_b": "LLM09",
+      "decision": "resolved:LLM05",
+      "rationale": "Technically exploitable output (XSS, SQLi, RCE) \u2192 LLM05. Factually incorrect/misleading \u2192 LLM09. Exploitability discriminates.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM06",
+      "entry_id_b": "NEW-MA",
+      "decision": "resolved:LLM06",
+      "rationale": "System grants excessive permissions \u2192 LLM06. Model objective diverges from spec \u2192 NEW-MA. Locus of fault (system design vs model behavior) discriminates.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM06",
+      "entry_id_b": "NEW-MTIE",
+      "decision": "resolved:NEW-MTIE",
+      "rationale": "Malicious MCP tool definition causing unintended invocation \u2192 NEW-MTIE as primary. Co-label LLM06 if excessive permissions also present.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM09",
+      "entry_id_b": "NEW-MA",
+      "decision": "resolved:LLM09",
+      "rationale": "Incorrect/misleading output \u2192 LLM09. Correct but policy-violating behavior \u2192 NEW-MA. Factual accuracy vs policy compliance discriminates.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "LLM10",
+      "entry_id_b": "NEW-WLA",
+      "decision": "resolved:LLM10",
+      "rationale": "LLM operator is victim (resource exhaustion, DoW) \u2192 LLM10. Third parties are victims (LLM as attack infrastructure) \u2192 NEW-WLA. Victim identity discriminates.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    },
+    {
+      "entry_id_a": "NEW-MA",
+      "entry_id_b": "NEW-MSDA",
+      "decision": "ambiguous-both-labels",
+      "rationale": "Scheming is a subset of misalignment with distinct detection requirements. Boundary between strategic deception and spec gaming is not empirically stable for consistent coding.",
+      "adjudicator": "Rock Lambros",
+      "date": "2026-05-21"
+    }
+  ]
+}
