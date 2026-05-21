@@ -4,6 +4,7 @@ from pathlib import Path
 
 import click
 
+from engine.cli.rubric import freeze_rubric_cmd, validate_rubric_cmd
 from engine.cli.snapshot import vendor_snapshot_cmd
 
 
@@ -14,6 +15,8 @@ def cli() -> None:
 
 
 cli.add_command(vendor_snapshot_cmd)
+cli.add_command(validate_rubric_cmd)
+cli.add_command(freeze_rubric_cmd)
 
 
 @cli.command()
