@@ -14,7 +14,8 @@ freezing the classification rubric for an incident-rank-validation cycle.
 The rubric drafter (Claude + Rock) MUST NOT view vote results during drafting.
 This means:
 
-1. Do not open `~/github_projects/GenAI-LLM-Top10/2026/polling/` or any
+1. Do not open the `2026/polling/` directory in the source repo
+   (`https://github.com/GenAI-Security-Project/GenAI-LLM-Top10`) or any
    file containing vote results.
 2. Do not read the `Analysis` or `Results` sheets from the voting spreadsheet.
 3. The CASE 2 ranking order in HANDOFF §2 is metadata about *what* the entries
@@ -113,6 +114,29 @@ Per HANDOFF §6 control 5 and REVIEWERS.md:
 4. Update the cycle manifest with reviewer identity and hash.
 
 If no external reviewer is available, the run proceeds as `non_publishable=True`.
+
+## Rollup Sub-Test Consumption Spec (Premortem4 R5)
+
+The rubric contains 4 rolled-up candidate entries (`is_rollup_candidate=true`, `rolled_into` pointing to
+a parent incumbent). This section specifies how Plans 4-5 should consume them:
+
+1. **Independent classification:** Rollup candidates are classified independently alongside their parent.
+   The classifier evaluates each incident against BOTH the parent entry and the rollup entry.
+2. **Dual labeling:** If an incident matches a rollup candidate, it receives BOTH the rollup label AND
+   the parent label. The rollup classification is a sub-test of the parent, not a competing label.
+3. **Parent contribution:** The concordance statistic for the parent entry includes incidents that matched
+   via the rollup sub-test. Rollup matches contribute to the parent's evidence pool.
+4. **No independent rank:** Rollup candidates do NOT have their own rank position in the final Top 10.
+   They exist to test whether the parent entry's scope is too broad (i.e., whether the rolled-up concept
+   should have been a separate entry). This sub-test result is reported as a methodology finding.
+
+## Adapter Compatibility Warning (Premortem4 R11)
+
+The frozen rubric covers 20 entries (10 incumbents + 6 standalone new + 4 rollup). The provisional
+adapter (`engine/adapters/genai_agentic.py:_PROVISIONAL_2025_ENTRIES`) classifies against only 10
+incumbent entries. Do NOT run the classify pipeline with this rubric until Plan 5 updates the adapter.
+A 20-entry rubric with a 10-entry classifier will produce incomplete classifications that silently
+pass the `require_rubric_hash_match()` gate (which checks the rubric hash, not classifier coverage).
 
 ## Rubric Amendments
 

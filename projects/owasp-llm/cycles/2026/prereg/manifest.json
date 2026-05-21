@@ -1,0 +1,39 @@
+{
+  "engine_version": "0.3.0",
+  "engine_version_range_min": "0.3.0",
+  "engine_version_range_max": "0.3.0",
+  "cycle_id": "2026",
+  "taxonomy_hash": "9923cf610f9df1d61c96dd4f98d8a12548503dd3aae1f9c55509985a7dca6664",
+  "snapshot_hash": "24806f1a4f0917f85f7509d6cb2a34b12e56eb902714b37bc2b03a2cf1a246bb",
+  "primary_spec": "negative_binomial_per_stratum",
+  "robustness_specs": [
+    "poisson_flat"
+  ],
+  "flag_threshold_tau": 0.8,
+  "statistic": "weighted_cohens_kappa",
+  "measurability_minimum": 4,
+  "prior_scale": 0.5,
+  "concentration_shape": 5.0,
+  "concentration_rate": 0.1,
+  "ess_fraction": 0.4,
+  "meaningful_kappa_n": 4,
+  "prng_seed": 20260520,
+  "rubric_drafting_attestation": {
+    "viewed_corpus_before_drafting": false,
+    "viewed_corpus_details": "",
+    "viewed_vote_data_before_drafting": false,
+    "viewed_vote_data_details": ""
+  },
+  "rubric_reviewer": {
+    "reviewer_name": "Rock Lambros",
+    "reviewer_affiliation": "OWASP GenAI Top 10 effort lead (ranking author)",
+    "attestation_relative_path": "docs/REVIEWERS/rock-lambros-rubric.txt",
+    "attestation_sha256": "1f8eebe6f8e2ac853d72be88de94e6986eecf29b9ea5b0dc0a351613d23cbd7b",
+    "signed_at": "2026-05-21T04:56:58-06:00",
+    "viewed_results_before_signoff": false
+  },
+  "statistical_reviewer": null,
+  "classifier_rule_hash": null,
+  "rubric_hash": "2383f39825e4949251d514df49d1fed586874714aa9396fa24f3c0774534b120",
+  "post_hoc_register_path": null
+}

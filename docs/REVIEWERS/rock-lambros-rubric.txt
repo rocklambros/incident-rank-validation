@@ -1,0 +1,24 @@
+RUBRIC REVIEW ATTESTATION
+
+Reviewer: Rock Lambros
+Affiliation: OWASP GenAI Top 10 effort lead (ranking author)
+Date: 2026-05-21
+Rubric hash reviewed: 2383f39825e4949251d514df49d1fed586874714aa9396fa24f3c0774534b120
+
+I reviewed the rubric (rubric.json) and adjudication log (adjudication_log.json)
+for the OWASP GenAI LLM Top 10 2026 incident-rank validation cycle.
+
+Viewed analysis results before signing: No
+Viewed vote/polling data before signing: No
+
+Findings:
+None — rubric is adequate for consistent coding
+
+Decision: APPROVED
+
+Statement of independence:
+I am Rock Lambros. I am the ranking author of this project. This review
+is NOT independent — it is a self-review operating in single-author mode
+per HANDOFF §4. This cycle is non-publishable as a consequence.
+
+Signature: Rock Lambros
