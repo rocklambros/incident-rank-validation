@@ -93,7 +93,7 @@ class BatchHeader:
     rubric_hash: str
     manifest_lock_hash: str
     coder_id: str
-    generated_at: str
+    generated_at: str = ""
     coding_checklist: dict[str, str] | None = field(default=None)
 
     def to_dict(self) -> dict[str, Any]:
