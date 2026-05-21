@@ -41,6 +41,7 @@ def _make_manifest(**overrides: Any) -> PreregManifest:
         "ess_fraction": 0.1,  # relaxed for small test runs
         "meaningful_kappa_n": 4,
         "prng_seed": 42,
+        "confidence_threshold": 0.3,
         "rubric_drafting_attestation": None,
         "rubric_reviewer": None,
         "statistical_reviewer": None,
