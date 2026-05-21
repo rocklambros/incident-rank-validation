@@ -134,10 +134,12 @@ llm02 = RubricEntry(
         "cross-session state leakage, DLP bypass, and reasoning-trace disclosure."
     ),
     exclusions=(
-        "Prompt injection as the extraction mechanism (→ LLM01, though disclosure outcome is in scope here)",
+        "Prompt injection as the extraction mechanism"
+        " (→ LLM01, though disclosure outcome is in scope here)",
         "Hidden context exposure where content is not regulated/sensitive data (→ LLM07)",
         "Inference-time side channels via speculative decoding (→ NEW-ITSCD)",
-        "Embedding inversion or vector-store leakage mechanism (→ LLM08, disclosure outcome in scope here)",
+        "Embedding inversion or vector-store leakage mechanism"
+        " (→ LLM08, disclosure outcome in scope here)",
     ),
     boundary_rules=(
         BoundaryRule(
@@ -218,7 +220,8 @@ llm03 = RubricEntry(
         "unsigned/replaceable artifacts."
     ),
     exclusions=(
-        "Training data poisoning where the attack is on data content rather than supply chain integrity (→ LLM04)",
+        "Training data poisoning where the attack is on data content"
+        " rather than supply chain integrity (→ LLM04)",
         "Runtime memory corruption (→ NEW-PMP)",
         "MCP tool definition trust failure at parse time (→ NEW-MTIE)",
     ),
@@ -442,7 +445,8 @@ llm06 = RubricEntry(
         "missing authorization mediation."
     ),
     exclusions=(
-        "Prompt injection causing unauthorized tool use (→ LLM01 for the vector, though consequence may co-label)",
+        "Prompt injection causing unauthorized tool use"
+        " (→ LLM01 for the vector, though consequence may co-label)",
         "MCP tool definition exploitation at parse time (→ NEW-MTIE)",
         "Model behavioral misalignment without excessive permissions (→ NEW-MA)",
     ),
