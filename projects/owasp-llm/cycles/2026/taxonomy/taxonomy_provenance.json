@@ -1,0 +1,10 @@
+{
+  "source_repo": "https://github.com/GenAI-Security-Project/GenAI-LLM-Top10",
+  "source_commit_sha": "d2c7e23246148ea7bb7592e94bfdec73a34c389b",
+  "vendored_at": "2026-05-20",
+  "vendored_by": "Rock Lambros",
+  "incumbent_source_dir": "2026/",
+  "candidate_source_dir": "2026/new_entry_candidates/",
+  "vendored_content_hash": "343e330ed98609edcf773e513eb9ebf3a9c42427c52822eeffa29678e8f3b11c",
+  "synthesized_entries": []
+}
