@@ -72,9 +72,21 @@ class StageProvenance:
 
 Each subsequent stage reads the previous stage's provenance and verifies `input_hashes` match. If any intermediate artifact was regenerated without re-running downstream stages, the next stage refuses to proceed. This prevents stale intermediate artifacts from propagating silently through the pipeline.
 
+The `output_hash` covers the full serialized output (including incident text for batch files), not just identifiers. This ensures that any modification to batch content between stages is detected by the provenance chain.
+
 ### Classifier iteration requires a new cycle
 
 If calibration reveals the classifier is inadequate, revising the classifier requires a new pre-registration cycle: new `classifier_rule_hash`, new manifest, new lock. No mid-cycle classifier changes. Each classifier version is a distinct pre-registration.
+
+### Overlap weights are pre-registered
+
+Overlap weights, like classifier rules and the confidence threshold, are pre-registered parameters locked in the manifest. Changes to overlap weights require a new cycle.
+
+### Synthetic coding path for testing
+
+A synthetic coding function `code_synthetic(sample_results, incidents)` fills batch labels from `native_labels` for testing purposes. It enables end-to-end pipeline testing (classify → sample → code_synthetic → tally → calibrate → cv-stability) without manual coding. The synthetic coder uses `coder_id: "synthetic"` and results are non-publishable. This parallels `classify_stub()` in `engine/classify/stub.py` — a test-only path through the manual stage.
+
+The synthetic coding path is the primary guard against the 40-hour coding investment being wasted on a pipeline bug discovered after coding is complete.
 
 ---
 
@@ -98,7 +110,9 @@ class ClassifierRules:
     rule_hash: str  # SHA-256 of canonical JSON of all rules
 ```
 
-Confidence formula: `confidence = max(0, positive_hits - negative_hits) / len(positive_patterns)`. An incident is assigned to an entry when `confidence >= confidence_threshold` (default 0.3, pre-registered in the manifest). Negative-pattern hits suppress, not veto — a high positive-hit count can overcome negative signals.
+**Indicator matching semantics**: case-insensitive substring search. For each indicator string P and incident text T, a match occurs when `P.lower()` is found in `T.lower()`. No regex, no word-boundary constraints. This definition is locked by the `classifier_rule_hash`.
+
+Confidence formula: `confidence = max(0, positive_hits - negative_hits) / len(positive_patterns)`. An incident is assigned to an entry when `confidence >= confidence_threshold` (default 0.3, pre-registered as `confidence_threshold` in `PreregManifest`). Negative-pattern hits suppress, not veto — a high positive-hit count can overcome negative signals.
 
 The classifier produces a `ClassificationResult` (existing schema in `engine/classify/stub.py:38-64`) with the real `classifier_rule_hash` derived from the rules, not the hardcoded stub value.
 
@@ -217,6 +231,8 @@ The ai-harm stratum has only 364 incidents. If a stratum has fewer than 20 class
 
 The coder fills in `labels` (list of entry_ids) and optional `notes`.
 
+**Recall-frame coding checklist**: recall-frame batches include a `coding_checklist` field in the batch header containing all 20 entry names and short descriptions from the rubric. This reduces cognitive load during the 20-way multi-label classification task by providing a structured reference directly in the batch file. Precision-frame batches do not need this (the framing question is binary: "does this incident match [entry_id]?").
+
 The tally stage verifies:
 - `sample_hash` matches the sample stage's output hash
 - `rubric_hash` matches the manifest
@@ -242,6 +258,25 @@ If the coder discovers an error after initial coding, the correction is recorded
 ```
 
 The tally stage uses the latest labels. Amendments are preserved for audit. The post-hoc register records all amendments.
+
+### Batch validation rules
+
+The tally stage validates every coded batch file before counting. Validation collects all errors across all batches and reports them as a structured error list (not fail-fast):
+
+| Field state | Meaning | Tally behavior |
+|-------------|---------|----------------|
+| `labels: null` | Uncoded — coder has not filled in this incident | Skip with warning; incident excluded from counts |
+| `labels: []` | Coded as "no match" — incident does not match the entry | Precision frame: count as false positive. Recall frame: count as true negative for this entry |
+| `labels: ["LLM01", ...]` | Coded labels | Validated against rubric `entry_ids`; unknown IDs raise `ValueError` with file + incident context |
+| `rollup_sub_labels: [...]` | Rollup child labels | Validated against rollup entry IDs only; non-rollup IDs raise `ValueError` |
+| Duplicate labels | Coder listed same entry twice | Deduplicated silently |
+| `amendment.original_labels` | Correction chain | Must match the incident's labels from the previous version (if amendment chain exists); mismatch raises `ValueError` |
+
+Error behavior: the tally stage scans all batches, collects all validation errors, and emits a structured error report before failing. This lets the coder fix all errors in one pass rather than iterating on individual batch files.
+
+### Batch re-coding policy
+
+If a pipeline error invalidates a sample (changing `sample_hash`), all coded batches for that sample are invalidated and must be re-coded. If the sample stage is re-run with the same seed and inputs, producing the same `sample_hash`, existing coded batches remain valid. The provenance chain enforces this: the tally stage rejects coded batches whose `sample_hash` doesn't match the current sample provenance.
 
 ### Single-coder waiver
 
@@ -297,8 +332,11 @@ class EntryCalibrationReport:
     has_recall_data: bool
     precision_ci_width: float | None
     recall_ci_width: float | None
+    recall_sample_size: int       # recall-frame labels for this entry
+    precision_sample_size: int    # precision-frame labels for this entry
     min_fold_count: int
-    flag: str  # "adequate", "wide", "no-data"
+    flag: str     # "adequate", "wide", "no-data"
+    reason: str   # structured reason for the flag value
 
 @dataclass(frozen=True, slots=True)
 class CalibrationDiagnostic:
@@ -308,7 +346,14 @@ class CalibrationDiagnostic:
     entry_reports: dict[str, EntryCalibrationReport]
 ```
 
-Entries flagged "wide" or "no-data" are noted in the final report's coverage gap section.
+**Flag reason values** (the `reason` field distinguishes root cause from symptom):
+- `"adequate"` — both frames have sufficient data, CI widths within target
+- `"wide: small-sample (n=N)"` — posteriors are wide due to small gold-set count, not due to genuinely poor classifier performance
+- `"wide: recall-frame-only"` — no precision-frame data (new/rollup entry); recall posterior only
+- `"no-data: no-classifier-positives"` — classifier produced zero positives for this entry+stratum; precision frame empty
+- `"no-data: frame-blind"` — entry is frame-blind; excluded from calibration by design
+
+This distinction is critical: "insufficient sample to measure recall" and "measured low recall from adequate sample" are different methodological statements with different implications for the inference model and the report.
 
 Each entry's diagnostic includes `min_fold_count` — the minimum number of coded labels per fold. If `min_fold_count < 5`, the CV fold variance is annotated as "unstable — fewer than 5 labels per fold."
 
@@ -353,6 +398,8 @@ Each stage also writes `cycles/2026/calibration/<stage>_provenance.json` (the `S
 
 Rollup candidates (ROLL-CMSB, ROLL-LAPTF, ROLL-SICG, ROLL-CFAS) do not get their own precision-frame sample. Instead, within the parent entry's precision frame, the coder is asked: "Does this incident specifically involve [rollup child concept]?" For example, in the LLM01 precision-frame batch, each incident has an additional field `rollup_sub_labels: list[str] | null` where the coder can assign `ROLL-CMSB` if the incident involves cross-modal safety bypass specifically. The tally stage counts rollup sub-labels separately. The rollup sub-test produces its own Beta posterior for the child entry, conditioned on the parent entry's precision frame.
 
+Rollup precision posteriors are **conditional on the parent** — they measure P(rollup correctly identified | incident is parent-positive), not unconditional precision. FPs from outside the parent's domain are already counted in the parent entry's FP rate and do not affect the rollup sub-test.
+
 ---
 
 ## Residual Risk Register
@@ -360,12 +407,18 @@ Rollup candidates (ROLL-CMSB, ROLL-LAPTF, ROLL-SICG, ROLL-CFAS) do not get their
 | Risk | Status | Rationale |
 |------|--------|-----------|
 | Git timestamp forgery (signoff.py:37-43) | Accepted | Discipline-based control per REVIEWERS.md:56. Mechanical check catches accidental mismatch. Cryptographic timestamping is overkill for OWASP working group audience. |
+| Inference FP term semantic mismatch (inference.py:177-181) | Documented; fix deferred to Plan 5 | The inference model's FP leakage term uses `true_rate * (1-precision)`. Standard formulation is `true_rate * recall * (1-precision) / precision`. These differ by factor `recall/precision`. With current sparse overlap matrix (single entry: LLM05→LLM03 at 0.2), practical impact is negligible. **Hard gate**: the overlap matrix MUST NOT be expanded beyond its current single non-zero entry until this formula is corrected in `inference.py`. Plan 4 calibration outputs are the first to exercise this code path with non-trivial precision values. |
+| Recall frame insufficient for rare entries | Accepted | Censoring module (`censoring.py:72-82`) excludes entries with mean recall < 0.1 from ranked inference. CalibrationDiagnostic's `reason` field now distinguishes "insufficient sample" from "measured low recall." Doubling recall-frame sample to 400 would add ~20 hours coding for marginal value (confirming what the coverage gap analysis already shows). |
+| Single-coder non-publishable | Accepted | Deliberate project decision per HANDOFF §4. Pipeline ready for multi-coder via `coder_id`. |
+| Recall-frame cognitive asymmetry | Partially mitigated | Inherent to two-frame methodology. Mitigated by recall-frame coding checklist in batch files (20 entry names + descriptions). Rock's rubric familiarity further reduces risk. |
 
-All other premortem findings have been mitigated in this design.
+All other premortem findings (first + second premortem) have been mitigated in this design.
 
 ---
 
 ## Premortem Finding Traceability
+
+### First premortem (design phase)
 
 | Finding | Severity | Remediation | Spec section |
 |---------|----------|-------------|--------------|
@@ -389,3 +442,22 @@ All other premortem findings have been mitigated in this design.
 | F5.3 | MEDIUM | R10: New cycle required | Architecture — Classifier iteration |
 | F5.5 | LOW | Disclosure-only + interpretation | Stage 6 — CV Stability |
 | F5.6 | MEDIUM | R11: Explicit disclosure | Stage 1 — Coverage gap disclosure |
+
+### Second premortem (spec review)
+
+| Finding | Severity | Remediation | Spec section |
+|---------|----------|-------------|--------------|
+| 2-F1.1 | CRITICAL | Add `confidence_threshold` to PreregManifest | Stage 1 — Classify (manifest field) |
+| 2-F1.2 | HIGH | Diagnostic `reason` + `recall_sample_size` fields | Stage 5 — Calibration-adequacy diagnostic |
+| 2-F1.3 | HIGH | Define indicator match semantics | Stage 1 — Classify (matching definition) |
+| 2-F1.4 | MEDIUM | Coding instructions (not spec) | — |
+| 2-F1.5 | MEDIUM | Recall-frame coding checklist in batches | Stage 3 — Batch file format |
+| 2-F1.6 | MEDIUM | Conservative by design (empty overlap for new entries) | Architecture — Overlap weights |
+| 2-F2.1 | HIGH | Document FP term mismatch + hard gate on overlap expansion | Residual risk register |
+| 2-F2.4 | MEDIUM | Clarify rollup precision is conditional on parent | Rollup Sub-Test |
+| 2-F3.1 | MEDIUM | Clarify output_hash covers full content | Architecture — Stage provenance |
+| 2-F4.1 | HIGH | Synthetic coding path (code_synthetic) | Architecture — Synthetic coding path |
+| 2-F4.2 | HIGH | Batch validation rules table | Stage 3 — Batch validation rules |
+| 2-F4.5 | MEDIUM | Batch re-coding policy | Stage 3 — Batch re-coding policy |
+| 2-F5.1 | MEDIUM | CalibrationDiagnostic `reason` field | Stage 5 — Calibration-adequacy diagnostic |
+| 2-F5.3 | MEDIUM | Overlap weights are pre-registered | Architecture — Overlap weights |
