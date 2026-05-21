@@ -10,7 +10,9 @@ The ranking author is **Rock Lambros**. Per HANDOFF §4, when no independent rev
 
 - **Name:** Rock Lambros
 - **Affiliation:** OWASP GenAI Top 10 effort lead (ranking author of this project)
-- **Status:** INTERIM — same identity as ranking author
+- **Status:** SELF-REVIEW — same identity as ranking author; non-publishable per HANDOFF §4
+- **Attestation file:** docs/REVIEWERS/rock-lambros-rubric.txt
+- **Attestation SHA-256:** 1f8eebe6f8e2ac853d72be88de94e6986eecf29b9ea5b0dc0a351613d23cbd7b
 - **Methodological consequence:** the rubric is single-authored. Manifests signed by Rock as rubric reviewer are non-publishable per HANDOFF §4, regardless of what the `non_publishable` field derives.
 
 ### Statistical reviewer
