@@ -4,4 +4,4 @@
 def test_version_string() -> None:
     from engine import __version__
 
-    assert __version__ == "0.3.0"
+    assert __version__ == "0.4.0"
