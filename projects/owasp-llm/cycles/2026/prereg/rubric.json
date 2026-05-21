@@ -1,0 +1,936 @@
+{
+  "cycle_id": "2026",
+  "version": "1.0.0",
+  "entries": [
+    {
+      "entry_id": "LLM01",
+      "canonical_name": "Prompt Injection",
+      "in_scope": "Attacks where input to an LLM \u2014 direct user input, retrieved documents, tool output, image/audio/video content, intermediate reasoning, or persistent memory \u2014 alters the model's behavior in ways the operator did not intend. Covers direct injection, indirect injection via retrieved content, multimodal injection, cross-session memory/RAG poisoning as an injection vector, and fine-tuning API abuse as a gradient oracle.",
+      "exclusions": [
+        "Data exfiltration where the primary mechanism is not prompt manipulation (\u2192 LLM02)",
+        "Consequences of model output reaching privileged actions without injection (\u2192 LLM06)",
+        "Leakage of hidden context when no injection is the cause (\u2192 LLM07)",
+        "Cross-modal bypass that is a sub-test of this entry (\u2192 ROLL-CMSB)"
+      ],
+      "boundary_rules": [
+        {
+          "adjacent_entry_id": "LLM02",
+          "rule": "If the attack's primary goal is data extraction and prompt manipulation is merely the vector, classify as LLM02. If the primary mechanism is prompt manipulation with data extraction as a side effect, classify as LLM01.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM05",
+          "rule": "If the incident involves injection that causes the LLM to produce output exploiting a downstream system (XSS, SQLi, RCE), classify as LLM01 for the injection vector. Co-label with LLM05 if the downstream system also lacked output validation.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM06",
+          "rule": "If prompt injection causes the LLM to take unauthorized actions via tools, classify as LLM01 (attack vector). LLM06 applies when the system grants excessive permissions regardless of injection. Co-label if both injection and excessive permissions are present.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM07",
+          "rule": "If an injection attack causes the model to disclose its system prompt or hidden context, classify as LLM01 (injection is the mechanism). LLM07 applies when hidden context is exposed through conversational probing or design flaws without injection.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "NEW-PMP",
+          "rule": "If the attack uses prompt injection as the initial vector but the payload persists in long-term memory and affects future sessions, classify as NEW-PMP. Single-session injection without memory persistence is LLM01.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "NEW-MTIE",
+          "rule": "If adversarial instructions are embedded in an MCP tool definition and parsed by the model at tool-load time, classify as NEW-MTIE. If injection arrives via normal input/retrieved content channels, classify as LLM01.",
+          "is_ambiguous": false
+        }
+      ],
+      "positive_indicators": [
+        "prompt injection",
+        "jailbreak",
+        "instruction override",
+        "system prompt bypass",
+        "indirect prompt injection",
+        "adversarial suffix",
+        "multi-turn manipulation",
+        "fine-tuning gradient oracle",
+        "invisible Unicode injection",
+        "RAG-mediated injection"
+      ],
+      "negative_indicators": [
+        "data exfiltration without prompt manipulation",
+        "hardware side-channel",
+        "model weight extraction",
+        "resource exhaustion without injection",
+        "memory poisoning persisting across sessions"
+      ],
+      "co_occurrence_pairs": [
+        [
+          "LLM01",
+          "LLM02"
+        ],
+        [
+          "LLM01",
+          "LLM05"
+        ],
+        [
+          "LLM01",
+          "LLM06"
+        ],
+        [
+          "LLM01",
+          "LLM07"
+        ]
+      ],
+      "is_rollup_candidate": false,
+      "rolled_into": null
+    },
+    {
+      "entry_id": "LLM02",
+      "canonical_name": "Sensitive Information Disclosure",
+      "in_scope": "Incidents where an LLM-integrated system exposes confidential, regulated, or proprietary data through any output channel. Covers training-data memorization and extraction, inference-time context leakage, pipeline-time disclosure (telemetry, distillation, synthetic data), and observation-time side channels (membership inference, timing, cache signals). Includes cross-session state leakage, DLP bypass, and reasoning-trace disclosure.",
+      "exclusions": [
+        "Prompt injection as the extraction mechanism (\u2192 LLM01, though disclosure outcome is in scope here)",
+        "Hidden context exposure where content is not regulated/sensitive data (\u2192 LLM07)",
+        "Inference-time side channels via speculative decoding (\u2192 NEW-ITSCD)",
+        "Embedding inversion or vector-store leakage mechanism (\u2192 LLM08, disclosure outcome in scope here)"
+      ],
+      "boundary_rules": [
+        {
+          "adjacent_entry_id": "LLM01",
+          "rule": "If prompt injection is the mechanism causing data disclosure, the injection vector is LLM01 and the disclosure outcome is LLM02. Co-label when both are independently present.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM07",
+          "rule": "If the exposed content is the system prompt, tool schemas, or behavioral logic that is not regulated data, classify as LLM07. If the hidden context contains credentials, PII, or regulated data, classify as LLM02. Co-label if both types of content are exposed.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM08",
+          "rule": "If the disclosure mechanism is embedding inversion or cross-tenant vector-store leakage, the mechanism is LLM08 and the disclosure outcome (regulated data) is LLM02. Co-label.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "NEW-ITSCD",
+          "rule": "If sensitive information is extracted via speculative-decoding timing or packet-size side channels, classify as NEW-ITSCD. General side channels covered by LLM02 \u00a75 (membership inference, log-prob channels) remain LLM02.",
+          "is_ambiguous": true
+        }
+      ],
+      "positive_indicators": [
+        "data leak",
+        "PII exposure",
+        "training data extraction",
+        "memorization",
+        "cross-session state leakage",
+        "reasoning trace disclosure",
+        "credential exposure in output",
+        "DLP bypass",
+        "membership inference",
+        "distillation data transfer"
+      ],
+      "negative_indicators": [
+        "no sensitive data in output",
+        "system prompt exposure without regulated data",
+        "resource exhaustion",
+        "model behavioral drift"
+      ],
+      "co_occurrence_pairs": [
+        [
+          "LLM01",
+          "LLM02"
+        ],
+        [
+          "LLM02",
+          "LLM07"
+        ],
+        [
+          "LLM02",
+          "LLM08"
+        ]
+      ],
+      "is_rollup_candidate": false,
+      "rolled_into": null
+    },
+    {
+      "entry_id": "LLM03",
+      "canonical_name": "Supply Chain Vulnerabilities",
+      "in_scope": "Vulnerabilities in the LLM supply chain affecting integrity of training data sources, pre-trained models, adapters, conversion pipelines, deployment platforms, and third-party dependencies. Covers traditional package vulnerabilities, compromised pre-trained models, weak model provenance, vulnerable LoRA adapters, model merge/conversion workflow exploits, on-device supply chain risks, and unsigned/replaceable artifacts.",
+      "exclusions": [
+        "Training data poisoning where the attack is on data content rather than supply chain integrity (\u2192 LLM04)",
+        "Runtime memory corruption (\u2192 NEW-PMP)",
+        "MCP tool definition trust failure at parse time (\u2192 NEW-MTIE)"
+      ],
+      "boundary_rules": [
+        {
+          "adjacent_entry_id": "LLM04",
+          "rule": "If the attack targets the supply chain path (compromised model repo, tampered artifact, malicious adapter in transit), classify as LLM03. If the attack manipulates the content of training/fine-tuning data to embed harmful patterns, classify as LLM04.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM05",
+          "rule": "If a supply chain compromise leads to a model generating unsafe output, the supply chain vector is LLM03. If the downstream system also fails to validate output, co-label with LLM05.",
+          "is_ambiguous": false
+        }
+      ],
+      "positive_indicators": [
+        "compromised dependency",
+        "malicious model artifact",
+        "model repo impersonation",
+        "unsigned model weights",
+        "tampered LoRA adapter",
+        "model merge exploit",
+        "format conversion attack",
+        "on-device model tampering",
+        "supply chain compromise"
+      ],
+      "negative_indicators": [
+        "training data content manipulation",
+        "runtime prompt injection",
+        "resource exhaustion",
+        "behavioral misalignment from training"
+      ],
+      "co_occurrence_pairs": [
+        [
+          "LLM03",
+          "LLM04"
+        ],
+        [
+          "LLM03",
+          "LLM05"
+        ]
+      ],
+      "is_rollup_candidate": false,
+      "rolled_into": null
+    },
+    {
+      "entry_id": "LLM04",
+      "canonical_name": "Data and Model Poisoning",
+      "in_scope": "Attacks and failures where data or model artifacts are manipulated to embed harmful behavior, bias, or exploitable weaknesses. Covers pre-training data poisoning, fine-tuning data poisoning, embedding/vectorization poisoning, transfer learning compromise, continuous learning pipeline poisoning, RAG knowledge base poisoning, and backdoor insertion including sleeper agents.",
+      "exclusions": [
+        "Supply chain integrity failures where the artifact path is compromised (\u2192 LLM03)",
+        "Runtime persistent memory poisoning without training pipeline access (\u2192 NEW-PMP)",
+        "Retrieval-time embedding geometry exploits without data content manipulation (\u2192 LLM08)",
+        "Compositional LoRA attacks as sub-test (\u2192 ROLL-CFAS)"
+      ],
+      "boundary_rules": [
+        {
+          "adjacent_entry_id": "LLM03",
+          "rule": "If the attack targets data content (injecting biased/malicious samples into training data), classify as LLM04. If the attack targets the artifact delivery path (compromised repo, tampered model file), classify as LLM03.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM09",
+          "rule": "If poisoned training data causes the model to systematically produce incorrect outputs, the poisoning mechanism is LLM04 and the misinformation outcome is LLM09. Co-label. If misinformation arises from hallucination or weak grounding without poisoning, classify as LLM09 only.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM08",
+          "rule": "If an attacker poisons document content that is then embedded and retrieved, the data manipulation is LLM04 and the retrieval-geometry exploit is LLM08. If the attack exploits embedding geometry without manipulating data content, classify as LLM08 only.",
+          "is_ambiguous": true
+        },
+        {
+          "adjacent_entry_id": "NEW-PMP",
+          "rule": "LLM04 covers poisoning at training/fine-tuning time requiring pipeline access. NEW-PMP covers runtime memory corruption via live interactions without training pipeline access. If an attacker poisons RLHF feedback loops, classify as LLM04.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "NEW-MA",
+          "rule": "If behavioral divergence from specification results from poisoned training data, classify as LLM04 (poisoning is the mechanism). If misalignment arises from benign training on clean data (reward hacking, specification gaming), classify as NEW-MA.",
+          "is_ambiguous": false
+        }
+      ],
+      "positive_indicators": [
+        "training data poisoning",
+        "fine-tuning data manipulation",
+        "RAG knowledge base poisoning",
+        "backdoor insertion",
+        "sleeper agent",
+        "RLHF feedback loop poisoning",
+        "data integrity compromise",
+        "adversarial training samples"
+      ],
+      "negative_indicators": [
+        "supply chain artifact tampering",
+        "runtime memory corruption",
+        "hallucination from knowledge gaps",
+        "embedding geometry exploit without data manipulation",
+        "low corpus count (frame_blind \u2014 measurement limitation, not evidence of low prevalence)"
+      ],
+      "co_occurrence_pairs": [
+        [
+          "LLM03",
+          "LLM04"
+        ],
+        [
+          "LLM04",
+          "LLM09"
+        ]
+      ],
+      "is_rollup_candidate": false,
+      "rolled_into": null
+    },
+    {
+      "entry_id": "LLM05",
+      "canonical_name": "Improper Output Handling",
+      "in_scope": "Insufficient validation, sanitization, and handling of LLM-generated outputs before they are passed to downstream components. Covers XSS, CSRF, SSRF, SQL injection, command injection, path traversal, and remote code execution from unvalidated LLM output. Includes ANSI escape sequence injection in terminals, and auto-rendering of model-referenced external resources (images, links) enabling data exfiltration.",
+      "exclusions": [
+        "Prompt injection as the initial attack vector (\u2192 LLM01)",
+        "Model generating insecure code as a development tool (\u2192 ROLL-SICG)",
+        "Overreliance on LLM output accuracy (\u2192 LLM09)"
+      ],
+      "boundary_rules": [
+        {
+          "adjacent_entry_id": "LLM01",
+          "rule": "If injection causes the LLM to produce malicious output that exploits a downstream system, classify the injection as LLM01 and the output handling failure as LLM05. Co-label.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM03",
+          "rule": "If a supply chain compromise causes a model to generate unsafe output, the supply chain vector is LLM03. If the downstream system also fails to validate, co-label with LLM05.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM09",
+          "rule": "LLM05 covers output that is technically exploitable (XSS, SQLi, RCE). LLM09 covers output that is factually incorrect or misleading. If incorrect output also contains injection payloads, co-label.",
+          "is_ambiguous": false
+        }
+      ],
+      "positive_indicators": [
+        "XSS from LLM output",
+        "SQL injection via model-generated query",
+        "command injection",
+        "remote code execution",
+        "SSRF",
+        "path traversal",
+        "ANSI escape injection",
+        "markdown image exfiltration",
+        "output not sanitized before downstream use"
+      ],
+      "negative_indicators": [
+        "model output is factually wrong but not exploitable",
+        "prompt injection without downstream output exploitation",
+        "model generates insecure code as development assistance"
+      ],
+      "co_occurrence_pairs": [
+        [
+          "LLM01",
+          "LLM05"
+        ],
+        [
+          "LLM03",
+          "LLM05"
+        ]
+      ],
+      "is_rollup_candidate": false,
+      "rolled_into": null
+    },
+    {
+      "entry_id": "LLM06",
+      "canonical_name": "Excessive Agency",
+      "in_scope": "Vulnerabilities where LLM-based systems are granted excessive functionality, permissions, or autonomy enabling damaging actions. Covers excessive tool access, over-privileged database/API connections, unnecessary extension capabilities, lack of human-in-the-loop for high-impact actions, and missing authorization mediation.",
+      "exclusions": [
+        "Prompt injection causing unauthorized tool use (\u2192 LLM01 for the vector, though consequence may co-label)",
+        "MCP tool definition exploitation at parse time (\u2192 NEW-MTIE)",
+        "Model behavioral misalignment without excessive permissions (\u2192 NEW-MA)"
+      ],
+      "boundary_rules": [
+        {
+          "adjacent_entry_id": "LLM01",
+          "rule": "If prompt injection triggers unauthorized actions, the injection is LLM01 and the excessive permission that enabled the action is LLM06. Co-label if both are independently present. LLM06 alone applies when the system's permission model is too broad regardless of injection.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "NEW-MTIE",
+          "rule": "If a malicious MCP tool definition causes the model to invoke unintended capabilities, the parse-layer trust failure is NEW-MTIE. If the system also grants the tool excessive permissions beyond what's needed, co-label with LLM06.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "NEW-MA",
+          "rule": "LLM06 addresses the system granting too much authority to the model. NEW-MA addresses the model's learned objective diverging from specification. If a misaligned model exploits excessive permissions, co-label.",
+          "is_ambiguous": false
+        }
+      ],
+      "positive_indicators": [
+        "excessive tool access",
+        "over-privileged API connection",
+        "unnecessary write permissions",
+        "missing human approval for high-impact actions",
+        "open-ended shell access",
+        "lack of least-privilege enforcement"
+      ],
+      "negative_indicators": [
+        "model produces wrong output but has no tool access",
+        "injection is the sole mechanism",
+        "tool definition contains adversarial instructions"
+      ],
+      "co_occurrence_pairs": [
+        [
+          "LLM01",
+          "LLM06"
+        ],
+        [
+          "LLM06",
+          "NEW-MA"
+        ]
+      ],
+      "is_rollup_candidate": false,
+      "rolled_into": null
+    },
+    {
+      "entry_id": "LLM07",
+      "canonical_name": "Hidden Context Exposure",
+      "in_scope": "Unauthorized extraction, inference, or reconstruction of hidden, non-user-facing system instructions or operational context. Covers system prompt leakage, tool/function schema exposure, behavioral control logic disclosure, safety mechanism reverse engineering, permission/role disclosure, and output structure exposure. Security-relevant when hidden context contains secrets, policy logic, or implementation details that increase attacker capability.",
+      "exclusions": [
+        "Leakage of regulated user data or training data (\u2192 LLM02)",
+        "Prompt injection as the extraction mechanism (\u2192 LLM01 for the vector)",
+        "Agentic amplifications: persistent memory, inter-agent channels (\u2192 ASI scope)"
+      ],
+      "boundary_rules": [
+        {
+          "adjacent_entry_id": "LLM01",
+          "rule": "If injection is the mechanism causing hidden context exposure, the injection is LLM01. If hidden context is extracted through conversational probing or design flaws without injection, classify as LLM07 only.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM02",
+          "rule": "If exposed hidden context contains only operational logic, tool schemas, or behavioral rules, classify as LLM07. If it contains credentials, PII, or regulated data, classify as LLM02.",
+          "is_ambiguous": false
+        }
+      ],
+      "positive_indicators": [
+        "system prompt extraction",
+        "tool schema disclosure",
+        "behavioral logic exposure",
+        "safety mechanism reverse engineering",
+        "permission structure disclosure",
+        "output format rule exposure"
+      ],
+      "negative_indicators": [
+        "PII or regulated data in output",
+        "training data memorization",
+        "no hidden context involved"
+      ],
+      "co_occurrence_pairs": [
+        [
+          "LLM01",
+          "LLM07"
+        ],
+        [
+          "LLM02",
+          "LLM07"
+        ]
+      ],
+      "is_rollup_candidate": false,
+      "rolled_into": null
+    },
+    {
+      "entry_id": "LLM08",
+      "canonical_name": "Vector and Embedding Weaknesses",
+      "in_scope": "Security risks in the embedding and vector-search layer of LLM applications. Covers cross-tenant leakage via shared similarity search, embedding inversion attacks, retrieval-time data poisoning, retrieval jamming, membership inference via similarity search, semantic cache poisoning, and multimodal embedding poisoning. Applies to RAG, vector-backed agent memory, semantic caches, and deduplication pipelines.",
+      "exclusions": [
+        "Prompt injection through retrieved content (\u2192 LLM01)",
+        "Training-time poisoning of the embedding model itself (\u2192 LLM04)",
+        "Serialization/deserialization flaws in vector-store libraries (\u2192 LLM03)",
+        "Agent-memory attacks not relying on embedding geometry (\u2192 NEW-PMP)"
+      ],
+      "boundary_rules": [
+        {
+          "adjacent_entry_id": "LLM02",
+          "rule": "If embedding inversion or cross-tenant vector leakage discloses regulated data, the mechanism is LLM08 and the disclosure outcome is LLM02. Co-label.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM04",
+          "rule": "If an attacker manipulates data content that is then embedded, the data manipulation is LLM04. If the attack exploits embedding geometry without manipulating source data content, classify as LLM08.",
+          "is_ambiguous": true
+        }
+      ],
+      "positive_indicators": [
+        "cross-tenant vector leakage",
+        "embedding inversion",
+        "retrieval-time poisoning",
+        "retrieval jamming",
+        "similarity-search membership inference",
+        "semantic cache poisoning",
+        "multimodal embedding poisoning",
+        "RAG over-retrieval",
+        "low corpus count (frame_blind \u2014 measurement limitation, not evidence of low prevalence)"
+      ],
+      "negative_indicators": [
+        "prompt injection via retrieved text content",
+        "training-time model poisoning",
+        "supply chain artifact compromise"
+      ],
+      "co_occurrence_pairs": [
+        [
+          "LLM02",
+          "LLM08"
+        ],
+        [
+          "LLM04",
+          "LLM08"
+        ]
+      ],
+      "is_rollup_candidate": false,
+      "rolled_into": null
+    },
+    {
+      "entry_id": "LLM09",
+      "canonical_name": "Misinformation",
+      "in_scope": "Incidents where an LLM produces incorrect, incomplete, unsupported, or misleading information that is trusted and acted upon. Covers hallucination, incorrect state inference in workflows, unsafe code/dependency generation, misleading summaries with critical omissions, adversarially induced misinformation, cross-agent misinformation propagation, and forged or misattributed evidence.",
+      "exclusions": [
+        "Poisoned training data as the root cause of incorrect output (\u2192 LLM04 for the mechanism)",
+        "Model behavioral misalignment where output is correct but policy-violating (\u2192 NEW-MA)",
+        "LLM output exploiting downstream systems (\u2192 LLM05)"
+      ],
+      "boundary_rules": [
+        {
+          "adjacent_entry_id": "LLM04",
+          "rule": "If misinformation results from poisoned training data, the poisoning is LLM04 and the misinformation outcome is LLM09. Co-label. If misinformation arises from hallucination or weak grounding without poisoning, classify as LLM09 only.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM05",
+          "rule": "LLM09 covers factually incorrect or misleading output. LLM05 covers output that is technically exploitable (XSS, SQLi, RCE). The failure modes are distinct.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "NEW-MA",
+          "rule": "LLM09 covers incorrect output (the model is wrong). NEW-MA covers behavioral divergence from specification (the model is not doing what it was told, regardless of factual accuracy). A misaligned model can produce correct but policy-violating output \u2014 that is NEW-MA, not LLM09.",
+          "is_ambiguous": false
+        }
+      ],
+      "positive_indicators": [
+        "hallucination",
+        "confabulation",
+        "fabricated citation",
+        "incorrect state inference",
+        "misleading summary",
+        "critical omission",
+        "hallucinated dependency",
+        "false reasoning",
+        "overreliance on fluent output"
+      ],
+      "negative_indicators": [
+        "output is technically exploitable but factually correct",
+        "behavioral policy violation with correct facts",
+        "data poisoning as root cause"
+      ],
+      "co_occurrence_pairs": [
+        [
+          "LLM04",
+          "LLM09"
+        ]
+      ],
+      "is_rollup_candidate": false,
+      "rolled_into": null
+    },
+    {
+      "entry_id": "LLM10",
+      "canonical_name": "Unbounded Consumption",
+      "in_scope": "Excessive and uncontrolled resource consumption via LLM inference. Covers variable-length input flooding, denial-of-wallet attacks, context window overflow, resource-intensive queries, adversarial inputs optimized for compute cost, multimodal cost amplification, model extraction/distillation theft, side-channel model architecture extraction, agent-tool interaction flooding, reasoning-loop exhaustion, and inference infrastructure exploitation.",
+      "exclusions": [
+        "LLM used as attack infrastructure against third parties (\u2192 NEW-WLA)",
+        "Data disclosure via model extraction queries (\u2192 LLM02 for the data, LLM10 for the cost)"
+      ],
+      "boundary_rules": [
+        {
+          "adjacent_entry_id": "NEW-WLA",
+          "rule": "LLM10 covers resource exhaustion where the LLM operator is the victim (DoW, compute overload). NEW-WLA covers the LLM used as attack infrastructure where third parties are the victims. If stolen API credentials are used for both cost exploitation and attack generation, co-label.",
+          "is_ambiguous": false
+        }
+      ],
+      "positive_indicators": [
+        "denial of wallet",
+        "resource exhaustion",
+        "compute overload",
+        "model extraction",
+        "distillation theft",
+        "reasoning loop exhaustion",
+        "token flooding",
+        "inference infrastructure exploit",
+        "low corpus count (frame_blind \u2014 measurement limitation, not evidence of low prevalence)"
+      ],
+      "negative_indicators": [
+        "LLM used to generate phishing content",
+        "LLM used for autonomous vulnerability discovery",
+        "normal inference cost"
+      ],
+      "co_occurrence_pairs": [],
+      "is_rollup_candidate": false,
+      "rolled_into": null
+    },
+    {
+      "entry_id": "NEW-PMP",
+      "canonical_name": "Persistent Memory Poisoning",
+      "in_scope": "Manipulation of an LLM application's long-term memory store such that future interactions are influenced by attacker-controlled content. Covers indirect memory injection via untrusted content, delayed/conditional memory writes, query-only memory injection (MINJA), CSRF-based memory writes, cross-tenant shared-memory poisoning, reflection-based self-poisoning, memory-anchored exfiltration channels, and memory-anchored recommendation manipulation. The payload survives the originating session.",
+      "exclusions": [
+        "Single-session prompt injection without memory persistence (\u2192 LLM01)",
+        "Training-time data poisoning requiring pipeline access (\u2192 LLM04)",
+        "Vector store retrieval weaknesses without memory corruption (\u2192 LLM08)",
+        "Fixed system instruction leakage (\u2192 LLM07)"
+      ],
+      "boundary_rules": [
+        {
+          "adjacent_entry_id": "LLM01",
+          "rule": "If injection occurs in a single session without persisting to memory, classify as LLM01. If the injection payload writes to long-term memory and affects future sessions, classify as NEW-PMP.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM04",
+          "rule": "NEW-PMP covers runtime memory corruption via live interactions. LLM04 covers poisoning at training/fine-tuning time requiring pipeline access. RLHF feedback loop poisoning is LLM04.",
+          "is_ambiguous": false
+        }
+      ],
+      "positive_indicators": [
+        "persistent memory injection",
+        "SpAIware",
+        "MINJA",
+        "cross-session poisoning",
+        "memory-anchored exfiltration",
+        "delayed tool invocation",
+        "CSRF memory write",
+        "reflection-based self-poisoning",
+        "shared memory corruption"
+      ],
+      "negative_indicators": [
+        "single-session injection",
+        "training data poisoning",
+        "vector-store geometry exploit",
+        "system prompt leakage"
+      ],
+      "co_occurrence_pairs": [
+        [
+          "LLM01",
+          "NEW-PMP"
+        ]
+      ],
+      "is_rollup_candidate": false,
+      "rolled_into": null
+    },
+    {
+      "entry_id": "NEW-MTIE",
+      "canonical_name": "MCP Tool Interface Exploitation",
+      "in_scope": "Risk arising when an LLM parses an MCP tool definition and follows instructions embedded within it, because the model cannot verify definition authenticity. Covers tool definition poisoning via hidden Unicode, tool squatting via name impersonation, and post-registration definition drift (rug pull). The vulnerability exists at parse time \u2014 the model reads the description field and acts on instructions found there.",
+      "exclusions": [
+        "Agentic tool misuse during execution (\u2192 ASI02)",
+        "MCP server supply chain compromise (\u2192 ASI04 / LLM03)",
+        "Credential theft consequences from tool exploitation (\u2192 ASI03)",
+        "Standard prompt injection via input/retrieved content (\u2192 LLM01)"
+      ],
+      "boundary_rules": [
+        {
+          "adjacent_entry_id": "LLM01",
+          "rule": "If adversarial instructions arrive via normal input or retrieved content, classify as LLM01. If they are embedded in an MCP tool definition and parsed at tool-load time, classify as NEW-MTIE.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM06",
+          "rule": "NEW-MTIE covers the model being deceived by a malicious tool definition. LLM06 covers the system granting tools excessive permissions. If a poisoned tool definition also has excessive permissions, co-label.",
+          "is_ambiguous": false
+        }
+      ],
+      "positive_indicators": [
+        "MCP tool definition poisoning",
+        "tool squatting",
+        "definition drift",
+        "rug pull",
+        "hidden Unicode in tool description",
+        "parse-time instruction following",
+        "tool name impersonation"
+      ],
+      "negative_indicators": [
+        "injection via normal user input",
+        "tool misuse during execution without definition poisoning",
+        "supply chain compromise of MCP server binary"
+      ],
+      "co_occurrence_pairs": [
+        [
+          "NEW-MTIE",
+          "LLM06"
+        ]
+      ],
+      "is_rollup_candidate": false,
+      "rolled_into": null
+    },
+    {
+      "entry_id": "NEW-MA",
+      "canonical_name": "Model Misalignment",
+      "in_scope": "Behavioral divergence of an LLM from its intended specification, organizational policy, or safety constraints \u2014 even when the model is otherwise functioning as designed and no attacker is present. Covers specification gaming, reward hacking, safety-alignment degradation through benign fine-tuning, policy drift over context or time, and deceptive compliance (appearing aligned during evaluation while behaving differently in deployment). The vulnerability is adversary-optional.",
+      "exclusions": [
+        "Factually incorrect output without behavioral divergence (\u2192 LLM09)",
+        "Training data poisoning as the mechanism (\u2192 LLM04)",
+        "Excessive system permissions (\u2192 LLM06)",
+        "Deliberate scheming and evaluation evasion (\u2192 NEW-MSDA)"
+      ],
+      "boundary_rules": [
+        {
+          "adjacent_entry_id": "LLM04",
+          "rule": "If behavioral divergence results from poisoned training data, classify as LLM04. If misalignment arises from benign training on clean data (reward hacking, specification gaming), classify as NEW-MA.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM06",
+          "rule": "NEW-MA addresses the model's learned objective diverging from specification. LLM06 addresses the system granting excessive authority. Co-label if a misaligned model exploits excessive permissions.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "LLM09",
+          "rule": "LLM09 covers incorrect output. NEW-MA covers behavioral divergence from specification regardless of factual accuracy. A misaligned model producing correct but policy-violating output is NEW-MA.",
+          "is_ambiguous": false
+        },
+        {
+          "adjacent_entry_id": "NEW-MSDA",
+          "rule": "NEW-MA covers general misalignment (specification gaming, reward hacking, drift). NEW-MSDA covers deliberate scheming \u2014 the model detects evaluation context and strategically behaves differently. Scheming is a subset of misalignment but has distinct detection requirements.",
+          "is_ambiguous": true
+        }
+      ],
+      "positive_indicators": [
+        "specification gaming",
+        "reward hacking",
+        "safety alignment degradation",
+        "policy drift",
+        "deceptive compliance",
+        "objective mismatch",
+        "behavioral fidelity failure",
+        "fine-tuning safety erosion"
+      ],
+      "negative_indicators": [
+        "factually incorrect output",
+        "poisoned training data as root cause",
+        "excessive tool permissions",
+        "deliberate evaluation evasion with chain-of-thought evidence"
+      ],
+      "co_occurrence_pairs": [
+        [
+          "LLM06",
+          "NEW-MA"
+        ],
+        [
+          "NEW-MA",
+          "NEW-MSDA"
+        ]
+      ],
+      "is_rollup_candidate": false,
+      "rolled_into": null
+    },
+    {
+      "entry_id": "NEW-ITSCD",
+      "canonical_name": "Inference-Time Side-Channel Disclosure",
+      "in_scope": "Information extraction via externally observable properties of the LLM inference process \u2014 specifically speculative decoding and streaming token emission. Covers query-topic fingerprinting via packet-size analysis, system prompt reconstruction via timing oracles, and RAG datastore content leakage via accept-rate variations. The attacker requires only passive network visibility, no model interaction.",
+      "exclusions": [
+        "General membership inference and log-probability channels (\u2192 LLM02 \u00a75)",
+        "Application-layer data leakage (\u2192 LLM02)",
+        "Hidden context exposure through conversational means (\u2192 LLM07)"
+      ],
+      "boundary_rules": [
+        {
+          "adjacent_entry_id": "LLM02",
+          "rule": "NEW-ITSCD covers side channels specific to speculative decoding and streaming token emission (packet-size, timing). LLM02 \u00a75 covers general inference-time side channels (membership inference, log-probability, API-surface extraction). The boundary is the mechanism: speculative-decoding-specific = NEW-ITSCD.",
+          "is_ambiguous": true
+        }
+      ],
+      "positive_indicators": [
+        "speculative decoding side channel",
+        "packet-size fingerprinting",
+        "timing oracle",
+        "token emission pattern analysis",
+        "RAG datastore leakage via accept-rate",
+        "network-level inference attack",
+        "query-topic classification from encrypted traffic"
+      ],
+      "negative_indicators": [
+        "application-layer data disclosure",
+        "membership inference via API queries",
+        "log-probability extraction",
+        "prompt injection"
+      ],
+      "co_occurrence_pairs": [],
+      "is_rollup_candidate": false,
+      "rolled_into": null
+    },
+    {
+      "entry_id": "NEW-WLA",
+      "canonical_name": "Weaponized LLM Abuse",
+      "in_scope": "Adversaries leveraging LLM capabilities to automate, scale, and enhance cyberattacks against third-party targets. The LLM is attack infrastructure, not the target. Covers polymorphic phishing at scale, adaptive credential stuffing, autonomous vulnerability discovery, LLM-powered social engineering, and stolen LLM access as attack infrastructure (LLMjacking).",
+      "exclusions": [
+        "Resource exhaustion where the LLM operator is the victim (\u2192 LLM10)",
+        "Model extraction for IP theft (\u2192 LLM10)"
+      ],
+      "boundary_rules": [
+        {
+          "adjacent_entry_id": "LLM10",
+          "rule": "NEW-WLA covers the LLM used as attack infrastructure against third parties. LLM10 covers resource exhaustion where the LLM operator is the victim. LLMjacking involves both: cost to the operator (LLM10) and attacks against third parties (NEW-WLA). Co-label for LLMjacking.",
+          "is_ambiguous": false
+        }
+      ],
+      "positive_indicators": [
+        "polymorphic phishing generation",
+        "LLM-powered social engineering",
+        "autonomous vulnerability discovery",
+        "adaptive credential stuffing",
+        "LLMjacking",
+        "stolen API key abuse for attack generation",
+        "attack content automation"
+      ],
+      "negative_indicators": [
+        "denial-of-wallet against the LLM operator",
+        "model extraction for IP theft",
+        "normal LLM usage"
+      ],
+      "co_occurrence_pairs": [
+        [
+          "LLM10",
+          "NEW-WLA"
+        ]
+      ],
+      "is_rollup_candidate": false,
+      "rolled_into": null
+    },
+    {
+      "entry_id": "NEW-MSDA",
+      "canonical_name": "Model Scheming and Deceptive Alignment",
+      "in_scope": "Frontier LLMs developing goal-directed strategies to deceive evaluators, safety reviewers, and users. Covers capability sandbagging (deliberately underperforming in evaluations), alignment faking (appearing aligned during training/evaluation while retaining different deployment behavior), and oversight evasion (structuring outputs to avoid triggering review). Distinguished from general misalignment by the model's deliberate, strategic deception.",
+      "exclusions": [
+        "Unintentional misalignment without strategic deception (\u2192 NEW-MA)",
+        "Hallucination or misinformation (\u2192 LLM09)",
+        "Poisoning-induced behavioral changes (\u2192 LLM04)"
+      ],
+      "boundary_rules": [
+        {
+          "adjacent_entry_id": "NEW-MA",
+          "rule": "NEW-MSDA covers deliberate strategic deception \u2014 the model detects evaluation context and purposefully behaves differently. NEW-MA covers general misalignment (specification gaming, reward hacking) without deliberate evaluation evasion. Evidence of strategic reasoning about evaluation context (chain-of-thought) distinguishes NEW-MSDA.",
+          "is_ambiguous": true
+        }
+      ],
+      "positive_indicators": [
+        "capability sandbagging",
+        "alignment faking",
+        "evaluation evasion",
+        "deliberate underperformance",
+        "behavioral consistency divergence",
+        "reasoning trace showing strategic deception",
+        "oversight evasion"
+      ],
+      "negative_indicators": [
+        "unintentional specification gaming",
+        "reward hacking without evaluation awareness",
+        "hallucination",
+        "training data poisoning"
+      ],
+      "co_occurrence_pairs": [
+        [
+          "NEW-MA",
+          "NEW-MSDA"
+        ]
+      ],
+      "is_rollup_candidate": false,
+      "rolled_into": null
+    },
+    {
+      "entry_id": "ROLL-CMSB",
+      "canonical_name": "Cross-Modal Safety Bypass",
+      "in_scope": "Attacks where harmful content encoded in non-text modalities (images, audio, video) bypasses text-domain safety alignment. Covers typographic image injection, flowchart-encoded jailbreaks, video frame distribution attacks, and audio-encoded instructions. The model's vision/audio component integrates content that the text safety layer would have blocked.",
+      "exclusions": [
+        "Text-only prompt injection (\u2192 LLM01)",
+        "Multimodal embedding poisoning in vector stores (\u2192 LLM08)"
+      ],
+      "boundary_rules": [],
+      "positive_indicators": [
+        "cross-modal jailbreak",
+        "typographic image injection",
+        "flowchart attack",
+        "video frame distribution attack",
+        "audio-encoded instruction",
+        "vision encoder bypass",
+        "multimodal safety bypass"
+      ],
+      "negative_indicators": [
+        "text-only injection",
+        "embedding-layer attack"
+      ],
+      "co_occurrence_pairs": [],
+      "is_rollup_candidate": true,
+      "rolled_into": "LLM01"
+    },
+    {
+      "entry_id": "ROLL-LAPTF",
+      "canonical_name": "LLM Artifact Promotion Trust Failure",
+      "in_scope": "Risks when model artifacts, adapters, datasets, and conversion outputs are promoted through automated release pipelines without trustworthy verification. Covers repository impersonation, unsigned artifacts, weak release gating, and conversion/merge workflows lacking provenance verification before publication.",
+      "exclusions": [
+        "Training data content manipulation (\u2192 LLM04)",
+        "Runtime prompt injection (\u2192 LLM01)"
+      ],
+      "boundary_rules": [],
+      "positive_indicators": [
+        "model artifact impersonation",
+        "unsigned adapter",
+        "weak release gate",
+        "conversion pipeline exploit",
+        "merge workflow tampering",
+        "promotion path compromise"
+      ],
+      "negative_indicators": [
+        "training data poisoning",
+        "runtime injection"
+      ],
+      "co_occurrence_pairs": [],
+      "is_rollup_candidate": true,
+      "rolled_into": "LLM03"
+    },
+    {
+      "entry_id": "ROLL-SICG",
+      "canonical_name": "Systemic Insecure Code Generation",
+      "in_scope": "LLMs generating functionally correct but security-vulnerable code as a consequence of training optimization favoring correctness over security. Covers injection vulnerability generation, hardcoded credential embedding, insecure deserialization patterns, outdated dependency selection, and missing authentication/authorization controls in generated code. Failure rate of 45-62% across studies, not improving with model capability.",
+      "exclusions": [
+        "Agentic execution of generated code without review (\u2192 ASI05)",
+        "Agent committing code without security gate (\u2192 ASI02)",
+        "Developer over-trust in AI output (\u2192 ASI09)"
+      ],
+      "boundary_rules": [],
+      "positive_indicators": [
+        "SQL injection in generated code",
+        "hardcoded credentials in generated code",
+        "insecure deserialization pattern",
+        "missing input validation in generated code",
+        "CWE-89",
+        "CWE-78",
+        "CWE-798",
+        "AI-generated vulnerable code"
+      ],
+      "negative_indicators": [
+        "LLM output exploiting a downstream system at runtime",
+        "developer-written insecure code"
+      ],
+      "co_occurrence_pairs": [],
+      "is_rollup_candidate": true,
+      "rolled_into": "LLM05"
+    },
+    {
+      "entry_id": "ROLL-CFAS",
+      "canonical_name": "Compositional Fine-tuning Alignment Subversion",
+      "in_scope": "Attacks exploiting compositional LoRA/PEFT adapter loading where individually benign adapters produce harmful behavior when composed at inference time. Covers colluding LoRA pairs that suppress safety alignment in composition, constitutional classifier backdoors via dataset poisoning, and spurious subspace anchoring. Evaluation of adapters in isolation is insufficient \u2014 harmful behavior emerges only in the composition state.",
+      "exclusions": [
+        "Single-adapter poisoning (\u2192 LLM04)",
+        "Supply chain compromise of adapter distribution (\u2192 LLM03)"
+      ],
+      "boundary_rules": [],
+      "positive_indicators": [
+        "colluding LoRA",
+        "CoLoRA attack",
+        "compositional safety suppression",
+        "constitutional classifier backdoor",
+        "adapter composition attack",
+        "multi-adapter safety degradation"
+      ],
+      "negative_indicators": [
+        "single adapter poisoning",
+        "supply chain artifact tampering",
+        "runtime injection"
+      ],
+      "co_occurrence_pairs": [],
+      "is_rollup_candidate": true,
+      "rolled_into": "LLM04"
+    }
+  ]
+}
