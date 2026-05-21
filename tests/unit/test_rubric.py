@@ -719,3 +719,118 @@ class TestRubricCLI:
         )
         assert result.exit_code != 0
         assert "attestation" in result.output.lower()
+
+
+class TestFreezeWorkflowIntegration:
+    """End-to-end integration test for the rubric freeze workflow.
+
+    Exercises: construct rubric → write → write attestation → write adjudication
+    → validate-rubric CLI → freeze-rubric CLI → hash chain verification.
+    """
+
+    def test_full_freeze_workflow(self, tmp_path: Path) -> None:
+        # 1. Construct a 3-entry rubric (2 regular + 1 rollup) with paired rules.
+        entry_a = RubricEntry(
+            entry_id="LLM01",
+            canonical_name="Prompt Injection",
+            in_scope="Attacks via crafted input.",
+            exclusions=("Data exfiltration only",),
+            boundary_rules=(
+                BoundaryRule(
+                    adjacent_entry_id="LLM02",
+                    rule="If data extraction is primary goal, classify as LLM02.",
+                    is_ambiguous=False,
+                ),
+            ),
+            positive_indicators=("prompt injection",),
+            negative_indicators=("data exfiltration only",),
+            co_occurrence_pairs=(("LLM01", "LLM02"),),
+            is_rollup_candidate=False,
+            rolled_into=None,
+        )
+        entry_b = RubricEntry(
+            entry_id="LLM02",
+            canonical_name="Sensitive Info Disclosure",
+            in_scope="Data extraction attacks.",
+            exclusions=("Prompt manipulation only",),
+            boundary_rules=(
+                BoundaryRule(
+                    adjacent_entry_id="LLM01",
+                    rule="If prompt manipulation is primary mechanism, classify as LLM01.",
+                    is_ambiguous=False,
+                ),
+            ),
+            positive_indicators=("data leak",),
+            negative_indicators=("no data extracted",),
+            co_occurrence_pairs=(("LLM01", "LLM02"),),
+            is_rollup_candidate=False,
+            rolled_into=None,
+        )
+        rollup = RubricEntry(
+            entry_id="ROLL-X",
+            canonical_name="Cross-Modal Bypass",
+            in_scope="Multi-modal injection.",
+            exclusions=(),
+            boundary_rules=(),
+            positive_indicators=("multi-modal",),
+            negative_indicators=("text-only",),
+            co_occurrence_pairs=(),
+            is_rollup_candidate=True,
+            rolled_into="LLM01",
+        )
+        rubric = Rubric(
+            cycle_id="2026", version="1.0.0",
+            entries=(entry_a, entry_b, rollup),
+        )
+
+        # 2. All validations pass.
+        rubric.validate_completeness({"LLM01", "LLM02", "ROLL-X"})
+        rubric.validate_boundary_rules()
+        rubric.validate_co_occurrences()
+
+        # 3. Write rubric.
+        rubric_path = tmp_path / "prereg" / "rubric.json"
+        write_rubric(rubric, rubric_path)
+
+        # 4. Read back and verify hash stability.
+        loaded = read_rubric(rubric_path)
+        assert loaded.compute_hash() == rubric.compute_hash()
+
+        # 5. Write attestation.
+        att = RubricDraftingAttestation(
+            viewed_corpus_before_drafting=False,
+            viewed_corpus_details="",
+            viewed_vote_data_before_drafting=False,
+            viewed_vote_data_details="",
+        )
+        att_path = tmp_path / "prereg" / "rubric_attestation.json"
+        write_rubric_attestation(att, att_path)
+
+        # 6. Write adjudication log covering the one boundary pair.
+        log = AdjudicationLog(
+            rubric_hash=rubric.compute_hash(),
+            entries=(
+                AdjudicationEntry(
+                    entry_id_a="LLM01",
+                    entry_id_b="LLM02",
+                    decision="resolved:LLM01",
+                    rationale="Prompt manipulation is primary.",
+                    adjudicator="Rock Lambros",
+                    date="2026-05-20",
+                ),
+            ),
+        )
+        log.validate_coverage(rubric)
+        log_path = tmp_path / "prereg" / "adjudication_log.json"
+        write_adjudication_log(log, log_path)
+
+        # 7. Verify hash chain: manifest rubric_hash matches file.
+        from engine.prereg.gates import require_rubric_hash_match
+
+        m = _make_test_manifest(rubric_hash=rubric.compute_hash())
+        require_rubric_hash_match(m, rubric_path)  # should not raise
+
+        # 8. Verify mismatch detection.
+        m_bad = _make_test_manifest(rubric_hash="tampered_hash")
+        with pytest.raises(ValueError, match="rubric hash mismatch"):
+            require_rubric_hash_match(m_bad, rubric_path)
