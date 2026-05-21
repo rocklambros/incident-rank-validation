@@ -73,10 +73,8 @@ def is_publishable(manifest: PreregManifest, *, ranking_author: str) -> bool:
         and _normalize_name(manifest.rubric_reviewer.reviewer_name) == author_norm
     ):
         return False
-    if (
+    return not (
         manifest.statistical_reviewer is not None
         and _normalize_name(manifest.statistical_reviewer.reviewer_name)
         == author_norm
-    ):
-        return False
-    return True
+    )
