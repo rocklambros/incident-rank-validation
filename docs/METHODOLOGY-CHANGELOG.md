@@ -1,5 +1,19 @@
 # Methodology Changelog
 
+## 0.3.0 (Plan 3, 2026-05-20)
+
+Rubric freeze workflow scaffolding: data model, serialization, CLI, gate logic.
+
+Key deliverables:
+- `engine/prereg/rubric.py`: `RubricEntry`, `BoundaryRule`, `Rubric` dataclasses with hash computation and completeness/boundary validation.
+- `engine/prereg/adjudication.py`: `AdjudicationEntry`, `AdjudicationLog` with boundary-coverage validation.
+- `engine/prereg/rubric_io.py`: JSON serialization/deserialization for rubric, attestation, and adjudication log artifacts.
+- `engine/prereg/gates.py`: Pre-classify gate (`require_rubric_attestation`, `require_rubric_hash`) and publishability check (`is_publishable` with reviewer-independence verification).
+- `engine/cli/rubric.py`: `validate-rubric` and `freeze-rubric` CLI commands.
+- `rubric_hash` field added to `PreregManifest` (hash-locked alongside existing `taxonomy_hash` and `snapshot_hash`).
+
+Methodology decision: the rubric data model defines 10 fields per entry (the 8 HANDOFF §5.2 Artifact 1 required fields plus `is_rollup_candidate` and `rolled_into` for the rollup sub-test). Boundary rules are paired: if A→B exists, B→A must exist, enforced by `validate_boundary_rules()`. Ambiguous boundaries carry `is_ambiguous=true` and propagate as label uncertainty (HANDOFF §5.2: "Genuine 50/50 calls are recorded as both labels with ambiguity"). The `is_publishable()` gate combines the manifest's mechanical `non_publishable` derivation with the discipline-based reviewer-independence check. Rubric content (Phase B) and freeze (Phase C) are deferred.
+
 ## 0.2.0 (Plan 2, 2026-05-20)
 
 GenAI Agentic corpus A adapter, per-stratum bias profiles, snapshot vendoring.

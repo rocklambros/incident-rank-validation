@@ -26,7 +26,7 @@ from engine.prereg.rubric_io import read_rubric, read_rubric_attestation
     "--taxonomy",
     type=click.Path(exists=True),
     default=None,
-    help="Path to taxonomy.json — reads entry IDs automatically (mutually exclusive with --expected-ids).",
+    help="Path to taxonomy.json (mutually exclusive with --expected-ids).",
 )
 @click.option(
     "--no-adjacency-attested",

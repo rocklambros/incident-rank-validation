@@ -8,7 +8,6 @@ import pytest
 from click.testing import CliRunner
 
 from engine.cli.rubric import freeze_rubric_cmd, validate_rubric_cmd
-
 from engine.prereg.adjudication import AdjudicationEntry, AdjudicationLog
 from engine.prereg.gates import (
     is_publishable,
@@ -318,7 +317,9 @@ class TestRubricValidation:
         )
         entry_b = _make_entry("LLM02", boundary_adjacent="LLM01")
         r = Rubric(cycle_id="2026", version="1.0.0", entries=(bad_entry, entry_b))
-        with pytest.raises(ValueError, match="co_occurrence_pair references unknown entry NONEXISTENT"):
+        with pytest.raises(
+            ValueError, match="co_occurrence_pair references unknown entry NONEXISTENT"
+        ):
             r.validate_co_occurrences()
 
     def test_rollup_candidates_filter(self) -> None:
