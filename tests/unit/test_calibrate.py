@@ -107,26 +107,33 @@ class TestSamplerProtocol:
 
 
 # ---------------------------------------------------------------------------
-# CV stub
+# CV (real k-fold implementation)
 # ---------------------------------------------------------------------------
 
 
-class TestCVStub:
-    def test_cross_validate_raises_not_implemented(self) -> None:
-        with pytest.raises(NotImplementedError, match="Plan 4"):
-            cross_validate_calibration()
-
-    def test_cross_validate_message_includes_n_folds(self) -> None:
-        with pytest.raises(NotImplementedError, match="k=10"):
-            cross_validate_calibration(n_folds=10)
-
+class TestCV:
     def test_cvresult_is_frozen_dataclass(self) -> None:
-        result = CVResult(n_folds=5, fold_variances={("e1", "s1"): 0.01})
+        result = CVResult(
+            n_folds=5,
+            fold_variances={("e1", "s1"): 0.01},
+            interpretation={("e1", "s1"): "stable"},
+            min_per_fold={("e1", "s1"): 10},
+        )
         with pytest.raises((dataclasses.FrozenInstanceError, AttributeError)):
             result.n_folds = 3  # type: ignore[misc]
 
     def test_cvresult_stores_fold_variances(self) -> None:
         fv: dict[tuple[str, str], float] = {("e1", "security"): 0.002}
-        result = CVResult(n_folds=5, fold_variances=fv)
+        result = CVResult(
+            n_folds=5,
+            fold_variances=fv,
+            interpretation={("e1", "security"): "stable"},
+            min_per_fold={("e1", "security"): 10},
+        )
         assert result.n_folds == 5
         assert result.fold_variances[("e1", "security")] == pytest.approx(0.002)
+
+    def test_cross_validate_empty_returns_cvresult(self) -> None:
+        result = cross_validate_calibration({}, {}, n_folds=5)
+        assert result.n_folds == 5
+        assert result.fold_variances == {}
