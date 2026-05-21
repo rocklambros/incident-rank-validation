@@ -47,6 +47,7 @@ class PreregManifest:
     ess_fraction: float  # ESS check fraction (default 0.4)
     meaningful_kappa_n: int  # minimum measurable entries for kappa (default 4)
     prng_seed: int
+    confidence_threshold: float  # Stage-1 classifier confidence threshold (default 0.3)
     rubric_drafting_attestation: RubricDraftingAttestation | None
     rubric_reviewer: ReviewerSignoff | None
     statistical_reviewer: ReviewerSignoff | None

@@ -188,6 +188,7 @@ def execute_synthetic_pipeline(
         ess_fraction=hyper["ess_fraction"],
         meaningful_kappa_n=meaningful_kappa_n,
         prng_seed=prng_seed,
+        confidence_threshold=hyper.get("confidence_threshold", 0.3),
         rubric_drafting_attestation=None,
         rubric_reviewer=None,
         statistical_reviewer=None,
