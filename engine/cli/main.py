@@ -4,6 +4,14 @@ from pathlib import Path
 
 import click
 
+from engine.cli.calibration import (
+    cal_calibrate,
+    cal_classify,
+    cal_cv_stability,
+    cal_generate_batches,
+    cal_sample,
+    cal_tally,
+)
 from engine.cli.rubric import freeze_rubric_cmd, validate_rubric_cmd
 from engine.cli.snapshot import vendor_snapshot_cmd
 
@@ -17,6 +25,12 @@ def cli() -> None:
 cli.add_command(vendor_snapshot_cmd)
 cli.add_command(validate_rubric_cmd)
 cli.add_command(freeze_rubric_cmd)
+cli.add_command(cal_classify)
+cli.add_command(cal_sample)
+cli.add_command(cal_generate_batches)
+cli.add_command(cal_tally)
+cli.add_command(cal_calibrate)
+cli.add_command(cal_cv_stability)
 
 
 @cli.command()
