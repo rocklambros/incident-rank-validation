@@ -66,6 +66,7 @@ def _make_manifest(
         "ess_fraction": 0.4,
         "meaningful_kappa_n": 4,
         "prng_seed": 42,
+        "confidence_threshold": 0.3,
         "rubric_drafting_attestation": rubric_attestation,
         "rubric_reviewer": rubric_reviewer,
         "statistical_reviewer": statistical_reviewer,
@@ -137,6 +138,10 @@ class TestPreregManifest:
             ),
         )
         assert m.non_publishable is True
+
+    def test_confidence_threshold_default(self) -> None:
+        m = _make_manifest()
+        assert m.confidence_threshold == 0.3
 
     def test_publishable_when_both_reviewers_clean(self) -> None:
         m = _make_manifest(
@@ -233,6 +238,7 @@ class TestLock:
             "ess_fraction": 0.99,
             "meaningful_kappa_n": 99,
             "prng_seed": 999,
+            "confidence_threshold": 0.99,
             "rubric_drafting_attestation": RubricDraftingAttestation(
                 viewed_corpus_before_drafting=True,
                 viewed_corpus_details="mutated",

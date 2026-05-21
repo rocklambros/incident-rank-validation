@@ -504,6 +504,7 @@ def _make_test_manifest(**overrides: object) -> PreregManifest:
         "ess_fraction": 0.4,
         "meaningful_kappa_n": 4,
         "prng_seed": 20260520,
+        "confidence_threshold": 0.3,
         "rubric_drafting_attestation": None,
         "rubric_reviewer": None,
         "statistical_reviewer": None,
