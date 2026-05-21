@@ -55,6 +55,25 @@ def require_rubric_hash_match(
         )
 
 
+def require_classifier_rule_hash_match(
+    manifest: PreregManifest, actual_hash: str
+) -> None:
+    """Raise if manifest.classifier_rule_hash does not match actual classifier rules.
+
+    HANDOFF §6 control 11(b): classifier rules are hash-locked before sampling.
+    """
+    if manifest.classifier_rule_hash is None:
+        raise ValueError(
+            "classifier_rule_hash is None in manifest — "
+            "pre-register classifier rules before running classify"
+        )
+    if manifest.classifier_rule_hash != actual_hash:
+        raise ValueError(
+            f"classifier rule hash mismatch: manifest={manifest.classifier_rule_hash}, "
+            f"actual={actual_hash}. Were classifier rules modified after pre-registration?"
+        )
+
+
 def is_publishable(manifest: PreregManifest, *, ranking_author: str) -> bool:
     """Check publication readiness including reviewer independence.
 
