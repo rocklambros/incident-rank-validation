@@ -330,6 +330,7 @@ def validate_coded_batch(
     expected_sample_hash: str,
     expected_rubric_hash: str,
     expected_lock_hash: str,
+    expected_incident_ids: set[str] | None = None,
 ) -> list[ValidationError]:
     """Validate a coded batch file against expected provenance and taxonomy.
 
@@ -347,6 +348,9 @@ def validate_coded_batch(
         The expected value of ``header.rubric_hash``.
     expected_lock_hash:
         The expected value of ``header.manifest_lock_hash``.
+    expected_incident_ids:
+        If provided, every incident_id in the batch must be a member of this
+        set.  Detects ID corruption or injection of fabricated incidents.
 
     Returns
     -------
@@ -399,6 +403,13 @@ def validate_coded_batch(
     for inc_data in data.get("incidents", []):
         incident_id = inc_data.get("incident_id", "<unknown>")
         labels = inc_data.get("labels")
+
+        if expected_incident_ids is not None and incident_id not in expected_incident_ids:
+            errors.append(ValidationError(
+                file=path,
+                incident_id=incident_id,
+                message=f"incident_id {incident_id!r} not in expected corpus",
+            ))
 
         if labels is None:
             errors.append(ValidationError(

@@ -44,7 +44,7 @@ class TestComputeCalibration:
             precision={("LLM01", "security"): (35, 5, 40)},
         )
         cal, diag = compute_calibration(
-            tally, all_entry_ids=["LLM01"], strata=["security"],
+            tally, all_entry_ids=["LLM01"],
             frame_blind_ids=set(),
         )
         bp = cal.precision[("LLM01", "security")]
@@ -56,7 +56,7 @@ class TestComputeCalibration:
             recall={("LLM01", "security"): (30, 70, 100)},
         )
         cal, diag = compute_calibration(
-            tally, all_entry_ids=["LLM01"], strata=["security"],
+            tally, all_entry_ids=["LLM01"],
             frame_blind_ids=set(),
         )
         bp = cal.recall[("LLM01", "security")]
@@ -69,7 +69,7 @@ class TestComputeCalibration:
             recall={("LLM01", "security"): (30, 10, 40)},
         )
         cal, diag = compute_calibration(
-            tally, all_entry_ids=["LLM01"], strata=["security"],
+            tally, all_entry_ids=["LLM01"],
             frame_blind_ids=set(),
         )
         report = diag.entry_reports["LLM01"]
@@ -80,7 +80,7 @@ class TestComputeCalibration:
     def test_diagnostic_no_data_frame_blind(self) -> None:
         tally = _tally()
         cal, diag = compute_calibration(
-            tally, all_entry_ids=["LLM04"], strata=["security"],
+            tally, all_entry_ids=["LLM04"],
             frame_blind_ids={"LLM04"},
         )
         report = diag.entry_reports["LLM04"]
@@ -92,10 +92,33 @@ class TestComputeCalibration:
             recall={("NEW-PMP", "security"): (2, 98, 100)},
         )
         cal, diag = compute_calibration(
-            tally, all_entry_ids=["NEW-PMP"], strata=["security"],
+            tally, all_entry_ids=["NEW-PMP"],
             frame_blind_ids=set(),
         )
         report = diag.entry_reports["NEW-PMP"]
         assert report.has_precision_data is False
         assert report.has_recall_data is True
         assert "recall-frame-only" in report.reason
+
+    def test_diagnostic_no_classifier_rules(self) -> None:
+        tally = _tally()
+        cal, diag = compute_calibration(
+            tally, all_entry_ids=["LLM99"],
+            frame_blind_ids=set(),
+            classifier_entry_ids={"LLM01", "LLM02"},
+        )
+        report = diag.entry_reports["LLM99"]
+        assert report.flag == "no-data"
+        assert "no-classifier-rules" in report.reason
+        assert diag.entries_no_data == 1
+
+    def test_no_classifier_positives_when_rules_exist(self) -> None:
+        tally = _tally()
+        cal, diag = compute_calibration(
+            tally, all_entry_ids=["LLM01"],
+            frame_blind_ids=set(),
+            classifier_entry_ids={"LLM01"},
+        )
+        report = diag.entry_reports["LLM01"]
+        assert report.flag == "no-data"
+        assert "no-classifier-positives" in report.reason

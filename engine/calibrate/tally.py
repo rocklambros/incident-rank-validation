@@ -2,8 +2,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 
-from engine.calibrate.batch import CodingBatch
+from engine.calibrate.batch import CodingBatch, ValidationError, validate_coded_batch
 
 
 @dataclass(frozen=True, slots=True)
@@ -29,20 +30,35 @@ class TallyResult:
     amendments_applied: int
 
 
-def tally_batches(batches: list[CodingBatch]) -> TallyResult:
+def tally_batches(
+    batches: list[CodingBatch],
+    *,
+    all_entry_ids: set[str] | None = None,
+    rollup_children: dict[str, set[str]] | None = None,
+) -> TallyResult:
+    """Aggregate coded labels into per-entry per-stratum tallies.
+
+    Parameters
+    ----------
+    all_entry_ids:
+        Explicit set of ALL entry IDs to compute recall for. If None,
+        falls back to discovering entries from labels (legacy behavior).
+    rollup_children:
+        Mapping of parent_entry_id -> set of rollup child IDs. Used to
+        count rollup FPs: incidents in the parent's precision frame where
+        the coder did NOT assign a rollup child count as FPs for that child.
+    """
     precision_tp: dict[tuple[str, str], int] = {}
     precision_fp: dict[tuple[str, str], int] = {}
     precision_total: dict[tuple[str, str], int] = {}
     recall_hits: dict[tuple[str, str], int] = {}
-    recall_miss: dict[tuple[str, str], int] = {}
     recall_total: dict[tuple[str, str], int] = {}
     rollup_tp: dict[tuple[str, str], int] = {}
-    rollup_fp: dict[tuple[str, str], int] = {}
     rollup_total: dict[tuple[str, str], int] = {}
     total_coded = 0
     amendments = 0
 
-    all_recall_entries: set[str] = set()
+    discovered_recall_entries: set[str] = set()
 
     for batch in batches:
         entry_id = batch.header.entry_id
@@ -51,6 +67,9 @@ def tally_batches(batches: list[CodingBatch]) -> TallyResult:
 
         if frame == "precision" and entry_id is not None:
             key = (entry_id, stratum)
+            children = (
+                (rollup_children or {}).get(entry_id, set())
+            )
             for inc in batch.incidents:
                 if inc.labels is None:
                     continue
@@ -60,11 +79,14 @@ def tally_batches(batches: list[CodingBatch]) -> TallyResult:
                     precision_tp[key] = precision_tp.get(key, 0) + 1
                 else:
                     precision_fp[key] = precision_fp.get(key, 0) + 1
-                if inc.rollup_sub_labels:
-                    for rl in inc.rollup_sub_labels:
-                        rk = (rl, stratum)
-                        rollup_total[rk] = rollup_total.get(rk, 0) + 1
-                        rollup_tp[rk] = rollup_tp.get(rk, 0) + 1
+                assigned_rollups = set(inc.rollup_sub_labels or [])
+                for rl in assigned_rollups:
+                    rk = (rl, stratum)
+                    rollup_total[rk] = rollup_total.get(rk, 0) + 1
+                    rollup_tp[rk] = rollup_tp.get(rk, 0) + 1
+                for child in children - assigned_rollups:
+                    rk = (child, stratum)
+                    rollup_total[rk] = rollup_total.get(rk, 0) + 1
                 if inc.amendment:
                     amendments += 1
 
@@ -74,23 +96,23 @@ def tally_batches(batches: list[CodingBatch]) -> TallyResult:
                     continue
                 total_coded += 1
                 labels_set = set(inc.labels)
-                all_recall_entries.update(labels_set)
+                discovered_recall_entries.update(labels_set)
                 for eid in labels_set:
                     rk = (eid, stratum)
                     recall_hits[rk] = recall_hits.get(rk, 0) + 1
                 if inc.amendment:
                     amendments += 1
 
+    recall_entry_ids = all_entry_ids if all_entry_ids is not None else discovered_recall_entries
+
     for batch in batches:
         if batch.header.frame != "recall":
             continue
         stratum = batch.header.stratum or "unknown"
         coded_count = sum(1 for inc in batch.incidents if inc.labels is not None)
-        for eid in all_recall_entries:
+        for eid in recall_entry_ids:
             rk = (eid, stratum)
-            hits = recall_hits.get(rk, 0)
             recall_total[rk] = recall_total.get(rk, 0) + coded_count
-            recall_miss[rk] = recall_miss.get(rk, 0) + (coded_count - hits)
 
     precision_counts = {
         k: PrecisionTally(
@@ -104,7 +126,7 @@ def tally_batches(batches: list[CodingBatch]) -> TallyResult:
     recall_counts = {
         k: RecallTally(
             true_positives=recall_hits.get(k, 0),
-            false_negatives=recall_miss.get(k, 0),
+            false_negatives=recall_total.get(k, 0) - recall_hits.get(k, 0),
             total_in_sample=recall_total.get(k, 0),
         )
         for k in recall_total
@@ -125,4 +147,53 @@ def tally_batches(batches: list[CodingBatch]) -> TallyResult:
         rollup_counts=rollup_counts_out,
         total_coded=total_coded,
         amendments_applied=amendments,
+    )
+
+
+def validate_and_tally(
+    batch_paths: list[Path],
+    *,
+    valid_entry_ids: set[str],
+    rollup_entry_ids: set[str],
+    expected_sample_hashes: dict[str, str],
+    expected_rubric_hash: str,
+    expected_lock_hash: str,
+    all_entry_ids: set[str] | None = None,
+    rollup_children: dict[str, set[str]] | None = None,
+    expected_incident_ids: set[str] | None = None,
+) -> TallyResult:
+    """Validate all coded batch files, then tally.
+
+    Raises ValueError if any validation errors are found.
+    """
+    all_errors: list[ValidationError] = []
+    batches: list[CodingBatch] = []
+
+    for path in batch_paths:
+        batch = CodingBatch.read(path)
+        batch_id = batch.header.batch_id
+        expected_hash = expected_sample_hashes.get(
+            batch_id, batch.header.sample_hash,
+        )
+        errors = validate_coded_batch(
+            path,
+            valid_entry_ids=valid_entry_ids,
+            rollup_entry_ids=rollup_entry_ids,
+            expected_sample_hash=expected_hash,
+            expected_rubric_hash=expected_rubric_hash,
+            expected_lock_hash=expected_lock_hash,
+            expected_incident_ids=expected_incident_ids,
+        )
+        hard_errors = [e for e in errors if "uncoded" not in e.message]
+        all_errors.extend(hard_errors)
+        batches.append(batch)
+
+    if all_errors:
+        msg = "\n".join(str(e) for e in all_errors)
+        raise ValueError(f"Batch validation failed:\n{msg}")
+
+    return tally_batches(
+        batches,
+        all_entry_ids=all_entry_ids,
+        rollup_children=rollup_children,
     )
