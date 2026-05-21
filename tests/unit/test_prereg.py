@@ -12,6 +12,11 @@ from typing import Any
 import pytest
 
 from engine.prereg.attestation import AttestationError, verify_committed
+from engine.prereg.gates import (
+    require_classifier_rule_hash_match,
+    require_rubric_attestation,
+    require_rubric_hash,
+)
 from engine.prereg.git_timestamp import GitTimestampError, attestation_signed_at
 from engine.prereg.lock import compute_lock_hash, verify_lock, write_lock
 from engine.prereg.manifest import PreregManifest
@@ -453,3 +458,24 @@ class TestSignoffVerify:
 
         with pytest.raises(ValueError, match="signed_at mismatch"):
             signoff.verify(repo)
+
+
+# ---------------------------------------------------------------------------
+# Classifier rule hash gate tests
+# ---------------------------------------------------------------------------
+
+
+class TestClassifierRuleHashGate:
+    def test_passes_when_hashes_match(self) -> None:
+        m = _make_manifest(classifier_rule_hash="abc123")
+        require_classifier_rule_hash_match(m, "abc123")
+
+    def test_raises_when_hashes_differ(self) -> None:
+        m = _make_manifest(classifier_rule_hash="abc123")
+        with pytest.raises(ValueError, match="classifier rule hash mismatch"):
+            require_classifier_rule_hash_match(m, "different")
+
+    def test_raises_when_manifest_hash_is_none(self) -> None:
+        m = _make_manifest(classifier_rule_hash=None)
+        with pytest.raises(ValueError, match="classifier_rule_hash is None"):
+            require_classifier_rule_hash_match(m, "abc123")
