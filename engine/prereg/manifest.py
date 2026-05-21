@@ -51,6 +51,7 @@ class PreregManifest:
     rubric_reviewer: ReviewerSignoff | None
     statistical_reviewer: ReviewerSignoff | None
     classifier_rule_hash: str | None  # hash of Stage-1 classifier rules
+    rubric_hash: str | None  # hash of frozen rubric (Plan 3)
     post_hoc_register_path: str | None  # path to Merkle-chained register
 
     @property

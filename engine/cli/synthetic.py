@@ -192,6 +192,7 @@ def execute_synthetic_pipeline(
         rubric_reviewer=None,
         statistical_reviewer=None,
         classifier_rule_hash=classification.classifier_rule_hash,
+        rubric_hash=None,
         post_hoc_register_path=None,
         **(manifest_kwargs or {}),
     )

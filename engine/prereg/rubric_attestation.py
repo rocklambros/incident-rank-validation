@@ -12,7 +12,9 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True)
 class RubricDraftingAttestation:
-    """Attestation about corpus exposure during rubric drafting."""
+    """Attestation about corpus and vote-data exposure during rubric drafting."""
 
     viewed_corpus_before_drafting: bool
     viewed_corpus_details: str  # which samples, if any — empty string if none
+    viewed_vote_data_before_drafting: bool  # HANDOFF §6 control 2
+    viewed_vote_data_details: str  # which vote data, if any — empty string if none

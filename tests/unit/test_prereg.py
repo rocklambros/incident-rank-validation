@@ -70,6 +70,7 @@ def _make_manifest(
         "rubric_reviewer": rubric_reviewer,
         "statistical_reviewer": statistical_reviewer,
         "classifier_rule_hash": None,
+        "rubric_hash": None,
         "post_hoc_register_path": None,
     }
     defaults.update(overrides)
@@ -151,6 +152,8 @@ class TestPreregManifest:
             rubric_attestation=RubricDraftingAttestation(
                 viewed_corpus_before_drafting=False,
                 viewed_corpus_details="",
+                viewed_vote_data_before_drafting=False,
+                viewed_vote_data_details="",
             ),
             rubric_reviewer=_make_signoff(),
             statistical_reviewer=_make_signoff(
@@ -198,6 +201,8 @@ class TestLock:
             rubric_attestation=RubricDraftingAttestation(
                 viewed_corpus_before_drafting=False,
                 viewed_corpus_details="",
+                viewed_vote_data_before_drafting=False,
+                viewed_vote_data_details="",
             ),
             rubric_reviewer=_make_signoff(),
             statistical_reviewer=_make_signoff(
@@ -231,10 +236,13 @@ class TestLock:
             "rubric_drafting_attestation": RubricDraftingAttestation(
                 viewed_corpus_before_drafting=True,
                 viewed_corpus_details="mutated",
+                viewed_vote_data_before_drafting=True,
+                viewed_vote_data_details="mutated",
             ),
             "rubric_reviewer": _make_signoff(name="Mutated"),
             "statistical_reviewer": _make_signoff(name="Mutated"),
             "classifier_rule_hash": "mutated_hash",
+            "rubric_hash": "mutated_rubric_hash",
             "post_hoc_register_path": "mutated/path.jsonl",
         }
 
