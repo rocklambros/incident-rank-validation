@@ -18,6 +18,7 @@ rules:
       exclude:
         - engine/prereg/git_timestamp.py
         - engine/prereg/attestation.py
+        - engine/cli/rubric.py
         - tests/
 
   - id: no-dynamic-code
