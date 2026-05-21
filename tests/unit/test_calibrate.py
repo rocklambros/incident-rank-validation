@@ -9,7 +9,7 @@ import pytest
 
 from engine.calibrate.beta import BetaPosterior, Calibration
 from engine.calibrate.cv import CVResult, cross_validate_calibration
-from engine.calibrate.sampler import Sampler, StratifiedSampler
+from engine.calibrate.sampler import SampleFrame, SampleRequest, SampleResult, Sampler
 
 # ---------------------------------------------------------------------------
 # BetaPosterior
@@ -88,22 +88,26 @@ class TestCalibration:
 
 
 class TestSamplerProtocol:
-    def test_stratified_sampler_implements_sampler_protocol(self) -> None:
-        sampler: Sampler = StratifiedSampler()
-        try:
-            sampler.draw([], {"a": 1}, seed=0)
-        except NotImplementedError as e:
-            assert "Plan 4" in str(e)
-        else:
-            raise AssertionError("StratifiedSampler should raise NotImplementedError")
+    def test_sample_frame_enum(self) -> None:
+        assert SampleFrame.PRECISION.value == "precision"
+        assert SampleFrame.RECALL.value == "recall"
 
-    def test_stratified_sampler_isinstance_sampler(self) -> None:
-        assert isinstance(StratifiedSampler(), Sampler)
+    def test_sample_request_is_frozen(self) -> None:
+        req = SampleRequest(
+            frame=SampleFrame.RECALL, entry_id=None, stratum=None, n=100,
+        )
+        with pytest.raises((dataclasses.FrozenInstanceError, AttributeError)):
+            req.n = 50  # type: ignore[misc]
 
-    def test_not_implemented_message_mentions_plan_1(self) -> None:
-        sampler = StratifiedSampler()
-        with pytest.raises(NotImplementedError, match="Plan 1"):
-            sampler.draw([], {}, seed=42)
+    def test_sample_result_is_frozen(self) -> None:
+        result = SampleResult(
+            incidents=(), request=SampleRequest(
+                frame=SampleFrame.RECALL, entry_id=None, stratum=None, n=0,
+            ),
+            actual_n=0, sample_hash="abc",
+        )
+        with pytest.raises((dataclasses.FrozenInstanceError, AttributeError)):
+            result.actual_n = 99  # type: ignore[misc]
 
 
 # ---------------------------------------------------------------------------
@@ -111,22 +115,23 @@ class TestSamplerProtocol:
 # ---------------------------------------------------------------------------
 
 
-class TestCVStub:
-    def test_cross_validate_raises_not_implemented(self) -> None:
-        with pytest.raises(NotImplementedError, match="Plan 4"):
-            cross_validate_calibration()
-
-    def test_cross_validate_message_includes_n_folds(self) -> None:
-        with pytest.raises(NotImplementedError, match="k=10"):
-            cross_validate_calibration(n_folds=10)
-
+class TestCVResult:
     def test_cvresult_is_frozen_dataclass(self) -> None:
-        result = CVResult(n_folds=5, fold_variances={("e1", "s1"): 0.01})
+        result = CVResult(
+            n_folds=5,
+            fold_variances={("e1", "s1"): 0.01},
+            interpretation={("e1", "s1"): "stable"},
+            min_per_fold={("e1", "s1"): 10},
+        )
         with pytest.raises((dataclasses.FrozenInstanceError, AttributeError)):
             result.n_folds = 3  # type: ignore[misc]
 
-    def test_cvresult_stores_fold_variances(self) -> None:
+    def test_cvresult_stores_all_fields(self) -> None:
         fv: dict[tuple[str, str], float] = {("e1", "security"): 0.002}
-        result = CVResult(n_folds=5, fold_variances=fv)
+        interp: dict[tuple[str, str], str] = {("e1", "security"): "stable"}
+        mpf: dict[tuple[str, str], int] = {("e1", "security"): 10}
+        result = CVResult(n_folds=5, fold_variances=fv, interpretation=interp, min_per_fold=mpf)
         assert result.n_folds == 5
         assert result.fold_variances[("e1", "security")] == pytest.approx(0.002)
+        assert result.interpretation[("e1", "security")] == "stable"
+        assert result.min_per_fold[("e1", "security")] == 10
