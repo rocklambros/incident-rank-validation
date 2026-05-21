@@ -5,12 +5,14 @@ Verifies the full pipeline produces valid Calibration and CVResult objects.
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 from engine.adapters.synthetic import SyntheticAdapter
 from engine.calibrate.batch import code_synthetic_with_ground_truth, generate_batch
 from engine.calibrate.calibrate import compute_calibration
 from engine.calibrate.cv import cross_validate_calibration
 from engine.calibrate.sampler import SampleFrame, SampleRequest
-from engine.calibrate.tally import tally_batches
+from engine.calibrate.tally import tally_batches, validate_and_tally
 from engine.calibrate.two_frame_sampler import TwoFrameSampler
 from engine.classify.stub import classify_stub
 
@@ -87,7 +89,6 @@ class TestCalibrationE2E:
         cal, diag = compute_calibration(
             tally,
             all_entry_ids=list(entry_ids),
-            strata=strata,
             frame_blind_ids=fb_ids,
         )
         assert len(cal.precision) > 0 or len(cal.recall) > 0
@@ -115,3 +116,72 @@ class TestCalibrationE2E:
 
         cv = cross_validate_calibration(prec_labels, rec_labels, n_folds=5)
         assert cv.n_folds == 5
+
+    def test_validate_and_tally_with_disk_batches(self, tmp_path: Path) -> None:
+        adapter = SyntheticAdapter(seed=42)
+        incidents = tuple(adapter.iter_incidents())
+        entries = adapter.entry_definitions()
+        entry_ids = tuple(e.entry_id for e in entries)
+        non_fb_ids = tuple(e.entry_id for e in entries if not e.frame_blind)
+        strata = sorted({inc.corpus_stratum for inc in incidents})
+
+        classification = classify_stub(incidents, entry_ids)
+        sampler = TwoFrameSampler(classification_result=classification)
+        incidents_list = list(incidents)
+        incidents_by_id = {inc.id: inc for inc in incidents}
+        corpus_ids = {inc.id for inc in incidents}
+
+        batch_paths: list[Path] = []
+        sample_hashes: dict[str, str] = {}
+
+        for eid in non_fb_ids:
+            for s in strata:
+                req = SampleRequest(
+                    frame=SampleFrame.PRECISION, entry_id=eid, stratum=s, n=40,
+                )
+                sr = sampler.draw(req, incidents_list, seed=42)
+                if sr.actual_n > 0:
+                    batch = generate_batch(
+                        sample_result=sr, rubric_hash="test",
+                        manifest_lock_hash="test", coder_id="synthetic",
+                        cycle_id="test",
+                    )
+                    coded = code_synthetic_with_ground_truth(
+                        batch, incidents_by_id=incidents_by_id,
+                        valid_entry_ids=set(entry_ids),
+                    )
+                    p = tmp_path / f"{coded.header.batch_id}.json"
+                    coded.write(p)
+                    batch_paths.append(p)
+                    sample_hashes[coded.header.batch_id] = coded.header.sample_hash
+
+        for s in strata:
+            req = SampleRequest(
+                frame=SampleFrame.RECALL, entry_id=None, stratum=s, n=100,
+            )
+            sr = sampler.draw(req, incidents_list, seed=42)
+            batch = generate_batch(
+                sample_result=sr, rubric_hash="test",
+                manifest_lock_hash="test", coder_id="synthetic",
+                cycle_id="test",
+            )
+            coded = code_synthetic_with_ground_truth(
+                batch, incidents_by_id=incidents_by_id,
+                valid_entry_ids=set(entry_ids),
+            )
+            p = tmp_path / f"{coded.header.batch_id}.json"
+            coded.write(p)
+            batch_paths.append(p)
+            sample_hashes[coded.header.batch_id] = coded.header.sample_hash
+
+        tally = validate_and_tally(
+            batch_paths,
+            valid_entry_ids=set(entry_ids),
+            rollup_entry_ids=set(),
+            expected_sample_hashes=sample_hashes,
+            expected_rubric_hash="test",
+            expected_lock_hash="test",
+            all_entry_ids=set(entry_ids),
+            expected_incident_ids=corpus_ids,
+        )
+        assert tally.total_coded > 0

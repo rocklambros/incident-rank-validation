@@ -16,12 +16,14 @@ from engine.version import __version__
 @click.command("cal-classify")
 @click.option("--cycle", required=True, type=click.Path(path_type=Path))
 @click.option("--rubric", required=True, type=click.Path(exists=True, path_type=Path))
+@click.option("--manifest", required=True, type=click.Path(exists=True, path_type=Path))
 @click.option("--snapshot-dir", required=True, type=click.Path(exists=True, path_type=Path))
 @click.option("--snapshot-date", required=True, type=str)
 @click.option("--confidence-threshold", type=float, default=0.3)
 def cal_classify(
     cycle: Path,
     rubric: Path,
+    manifest: Path,
     snapshot_dir: Path,
     snapshot_date: str,
     confidence_threshold: float,
@@ -29,13 +31,21 @@ def cal_classify(
     """Stage 1: Run the deterministic keyword/indicator classifier."""
     from engine.calibrate.provenance import StageProvenance, hash_file, hash_json, write_provenance
     from engine.classify.classifier import build_rules_from_rubric, classify_real
+    from engine.prereg.gates import require_classifier_rule_hash_match
+    from engine.prereg.manifest import PreregManifest
     from engine.prereg.rubric_io import read_rubric
 
     cal_dir = cycle / "calibration"
     cal_dir.mkdir(parents=True, exist_ok=True)
 
+    manifest_data = json.loads(manifest.read_text(encoding="utf-8"))
+    manifest_lock_hash = hash_file(manifest)
+
     rb = read_rubric(rubric)
     rules = build_rules_from_rubric(rb, confidence_threshold)
+
+    mreg = PreregManifest(**manifest_data)
+    require_classifier_rule_hash_match(mreg, rules.rule_hash)
 
     from engine.adapters.genai_agentic import GenAIAgenticAdapter
     adapter = GenAIAgenticAdapter(snapshot_dir, snapshot_date)
@@ -63,7 +73,7 @@ def cal_classify(
 
     prov = StageProvenance(
         stage_name="classify",
-        manifest_lock_hash="",
+        manifest_lock_hash=manifest_lock_hash,
         input_hashes={"rubric": hash_file(rubric)},
         output_hash=hash_json(out_data),
         timestamp=datetime.now(UTC).isoformat(),

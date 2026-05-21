@@ -39,9 +39,9 @@ def _ci_width(bp: BetaPosterior) -> float:
 def compute_calibration(
     tally: TallyResult,
     all_entry_ids: list[str],
-    strata: list[str],
     frame_blind_ids: set[str],
     n_folds: int = 5,
+    classifier_entry_ids: set[str] | None = None,
 ) -> tuple[Calibration, CalibrationDiagnostic]:
     recall_posteriors: dict[tuple[str, str], BetaPosterior] = {}
     precision_posteriors: dict[tuple[str, str], BetaPosterior] = {}
@@ -106,6 +106,10 @@ def compute_calibration(
         if eid in frame_blind_ids:
             flag = "no-data"
             reason = "no-data: frame-blind"
+            no_data += 1
+        elif classifier_entry_ids is not None and eid not in classifier_entry_ids:
+            flag = "no-data"
+            reason = "no-data: no-classifier-rules"
             no_data += 1
         elif not has_prec and not has_rec:
             flag = "no-data"

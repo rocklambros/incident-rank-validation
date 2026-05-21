@@ -259,6 +259,8 @@ If the coder discovers an error after initial coding, the correction is recorded
 
 The tally stage uses the latest labels. Amendments are preserved for audit. The post-hoc register records all amendments.
 
+> **Implementation note (v0.4.0):** The `amendment` field on `BatchIncident` is currently `str | None` — a free-text note, not the structured `{original_labels, correction_reason, corrected_at}` object shown above. The structured format is the target contract; the current implementation records the correction reason as a string and delegates chain validation to a future version. The tally stage counts any non-null `amendment` value as an amendment regardless of structure.
+
 ### Batch validation rules
 
 The tally stage validates every coded batch file before counting. Validation collects all errors across all batches and reports them as a structured error list (not fail-fast):
@@ -347,10 +349,11 @@ class CalibrationDiagnostic:
 ```
 
 **Flag reason values** (the `reason` field distinguishes root cause from symptom):
-- `"adequate"` — both frames have sufficient data, CI widths within target
+- `"adequate"` — both frames have sufficient data, 90% CI width < 0.30 (hardcoded threshold derived from Beta(a,b) requiring a+b ≈ 40; see §3 sample-size rationale)
 - `"wide: small-sample (n=N)"` — posteriors are wide due to small gold-set count, not due to genuinely poor classifier performance
 - `"wide: recall-frame-only"` — no precision-frame data (new/rollup entry); recall posterior only
-- `"no-data: no-classifier-positives"` — classifier produced zero positives for this entry+stratum; precision frame empty
+- `"no-data: no-classifier-rules"` — entry had no classifier rules in this cycle (e.g., newly added entry with no indicator patterns yet)
+- `"no-data: no-classifier-positives"` — classifier rules existed but produced zero positives for this entry+stratum; precision frame empty
 - `"no-data: frame-blind"` — entry is frame-blind; excluded from calibration by design
 
 This distinction is critical: "insufficient sample to measure recall" and "measured low recall from adequate sample" are different methodological statements with different implications for the inference model and the report.
