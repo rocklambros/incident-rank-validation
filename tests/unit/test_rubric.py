@@ -5,6 +5,9 @@ import json
 from pathlib import Path
 
 import pytest
+from click.testing import CliRunner
+
+from engine.cli.rubric import freeze_rubric_cmd, validate_rubric_cmd
 
 from engine.prereg.adjudication import AdjudicationEntry, AdjudicationLog
 from engine.prereg.gates import (
@@ -609,3 +612,110 @@ class TestGates:
         m = _make_test_manifest(rubric_hash=None)
         with pytest.raises(ValueError, match="rubric hash is None"):
             require_rubric_hash_match(m, p)
+
+
+class TestRubricCLI:
+    """Smoke tests for rubric CLI commands."""
+
+    def test_validate_rubric_missing_file(self, tmp_path: Path) -> None:
+        runner = CliRunner()
+        result = runner.invoke(
+            validate_rubric_cmd,
+            ["--rubric", str(tmp_path / "nonexistent.json")],
+        )
+        assert result.exit_code != 0
+        assert "does not exist" in result.output or "Error" in result.output
+
+    def test_validate_rubric_valid_file(self, tmp_path: Path) -> None:
+        r = _make_rubric()
+        p = tmp_path / "rubric.json"
+        write_rubric(r, p)
+        runner = CliRunner()
+        result = runner.invoke(
+            validate_rubric_cmd,
+            [
+                "--rubric", str(p),
+                "--expected-ids", "LLM01,LLM02",
+            ],
+        )
+        assert result.exit_code == 0
+        assert "valid" in result.output.lower() or "hash" in result.output.lower()
+
+    def test_validate_rubric_with_taxonomy(self, tmp_path: Path) -> None:
+        r = _make_rubric()
+        rubric_path = tmp_path / "rubric.json"
+        write_rubric(r, rubric_path)
+        taxonomy_path = tmp_path / "taxonomy.json"
+        taxonomy_path.write_text(json.dumps({
+            "cycle_id": "2026",
+            "entries": [
+                {"entry_id": "LLM01", "canonical_name": "Prompt Injection"},
+                {"entry_id": "LLM02", "canonical_name": "Sensitive Info"},
+            ],
+        }))
+        runner = CliRunner()
+        result = runner.invoke(
+            validate_rubric_cmd,
+            ["--rubric", str(rubric_path), "--taxonomy", str(taxonomy_path)],
+        )
+        assert result.exit_code == 0
+        assert "valid" in result.output.lower() or "hash" in result.output.lower()
+
+    def test_validate_rubric_taxonomy_and_expected_ids_exclusive(self, tmp_path: Path) -> None:
+        r = _make_rubric()
+        rubric_path = tmp_path / "rubric.json"
+        write_rubric(r, rubric_path)
+        taxonomy_path = tmp_path / "taxonomy.json"
+        taxonomy_path.write_text(json.dumps({"cycle_id": "2026", "entries": []}))
+        runner = CliRunner()
+        result = runner.invoke(
+            validate_rubric_cmd,
+            [
+                "--rubric", str(rubric_path),
+                "--taxonomy", str(taxonomy_path),
+                "--expected-ids", "LLM01,LLM02",
+            ],
+        )
+        assert result.exit_code != 0
+        assert "mutually exclusive" in result.output.lower() or "cannot" in result.output.lower()
+
+    def test_freeze_rubric_missing_attestation(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        import subprocess
+
+        r = _make_rubric()
+        rubric_path = tmp_path / "rubric.json"
+        write_rubric(r, rubric_path)
+        # Initialize a git repo in tmp_path so verify_committed() can resolve
+        # paths via git rev-parse --show-toplevel (Premortem3 R2).
+        subprocess.run(
+            ["git", "init"], cwd=tmp_path, capture_output=True, check=True
+        )
+        subprocess.run(
+            ["git", "config", "user.email", "test@test.com"],
+            cwd=tmp_path, capture_output=True, check=True,
+        )
+        subprocess.run(
+            ["git", "config", "user.name", "Test"],
+            cwd=tmp_path, capture_output=True, check=True,
+        )
+        subprocess.run(
+            ["git", "add", "rubric.json"],
+            cwd=tmp_path, capture_output=True, check=True,
+        )
+        subprocess.run(
+            ["git", "commit", "-m", "init"],
+            cwd=tmp_path, capture_output=True, check=True,
+        )
+        monkeypatch.chdir(tmp_path)
+        runner = CliRunner()
+        result = runner.invoke(
+            freeze_rubric_cmd,
+            [
+                "--rubric", str(rubric_path),
+                "--cycle-dir", str(tmp_path),
+            ],
+        )
+        assert result.exit_code != 0
+        assert "attestation" in result.output.lower()
