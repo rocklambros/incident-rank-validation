@@ -111,11 +111,11 @@ class TestSamplerProtocol:
 
 
 # ---------------------------------------------------------------------------
-# CV stub
+# CV (real k-fold implementation)
 # ---------------------------------------------------------------------------
 
 
-class TestCVResult:
+class TestCV:
     def test_cvresult_is_frozen_dataclass(self) -> None:
         result = CVResult(
             n_folds=5,
@@ -135,3 +135,8 @@ class TestCVResult:
         assert result.fold_variances[("e1", "security")] == pytest.approx(0.002)
         assert result.interpretation[("e1", "security")] == "stable"
         assert result.min_per_fold[("e1", "security")] == 10
+
+    def test_cross_validate_empty_returns_cvresult(self) -> None:
+        result = cross_validate_calibration({}, {}, n_folds=5)
+        assert result.n_folds == 5
+        assert result.fold_variances == {}
