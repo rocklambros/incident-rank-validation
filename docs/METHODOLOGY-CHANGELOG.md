@@ -1,5 +1,21 @@
 # Methodology Changelog
 
+## 1.0.0 (Plan 5, 2026-05-21): First real LLM 2026 cycle
+
+- Stage-2 LLM-assisted classifier with RunPod integration, delimiter-fenced prompts (HANDOFF §5.2), cost tracking with $500 ceiling auto-abort.
+- Full-corpus classification: Stage-1 deterministic + Stage-2 LLM on ambiguous residue.
+- NUTS measurement-error inference on real classified data with gold-set Beta priors, CPU-pinned (HANDOFF §7.5).
+- Poisson-flat robustness spec as declared alternative (HANDOFF §6 control 4).
+- Vote-rank posterior via bootstrap over XLSX Raw Results (Anonymized) respondents.
+- Rollup sub-test for rolled-up candidates (HANDOFF §5.2, §5.5).
+- Decision layer: measurability map, concordance, selection bias, twin agreement, robustness spread, per-entry flags.
+- Report renderer with rollup section, pre-registration diff, robustness spread, RunPod cost disclosure.
+- Reproduction bundle with Stage-2 manifest hash, calibration hash, vote data hash.
+- Real-data pipeline CLI: classify-real, infer-real, decide-real, report, repro-bundle.
+- Never-falsely-low re-run with real-cycle hyperparameters (PRD §6.6 criterion 3).
+- Two-cycle parity framework (M17, PRD §6.6 criterion 13).
+- non_publishable derived from reviewer attestation state (INTERIM: Rock = both reviewers → True).
+
 ## 0.3.0 (Plan 3, 2026-05-20)
 
 Rubric freeze workflow scaffolding: data model, serialization, CLI, gate logic.
