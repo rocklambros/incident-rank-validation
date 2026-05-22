@@ -6,11 +6,14 @@ Poisson-flat (no over-dispersion, flat priors).
 """
 from __future__ import annotations
 
+from typing import Any
+
 import jax
 import jax.numpy as jnp
 import numpy as np
 import numpy.typing as npt
 import numpyro
+import numpyro.diagnostics
 import numpyro.distributions as dist
 from numpyro.infer import MCMC, NUTS
 
@@ -31,12 +34,14 @@ def run_robustness_inference(
     overlap: OverlapWeights,
     num_warmup: int = 1000,
     num_samples: int = 2000,
+    num_chains: int = 4,
     timeout_seconds: float | None = None,
 ) -> InferenceResult:
     if spec_name == "poisson_flat":
         return _run_poisson_flat(
             manifest, measurable_entries, strata, observed_counts,
             stratum_sizes, calibration, overlap, num_warmup, num_samples,
+            num_chains,
         )
     raise ValueError(f"Unknown robustness spec: {spec_name}")
 
@@ -51,6 +56,7 @@ def _run_poisson_flat(
     overlap: OverlapWeights,
     num_warmup: int,
     num_samples: int,
+    num_chains: int,
 ) -> InferenceResult:
     assert jax.default_backend() == "cpu"
 
@@ -85,18 +91,49 @@ def _run_poisson_flat(
         numpyro.sample("obs", dist.Poisson(rate=expected), obs=jnp.array(obs_data))
 
     kernel = NUTS(model)
-    mcmc = MCMC(kernel, num_warmup=num_warmup, num_samples=num_samples, num_chains=1, progress_bar=False)
-    mcmc.run(jax.random.PRNGKey(manifest.prng_seed + 1000), obs, sizes, recall_a, recall_b, prec_a, prec_b, W)
+    mcmc = MCMC(
+        kernel,
+        num_warmup=num_warmup,
+        num_samples=num_samples,
+        num_chains=num_chains,
+        progress_bar=False,
+    )
+    mcmc.run(
+        jax.random.PRNGKey(manifest.prng_seed + 1000),
+        obs, sizes, recall_a, recall_b, prec_a, prec_b, W,
+    )
 
     samples = mcmc.get_samples()
     lambda_samples = np.asarray(samples["lambda"], dtype=np.float64)
 
+    # Diagnostics extraction (mirroring run_inference)
+    chain_samples = mcmc.get_samples(group_by_chain=True)
+    summary: dict[str, Any] = numpyro.diagnostics.summary(chain_samples)
+
+    r_hat_dict: dict[str, float] = {}
+    ess_dict: dict[str, float] = {}
+    for param_name, stats in summary.items():
+        if "r_hat" in stats:
+            vals = np.atleast_1d(stats["r_hat"])
+            for idx, val in enumerate(vals.flat):
+                key = f"{param_name}[{idx}]" if vals.size > 1 else param_name
+                r_hat_dict[key] = float(val)
+        if "n_eff" in stats:
+            vals = np.atleast_1d(stats["n_eff"])
+            for idx, val in enumerate(vals.flat):
+                key = f"{param_name}[{idx}]" if vals.size > 1 else param_name
+                ess_dict[key] = float(val)
+
+    extra = mcmc.get_extra_fields()
+    diverging = extra.get("diverging", np.array([]))
+    divergences = int(np.asarray(diverging).sum())
+
     return InferenceResult(
         lambda_samples=lambda_samples,
         entry_ids=measurable_entries,
-        r_hat={},
-        ess={},
-        divergences=0,
+        r_hat=r_hat_dict,
+        ess=ess_dict,
+        divergences=divergences,
         num_warmup=num_warmup,
         num_samples=num_samples,
     )

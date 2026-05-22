@@ -1,6 +1,6 @@
 [project]
 name = "incident-rank-validation"
-version = "1.0.0"
+version = "1.1.0"
 description = "Engine for validating ranked taxonomies against incident corpora."
 requires-python = ">=3.12,<3.13"
 license = { text = "Apache-2.0" }
@@ -34,6 +34,9 @@ dev = [
 #   protobuf 4.25.9 (CVE-2026-0994, HIGH, recursion bypass) — pinned by opentelemetry-proto v1.25.0 via semgrep==1.99.0
 # Both require multi-package upgrades (cyclonedx-bom + semgrep) and re-validation; tracked as supply-chain residuals.
 
+[project.optional-dependencies]
+monitoring = ["wandb>=0.19,<1.0"]
+
 [tool.uv]
 package = true
 
@@ -55,7 +58,11 @@ python_version = "3.12"
 packages = ["engine", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["scipy.*", "jax.*", "jaxlib.*", "numpyro.*"]
+module = ["scipy.*", "jax.*", "jaxlib.*", "numpyro.*", "openpyxl.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["wandb.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
@@ -66,6 +73,7 @@ filterwarnings = [
   "ignore::FutureWarning:jax",
   "ignore::DeprecationWarning:jax",
   "ignore::FutureWarning:numpyro",
+  "ignore:There are not enough devices to run parallel chains:UserWarning",
 ]
 markers = ["slow: NUTS / e2e tests", "timeout: per-test wall-clock timeout hint (seconds)"]
 env = ["JAX_ENABLE_X64=true", "JAX_PLATFORM_NAME=cpu"]

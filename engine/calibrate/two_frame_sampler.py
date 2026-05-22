@@ -46,9 +46,7 @@ class TwoFrameSampler:
             and (request.stratum is None or inc.corpus_stratum == request.stratum)
         ]
 
-        if len(pool) < 20:
-            sampled = tuple(pool)
-        elif len(pool) <= request.n:
+        if len(pool) < 20 or len(pool) <= request.n:
             sampled = tuple(pool)
         else:
             rng = random.Random(seed)

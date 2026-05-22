@@ -4,7 +4,12 @@ from __future__ import annotations
 
 from engine.decide.concordance import STANDING_CAVEAT, ConcordanceResult
 from engine.decide.measurability import MeasurabilityMap
-from engine.decide.robustness_multiplicity import FlagDirection, FlagFinding, RobustnessSpread, SpecResult
+from engine.decide.robustness_multiplicity import (
+    FlagDirection,
+    FlagFinding,
+    RobustnessSpread,
+    SpecResult,
+)
 from engine.decide.rollup import RollupResult, RollupVerdict
 from engine.decide.selection_bias import SelectionBiasDisclosure
 from engine.model.censoring import MeasurabilityVerdict

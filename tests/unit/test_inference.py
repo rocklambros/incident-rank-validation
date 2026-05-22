@@ -111,6 +111,7 @@ class TestBasicInference:
                 overlap=overlap,
                 num_warmup=NUM_WARMUP,
                 num_samples=NUM_SAMPLES,
+                num_chains=1,
             )
 
     def test_returns_inference_result(self) -> None:
@@ -175,6 +176,7 @@ class TestManifestHyperparameters:
                 overlap=overlap,
                 num_warmup=NUM_WARMUP,
                 num_samples=NUM_SAMPLES,
+                num_chains=1,
             )
 
             # Diffuse prior (large scale)
@@ -189,6 +191,7 @@ class TestManifestHyperparameters:
                 overlap=overlap,
                 num_warmup=NUM_WARMUP,
                 num_samples=NUM_SAMPLES,
+                num_chains=1,
             )
 
         mean_tight = float(result_tight.lambda_samples.mean())
@@ -246,6 +249,7 @@ class TestEmptyOverlap:
                 overlap=overlap,
                 num_warmup=warmup,
                 num_samples=NUM_SAMPLES,
+                num_chains=1,
             )
 
         assert isinstance(result, InferenceResult)

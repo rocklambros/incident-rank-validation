@@ -2,17 +2,14 @@
 from __future__ import annotations
 
 import hashlib
-import json
 
 import pytest
 
 from engine.classify.classifier import (
     ClassifierRules,
     EntryClassifierRule,
-    build_rules_from_rubric,
     classify_real,
 )
-from engine.classify.stub import Classification, ClassificationResult
 from engine.schema import IncidentRecord
 
 
@@ -53,10 +50,6 @@ class TestClassifierRules:
             positive_patterns=("prompt injection",),
             negative_patterns=("benign",),
             confidence_threshold=0.3,
-        )
-        rules = ClassifierRules(
-            rules_by_entry={"LLM01": rule},
-            rule_hash="",
         )
         h1 = ClassifierRules.compute_rule_hash({"LLM01": rule})
         h2 = ClassifierRules.compute_rule_hash({"LLM01": rule})
