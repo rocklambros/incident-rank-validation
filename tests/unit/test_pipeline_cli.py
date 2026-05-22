@@ -96,3 +96,94 @@ class TestDecideRealCLI:
         ])
         assert result.exit_code != 0
         assert "infer" in result.output.lower()
+
+
+class TestExecuteFlags:
+    def test_classify_real_execute_attempts_orchestration(self, tmp_path: Path) -> None:
+        """F4.1: --execute flag triggers real classification, not just gate-checks."""
+        cycle = tmp_path / "cycle"
+        prereg = cycle / "prereg"
+        prereg.mkdir(parents=True)
+        (prereg / "manifest.json").write_text("{}")
+        (prereg / "manifest.lock").write_text("{}")
+        rubric_data = json.dumps({
+            "cycle_id": "test-2026",
+            "version": 1,
+            "entries": [],
+        })
+        (prereg / "rubric.json").write_text(rubric_data)
+        cal_dir = cycle / "calibrate"
+        cal_dir.mkdir(parents=True)
+        (cal_dir / "posteriors.json").write_text("{}")
+        corpus = cycle / "corpora"
+        corpus.mkdir(parents=True)
+
+        runner = CliRunner()
+        result = runner.invoke(cli, [
+            "classify-real", "--cycle", str(cycle), "--execute",
+        ])
+        # With --execute, the command should NOT just print "prerequisites satisfied"
+        assert "prerequisites satisfied" not in (result.output or "").lower()
+
+    def test_infer_real_execute_attempts_orchestration(self, tmp_path: Path) -> None:
+        """--execute flag triggers real inference attempt."""
+        cycle = tmp_path / "cycle"
+        prereg = cycle / "prereg"
+        prereg.mkdir(parents=True)
+        (prereg / "manifest.lock").write_text("{}")
+        classify_dir = cycle / "classify"
+        classify_dir.mkdir(parents=True)
+        (classify_dir / "labeled_incidents.json").write_text("[]")
+        cal_dir = cycle / "calibrate"
+        cal_dir.mkdir(parents=True)
+        (cal_dir / "posteriors.json").write_text("{}")
+
+        runner = CliRunner()
+        result = runner.invoke(cli, [
+            "infer-real", "--cycle", str(cycle), "--execute",
+        ])
+        assert "prerequisites satisfied" not in (result.output or "").lower()
+
+    def test_decide_real_execute_attempts_orchestration(self, tmp_path: Path) -> None:
+        """--execute flag triggers real decision attempt."""
+        cycle = tmp_path / "cycle"
+        prereg = cycle / "prereg"
+        prereg.mkdir(parents=True)
+        (prereg / "manifest.lock").write_text("{}")
+        infer_dir = cycle / "infer"
+        infer_dir.mkdir(parents=True)
+        (infer_dir / "inference_summary.json").write_text("{}")
+        vote_file = tmp_path / "vote.xlsx"
+        vote_file.write_bytes(b"")
+
+        runner = CliRunner()
+        result = runner.invoke(cli, [
+            "decide-real", "--cycle", str(cycle),
+            "--vote-xlsx", str(vote_file), "--execute",
+        ])
+        assert "prerequisites satisfied" not in (result.output or "").lower()
+
+    def test_without_execute_flag_still_gate_checks(self, tmp_path: Path) -> None:
+        """Without --execute, commands still do prerequisite validation only."""
+        cycle = tmp_path / "cycle"
+        prereg = cycle / "prereg"
+        prereg.mkdir(parents=True)
+        (prereg / "manifest.json").write_text("{}")
+        (prereg / "manifest.lock").write_text("{}")
+        rubric_data = json.dumps({
+            "cycle_id": "test-2026",
+            "version": 1,
+            "entries": [],
+        })
+        (prereg / "rubric.json").write_text(rubric_data)
+        cal_dir = cycle / "calibrate"
+        cal_dir.mkdir(parents=True)
+        (cal_dir / "posteriors.json").write_text("{}")
+        corpus = cycle / "corpora"
+        corpus.mkdir(parents=True)
+
+        runner = CliRunner()
+        result = runner.invoke(cli, [
+            "classify-real", "--cycle", str(cycle),
+        ])
+        assert "prerequisites satisfied" in (result.output or "").lower()

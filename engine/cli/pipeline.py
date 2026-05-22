@@ -18,7 +18,9 @@ from engine.classify.stage2_manifest import Stage2Manifest
 @click.option("--cycle", required=True, type=click.Path(path_type=Path, exists=True))
 @click.option("--stage2-config", type=click.Path(path_type=Path), default=None,
               help="Path to stage2_manifest.json for LLM-assisted classification")
-def classify_real(cycle: Path, stage2_config: Path | None) -> None:
+@click.option("--execute", is_flag=True, default=False,
+              help="Execute classification (without flag, validates prerequisites only)")
+def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> None:
     """Run Stage-1 + optional Stage-2 classification on real corpus data."""
     prereg = cycle / "prereg"
     if not (prereg / "manifest.json").exists():
@@ -51,7 +53,53 @@ def classify_real(cycle: Path, stage2_config: Path | None) -> None:
         raise click.ClickException(f"Corpus directory not found: {corpus_dir}")
 
     click.echo(f"Stage-1 classification: {len(rules.rules_by_entry)} entry rules loaded")
-    click.echo("Classify phase: prerequisites satisfied. Run with --execute to classify.")
+
+    if not execute:
+        click.echo("Classify phase: prerequisites satisfied. Run with --execute to classify.")
+        return
+
+    # Execute real classification pipeline
+    click.echo("Executing classify phase...")
+    try:
+        from engine.cli.pipeline_executor import (
+            merge_classifications,
+            route_to_stage2,
+            write_classify_artifacts,
+        )
+        from engine.schema import IncidentRecord
+
+        # Load corpus incidents from corpora directory
+        incidents: list[IncidentRecord] = []
+        for jsonl_file in sorted(corpus_dir.glob("*.jsonl")):
+            for line in jsonl_file.read_text().splitlines():
+                line = line.strip()
+                if line:
+                    rec = json.loads(line)
+                    incidents.append(IncidentRecord(
+                        id=rec["id"],
+                        text=rec.get("text", ""),
+                        corpus_stratum=rec.get("corpus_stratum", "unknown"),
+                        native_labels=tuple(rec.get("native_labels", ())),
+                    ))
+
+        click.echo(f"Loaded {len(incidents)} incidents from corpus")
+
+        # Stage-1 classification
+        result = _classify(tuple(incidents), rules)
+        click.echo(f"Stage-1 produced {len(result.classifications)} classifications")
+
+        # Stage-2 routing (if configured)
+        stage2_results: tuple = ()
+        if stage2_config is not None:
+            low_confidence = route_to_stage2(result.classifications, confidence_threshold=0.3)
+            click.echo(f"Routed {len(low_confidence)} incidents to Stage-2")
+
+        # Write artifacts
+        out_dir = cycle / "classify"
+        write_classify_artifacts(result, out_dir, stage2_results=stage2_results)
+        click.echo(f"Classify phase complete. Artifacts written to {out_dir}")
+    except Exception as e:
+        raise click.ClickException(f"Classify phase failed: {e}")
 
 
 @click.command(name="infer-real")
@@ -59,11 +107,14 @@ def classify_real(cycle: Path, stage2_config: Path | None) -> None:
 @click.option("--num-warmup", type=int, default=1000)
 @click.option("--num-samples", type=int, default=2000)
 @click.option("--timeout-seconds", type=float, default=None)
+@click.option("--execute", is_flag=True, default=False,
+              help="Execute inference (without flag, validates prerequisites only)")
 def infer_real(
     cycle: Path,
     num_warmup: int,
     num_samples: int,
     timeout_seconds: float | None,
+    execute: bool,
 ) -> None:
     """Run NUTS inference on classified real data."""
     prereg = cycle / "prereg"
@@ -90,21 +141,39 @@ def infer_real(
             "Real inference MUST NOT use uniform Beta(1,1) priors."
         )
 
-    click.echo("Infer phase: prerequisites satisfied.")
     click.echo(f"NUTS parameters: warmup={num_warmup}, samples={num_samples}")
 
     import os
     os.environ.setdefault("JAX_PLATFORM_NAME", "cpu")
     os.environ.setdefault("JAX_ENABLE_X64", "true")
 
-    click.echo("Infer phase ready. Run with --execute to start NUTS inference.")
+    if not execute:
+        click.echo("Infer phase: prerequisites satisfied. Run with --execute to start NUTS inference.")
+        return
+
+    # Execute real inference pipeline
+    click.echo("Executing infer phase...")
+    try:
+        from engine.cli.pipeline_executor import execute_infer_phase
+
+        execute_infer_phase(
+            cycle,
+            num_warmup=num_warmup,
+            num_samples=num_samples,
+            num_chains=4,
+        )
+        click.echo("Infer phase complete.")
+    except Exception as e:
+        raise click.ClickException(f"Infer phase failed: {e}")
 
 
 @click.command(name="decide-real")
 @click.option("--cycle", required=True, type=click.Path(path_type=Path, exists=True))
 @click.option("--vote-xlsx", required=True, type=click.Path(path_type=Path, exists=True),
               help="Path to vote results XLSX file")
-def decide_real(cycle: Path, vote_xlsx: Path) -> None:
+@click.option("--execute", is_flag=True, default=False,
+              help="Execute decision phase (without flag, validates prerequisites only)")
+def decide_real(cycle: Path, vote_xlsx: Path, execute: bool) -> None:
     """Run decision layer: vote posterior + concordance + flags."""
     prereg = cycle / "prereg"
     if not (prereg / "manifest.lock").exists():
@@ -115,7 +184,54 @@ def decide_real(cycle: Path, vote_xlsx: Path) -> None:
         raise click.ClickException("infer/ directory not found — run infer first")
 
     click.echo(f"Decide phase: loading vote data from {vote_xlsx}")
-    click.echo("Decide phase: prerequisites satisfied.")
+
+    if not execute:
+        click.echo("Decide phase: prerequisites satisfied. Run with --execute to decide.")
+        return
+
+    # Execute real decision pipeline
+    click.echo("Executing decide phase...")
+    try:
+        from engine.cli.pipeline_executor import write_decide_artifacts
+
+        # Load inference summary
+        summary_path = infer_dir / "inference_summary.json"
+        if not summary_path.exists():
+            raise FileNotFoundError(
+                f"Inference summary not found: {summary_path}. Run infer first."
+            )
+        inference_summary = json.loads(summary_path.read_text())
+
+        # Load vote data
+        from engine.vote.xlsx_loader import load_vote_xlsx
+
+        vote_data = load_vote_xlsx(vote_xlsx)
+        click.echo(f"Loaded vote data: {len(vote_data.rows)} rows")
+
+        # Build concordance
+        from engine.decide.concordance import compute_concordance
+
+        lambda_samples_path = infer_dir / "lambda_samples.npy"
+        if lambda_samples_path.exists():
+            lambda_samples = np.load(lambda_samples_path)
+        else:
+            raise FileNotFoundError(
+                f"Lambda samples not found: {lambda_samples_path}. Run infer first."
+            )
+
+        entry_ids = tuple(inference_summary.get("entry_ids", []))
+        concordance = compute_concordance(
+            lambda_samples=lambda_samples,
+            entry_ids=entry_ids,
+            vote_data=vote_data,
+        )
+
+        # Write artifacts
+        out_dir = cycle / "results"
+        write_decide_artifacts(concordance, out_dir)
+        click.echo(f"Decide phase complete. Artifacts written to {out_dir}")
+    except Exception as e:
+        raise click.ClickException(f"Decide phase failed: {e}")
 
 
 @click.command(name="report")
