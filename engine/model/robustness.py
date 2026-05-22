@@ -31,12 +31,14 @@ def run_robustness_inference(
     overlap: OverlapWeights,
     num_warmup: int = 1000,
     num_samples: int = 2000,
+    num_chains: int = 4,
     timeout_seconds: float | None = None,
 ) -> InferenceResult:
     if spec_name == "poisson_flat":
         return _run_poisson_flat(
             manifest, measurable_entries, strata, observed_counts,
             stratum_sizes, calibration, overlap, num_warmup, num_samples,
+            num_chains,
         )
     raise ValueError(f"Unknown robustness spec: {spec_name}")
 
@@ -51,6 +53,7 @@ def _run_poisson_flat(
     overlap: OverlapWeights,
     num_warmup: int,
     num_samples: int,
+    num_chains: int,
 ) -> InferenceResult:
     assert jax.default_backend() == "cpu"
 
@@ -85,7 +88,7 @@ def _run_poisson_flat(
         numpyro.sample("obs", dist.Poisson(rate=expected), obs=jnp.array(obs_data))
 
     kernel = NUTS(model)
-    mcmc = MCMC(kernel, num_warmup=num_warmup, num_samples=num_samples, num_chains=1, progress_bar=False)
+    mcmc = MCMC(kernel, num_warmup=num_warmup, num_samples=num_samples, num_chains=num_chains, progress_bar=False)
     mcmc.run(jax.random.PRNGKey(manifest.prng_seed + 1000), obs, sizes, recall_a, recall_b, prec_a, prec_b, W)
 
     samples = mcmc.get_samples()
