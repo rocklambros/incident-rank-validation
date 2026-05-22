@@ -87,7 +87,7 @@ def _build_fixture_cycle(tmp_path: Path) -> Path:
     # Calibration posteriors (uniform Beta(1,1) — acceptable for testing)
     cal_dir = cycle / "calibrate"
     cal_dir.mkdir(parents=True)
-    cal_data = {"recall": {}, "precision": {}}
+    cal_data: dict[str, dict[str, object]] = {"recall": {}, "precision": {}}
     (cal_dir / "posteriors.json").write_text(json.dumps(cal_data))
 
     # Corpus with 5 incidents

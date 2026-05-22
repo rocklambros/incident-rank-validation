@@ -297,7 +297,7 @@ def generate_batch(
         batch_id=str(uuid.uuid4()),
         frame=req.frame.value,
         entry_id=req.entry_id,
-        stratum=req.stratum,
+        stratum=req.stratum or "unknown",
         sample_hash=sample_result.sample_hash,
         rubric_hash=rubric_hash,
         manifest_lock_hash=manifest_lock_hash,

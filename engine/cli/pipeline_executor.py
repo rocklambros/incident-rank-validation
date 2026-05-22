@@ -19,7 +19,10 @@ from engine.classify.stub import Classification, ClassificationResult
 if TYPE_CHECKING:
     from engine.calibrate.beta import Calibration
     from engine.decide.concordance import ConcordanceResult
+    from engine.decide.rollup import RollupResult
+    from engine.decide.selection_bias import SelectionBiasDisclosure
     from engine.model.inference import InferenceResult
+    from engine.monitoring.wandb_logger import WandBLogger
     from engine.prereg.manifest import PreregManifest
 
 
@@ -108,7 +111,9 @@ def _load_calibration(cal_path: Path) -> Calibration:
 
     data = json.loads(cal_path.read_text())
 
-    def _parse_posteriors(d: dict) -> dict[tuple[str, str], BetaPosterior]:
+    def _parse_posteriors(
+        d: dict[str, dict[str, float]],
+    ) -> dict[tuple[str, str], BetaPosterior]:
         result: dict[tuple[str, str], BetaPosterior] = {}
         for key_str, params in d.items():
             parts = key_str.split("::")
@@ -177,7 +182,7 @@ def execute_infer_phase(
     num_warmup: int = 1000,
     num_samples: int = 2000,
     num_chains: int = 4,
-    wandb_logger: object | None = None,
+    wandb_logger: WandBLogger | None = None,
 ) -> None:
     import os
     os.environ.setdefault("JAX_PLATFORM_NAME", "cpu")
@@ -309,8 +314,8 @@ def write_nuts_failure(
 def write_decide_artifacts(
     concordance: ConcordanceResult,
     out_dir: Path,
-    rollup_results: tuple = (),
-    selection_bias: object | None = None,
+    rollup_results: tuple[RollupResult, ...] = (),
+    selection_bias: SelectionBiasDisclosure | None = None,
     twin_agreement: object | None = None,
     robustness: object | None = None,
 ) -> None:
