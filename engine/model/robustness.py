@@ -6,11 +6,14 @@ Poisson-flat (no over-dispersion, flat priors).
 """
 from __future__ import annotations
 
+from typing import Any
+
 import jax
 import jax.numpy as jnp
 import numpy as np
 import numpy.typing as npt
 import numpyro
+import numpyro.diagnostics
 import numpyro.distributions as dist
 from numpyro.infer import MCMC, NUTS
 
@@ -94,12 +97,34 @@ def _run_poisson_flat(
     samples = mcmc.get_samples()
     lambda_samples = np.asarray(samples["lambda"], dtype=np.float64)
 
+    # Diagnostics extraction (mirroring run_inference)
+    chain_samples = mcmc.get_samples(group_by_chain=True)
+    summary: dict[str, Any] = numpyro.diagnostics.summary(chain_samples)
+
+    r_hat_dict: dict[str, float] = {}
+    ess_dict: dict[str, float] = {}
+    for param_name, stats in summary.items():
+        if "r_hat" in stats:
+            vals = np.atleast_1d(stats["r_hat"])
+            for idx, val in enumerate(vals.flat):
+                key = f"{param_name}[{idx}]" if vals.size > 1 else param_name
+                r_hat_dict[key] = float(val)
+        if "n_eff" in stats:
+            vals = np.atleast_1d(stats["n_eff"])
+            for idx, val in enumerate(vals.flat):
+                key = f"{param_name}[{idx}]" if vals.size > 1 else param_name
+                ess_dict[key] = float(val)
+
+    extra = mcmc.get_extra_fields()
+    diverging = extra.get("diverging", np.array([]))
+    divergences = int(np.asarray(diverging).sum())
+
     return InferenceResult(
         lambda_samples=lambda_samples,
         entry_ids=measurable_entries,
-        r_hat={},
-        ess={},
-        divergences=0,
+        r_hat=r_hat_dict,
+        ess=ess_dict,
+        divergences=divergences,
         num_warmup=num_warmup,
         num_samples=num_samples,
     )
