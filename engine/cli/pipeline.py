@@ -77,9 +77,14 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
                     rec = json.loads(line)
                     incidents.append(IncidentRecord(
                         id=rec["id"],
+                        date=rec.get("date", "1970-01-01"),
                         text=rec.get("text", ""),
+                        severity=rec.get("severity"),
+                        source_class=rec.get("source_class", "unknown"),
                         corpus_stratum=rec.get("corpus_stratum", "unknown"),
+                        quality=rec.get("quality", "auto"),
                         native_labels=tuple(rec.get("native_labels", ())),
+                        source_url=rec.get("source_url", ""),
                     ))
 
         click.echo(f"Loaded {len(incidents)} incidents from corpus")
