@@ -74,10 +74,7 @@ def cross_validate_calibration(
             fold_means.append(bp.mean)
             start = end
 
-        if len(fold_means) < 2:
-            var = 0.0
-        else:
-            var = statistics.variance(fold_means)
+        var = 0.0 if len(fold_means) < 2 else statistics.variance(fold_means)
 
         fold_variances[key] = var
         min_per_fold_out[key] = min_fold_n

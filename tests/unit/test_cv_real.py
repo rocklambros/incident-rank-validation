@@ -1,9 +1,7 @@
 """Tests for engine.calibrate.cv — real k-fold cross-validation."""
 from __future__ import annotations
 
-import pytest
-
-from engine.calibrate.cv import CVResult, cross_validate_calibration
+from engine.calibrate.cv import cross_validate_calibration
 
 
 class TestCrossValidateCalibration:
@@ -17,7 +15,7 @@ class TestCrossValidateCalibration:
 
     def test_unstable_small_sample(self) -> None:
         precision = {("LLM01", "security"): [True, False, True]}
-        recall = {}
+        recall: dict[tuple[str, str], list[bool]] = {}
         result = cross_validate_calibration(precision, recall, n_folds=5)
         assert result.min_per_fold[("LLM01", "security")] < 5
         assert "unstable" in result.interpretation[("LLM01", "security")]

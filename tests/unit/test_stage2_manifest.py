@@ -60,7 +60,7 @@ class TestStage2Manifest:
         m = _make_manifest()
         try:
             m.model_identity = "other"  # type: ignore[misc]
-            assert False, "should be frozen"
+            raise AssertionError("should be frozen")
         except AttributeError:
             pass
 

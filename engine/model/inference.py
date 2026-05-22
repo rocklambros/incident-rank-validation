@@ -109,6 +109,7 @@ def run_inference(
     overlap: OverlapWeights,
     num_warmup: int = 1000,
     num_samples: int = 2000,
+    num_chains: int = 4,
     timeout_seconds: float | None = None,
 ) -> InferenceResult:
     """Run NUTS inference on the measurement-error model.
@@ -210,7 +211,7 @@ def run_inference(
             kernel,
             num_warmup=num_warmup,
             num_samples=num_samples,
-            num_chains=1,
+            num_chains=num_chains,
             progress_bar=False,
         )
         mcmc.run(

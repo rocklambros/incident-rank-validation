@@ -5,8 +5,8 @@ from typing import Any
 
 from engine.classify.runpod_client import (
     RunPodClient,
-    RunPodResponse,
     RunPodError,
+    RunPodResponse,
 )
 
 
@@ -49,9 +49,11 @@ class MockRunPodClient(RunPodClient):
 
 class TestRunPodClient:
     def test_successful_response(self) -> None:
-        client = MockRunPodClient([
-            {"output": '{"entry_id": "LLM01", "confidence": 0.9}', "id": "job-1", "executionTime": 500.0}
-        ])
+        client = MockRunPodClient([{
+            "output": '{"entry_id": "LLM01", "confidence": 0.9}',
+            "id": "job-1",
+            "executionTime": 500.0,
+        }])
         resp = client.run_sync("classify this incident", seed=42)
         assert resp.output_text == '{"entry_id": "LLM01", "confidence": 0.9}'
         assert resp.job_id == "job-1"
@@ -61,7 +63,7 @@ class TestRunPodClient:
         client = MockRunPodClient([{"status": "FAILED", "error": "GPU OOM"}])
         try:
             client.run_sync("classify this", seed=42)
-            assert False, "should raise"
+            raise AssertionError("should raise")
         except RunPodError:
             pass
 
@@ -69,7 +71,7 @@ class TestRunPodClient:
         client = MockRunPodClient([])
         try:
             client.run_sync("classify this", seed=42)
-            assert False, "should raise"
+            raise AssertionError("should raise")
         except RunPodError:
             pass
 

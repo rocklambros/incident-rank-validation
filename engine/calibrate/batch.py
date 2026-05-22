@@ -30,7 +30,7 @@ from __future__ import annotations
 import json
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -297,12 +297,12 @@ def generate_batch(
         batch_id=str(uuid.uuid4()),
         frame=req.frame.value,
         entry_id=req.entry_id,
-        stratum=req.stratum,
+        stratum=req.stratum or "unknown",
         sample_hash=sample_result.sample_hash,
         rubric_hash=rubric_hash,
         manifest_lock_hash=manifest_lock_hash,
         coder_id=coder_id,
-        generated_at=datetime.now(timezone.utc).isoformat(),
+        generated_at=datetime.now(UTC).isoformat(),
         coding_checklist=coding_checklist,
     )
     incidents = [
@@ -415,7 +415,7 @@ def validate_coded_batch(
             errors.append(ValidationError(
                 file=path,
                 incident_id=incident_id,
-                message=f"uncoded incident: labels is null — coding not yet complete",
+                message="uncoded incident: labels is null — coding not yet complete",
             ))
             continue
 
