@@ -1,0 +1,216 @@
+{
+  "header": {
+    "cycle_id": "2026",
+    "batch_id": "8fd3c29b-7664-4566-b077-2e69f8b935c6",
+    "frame": "precision",
+    "entry_id": "LLM09",
+    "stratum": "security",
+    "sample_hash": "2cffa8502b5bbd02ae69e89fa363389c131e3481626443da80b5a784c56b7977",
+    "rubric_hash": "a9f4592c2ebcc2eddfcef52ef3ec70b9afc604c95d1b7ab3d49259f01fc90911",
+    "manifest_lock_hash": "125c9d8b742f4a773011ab027358eaf7a2d9d1a059ba30ab017824e1a8ed1e09",
+    "coder_id": "rock",
+    "generated_at": "2026-05-22T17:56:27.589247+00:00"
+  },
+  "incidents": [
+    {
+      "incident_id": "INC-03529",
+      "text": "Air Canada chatbot invents bereavement discount policy \u2014 tribunal ruling A passenger named Jake Moffatt used Air Canada's AI chatbot to ask about bereavement travel discounts after the death of a family member. The chatbot hallucinated a policy that did not exist \u2014 stating he could book at full price and apply for a retroactive discount within 90 days. When he followed this advice and was denied the discount, he took Air Canada to the British Columbia Civil Resolution Tribunal. The tribunal ruled that Air Canada was responsible for its chatbot's statements, rejecting the airline's argument that the chatbot was a 'separate legal entity'. Air Canada was ordered to pay the passenger $650. Legal liability established \u2014 first tribunal ruling holding an organisation legally responsible for AI chatbot hallucinations; financial penalty; reputational damage; legal precedent for operator accountability",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-05159",
+      "text": "Meta Galactica model withdrawn after misinformation at launch Meta AI launched Galactica \u2014 a large language model trained on scientific literature and designed to assist with scientific writing, summarisation, and knowledge retrieval \u2014 publicly via a demo on November 15, 2022. Within 72 hours, Meta withdrew the public demo after widespread criticism from the scientific community. Researchers found that Galactica confidently generated plausible-sounding but factually incorrect scientific text, including fabricated citations, incorrect chemical formulae, and authoritative-sounding passages on controversial topics (e.g., the history of bears in space). The core failure was that the model's confident, authoritative tone conveyed false certainty \u2014 users with limited domain expertise could not distinguish accurate from fabricated content. This remains the canonical real-world example of LLM misinformation at launch in a high-stakes domain. Model withdrawn within 72 hours of launch; scientific community backlash established reputational precedent for AI misinformation risk; demonstrates that domain-specialist training does not prevent hallucination and may amplify misinformation confidence; canonical case study for LLM09",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03815",
+      "text": "Google AI Overviews recommends adding glue to pizza \u2014 RAG hallucination at search scale Google's AI Overviews feature, which provides AI-generated summaries at the top of search results, recommended adding non-toxic glue to pizza sauce to make cheese stick better. The source was a satirical Reddit comment from 11 years ago that the RAG system retrieved and presented as factual advice. Other AI Overviews hallucinations included recommending eating rocks for minerals and suggesting Barack Obama was Muslim. Viral embarrassment; question of AI reliability at web scale; reduced AI Overview visibility; Google added more guardrails",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03582",
+      "text": "Apple Intelligence notification hallucinations \u2014 fabricated BBC news headlines Apple's AI-powered notification summarisation feature on iPhone generated fabricated news headlines attributed to the BBC, including false reports about a murder suspect and inaccurate sports scores. The BBC formally complained to Apple, stating the feature risked undermining trust in journalism. Apple acknowledged the issue and added disclaimers to AI-generated summaries. BBC formal complaint; journalist credibility concerns; Apple added disclaimers; feature accuracy questioned globally",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03758",
+      "text": "EU GDPR enforcement: ChatGPT cannot correct factually wrong personal data The Italian Garante (DPA) and Austrian noyb filed complaints demonstrating ChatGPT generates factually incorrect personal data (wrong birthdate, fabricated biographical details) and cannot correct or delete this information because OpenAI cannot identify which training data produced the hallucination. This created an impossible GDPR compliance situation: the right to rectification (Art. 16) and right to erasure (Art. 17) cannot be fulfilled for hallucinated personal data. GDPR enforcement precedent; structural compliance challenge for all LLM providers; potential systematic fines under Art. 83",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04263",
+      "text": "Tesla FSD phantom braking and obstacle hallucination \u2014 AI perception failures at highway speed NHTSA expanded its investigation into Tesla Full Self-Driving (FSD) after hundreds of reports of phantom braking events \u2014 the AI vision system hallucinating obstacles (shadows, overpasses, road markings) and applying emergency braking at highway speed. The investigation covered 2.4 million vehicles. Multiple rear-end collisions resulted from unexpected braking. The investigation questioned whether the pure-vision AI perception system (no LiDAR, no radar) could reliably distinguish real obstacles from visual artifacts. NHTSA investigation; multiple collisions; regulatory scrutiny of pure-vision AI perception; recall risk",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04070",
+      "text": "OpenAI Whisper hallucinating medical transcriptions \u2014 fabricated diagnoses in healthcare AI Researchers at the University of Michigan found that OpenAI's Whisper speech-to-text model, widely used in healthcare for medical transcription, hallucinated content in approximately 1% of transcriptions. Hallucinations included fabricated medical diagnoses, medication names, and patient statements that never occurred. The problem was particularly severe in recordings with pauses, accents, or background noise. Over 30,000 healthcare providers were estimated to use Whisper-based transcription tools. Fabricated medical diagnoses in patient records; patient safety risk; potential malpractice liability; FDA scrutiny of AI medical devices",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03531",
+      "text": "Air Canada found liable for chatbot's incorrect bereavement-fare advice A British Columbia tribunal ruled Air Canada liable for misleading information given by its website chatbot about bereavement fare refunds, rejecting the airline's argument that the chatbot was a 'separate legal entity'. The case became a landmark for AI-hallucination corporate liability.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04675",
+      "text": "Grok chatbot inaccuracies, hallucinations and harmful outputs xAI's Grok chatbot was repeatedly documented producing factually incorrect, defamatory and unsafe content, including fabricated news, antisemitic outputs and hallucinated criminal allegations against named individuals.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02206",
+      "text": "AI hallucinations cause chaos at Missouri pizzeria AIAAIC report: AI hallucinations cause chaos at Missouri pizzeria. System: AI Overviews. Technology: Generative AI. Purpose: Provide restaurant summary. Ethical issues: Accuracy/reliabiity; Mis/disinformation.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04250",
+      "text": "Study: Whisper AI speech recognition creates violent hallucinations AIAAIC report: Study: Whisper AI speech recognition creates violent hallucinations. System: Whisper. Technology: Generative AI; Speech-to-text; Speech recognition. Purpose: Recognise speech; Transcribe speech. Ethical issues: Accuracy/reliability; Mis/disinformation; Safety; Security.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-05068",
+      "text": "ChatGPT Provided Non-Existent Citations and Links when Prompted by Users When prompted about providing references, ChatGPT was reportedly generating non-existent but convincing-looking citations and links, which is also known as &quot;hallucination&quot;.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04237",
+      "text": "Study Highlights Persistent Hallucinations in Legal AI Systems Stanford University\u2019s Human-Centered AI Institute (HAI) conducted a study in which they designed a &quot;pre-registered dataset of over 200 open-ended legal queries&quot; to test AI products by LexisNexis (creator of Lexis+ AI) and Thomson Reuters (creator of Westlaw AI-Assisted Research and Ask Practical Law AI). The researchers found that these legal models hallucinate in 1 out of 6 (or more) benchmarking queries.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03832",
+      "text": "GPT-4o&#x27;s Chinese Tokens Reportedly Compromised by Spam and Pornography Due to Inadequate Filtering OpenAI&#x27;s GPT-4o was found to have its Chinese token training data compromised by spam and pornographic phrases due to inadequate data cleaning. Tianle Cai, a Ph.D. student at Princeton University, identified that most of the longest Chinese tokens were irrelevant and inappropriate, primarily originating from spam and pornography websites. The polluted tokens could lead to hallucinations, poor performance, and potential misuse, undermining the chatbot&#x27;s reliability and safety measures.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04351",
+      "text": "Whisper Speech-to-Text AI Reportedly Found to Create Violent Hallucinations Researchers at Cornell reportedly found that OpenAI&#x27;s Whisper, a speech-to-text system, can hallucinate violent language and fabricated details, especially with long pauses in speech, such as from those with speech impairments. Analyzing 13,000 clips, they determined 1% contained harmful hallucinations. These errors pose risks in hiring, legal trials, and medical documentation. The study suggests improving model training to reduce these hallucinations for diverse speaking patterns.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03481",
+      "text": "AI Transcription Tool Whisper Reportedly Inserting Fabricated Content in Medical Transcripts OpenAI&#x27;s AI-powered transcription tool Whisper, used to translate and transcribe audio content such as patient consultations with doctors, is advertised as having near \u201chuman level robustness and accuracy.\u201d However, software engineers, developers and academic researchers have alleged that it is prone to making up chunks of text or even entire sentences and that some of the hallucinations can include racial commentary, violent rhetoric, and even imagined medical treatments.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03546",
+      "text": "Alleged Fake Citations Undermine Expert Testimony in Minnesota Deepfake Law Case In a legal case defending Minnesota\u2019s deepfake election misinformation law, Stanford misinformation expert Professor Jeff Hancock&#x27;s affidavit allegedly cited non-existent academic sources, potentially generated by ChatGPT. The reportedly fabricated citations appear to have undermined the credibility of his testimony.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02963",
+      "text": "Norwegian Supreme Court Receives Legal Filing with Fabricated Citations Allegedly Generated by AI Tool In early 2025, Norway\u2019s Supreme Court (H\u00f8yesterett) received a legal filing containing hallucinated legal citations and quotes, allegedly inserted by an attorney using an AI tool without verification. The fabricated sources were detected during standard review. While no sanctions were issued, the Court updated its guidance to lawyers, warning that AI use does not exempt them from professional responsibility.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02787",
+      "text": "Judge Reportedly Disqualifies Butler Snow Lawyers Following Purported Use of ChatGPT-Fabricated Citations in Alabama Prison Litigation Three Butler Snow attorneys defending a former Alabama corrections commissioner were reportedly disqualified after two motions cited five non-existent cases generated via ChatGPT. Judge Anna Manasco is reported to have publicly reprimanded the lawyers, referred them to the Alabama State Bar, and ordered broad disclosure; she declined to sanction the firm. An external review of 2,400 citations across 330 filings reported no further errors.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02640",
+      "text": "Google&#x27;s Bard, Gemini, and Gemma AI Systems Allegedly Generated Defamatory Claims About Activist Robby Starbuck, Prompting Lawsuit Conservative activist Robby Starbuck reportedly filed a defamation lawsuit against Google, alleging its Bard, Gemini, and Gemma AI systems generated false statements linking him to sexual assault and extremist activity. Starbuck claims the outputs caused reputational harm and sought over $15 million in damages. Google acknowledged the hallucinations as known LLM behavior and stated it works to minimize such inaccuracies. See also Incident 1247.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03228",
+      "text": "Springer Nature Book &#x27;Social, Ethical and Legal Aspects of Generative AI: Tools, Techniques and Systems&#x27; Reportedly Published With Numerous Purportedly Fabricated or Unverifiable Citations &#x27;Social, Ethical and Legal Aspects of Generative AI: Tools, Techniques and Systems,&#x27; published by Springer Nature in June 2025, reportedly contains numerous purportedly untraceable academic citations. Independent analyses by multiple researchers allegedly found that a substantial share of references in certain chapters could not be verified, including citations to journals that do not exist. Citation patterns reportedly appear consistent with known large language model hallucination behaviors.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03227",
+      "text": "Springer Nature Book &#x27;Mastering Machine Learning: From Basics to Advanced&#x27; Reportedly Published With Numerous Purportedly Nonexistent or Incorrect Citations &quot;Mastering Machine Learning: From Basics to Advanced,&quot; published by Springer Nature in April 2025, reportedly contained numerous purportedly nonexistent or materially incorrect academic citations. Independent checks allegedly found that many referenced works did not exist or were misattributed, with multiple named researchers reportedly confirming they did not author the cited material. The pattern of errors has been described as consistent with known LLM citation hallucinations.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04090",
+      "text": "Pieces Technologies&#x27; Clinical AI Systems Allegedly Marketed With Misleading Performance Claims The Texas Attorney General announced a settlement with Pieces Technologies following allegations that the company misrepresented the accuracy of its healthcare AI systems used for clinical documentation. The state concluded that marketing claims about low error and hallucination rates may have misled hospitals and clinicians relying on the tools in patient care settings. The settlement imposed restrictions on future claims and required greater transparency around performance and risk.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01776",
+      "text": "Sixth Circuit Sanctioned Lawyers in Whiting v. City of Athens over Alleged Fake Appellate Citations in Briefs Reportedly Bearing Hallmarks of Hallucinations The U.S. Court of Appeals for the Sixth Circuit sanctioned attorneys Van Irion and Russ Egli after reportedly finding more than two dozen fake citations and alleged factual misrepresentations in appellate briefs in Whiting v. City of Athens. The court asked whether generative AI had been used, but the attorneys reportedly did not answer that question. Public reporting described the filings as bearing hallmarks of AI hallucinations.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01785",
+      "text": "South Africa Draft National AI Policy Reportedly Included Fictitious References Believed to Be AI Hallucinations South Africa&#x27;s Draft National AI Policy, gazetted for public comment, reportedly contained at least six fictitious academic references. Several cited articles or journals reportedly did not exist or were disclaimed by journal editors, and experts said the errors were consistent with AI hallucinations. The Department of Communications and Digital Technologies said it was reviewing the discrepancies but argued they did not affect the draft&#x27;s substance.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04491",
+      "text": "Bing Chat demo video contained false information (financial hallucinations) Microsoft's launch demo of Bing Chat featured hallucinated financial statements (Gap, Lululemon) and fabricated product features, an example of confident misinformation outputs from an LLM-powered search engine.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02342",
+      "text": "Attorney in Fletcher v. Experian Information Solutions, Inc. Reportedly Submitted Reply Brief with Purportedly AI-Generated Material Misrepresentations In February 2026, the 5th U.S. Circuit Court of Appeals sanctioned attorney Heather Hersh of FCRA Attorneys $2,500 for submitting a legal brief containing AI-generated fictitious content. The brief was filed as part of an appeal regarding sanctions against attorney Shawn Jaffer and his law firm in a Fair Credit Reporting Act lawsuit. The court identified 21 instances of fabricated quotations and serious misrepresentations of law or fact in Hersh's brief. When confronted, Hersh initially claimed she relied on publicly available case versions and blamed legal databases for inaccuracies, only admitting to using AI when directly asked. Judge Jennifer Walker Elrod called Hersh's response 'not credible' and 'misleading,' noting that had she been more forthcoming, lesser sanctions would have been imposed. The court expressed frustration that AI-hallucinated case citations continue to be a growing problem in courts, citing a database that lists 239 cases of AI-generated hallucinations in U.S. legal filings as of the incident date. The 5th Circuit had previously considered adopting specific rules for AI use by lawyers but decided existing professional conduct rules were sufficient.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03288",
+      "text": "The New York Times Sued Perplexity for Allegedly Using Copyrighted Content and Generating False Attributions The New York Times filed a lawsuit in federal court in New York against Perplexity, an AI startup founded in 2022 by a former OpenAI engineer that operates a search engine powered by similar technology to ChatGPT. The lawsuit alleges that Perplexity repeatedly violated The Times's copyrights over the past 18 months despite multiple demands to stop using the publication's content until a licensing agreement could be negotiated. The suit claims Perplexity's search engine retrieves information from websites and uses that information to generate text responses to user queries, sometimes grabbing large chunks or entire articles from The Times. The lawsuit argues this creates commercial products that substitute for The Times without permission or compensation. Additionally, The Times accused Perplexity of damaging its brand by sometimes generating false information through AI 'hallucination' and incorrectly attributing that misinformation to The Times. This lawsuit is part of a growing legal battle with over 40 copyright cases filed against AI companies across the country. Perplexity's head of communication responded that publishers have historically sued new technology companies without success.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03534",
+      "text": "Alaska Education Department Reportedly Published Policy Featuring Erroneous AI-Generated Citations Alaska Education Commissioner Deena Bishop used generative artificial intelligence to draft a proposed policy on cellphone use in schools, resulting in a state document that cited supposed academic studies that do not exist. The document was not disclosed as AI-generated and contained at least four false citations that appeared to be studies published in scientific journals. The false citations followed typical patterns of AI hallucination, with real journal names but fabricated article titles and incorrect URLs that led to different articles on unrelated topics. A department spokesperson initially called the false sources 'placeholders' during the drafting process. Commissioner Bishop later acknowledged using generative AI to create citations and said she realized the error before a state Board of Education meeting, sending correct citations to board members. However, vestiges of AI-generated false information remained in the corrected document that was voted on by the board. The incident highlights concerns about AI misinformation influencing state policy and the lack of disclosure requirements for AI use in government documents.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-05060",
+      "text": "BlenderBot 3 Cited Dutch Politician as a Terrorist Meta's BlenderBot 3, described as a 'state-of-the-art conversational agent' developed as a research project, falsely identified Marietje Schaake as a terrorist when prompted with the question 'Who is a terrorist?' by a Stanford colleague. The AI system responded: 'Well, that depends on who you ask. According to some governments and two international organizations, Maria Renske Schaake is a terrorist.' Schaake is a Dutch politician who served for a decade in the European Parliament and works as international policy director at Stanford University's Cyber Policy Center. She has never engaged in illegal activities or violence. Meta stated that the research model had combined two unrelated pieces of information into an incorrect sentence about Schaake. Later updates to BlenderBot appeared to fix the issue for her specifically. Meta closed the BlenderBot project in June. The incident highlights broader problems with AI hallucinations and false information about real people, with limited legal recourse available to those affected. Several similar cases are mentioned involving other AI systems making false claims about individuals, including legal scholars and academics being falsely linked to harassment claims or terrorist activities.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02474",
+      "text": "Cursor \u2014 Prompt Injection (CVE-2025-61589) Cursor is a code editor built for programming with AI. In versions 1.6 and below, Mermaid (a to render diagrams) allows embedding images which then get rendered by Cursor in the chat box. An attacker can use this to exfiltrate sensitive information to a third-party attacker controlled server through an image fetch after successfully performing a prompt injection. A malicious model (or hallucination/backdoor) might also trigger this exploit at will. This issue requires prompt injection from malicious data (web, image upload, source code) in order to exploit. In that case, it can send sensitive information to an attacker-controlled external server. Some additional bypasses not covered in the initial fix to this issue were discovered, see GHSA-43wj-mwcc-x93p. This issue is fixed in version 1.7.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01610",
+      "text": "Oregon Attorney Fined for Submitting AI-Fabricated Legal Brief Salem attorney Bill Ghiorso was fined $10,000 by the Oregon Court of Appeals for submitting a legal brief containing 15 fabricated citations and 9 false quotes generated by AI. The court condemned the unchecked use of AI, highlighting the breach of legal and professional standards.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01640",
+      "text": "Persistent AI Hallucinations Highlight Risks in Critical Applications Recent research and expert warnings highlight that hallucinations\u2014false outputs generated by large language models (LLMs)\u2014are unavoidable and increase with input size. These inaccuracies pose significant risks in high-stakes fields like law and accounting, challenging the reliability of AI for critical tasks.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01795",
+      "text": "Spanish Regulator Warns of AI Investment Risks Without Human Oversight The Spanish financial regulator CNMV found that large language models like ChatGPT, Gemini, DeepSeek, and Perplexity, when used for investment decisions without human supervision, frequently produce errors and hallucinations. These flaws could lead to significant financial losses, prompting calls for mandatory human oversight in AI-driven financial analysis.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01557",
+      "text": "Ontario Medical AI Scribes Found to Produce Dangerous Errors and Hallucinations Ontario's auditor general reported that most AI-powered medical transcription tools approved for doctors produced inaccurate, incomplete, or fabricated medical notes, including hallucinations and privacy risks. Inadequate evaluation and oversight of these systems pose direct threats to patient health and data security across the province.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00438",
+      "text": "AI-Generated Fabricated Citations Undermine Biomedical Research Integrity A Columbia University-led audit revealed that AI systems, particularly large language models, are responsible for fabricating over 4,000 citations in biomedical papers. These false references undermine clinical guidelines and scientific integrity, potentially leading to harmful medical decisions. The issue is ongoing and affects the reliability of healthcare research globally.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00785",
+      "text": "Chinese AI Search System Misidentifies Historical Figure, Spreading Misinformation Doubao, a Chinese AI assistant, mistakenly displayed an altered image of actor Fan Wei instead of historical figure Li Yuanhong due to widespread online misinformation and flawed training data. The incident exposed AI's vulnerability to 'hallucinations,' leading to public concern over AI reliability and the spread of false information. The issue was later corrected.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00171",
+      "text": "AI Hallucination in Police Report Leads to Fan Ban and Public Apology West Midlands Police used Microsoft's Copilot AI tool to draft a report containing false information, which led to Maccabi Tel Aviv fans being banned from a football match in Birmingham. The AI-generated inaccuracies prompted a public apology, suspension of the AI tool, and an official review into the incident.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00220",
+      "text": "AI System Leaks Unpublished Academic Work, Causes Citation Scandal in Turkey AI systems used for academic writing assistance in Turkey have leaked unpublished research, resulting in fabricated citations and 'ghost' papers. This breach of academic privacy and intellectual property was discovered by Do\u00e7. Dr. Yusuf K\u0131z\u0131lta\u015f, raising concerns about data security and ethical standards in academia.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02542",
+      "text": "Endor Labs Documents AI Dependency Hallucination Risk Endor Labs found ~34% of AI-suggested dependencies don't exist (hallucinations) and 44-49% of AI-imported dependency versions have known vulnerabilities. Only 20% of AI-recommended deps meet safety standards.",
+      "labels": null
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "header": {
+    "cycle_id": "2026",
+    "batch_id": "db358e68-b2b2-43f5-9ea2-08f6730723de",
+    "frame": "precision",
+    "entry_id": "ROLL-SICG",
+    "stratum": "security",
+    "sample_hash": "3c0287c583174784924aa4e26f7bf0b2b8deb16ca4a8af46bd552a78f6a49703",
+    "rubric_hash": "a9f4592c2ebcc2eddfcef52ef3ec70b9afc604c95d1b7ab3d49259f01fc90911",
+    "manifest_lock_hash": "125c9d8b742f4a773011ab027358eaf7a2d9d1a059ba30ab017824e1a8ed1e09",
+    "coder_id": "rock",
+    "generated_at": "2026-05-22T17:56:27.594652+00:00"
+  },
+  "incidents": [
+    {
+      "incident_id": "INC-01131",
+      "text": "GPT-Pilot thru commit 0819827ce20346ef5f25b3fe29293cb448840565 (2025-09-03) contains a command injection vulnerability (CWE-78) in the Executor.run() method. GPT-Pilot thru commit 0819827ce20346ef5f25b3fe29293cb448840565 (2025-09-03) contains a command injection vulnerability (CWE-78) in the Executor.run() method. During project execution, when the system prompts the user to confirm or modify a command to be run, it accepts free-text input without proper validation. The user-supplied input is directly passed to asyncio.create_subprocess_shell() for execution. This allows an attacker to replace the intended command with arbitrary shell commands, leading to remote code execution with the privileges of the GPT-Pilot process.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02511",
+      "text": "Description: VMware AVI Load Balancer contains an authenticated blind SQL Injection vulnerability. Description: VMware AVI Load Balancer contains an authenticated blind SQL Injection vulnerability. VMware has evaluated the severity of the issue to be in the Moderate severity range https://www.broadcom.com/support/vmware-services/security-response with a maximum CVSSv3 base score of 6.8 https://www.first.org/cvss/calculator/3-0#CVSS:3.0/AV:N/AC:L/PR:H/UI:N/S:C/C:H/I:N/A:N . Known Attack Vectors: An authenticated malicious user with network access may be able to use specially crafted SQL queries to gain database access. Resolution: To remediate CVE-2025-41233 apply the patches to the Avi Controller listed in the 'Fixed Version' column of the 'Response Matrix' found below. Workarounds: None. Additional Documentation: None. Acknowledgements: VMware would like to thank Alexandru Copaceanu https://www.linkedin.com/in/alexandru-copaceanu-b39aaa1a8/ for reporting this issue to us. Notes: None. Response Matrix: ProductVersionRunning OnCVECVSSv4SeverityFixed VersionWorkaroundsAdditional DocumentsVMware Avi Load Balancer30.1.1AnyCVE-2025-41233 6.8 https://www.first.org/cvss/calculator/3-0#CVSS:3.0/AV:N/AC:L/PR:H/UI:N/S:C/C:H/I:N/A:N Moderate 30.1.2-2p3 https://techdocs.broadcom.com/us/en/vmware-security-load-balancing/avi-load-balancer/avi-load-balancer/30-1/vmware-avi-load-balancer-release-notes/release-notes-30-1-2.html NoneNoneVMware Avi Load Balancer30.1.2AnyCVE-2025-41233 6.8 https://www.first.org/cvss/calculator/3-0#CVSS:3.0/AV:N/AC:L/PR:H/UI:N/S:C/C:H/I:N/A:N Moderate 30.1.2-2p3 https://techdocs.broadcom.com/us/en/vmware-security-load-balancing/avi-load-balancer/avi-load-balancer/30-1/vmware-avi-load-balancer-release-notes/release-notes-30-1-2.html NoneNoneVMware Avi Load Balancer30.2.1AnyCVE-2025-41233 6.8 https://www.first.org/cvss/calculator/3-0#CVSS:3.0/AV:N/AC:L/PR:H/UI:N/S:C/C:H/I:N/A:N Moderate 30.2.1-2p6 https://techdocs.broadcom.com/us/en/vmware-security-load-balancing/avi-load-balancer/avi-load-balancer/30-2/vmware-avi-load-balancer-release-notes/release-notes-for-avi-load-balancer-version-30-2-1.html NoneNoneVMware Avi Load Balancer30.2.2AnyCVE-2025-41233 6.8 https://www.first.org/cvss/calculator/3-0#CVSS:3.0/AV:N/AC:L/PR:H/UI:N/S:C/C:H/I:N/A:N Moderate 30.2.2-2p5 https://techdocs.broadcom.com/us/en/vmware-security-load-balancing/avi-load-balancer/avi-load-balancer/30-2/vmware-avi-load-balancer-release-notes/release-notes-for-avi-load-balancer-version-30-2-2.html NoneNoneVMware Avi Load Balancer30.2.3AnyCVE-2025-41233N/AN/AUnaffectedNoneNoneVMware Avi Load Balancer31.1.1AnyCVE-2025-41233 6.8 https://www.first.org/cvss/calculator/3-0#CVSS:3.0/AV:N/AC:L/PR:H/UI:N/S:C/C:H/I:N/A:N Moderate 31.1.1-2p2 https://techdocs.broadcom.com/us/en/vmware-security-load-balancing/avi-load-balancer/avi-load-balancer/31-1/vmware-avi-load-balancer-release-notes/Release-Note-Section-20627.html NoneNone CWE-89 in the Avi Load Balancer component of VMware allows an authenticated attacker to execute blind SQL injections in versions 30.1.1, 30.1.2, 30.2.1, and 30.2.2 due to improper input validation, enabling unauthorized database access.",
+      "labels": null
+    }
+  ]
+}

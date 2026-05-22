@@ -1,0 +1,26 @@
+{
+  "header": {
+    "cycle_id": "2026",
+    "batch_id": "e34b025c-c226-46bb-9d8b-471abc9fd47a",
+    "frame": "precision",
+    "entry_id": "LLM07",
+    "stratum": "security",
+    "sample_hash": "7a139343a1c71986abe1d5a48423ae69db4afa759925216b9e8b7b690806538a",
+    "rubric_hash": "a9f4592c2ebcc2eddfcef52ef3ec70b9afc604c95d1b7ab3d49259f01fc90911",
+    "manifest_lock_hash": "125c9d8b742f4a773011ab027358eaf7a2d9d1a059ba30ab017824e1a8ed1e09",
+    "coder_id": "rock",
+    "generated_at": "2026-05-22T17:56:27.588164+00:00"
+  },
+  "incidents": [
+    {
+      "incident_id": "INC-04067",
+      "text": "OpenAI GPT-4 system prompt extraction toolkit \u2014 systematic prompt leakage Security researchers published a comprehensive toolkit for extracting system prompts from GPT-4 and other production LLMs. The toolkit combined multi-turn conversation steering, encoding tricks (Base64, ROT13), and role-play scenarios to reliably extract complete system prompts from deployed applications. The research demonstrated that prompt confidentiality is fundamentally broken as a security control. System prompt confidentiality proven unreliable; IP exposure for prompt-dependent applications; forces architectural redesign away from prompt-as-security",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03225",
+      "text": "SPE-LLM: System Prompt Extraction Attacks and Defenses Systematic framework for evaluating prompt-extraction attacks against state-of-the-art LLMs, releasing adversarial queries that reliably extract system prompts and benchmarking defenses.",
+      "labels": null
+    }
+  ]
+}

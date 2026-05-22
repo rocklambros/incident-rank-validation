@@ -1,0 +1,10 @@
+{
+  "engine_version": "1.1.0",
+  "input_hashes": {
+    "classify": "e7ec0e0e759850b9208970e9cc9af5da80fd16ff14677606ef45361a557fc05e"
+  },
+  "manifest_lock_hash": "125c9d8b742f4a773011ab027358eaf7a2d9d1a059ba30ab017824e1a8ed1e09",
+  "output_hash": "b04e437a5b04f2ddc9f15b4d18122198e98f9e328b2b1d295adb8db326f17c2b",
+  "stage_name": "sample",
+  "timestamp": "2026-05-22T17:56:01.274616+00:00"
+}
