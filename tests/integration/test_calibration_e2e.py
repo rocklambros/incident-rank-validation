@@ -92,7 +92,12 @@ class TestCalibrationE2E:
             frame_blind_ids=fb_ids,
         )
         assert len(cal.precision) > 0 or len(cal.recall) > 0
-        assert diag.entries_with_both_frames + diag.entries_recall_only + diag.entries_no_data == len(entry_ids)
+        total = (
+            diag.entries_with_both_frames
+            + diag.entries_recall_only
+            + diag.entries_no_data
+        )
+        assert total == len(entry_ids)
 
         # Stage 6: CV stability
         prec_labels: dict[tuple[str, str], list[bool]] = {}

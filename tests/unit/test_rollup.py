@@ -22,7 +22,11 @@ class TestRollupSubTest:
             threshold=0.01,
         )
         assert isinstance(result, RollupResult)
-        assert result.verdict in (RollupVerdict.SUPPORTED, RollupVerdict.CONTRADICTED, RollupVerdict.INDETERMINATE)
+        assert result.verdict in (
+            RollupVerdict.SUPPORTED,
+            RollupVerdict.CONTRADICTED,
+            RollupVerdict.INDETERMINATE,
+        )
 
     def test_contradicted_when_child_is_negligible(self) -> None:
         parent_lambda = np.full(100, 0.15)

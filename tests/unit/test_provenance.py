@@ -1,12 +1,16 @@
 """Tests for engine.calibrate.provenance — stage provenance chain."""
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import pytest
 
-from engine.calibrate.provenance import StageProvenance, write_provenance, read_provenance, verify_input_hashes
+from engine.calibrate.provenance import (
+    StageProvenance,
+    read_provenance,
+    verify_input_hashes,
+    write_provenance,
+)
 
 
 class TestStageProvenance:

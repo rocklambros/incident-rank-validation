@@ -19,6 +19,7 @@ rules:
         - engine/prereg/git_timestamp.py
         - engine/prereg/attestation.py
         - engine/cli/rubric.py
+        - engine/cli/secrets.py
         - tests/
 
   - id: no-dynamic-code

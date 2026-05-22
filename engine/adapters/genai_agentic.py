@@ -55,7 +55,10 @@ _PROVISIONAL_2025_ENTRIES: tuple[EntryDefinition, ...] = (
     EntryDefinition(entry_id="NEW-PMP", name="Prompt Management and Pipelines"),
     EntryDefinition(entry_id="NEW-MTIE", name="Multi-Tenant Isolation Erosion"),
     EntryDefinition(entry_id="NEW-MA", name="Model Abuse"),
-    EntryDefinition(entry_id="NEW-ITSCD", name="Insufficient Training/Serving Configuration and Defaults"),
+    EntryDefinition(
+        entry_id="NEW-ITSCD",
+        name="Insufficient Training/Serving Configuration and Defaults",
+    ),
     EntryDefinition(entry_id="NEW-WLA", name="Weak LLM Agent Authorization"),
     EntryDefinition(entry_id="NEW-MSDA", name="Model Supply and Dependency Attacks"),
     EntryDefinition(entry_id="ROLL-CMSB", name="Cross-Modal Safety Bypass"),

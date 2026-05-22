@@ -7,11 +7,21 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import click
 import numpy as np
 
-from engine.classify.stage2_manifest import Stage2Manifest
+if TYPE_CHECKING:
+    from engine.classify.stage2_protocol import Stage2Classification
+
+
+def _default_tier_boundaries(n_entries: int) -> tuple[int, ...]:
+    """Default tier boundaries: split entries into 3 tiers."""
+    if n_entries <= 3:
+        return tuple(range(1, n_entries))
+    third = n_entries // 3
+    return (third, 2 * third)
 
 
 @click.command(name="classify-real")
@@ -32,7 +42,9 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
 
     vote_dir = cycle / "vote"
     if vote_dir.exists() and any(vote_dir.iterdir()):
-        raise click.ClickException("Vote data found during classify phase — vote enters only at decide")
+        raise click.ClickException(
+            "Vote data found during classify phase — vote enters only at decide"
+        )
 
     # R3: calibration posteriors must exist before real classification
     cal_path = cycle / "calibrate" / "posteriors.json"
@@ -42,11 +54,14 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
             "Run the gold-set calibration pipeline (Plan 4) first."
         )
 
-    from engine.classify.classifier import build_rules_from_rubric, classify_real as _classify
+    from engine.classify.classifier import build_rules_from_rubric
+    from engine.classify.classifier import classify_real as _classify
     from engine.prereg.rubric_io import read_rubric
 
     rubric = read_rubric(prereg / "rubric.json")
-    rules = build_rules_from_rubric(rubric, confidence_threshold=0.3)
+    manifest_data = json.loads((prereg / "manifest.json").read_text())
+    confidence_threshold = manifest_data.get("confidence_threshold", 0.3)
+    rules = build_rules_from_rubric(rubric, confidence_threshold=confidence_threshold)
 
     corpus_dir = cycle / "corpora"
     if not corpus_dir.exists():
@@ -77,9 +92,14 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
                     rec = json.loads(line)
                     incidents.append(IncidentRecord(
                         id=rec["id"],
+                        date=rec.get("date", "1970-01-01"),
                         text=rec.get("text", ""),
+                        severity=rec.get("severity"),
+                        source_class=rec.get("source_class", "unknown"),
                         corpus_stratum=rec.get("corpus_stratum", "unknown"),
+                        quality=rec.get("quality", "auto"),
                         native_labels=tuple(rec.get("native_labels", ())),
+                        source_url=rec.get("source_url", ""),
                     ))
 
         click.echo(f"Loaded {len(incidents)} incidents from corpus")
@@ -89,17 +109,71 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
         click.echo(f"Stage-1 produced {len(result.classifications)} classifications")
 
         # Stage-2 routing (if configured)
-        stage2_results: tuple = ()
+        stage2_results: tuple[Stage2Classification, ...] = ()
         if stage2_config is not None:
-            low_confidence = route_to_stage2(result.classifications, confidence_threshold=0.3)
-            click.echo(f"Routed {len(low_confidence)} incidents to Stage-2")
+            low_confidence_ids = route_to_stage2(
+                result.classifications, confidence_threshold=confidence_threshold,
+            )
+            click.echo(f"Routed {len(low_confidence_ids)} incidents to Stage-2")
+
+            if low_confidence_ids:
+                import os
+
+                from engine.classify.cost_tracker import CostTracker
+                from engine.classify.runpod_client import HttpRunPodClient
+                from engine.classify.stage2 import Stage2Classifier
+                from engine.classify.stage2_manifest import Stage2Manifest
+                from engine.cli.secrets import load_secret
+
+                s2_manifest = Stage2Manifest.read(stage2_config)
+                api_key = load_secret("runpod/api-key", env_var="RUNPOD_API_KEY")
+                endpoint_id = os.environ.get("RUNPOD_ENDPOINT_ID", "")
+
+                client = HttpRunPodClient(api_key=api_key, endpoint_id=endpoint_id)
+                tracker = CostTracker(ceiling_usd=s2_manifest.cost_ceiling_usd)
+
+                classifier = Stage2Classifier(
+                    client=client,
+                    cost_tracker=tracker,
+                    rubric_json=(prereg / "rubric.json").read_text(),
+                    model_identity=s2_manifest.model_identity,
+                    weight_provenance_hash=s2_manifest.weight_provenance_hash,
+                    prng_seed=s2_manifest.prng_seed,
+                )
+
+                # Filter incidents for Stage-2
+                s2_incidents = tuple(i for i in incidents if i.id in low_confidence_ids)
+                rubric_hash = manifest_data.get("rubric_hash", "")
+                stage2_results = classifier.classify_batch(s2_incidents, rubric_hash)
+                client.close()
+
+                click.echo(
+                    f"Stage-2 classified {len(stage2_results)} incidents, "
+                    f"cost: ${tracker.total_cost_usd:.2f}"
+                )
+
+                # Merge Stage-1 and Stage-2 results
+                merged = merge_classifications(
+                    result.classifications, stage2_results, confidence_threshold,
+                )
+                from engine.classify.stub import ClassificationResult
+                result = ClassificationResult(
+                    classifications=merged,
+                    classifier_version=result.classifier_version,
+                    classifier_rule_hash=result.classifier_rule_hash,
+                )
 
         # Write artifacts
         out_dir = cycle / "classify"
-        write_classify_artifacts(result, out_dir, stage2_results=stage2_results)
+        incident_strata = {inc.id: inc.corpus_stratum for inc in incidents}
+        write_classify_artifacts(
+            result, out_dir,
+            stage2_results=stage2_results,
+            incident_strata=incident_strata,
+        )
         click.echo(f"Classify phase complete. Artifacts written to {out_dir}")
     except Exception as e:
-        raise click.ClickException(f"Classify phase failed: {e}")
+        raise click.ClickException(f"Classify phase failed: {e}") from e
 
 
 @click.command(name="infer-real")
@@ -109,12 +183,14 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
 @click.option("--timeout-seconds", type=float, default=None)
 @click.option("--execute", is_flag=True, default=False,
               help="Execute inference (without flag, validates prerequisites only)")
+@click.option("--wandb/--no-wandb", default=False, help="Enable WandB monitoring")
 def infer_real(
     cycle: Path,
     num_warmup: int,
     num_samples: int,
     timeout_seconds: float | None,
     execute: bool,
+    wandb: bool,
 ) -> None:
     """Run NUTS inference on classified real data."""
     prereg = cycle / "prereg"
@@ -148,23 +224,45 @@ def infer_real(
     os.environ.setdefault("JAX_ENABLE_X64", "true")
 
     if not execute:
-        click.echo("Infer phase: prerequisites satisfied. Run with --execute to start NUTS inference.")
+        click.echo(
+            "Infer phase: prerequisites satisfied."
+            " Run with --execute to start NUTS inference."
+        )
         return
 
     # Execute real inference pipeline
     click.echo("Executing infer phase...")
     try:
         from engine.cli.pipeline_executor import execute_infer_phase
+        from engine.monitoring.wandb_logger import WandBLogger
+
+        wandb_logger = WandBLogger.create(enabled=False)
+        if wandb:
+            try:
+                from engine.cli.secrets import load_secret
+
+                wandb_key = load_secret("wandb/api-key", env_var="WANDB_API_KEY")
+                import os
+                os.environ.setdefault("WANDB_API_KEY", wandb_key)
+                wandb_logger = WandBLogger.create(
+                    enabled=True,
+                    cycle_id=str(cycle),
+                    tags=["infer"],
+                )
+            except RuntimeError:
+                click.echo("WandB credentials not found; continuing without monitoring")
 
         execute_infer_phase(
             cycle,
             num_warmup=num_warmup,
             num_samples=num_samples,
             num_chains=4,
+            wandb_logger=wandb_logger,
         )
+        wandb_logger.finish()
         click.echo("Infer phase complete.")
     except Exception as e:
-        raise click.ClickException(f"Infer phase failed: {e}")
+        raise click.ClickException(f"Infer phase failed: {e}") from e
 
 
 @click.command(name="decide-real")
@@ -173,7 +271,8 @@ def infer_real(
               help="Path to vote results XLSX file")
 @click.option("--execute", is_flag=True, default=False,
               help="Execute decision phase (without flag, validates prerequisites only)")
-def decide_real(cycle: Path, vote_xlsx: Path, execute: bool) -> None:
+@click.option("--wandb/--no-wandb", default=False, help="Enable WandB monitoring")
+def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> None:
     """Run decision layer: vote posterior + concordance + flags."""
     prereg = cycle / "prereg"
     if not (prereg / "manifest.lock").exists():
@@ -192,46 +291,102 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool) -> None:
     # Execute real decision pipeline
     click.echo("Executing decide phase...")
     try:
-        from engine.cli.pipeline_executor import write_decide_artifacts
-
-        # Load inference summary
-        summary_path = infer_dir / "inference_summary.json"
-        if not summary_path.exists():
-            raise FileNotFoundError(
-                f"Inference summary not found: {summary_path}. Run infer first."
-            )
-        inference_summary = json.loads(summary_path.read_text())
-
-        # Load vote data
-        from engine.vote.xlsx_loader import load_vote_xlsx
-
-        vote_data = load_vote_xlsx(vote_xlsx)
-        click.echo(f"Loaded vote data: {len(vote_data.rows)} rows")
-
-        # Build concordance
+        from engine.cli.pipeline_executor import _load_manifest, write_decide_artifacts
         from engine.decide.concordance import compute_concordance
+        from engine.decide.selection_bias import compute_selection_bias
+        from engine.model.inference import InferenceResult
+        from engine.monitoring.wandb_logger import WandBLogger
+        from engine.vote.bootstrap import bootstrap_vote_ranks
+        from engine.vote.loader import load_vote_data
 
+        wandb_logger = WandBLogger.create(enabled=False)
+        if wandb:
+            try:
+                from engine.cli.secrets import load_secret
+
+                wandb_key = load_secret("wandb/api-key", env_var="WANDB_API_KEY")
+                import os
+                os.environ.setdefault("WANDB_API_KEY", wandb_key)
+                wandb_logger = WandBLogger.create(
+                    enabled=True,
+                    cycle_id=str(cycle),
+                    tags=["decide"],
+                )
+            except RuntimeError:
+                click.echo("WandB credentials not found; continuing without monitoring")
+
+        # Load manifest
+        manifest = _load_manifest(prereg / "manifest.json")
+
+        # Load inference results
         lambda_samples_path = infer_dir / "lambda_samples.npy"
-        if lambda_samples_path.exists():
-            lambda_samples = np.load(lambda_samples_path)
-        else:
+        summary_path = infer_dir / "inference_summary.json"
+        if not lambda_samples_path.exists() or not summary_path.exists():
             raise FileNotFoundError(
-                f"Lambda samples not found: {lambda_samples_path}. Run infer first."
+                "Inference artifacts not found. Run infer --execute first."
             )
+        lambda_samples = np.load(lambda_samples_path)
+        summary = json.loads(summary_path.read_text())
+        entry_ids = tuple(summary.get("entry_ids", []))
 
-        entry_ids = tuple(inference_summary.get("entry_ids", []))
-        concordance = compute_concordance(
+        inference_result = InferenceResult(
             lambda_samples=lambda_samples,
             entry_ids=entry_ids,
-            vote_data=vote_data,
+            r_hat=summary.get("r_hat", {}),
+            ess=summary.get("ess", {}),
+            divergences=summary.get("divergences", 0),
+            num_warmup=summary.get("num_warmup", 1000),
+            num_samples=summary.get("num_samples", 2000),
+        )
+
+        # Load vote data and bootstrap
+        vote_data = load_vote_data(vote_xlsx)
+        click.echo(f"Loaded vote data: {vote_data.n_respondents} respondents")
+
+        vote_posterior = bootstrap_vote_ranks(
+            respondent_rankings=vote_data.rankings,
+            entry_ids=vote_data.entry_ids,
+            n_bootstrap=5000,
+            seed=manifest.prng_seed,
+        )
+
+        # Compute concordance with correct 8-parameter signature
+        concordance = compute_concordance(
+            inference_result=inference_result,
+            vote_posterior=vote_posterior,
+            tier_boundaries=_default_tier_boundaries(len(entry_ids)),
+            flag_threshold_tau=manifest.flag_threshold_tau,
+            measurable_count=len(entry_ids),
+            total_count=len(entry_ids),
+            meaningful_kappa_n=manifest.meaningful_kappa_n,
+            measurability_minimum=manifest.measurability_minimum,
+        )
+
+        wandb_logger.log_concordance(
+            kappa_median=concordance.weighted_kappa_median,
+            kappa_ci=concordance.weighted_kappa_ci,
+            measurable_count=concordance.measurable_count,
+            total_count=concordance.total_count,
+        )
+
+        # Compute selection bias
+        measurability_verdicts = {e: "measurable" for e in entry_ids}
+        selection_bias = compute_selection_bias(
+            measurability_verdicts=measurability_verdicts,
+            median_vote_ranks=vote_posterior.median_ranks,
         )
 
         # Write artifacts
         out_dir = cycle / "results"
-        write_decide_artifacts(concordance, out_dir)
+        write_decide_artifacts(
+            concordance,
+            out_dir,
+            selection_bias=selection_bias,
+        )
+        wandb_logger.finish()
         click.echo(f"Decide phase complete. Artifacts written to {out_dir}")
     except Exception as e:
-        raise click.ClickException(f"Decide phase failed: {e}")
+        raise click.ClickException(f"Decide phase failed: {e}") from e
 
 
 @click.command(name="report")

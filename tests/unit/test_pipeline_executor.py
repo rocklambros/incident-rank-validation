@@ -11,32 +11,44 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from engine.classify.cost_tracker import CostTracker
-from engine.classify.runpod_client import RunPodResponse
 from engine.classify.stage2_protocol import Stage2Classification
-from engine.schema import IncidentRecord
 
 
 class TestClassifyPhase:
     def test_stage1_routes_ambiguous_to_stage2(self) -> None:
-        from engine.cli.pipeline_executor import route_to_stage2
         from engine.classify.stub import Classification
+        from engine.cli.pipeline_executor import route_to_stage2
 
         classifications = (
-            Classification(incident_id="INC-001", entry_id="LLM01", confidence=0.8, stage=1, rationale="high"),
-            Classification(incident_id="INC-002", entry_id="LLM02", confidence=0.1, stage=1, rationale="low"),
-            Classification(incident_id="INC-003", entry_id="LLM01", confidence=0.25, stage=1, rationale="ambig"),
+            Classification(
+                incident_id="INC-001", entry_id="LLM01",
+                confidence=0.8, stage=1, rationale="high",
+            ),
+            Classification(
+                incident_id="INC-002", entry_id="LLM02",
+                confidence=0.1, stage=1, rationale="low",
+            ),
+            Classification(
+                incident_id="INC-003", entry_id="LLM01",
+                confidence=0.25, stage=1, rationale="ambig",
+            ),
         )
         ambiguous = route_to_stage2(classifications, confidence_threshold=0.3)
         assert set(ambiguous) == {"INC-002", "INC-003"}
 
     def test_merge_stage1_stage2_results(self) -> None:
-        from engine.cli.pipeline_executor import merge_classifications
         from engine.classify.stub import Classification
+        from engine.cli.pipeline_executor import merge_classifications
 
         stage1 = (
-            Classification(incident_id="INC-001", entry_id="LLM01", confidence=0.8, stage=1, rationale="high"),
-            Classification(incident_id="INC-002", entry_id="LLM02", confidence=0.1, stage=1, rationale="low"),
+            Classification(
+                incident_id="INC-001", entry_id="LLM01",
+                confidence=0.8, stage=1, rationale="high",
+            ),
+            Classification(
+                incident_id="INC-002", entry_id="LLM02",
+                confidence=0.1, stage=1, rationale="low",
+            ),
         )
         stage2 = (
             Stage2Classification(
@@ -51,12 +63,15 @@ class TestClassifyPhase:
         assert ids["INC-002"] == "LLM03"
 
     def test_classify_writes_artifacts(self, tmp_path: Path) -> None:
-        from engine.cli.pipeline_executor import write_classify_artifacts
         from engine.classify.stub import Classification, ClassificationResult
+        from engine.cli.pipeline_executor import write_classify_artifacts
 
         result = ClassificationResult(
             classifications=(
-                Classification(incident_id="INC-001", entry_id="LLM01", confidence=0.8, stage=1, rationale="test"),
+                Classification(
+                    incident_id="INC-001", entry_id="LLM01",
+                    confidence=0.8, stage=1, rationale="test",
+                ),
             ),
             classifier_version="stage1-keyword-1.0.0",
             classifier_rule_hash="abc123",
@@ -119,7 +134,7 @@ class TestInferPhase:
 class TestDecidePhase:
     def test_writes_concordance_artifacts(self, tmp_path: Path) -> None:
         from engine.cli.pipeline_executor import write_decide_artifacts
-        from engine.decide.concordance import ConcordanceResult, STANDING_CAVEAT
+        from engine.decide.concordance import STANDING_CAVEAT, ConcordanceResult
 
         concordance = ConcordanceResult(
             weighted_kappa_median=0.72,

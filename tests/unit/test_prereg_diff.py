@@ -1,7 +1,7 @@
 # tests/unit/test_prereg_diff.py
 from __future__ import annotations
 
-from engine.report.diff import PreregDiff, compute_prereg_diff
+from engine.report.diff import compute_prereg_diff
 
 
 class TestPreregDiff:
