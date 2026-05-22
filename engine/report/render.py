@@ -6,8 +6,10 @@ from dataclasses import dataclass
 from engine.decide.concordance import STANDING_CAVEAT, ConcordanceResult
 from engine.decide.measurability import MeasurabilityMap
 from engine.decide.robustness_multiplicity import RobustnessSpread
+from engine.decide.rollup import RollupResult
 from engine.decide.selection_bias import SelectionBiasDisclosure
 from engine.decide.twin_agreement import TwinAgreement
+from engine.report.diff import PreregDiff
 from engine.threats.register import get_threats_register
 
 
@@ -21,6 +23,10 @@ class ReportInputs:
     robustness: RobustnessSpread | None
     twin_agreement: TwinAgreement | None
     non_publishable: bool
+    rollup_results: tuple[RollupResult, ...] = ()
+    prereg_diff: PreregDiff | None = None
+    runpod_cost_usd: float | None = None
+    cost_ceiling_usd: float | None = None
 
 
 def render_report(inputs: ReportInputs) -> str:
@@ -81,6 +87,46 @@ def render_report(inputs: ReportInputs) -> str:
                 f"- {f.entry_id}: P(tier mismatch) = {f.probability:.2f}, "
                 f"direction = {f.direction.value}\n"
             )
+
+    # Robustness spread (R2: HANDOFF §6 control 11(g))
+    if inputs.robustness is not None:
+        lines.append("\n## Robustness\n")
+        all_specs = [inputs.robustness.primary, *inputs.robustness.robustness]
+        for sr in all_specs:
+            if sr.weighted_kappa_median is not None and sr.weighted_kappa_ci is not None:
+                lines.append(
+                    f"- {sr.spec_name}: kappa = {sr.weighted_kappa_median:.2f} "
+                    f"[{sr.weighted_kappa_ci[0]:.2f}, {sr.weighted_kappa_ci[1]:.2f}]\n"
+                )
+            else:
+                lines.append(f"- {sr.spec_name}: kappa = N/A\n")
+        spread_val = inputs.robustness.spread
+        if spread_val is not None:
+            lines.append(f"Spread: {spread_val:.3f}\n")
+        if not inputs.robustness.is_consistent_in_direction():
+            lines.append("**WARNING: Specs disagree on flag direction.**\n")
+
+    # Rollup sub-test
+    if inputs.rollup_results:
+        lines.append("\n## Rollup Sub-Test\n")
+        for r in inputs.rollup_results:
+            lines.append(
+                f"- {r.child_entry_id} (parent: {r.parent_entry_id}): "
+                f"{r.verdict.value}, P(distinct cluster) = {r.p_distinct_cluster:.2f}, "
+                f"ratio = {r.ratio_median:.2f}\n"
+            )
+
+    # Pre-registration diff
+    if inputs.prereg_diff is not None:
+        lines.append("\n" + inputs.prereg_diff.to_markdown())
+
+    # RunPod cost
+    if inputs.runpod_cost_usd is not None:
+        lines.append("\n## Stage-2 Cost\n")
+        lines.append(
+            f"RunPod actual: ${inputs.runpod_cost_usd:.2f} / "
+            f"${inputs.cost_ceiling_usd:.2f} ceiling\n"
+        )
 
     lines.append("\n## Threats to Validity\n")
     for t in get_threats_register():

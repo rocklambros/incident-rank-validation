@@ -58,3 +58,23 @@ class TestReproductionBundle:
     def test_json_ends_with_newline(self) -> None:
         bundle = _make_bundle()
         assert bundle.to_json().endswith("\n")
+
+    def test_extended_bundle_round_trip(self, tmp_path: Path) -> None:
+        b = ReproductionBundle(
+            cycle_id="2026",
+            engine_version="1.0.0",
+            snapshot_hash="snap123",
+            manifest_hash="man456",
+            lockfile_hash="lock789",
+            provenance={
+                "stage2_manifest_hash": "s2hash",
+                "calibration_hash": "calhash",
+                "vote_data_hash": "votehash",
+            },
+        )
+        path = tmp_path / "bundle.json"
+        b.write(path)
+        loaded = ReproductionBundle.read(path)
+        assert loaded.provenance["stage2_manifest_hash"] == "s2hash"
+        assert loaded.provenance["calibration_hash"] == "calhash"
+        assert loaded.provenance["vote_data_hash"] == "votehash"

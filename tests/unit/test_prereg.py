@@ -250,6 +250,9 @@ class TestLock:
             "classifier_rule_hash": "mutated_hash",
             "rubric_hash": "mutated_rubric_hash",
             "post_hoc_register_path": "mutated/path.jsonl",
+            "rollup_threshold": 0.99,
+            "rollup_p_supported": 0.5,
+            "rollup_p_contradicted": 0.5,
         }
 
         manifest_fields = {f.name for f in fields(m)}

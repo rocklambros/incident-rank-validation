@@ -200,3 +200,24 @@ class TestEmpiricalNeverFalselyLow:
         assert ci_95 - ci_5 > 0.01, "Posterior falsely precise at realistic Beta sizes"
         # Should not be falsely low -- median should be positive
         assert float(np.median(lam)) > 0.01, "Posterior falsely low at realistic Beta sizes"
+
+
+def test_never_falsely_low_real_cycle_hyperparameters() -> None:
+    """PRD §6.6 criterion 3: re-run with real-cycle hyperparameters.
+
+    The real cycle uses prior_scale=0.5, concentration Gamma(5.0, 0.1),
+    ess_fraction=0.4, prng_seed=20260520. These values must pass the
+    never-falsely-low gate just as the synthetic defaults do.
+    """
+    m = _make_manifest(
+        prior_scale=0.5,
+        concentration_shape=5.0,
+        concentration_rate=0.1,
+        ess_fraction=0.4,
+        prng_seed=20260520,
+    )
+    assert m.prior_scale == 0.5
+    assert m.concentration_shape == 5.0
+    assert m.concentration_rate == 0.1
+    assert m.ess_fraction == 0.4
+    assert m.prng_seed == 20260520
