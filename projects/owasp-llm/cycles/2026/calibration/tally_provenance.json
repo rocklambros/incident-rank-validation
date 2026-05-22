@@ -1,0 +1,10 @@
+{
+  "engine_version": "1.1.0",
+  "input_hashes": {
+    "batches_rubric_hash": "a9f4592c2ebcc2eddfcef52ef3ec70b9afc604c95d1b7ab3d49259f01fc90911"
+  },
+  "manifest_lock_hash": "125c9d8b742f4a773011ab027358eaf7a2d9d1a059ba30ab017824e1a8ed1e09",
+  "output_hash": "7e18566248498b9105dea5d12103818cdcec303a51fc9bcf17e1bc300041b3f9",
+  "stage_name": "tally",
+  "timestamp": "2026-05-22T18:40:09.275702+00:00"
+}

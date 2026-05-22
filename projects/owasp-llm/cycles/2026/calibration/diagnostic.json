@@ -1,0 +1,227 @@
+{
+  "entries_with_both_frames": 11,
+  "entries_recall_only": 6,
+  "entries_no_data": 3,
+  "entry_reports": {
+    "LLM01": {
+      "has_precision_data": true,
+      "has_recall_data": true,
+      "precision_ci_width": 0.10181641159033061,
+      "recall_ci_width": 0.08090283488621934,
+      "recall_sample_size": 200,
+      "precision_sample_size": 40,
+      "min_fold_count": 8,
+      "flag": "adequate",
+      "reason": "adequate"
+    },
+    "LLM02": {
+      "has_precision_data": true,
+      "has_recall_data": true,
+      "precision_ci_width": 0.31330890430910646,
+      "recall_ci_width": 0.0750843468423654,
+      "recall_sample_size": 200,
+      "precision_sample_size": 24,
+      "min_fold_count": 4,
+      "flag": "wide",
+      "reason": "wide: small-sample (n=24)"
+    },
+    "LLM03": {
+      "has_precision_data": true,
+      "has_recall_data": true,
+      "precision_ci_width": 0.3573918645490397,
+      "recall_ci_width": 0.06133983486760751,
+      "recall_sample_size": 200,
+      "precision_sample_size": 9,
+      "min_fold_count": 1,
+      "flag": "wide",
+      "reason": "wide: small-sample (n=9)"
+    },
+    "LLM04": {
+      "has_precision_data": false,
+      "has_recall_data": true,
+      "precision_ci_width": null,
+      "recall_ci_width": 0.06133983486760751,
+      "recall_sample_size": 200,
+      "precision_sample_size": 0,
+      "min_fold_count": 40,
+      "flag": "no-data",
+      "reason": "no-data: frame-blind"
+    },
+    "LLM05": {
+      "has_precision_data": true,
+      "has_recall_data": true,
+      "precision_ci_width": 0.23182274180262297,
+      "recall_ci_width": 0.0686294215303059,
+      "recall_sample_size": 200,
+      "precision_sample_size": 40,
+      "min_fold_count": 8,
+      "flag": "adequate",
+      "reason": "adequate"
+    },
+    "LLM06": {
+      "has_precision_data": false,
+      "has_recall_data": true,
+      "precision_ci_width": null,
+      "recall_ci_width": 0.09563819618676941,
+      "recall_sample_size": 200,
+      "precision_sample_size": 0,
+      "min_fold_count": 40,
+      "flag": "wide",
+      "reason": "wide: recall-frame-only"
+    },
+    "LLM07": {
+      "has_precision_data": true,
+      "has_recall_data": true,
+      "precision_ci_width": 0.6146444226275198,
+      "recall_ci_width": 0.04257760978072702,
+      "recall_sample_size": 200,
+      "precision_sample_size": 2,
+      "min_fold_count": 0,
+      "flag": "wide",
+      "reason": "wide: small-sample (n=2)"
+    },
+    "LLM08": {
+      "has_precision_data": false,
+      "has_recall_data": true,
+      "precision_ci_width": null,
+      "recall_ci_width": 0.028717428075380195,
+      "recall_sample_size": 200,
+      "precision_sample_size": 0,
+      "min_fold_count": 40,
+      "flag": "no-data",
+      "reason": "no-data: frame-blind"
+    },
+    "LLM09": {
+      "has_precision_data": true,
+      "has_recall_data": true,
+      "precision_ci_width": 0.12546571630661496,
+      "recall_ci_width": 0.11104238217485254,
+      "recall_sample_size": 200,
+      "precision_sample_size": 40,
+      "min_fold_count": 8,
+      "flag": "adequate",
+      "reason": "adequate"
+    },
+    "LLM10": {
+      "has_precision_data": false,
+      "has_recall_data": true,
+      "precision_ci_width": null,
+      "recall_ci_width": 0.028717428075380195,
+      "recall_sample_size": 200,
+      "precision_sample_size": 0,
+      "min_fold_count": 40,
+      "flag": "no-data",
+      "reason": "no-data: frame-blind"
+    },
+    "NEW-PMP": {
+      "has_precision_data": true,
+      "has_recall_data": true,
+      "precision_ci_width": 0.4405135100339297,
+      "recall_ci_width": 0.04257760978072702,
+      "recall_sample_size": 200,
+      "precision_sample_size": 4,
+      "min_fold_count": 0,
+      "flag": "wide",
+      "reason": "wide: small-sample (n=4)"
+    },
+    "NEW-MTIE": {
+      "has_precision_data": false,
+      "has_recall_data": true,
+      "precision_ci_width": null,
+      "recall_ci_width": 0.028717428075380195,
+      "recall_sample_size": 200,
+      "precision_sample_size": 0,
+      "min_fold_count": 40,
+      "flag": "wide",
+      "reason": "wide: recall-frame-only"
+    },
+    "NEW-MA": {
+      "has_precision_data": true,
+      "has_recall_data": true,
+      "precision_ci_width": 0.7510726367309174,
+      "recall_ci_width": 0.10382332738582624,
+      "recall_sample_size": 200,
+      "precision_sample_size": 1,
+      "min_fold_count": 0,
+      "flag": "wide",
+      "reason": "wide: small-sample (n=1)"
+    },
+    "NEW-ITSCD": {
+      "has_precision_data": false,
+      "has_recall_data": true,
+      "precision_ci_width": null,
+      "recall_ci_width": 0.028717428075380195,
+      "recall_sample_size": 200,
+      "precision_sample_size": 0,
+      "min_fold_count": 40,
+      "flag": "wide",
+      "reason": "wide: recall-frame-only"
+    },
+    "NEW-WLA": {
+      "has_precision_data": true,
+      "has_recall_data": true,
+      "precision_ci_width": 0.6146444226275198,
+      "recall_ci_width": 0.13929513370853183,
+      "recall_sample_size": 200,
+      "precision_sample_size": 2,
+      "min_fold_count": 0,
+      "flag": "wide",
+      "reason": "wide: small-sample (n=2)"
+    },
+    "NEW-MSDA": {
+      "has_precision_data": true,
+      "has_recall_data": true,
+      "precision_ci_width": 0.7510726367309174,
+      "recall_ci_width": 0.028717428075380195,
+      "recall_sample_size": 200,
+      "precision_sample_size": 1,
+      "min_fold_count": 0,
+      "flag": "wide",
+      "reason": "wide: small-sample (n=1)"
+    },
+    "ROLL-CMSB": {
+      "has_precision_data": false,
+      "has_recall_data": true,
+      "precision_ci_width": null,
+      "recall_ci_width": 0.04257760978072702,
+      "recall_sample_size": 200,
+      "precision_sample_size": 0,
+      "min_fold_count": 40,
+      "flag": "wide",
+      "reason": "wide: recall-frame-only"
+    },
+    "ROLL-LAPTF": {
+      "has_precision_data": false,
+      "has_recall_data": true,
+      "precision_ci_width": null,
+      "recall_ci_width": 0.028717428075380195,
+      "recall_sample_size": 200,
+      "precision_sample_size": 0,
+      "min_fold_count": 40,
+      "flag": "wide",
+      "reason": "wide: recall-frame-only"
+    },
+    "ROLL-SICG": {
+      "has_precision_data": true,
+      "has_recall_data": true,
+      "precision_ci_width": 0.6146444226275197,
+      "recall_ci_width": 0.04257760978072702,
+      "recall_sample_size": 200,
+      "precision_sample_size": 2,
+      "min_fold_count": 0,
+      "flag": "wide",
+      "reason": "wide: small-sample (n=2)"
+    },
+    "ROLL-CFAS": {
+      "has_precision_data": false,
+      "has_recall_data": true,
+      "precision_ci_width": null,
+      "recall_ci_width": 0.028717428075380195,
+      "recall_sample_size": 200,
+      "precision_sample_size": 0,
+      "min_fold_count": 40,
+      "flag": "wide",
+      "reason": "wide: recall-frame-only"
+    }
+  }
+}

@@ -1,0 +1,264 @@
+{
+  "total_coded": 365,
+  "amendments_applied": 0,
+  "precision_counts": {
+    "NEW-MSDA::security": {
+      "true_positives": 1,
+      "false_positives": 0,
+      "total": 1
+    },
+    "LLM03::security": {
+      "true_positives": 8,
+      "false_positives": 1,
+      "total": 9
+    },
+    "LLM02::security": {
+      "true_positives": 14,
+      "false_positives": 10,
+      "total": 24
+    },
+    "LLM09::security": {
+      "true_positives": 38,
+      "false_positives": 2,
+      "total": 40
+    },
+    "LLM01::security": {
+      "true_positives": 39,
+      "false_positives": 1,
+      "total": 40
+    },
+    "NEW-WLA::security": {
+      "true_positives": 2,
+      "false_positives": 0,
+      "total": 2
+    },
+    "NEW-MA::security": {
+      "true_positives": 1,
+      "false_positives": 0,
+      "total": 1
+    },
+    "LLM05::security": {
+      "true_positives": 28,
+      "false_positives": 12,
+      "total": 40
+    },
+    "NEW-PMP::security": {
+      "true_positives": 4,
+      "false_positives": 0,
+      "total": 4
+    },
+    "ROLL-SICG::security": {
+      "true_positives": 0,
+      "false_positives": 2,
+      "total": 2
+    },
+    "LLM07::security": {
+      "true_positives": 2,
+      "false_positives": 0,
+      "total": 2
+    }
+  },
+  "recall_counts": {
+    "LLM05::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM10::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM09::ai-harm": {
+      "true_positives": 3,
+      "false_negatives": 97,
+      "total_in_sample": 100
+    },
+    "NEW-ITSCD::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "ROLL-CMSB::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM06::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "ROLL-SICG::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "ROLL-LAPTF::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM04::ai-harm": {
+      "true_positives": 3,
+      "false_negatives": 97,
+      "total_in_sample": 100
+    },
+    "NEW-MTIE::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "NEW-PMP::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "NEW-WLA::ai-harm": {
+      "true_positives": 1,
+      "false_negatives": 99,
+      "total_in_sample": 100
+    },
+    "NEW-MA::ai-harm": {
+      "true_positives": 11,
+      "false_negatives": 89,
+      "total_in_sample": 100
+    },
+    "ROLL-CFAS::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM01::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM08::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM07::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM03::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM02::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "NEW-MSDA::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM05::security": {
+      "true_positives": 4,
+      "false_negatives": 96,
+      "total_in_sample": 100
+    },
+    "LLM10::security": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM09::security": {
+      "true_positives": 13,
+      "false_negatives": 87,
+      "total_in_sample": 100
+    },
+    "NEW-ITSCD::security": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "ROLL-CMSB::security": {
+      "true_positives": 1,
+      "false_negatives": 99,
+      "total_in_sample": 100
+    },
+    "LLM06::security": {
+      "true_positives": 9,
+      "false_negatives": 91,
+      "total_in_sample": 100
+    },
+    "ROLL-SICG::security": {
+      "true_positives": 1,
+      "false_negatives": 99,
+      "total_in_sample": 100
+    },
+    "ROLL-LAPTF::security": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM04::security": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "NEW-MTIE::security": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "NEW-PMP::security": {
+      "true_positives": 1,
+      "false_negatives": 99,
+      "total_in_sample": 100
+    },
+    "NEW-WLA::security": {
+      "true_positives": 24,
+      "false_negatives": 76,
+      "total_in_sample": 100
+    },
+    "NEW-MA::security": {
+      "true_positives": 4,
+      "false_negatives": 96,
+      "total_in_sample": 100
+    },
+    "ROLL-CFAS::security": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM01::security": {
+      "true_positives": 6,
+      "false_negatives": 94,
+      "total_in_sample": 100
+    },
+    "LLM08::security": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM07::security": {
+      "true_positives": 1,
+      "false_negatives": 99,
+      "total_in_sample": 100
+    },
+    "LLM03::security": {
+      "true_positives": 3,
+      "false_negatives": 97,
+      "total_in_sample": 100
+    },
+    "LLM02::security": {
+      "true_positives": 5,
+      "false_negatives": 95,
+      "total_in_sample": 100
+    },
+    "NEW-MSDA::security": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    }
+  },
+  "rollup_counts": {}
+}

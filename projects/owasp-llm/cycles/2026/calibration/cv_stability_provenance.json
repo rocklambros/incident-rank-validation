@@ -1,0 +1,10 @@
+{
+  "engine_version": "1.1.0",
+  "input_hashes": {
+    "calibrate": "1b26185f47344a38874e402acc4c4fb9e91f11ad438d3eed8c801c115d24775e"
+  },
+  "manifest_lock_hash": "125c9d8b742f4a773011ab027358eaf7a2d9d1a059ba30ab017824e1a8ed1e09",
+  "output_hash": "1d28cb2fdd9cfd20eed0299b29f93da0dab613b036e474dfa21c1ab43b0f5c46",
+  "stage_name": "cv-stability",
+  "timestamp": "2026-05-22T18:40:28.837245+00:00"
+}
