@@ -34,6 +34,9 @@ dev = [
 #   protobuf 4.25.9 (CVE-2026-0994, HIGH, recursion bypass) — pinned by opentelemetry-proto v1.25.0 via semgrep==1.99.0
 # Both require multi-package upgrades (cyclonedx-bom + semgrep) and re-validation; tracked as supply-chain residuals.
 
+[project.optional-dependencies]
+monitoring = ["wandb>=0.19,<1.0"]
+
 [tool.uv]
 package = true
 
@@ -56,6 +59,10 @@ packages = ["engine", "tests"]
 
 [[tool.mypy.overrides]]
 module = ["scipy.*", "jax.*", "jaxlib.*", "numpyro.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["wandb.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
