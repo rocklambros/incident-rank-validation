@@ -12,6 +12,7 @@ from engine.cli.calibration import (
     cal_sample,
     cal_tally,
 )
+from engine.cli.pipeline import classify_real, decide_real, infer_real, report_cmd, repro_bundle_cmd
 from engine.cli.rubric import freeze_rubric_cmd, validate_rubric_cmd
 from engine.cli.snapshot import vendor_snapshot_cmd
 
@@ -31,8 +32,6 @@ cli.add_command(cal_generate_batches)
 cli.add_command(cal_tally)
 cli.add_command(cal_calibrate)
 cli.add_command(cal_cv_stability)
-
-from engine.cli.pipeline import classify_real, infer_real, decide_real, report_cmd, repro_bundle_cmd
 
 cli.add_command(classify_real)
 cli.add_command(infer_real)

@@ -8,12 +8,19 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import numpy.typing as npt
 
 from engine.classify.stage2_protocol import Stage2Classification
 from engine.classify.stub import Classification, ClassificationResult
+
+if TYPE_CHECKING:
+    from engine.calibrate.beta import Calibration
+    from engine.decide.concordance import ConcordanceResult
+    from engine.model.inference import InferenceResult
+    from engine.prereg.manifest import PreregManifest
 
 
 def route_to_stage2(
@@ -95,7 +102,7 @@ def write_classify_artifacts(
         )
 
 
-def _load_calibration(cal_path: Path) -> "Calibration":
+def _load_calibration(cal_path: Path) -> Calibration:
     """Deserialize calibration posteriors from JSON."""
     from engine.calibrate.beta import BetaPosterior, Calibration
 
@@ -117,7 +124,7 @@ def _load_calibration(cal_path: Path) -> "Calibration":
     return Calibration(recall=recall, precision=precision)
 
 
-def _load_manifest(manifest_path: Path) -> "PreregManifest":
+def _load_manifest(manifest_path: Path) -> PreregManifest:
     """Load PreregManifest from JSON file."""
     import dataclasses
 
@@ -262,7 +269,7 @@ def execute_infer_phase(
 
 
 def write_infer_artifacts(
-    result: "InferenceResult",
+    result: InferenceResult,
     out_dir: Path,
 ) -> None:
     from engine.model.inference import InferenceResult  # noqa: F401
@@ -300,7 +307,7 @@ def write_nuts_failure(
 
 
 def write_decide_artifacts(
-    concordance: "ConcordanceResult",
+    concordance: ConcordanceResult,
     out_dir: Path,
     rollup_results: tuple = (),
     selection_bias: object | None = None,
@@ -313,7 +320,11 @@ def write_decide_artifacts(
 
     conc_dict = {
         "weighted_kappa_median": concordance.weighted_kappa_median,
-        "weighted_kappa_ci": list(concordance.weighted_kappa_ci) if concordance.weighted_kappa_ci else None,
+        "weighted_kappa_ci": (
+            list(concordance.weighted_kappa_ci)
+            if concordance.weighted_kappa_ci
+            else None
+        ),
         "measurable_count": concordance.measurable_count,
         "total_count": concordance.total_count,
         "coverage_ratio": concordance.coverage_ratio,

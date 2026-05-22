@@ -11,8 +11,6 @@ from pathlib import Path
 import click
 import numpy as np
 
-from engine.classify.stage2_manifest import Stage2Manifest
-
 
 def _default_tier_boundaries(n_entries: int) -> tuple[int, ...]:
     """Default tier boundaries: split entries into 3 tiers."""
@@ -40,7 +38,9 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
 
     vote_dir = cycle / "vote"
     if vote_dir.exists() and any(vote_dir.iterdir()):
-        raise click.ClickException("Vote data found during classify phase — vote enters only at decide")
+        raise click.ClickException(
+            "Vote data found during classify phase — vote enters only at decide"
+        )
 
     # R3: calibration posteriors must exist before real classification
     cal_path = cycle / "calibrate" / "posteriors.json"
@@ -50,7 +50,8 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
             "Run the gold-set calibration pipeline (Plan 4) first."
         )
 
-    from engine.classify.classifier import build_rules_from_rubric, classify_real as _classify
+    from engine.classify.classifier import build_rules_from_rubric
+    from engine.classify.classifier import classify_real as _classify
     from engine.prereg.rubric_io import read_rubric
 
     rubric = read_rubric(prereg / "rubric.json")
@@ -161,10 +162,14 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
         # Write artifacts
         out_dir = cycle / "classify"
         incident_strata = {inc.id: inc.corpus_stratum for inc in incidents}
-        write_classify_artifacts(result, out_dir, stage2_results=stage2_results, incident_strata=incident_strata)
+        write_classify_artifacts(
+            result, out_dir,
+            stage2_results=stage2_results,
+            incident_strata=incident_strata,
+        )
         click.echo(f"Classify phase complete. Artifacts written to {out_dir}")
     except Exception as e:
-        raise click.ClickException(f"Classify phase failed: {e}")
+        raise click.ClickException(f"Classify phase failed: {e}") from e
 
 
 @click.command(name="infer-real")
@@ -215,7 +220,10 @@ def infer_real(
     os.environ.setdefault("JAX_ENABLE_X64", "true")
 
     if not execute:
-        click.echo("Infer phase: prerequisites satisfied. Run with --execute to start NUTS inference.")
+        click.echo(
+            "Infer phase: prerequisites satisfied."
+            " Run with --execute to start NUTS inference."
+        )
         return
 
     # Execute real inference pipeline
@@ -250,7 +258,7 @@ def infer_real(
         wandb_logger.finish()
         click.echo("Infer phase complete.")
     except Exception as e:
-        raise click.ClickException(f"Infer phase failed: {e}")
+        raise click.ClickException(f"Infer phase failed: {e}") from e
 
 
 @click.command(name="decide-real")
@@ -279,7 +287,7 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
     # Execute real decision pipeline
     click.echo("Executing decide phase...")
     try:
-        from engine.cli.pipeline_executor import write_decide_artifacts, _load_manifest
+        from engine.cli.pipeline_executor import _load_manifest, write_decide_artifacts
         from engine.decide.concordance import compute_concordance
         from engine.decide.selection_bias import compute_selection_bias
         from engine.model.inference import InferenceResult
@@ -374,7 +382,7 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
         wandb_logger.finish()
         click.echo(f"Decide phase complete. Artifacts written to {out_dir}")
     except Exception as e:
-        raise click.ClickException(f"Decide phase failed: {e}")
+        raise click.ClickException(f"Decide phase failed: {e}") from e
 
 
 @click.command(name="report")

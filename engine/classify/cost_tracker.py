@@ -39,7 +39,11 @@ class CostTracker:
         return sum(j.execution_time_ms for j in self._jobs)
 
     def record(self, job_id: str, cost_usd: float, execution_time_ms: float) -> None:
-        self._jobs.append(JobRecord(job_id=job_id, cost_usd=cost_usd, execution_time_ms=execution_time_ms))
+        self._jobs.append(JobRecord(
+            job_id=job_id,
+            cost_usd=cost_usd,
+            execution_time_ms=execution_time_ms,
+        ))
 
     def check_or_abort(self) -> None:
         if self.ceiling_exceeded:
@@ -72,7 +76,11 @@ class CostTracker:
             "total_execution_time_ms": self.total_execution_time_ms,
             "ceiling_exceeded": self.ceiling_exceeded,
             "jobs": [
-                {"job_id": j.job_id, "cost_usd": j.cost_usd, "execution_time_ms": j.execution_time_ms}
+                {
+                    "job_id": j.job_id,
+                    "cost_usd": j.cost_usd,
+                    "execution_time_ms": j.execution_time_ms,
+                }
                 for j in self._jobs
             ],
         }

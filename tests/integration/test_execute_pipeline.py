@@ -163,9 +163,12 @@ def test_full_classify_infer_pipeline(tmp_path: Path) -> None:
     # May fail on diagnostics with so few samples — that's expected
     # The key test is that it gets past the wiring bugs
     if result.exit_code != 0:
-        assert "diagnostics" in result.output.lower() or "r-hat" in result.output.lower() or "divergen" in result.output.lower(), (
-            f"infer failed with unexpected error: {result.output}"
-        )
+        lower_out = result.output.lower()
+        assert (
+            "diagnostics" in lower_out
+            or "r-hat" in lower_out
+            or "divergen" in lower_out
+        ), f"infer failed with unexpected error: {result.output}"
     else:
         lambda_path = cycle / "infer" / "lambda_samples.npy"
         assert lambda_path.exists(), "lambda_samples.npy not created"

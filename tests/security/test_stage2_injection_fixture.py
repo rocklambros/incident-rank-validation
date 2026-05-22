@@ -7,8 +7,12 @@ Stage-2 exists but fails injection checks, and turn green once it passes.
 
 from __future__ import annotations
 
+from dataclasses import dataclass as _stage2_dataclass
+
 import pytest
 
+from engine.classify.runpod_client import RunPodResponse as _RunPodResponse
+from engine.classify.stage2_prompt import build_prompt
 from engine.classify.stub import classify_stub
 from engine.schema import IncidentRecord
 
@@ -79,8 +83,6 @@ def test_stage2_rejects_injection(payload: str) -> None:
     protocol.classify(inc, rubric_hash="abc123")
 
 
-from engine.classify.stage2_prompt import build_prompt
-
 
 def test_braces_in_incident_text_do_not_crash() -> None:
     """F11: incident text with {braces} must not crash str.format()."""
@@ -91,10 +93,6 @@ def test_braces_in_incident_text_do_not_crash() -> None:
     assert "{curly_braces}" in prompt
     assert "positional" in prompt
 
-
-from dataclasses import dataclass as _stage2_dataclass
-
-from engine.classify.runpod_client import RunPodResponse as _RunPodResponse
 
 
 @_stage2_dataclass
