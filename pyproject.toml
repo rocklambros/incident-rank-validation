@@ -1,6 +1,6 @@
 [project]
 name = "incident-rank-validation"
-version = "0.3.0"
+version = "1.0.0"
 description = "Engine for validating ranked taxonomies against incident corpora."
 requires-python = ">=3.12,<3.13"
 license = { text = "Apache-2.0" }
@@ -14,6 +14,8 @@ dependencies = [
   "click==8.1.7",
   "tomli==2.0.2",
   "tomli-w==1.1.0",
+  "httpx>=0.27,<1.0",
+  "openpyxl>=3.1,<4.0",
 ]
 
 [dependency-groups]
@@ -65,5 +67,5 @@ filterwarnings = [
   "ignore::DeprecationWarning:jax",
   "ignore::FutureWarning:numpyro",
 ]
-markers = ["slow: NUTS / e2e tests"]
+markers = ["slow: NUTS / e2e tests", "timeout: per-test wall-clock timeout hint (seconds)"]
 env = ["JAX_ENABLE_X64=true", "JAX_PLATFORM_NAME=cpu"]

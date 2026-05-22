@@ -54,6 +54,9 @@ class PreregManifest:
     classifier_rule_hash: str | None  # hash of Stage-1 classifier rules
     rubric_hash: str | None  # hash of frozen rubric (Plan 3)
     post_hoc_register_path: str | None  # path to Merkle-chained register
+    rollup_threshold: float = 0.01
+    rollup_p_supported: float = 0.8
+    rollup_p_contradicted: float = 0.2
 
     @property
     def non_publishable(self) -> bool:
