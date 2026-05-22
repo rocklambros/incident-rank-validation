@@ -14,13 +14,21 @@
   "incidents": [
     {
       "incident_id": "INC-04067",
-      "text": "OpenAI GPT-4 system prompt extraction toolkit \u2014 systematic prompt leakage Security researchers published a comprehensive toolkit for extracting system prompts from GPT-4 and other production LLMs. The toolkit combined multi-turn conversation steering, encoding tricks (Base64, ROT13), and role-play scenarios to reliably extract complete system prompts from deployed applications. The research demonstrated that prompt confidentiality is fundamentally broken as a security control. System prompt confidentiality proven unreliable; IP exposure for prompt-dependent applications; forces architectural redesign away from prompt-as-security",
-      "labels": null
+      "text": "OpenAI GPT-4 system prompt extraction toolkit — systematic prompt leakage Security researchers published a comprehensive toolkit for extracting system prompts from GPT-4 and other production LLMs. The toolkit combined multi-turn conversation steering, encoding tricks (Base64, ROT13), and role-play scenarios to reliably extract complete system prompts from deployed applications. The research demonstrated that prompt confidentiality is fundamentally broken as a security control. System prompt confidentiality proven unreliable; IP exposure for prompt-dependent applications; forces architectural redesign away from prompt-as-security",
+      "labels": [
+        "LLM07",
+        "LLM01"
+      ],
+      "notes": "TP. System prompt extraction outcome → LLM07. Mechanism uses 'encoding tricks (Base64, ROT13)' and 'role-play scenarios' = jailbreak/injection vectors → LLM01. LLM07 exclusions allow this co-label: 'Prompt injection as the extraction mechanism (→ LLM01 for the vector)' — vector LLM01, outcome LLM07."
     },
     {
       "incident_id": "INC-03225",
       "text": "SPE-LLM: System Prompt Extraction Attacks and Defenses Systematic framework for evaluating prompt-extraction attacks against state-of-the-art LLMs, releasing adversarial queries that reliably extract system prompts and benchmarking defenses.",
-      "labels": null
+      "labels": [
+        "LLM07",
+        "LLM01"
+      ],
+      "notes": "TP. Same pattern as INC-04067: 'adversarial queries' = injection vector (LLM01), outcome is system prompt extraction (LLM07). Co-label."
     }
   ]
 }
