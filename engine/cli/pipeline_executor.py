@@ -53,6 +53,7 @@ def write_classify_artifacts(
     result: ClassificationResult,
     out_dir: Path,
     stage2_results: tuple[Stage2Classification, ...] = (),
+    incident_strata: dict[str, str] | None = None,
 ) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -63,6 +64,7 @@ def write_classify_artifacts(
             "confidence": c.confidence,
             "stage": c.stage,
             "rationale": c.rationale,
+            "stratum": (incident_strata or {}).get(c.incident_id, "default"),
         }
         for c in result.classifications
     ]
