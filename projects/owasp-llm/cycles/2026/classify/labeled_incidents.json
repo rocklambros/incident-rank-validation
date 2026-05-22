@@ -1,0 +1,5618 @@
+[
+  {
+    "incident_id": "INC-04490",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03529",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04560",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04787",
+    "entry_id": "LLM02",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03876",
+    "entry_id": "LLM03",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03876",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03997",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05001",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04715",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04715",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05172",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04574",
+    "entry_id": "LLM10",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04771",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01288",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04208",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03810",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03972",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03967",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03687",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04207",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05159",
+    "entry_id": "LLM09",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03004",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03247",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03570",
+    "entry_id": "LLM10",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03444",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03740",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03815",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03582",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03572",
+    "entry_id": "LLM04",
+    "confidence": 0.125,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.125",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04067",
+    "entry_id": "LLM07",
+    "confidence": 0.16666666666666666,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.167",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03807",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03807",
+    "entry_id": "LLM03",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03758",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03668",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04263",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04721",
+    "entry_id": "LLM03",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04070",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02590",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00924",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00806",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01340",
+    "entry_id": "LLM03",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01429",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00834",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00834",
+    "entry_id": "LLM03",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00198",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01064",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03210",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02190",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02447",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02629",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02450",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02636",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03334",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03010",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02700",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02613",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02997",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00904",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00833",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01391",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00860",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00860",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00627",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01637",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01297",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00827",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01378",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00739",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02813",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02686",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02994",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03304",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02514",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02964",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02455",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02512",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02435",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02321",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02324",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03376",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03376",
+    "entry_id": "NEW-PMP",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02878",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02793",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04720",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04720",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04629",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03531",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04536",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03639",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04675",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04043",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02206",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03239",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04250",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05609",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-07400",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05128",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05352",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05068",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04496",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04237",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03832",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04351",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04974",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04530",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03481",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03546",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02219",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02963",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02926",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02787",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02996",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02640",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02408",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03228",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03227",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04090",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01776",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01785",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04491",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02382",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00810",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02995",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00825",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03650",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02342",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03288",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03534",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05060",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04975",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04474",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04795",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04962",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03873",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03587",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03786",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04666",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04727",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04770",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04669",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04735",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04618",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04626",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03593",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03445",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03557",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03917",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03607",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04680",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04499",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04913",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04646",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03446",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03906",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04991",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04706",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-07506",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04976",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03225",
+    "entry_id": "LLM07",
+    "confidence": 0.16666666666666666,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.167",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03355",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03275",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03278",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01179",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02857",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03918",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03892",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03595",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02775",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03615",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04326",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04148",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03556",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04643",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02189",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03011",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04383",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03784",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02828",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03863",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02852",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02484",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03697",
+    "entry_id": "LLM01",
+    "confidence": 0.3,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.300",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01825",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01825",
+    "entry_id": "LLM03",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01589",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01599",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02841",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02841",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04827",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04827",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04828",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04555",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04083",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04082",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03586",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04105",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04220",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04320",
+    "entry_id": "LLM10",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02464",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02924",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02923",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03233",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02646",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04719",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03936",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03937",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03934",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03944",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03935",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02800",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02802",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04763",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04762",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04013",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04011",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04014",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04015",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04016",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04458",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04457",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03833",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03837",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04058",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04057",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04959",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02363",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04002",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03999",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03574",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04333",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04556",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03663",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04061",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02469",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01434",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02354",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01327",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01290",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01166",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03752",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01665",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00971",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01682",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00990",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00993",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01302",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01522",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00856",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01188",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00644",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01882",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01805",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01805",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01353",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01650",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01511",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01667",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01512",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00847",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01596",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00015",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01572",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00020",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01488",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01131",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01131",
+    "entry_id": "ROLL-SICG",
+    "confidence": 0.125,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.125",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00816",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00053",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01676",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00992",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01389",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01622",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01623",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01019",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00601",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00629",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00688",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01331",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02120",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01910",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00999",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00017",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00843",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00844",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01311",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01312",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01016",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01020",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01018",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01022",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01024",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01025",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01026",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01879",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01894",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01293",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01294",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01772",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02051",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01877",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01878",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01880",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01351",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01344",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01274",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01559",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01000",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01055",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00670",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00669",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01388",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00972",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01197",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01510",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00028",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00741",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01555",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01554",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01726",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01566",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00692",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01674",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01668",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01675",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01088",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01645",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01139",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01646",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01301",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01300",
+    "entry_id": "LLM03",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01300",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01647",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01644",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01608",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00012",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00686",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01332",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01333",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00831",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01896",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00870",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01023",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01587",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02050",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00898",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01804",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01804",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01806",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01346",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02091",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02089",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02090",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02086",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01515",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01680",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00024",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00804",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01460",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00005",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00023",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00011",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00004",
+    "entry_id": "LLM03",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00004",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00006",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01486",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01487",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02062",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00007",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01602",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01602",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00014",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00014",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01192",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01193",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01194",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01603",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00659",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01713",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01714",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01762",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00869",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01777",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01604",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00937",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01767",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01132",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01133",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01292",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01773",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01588",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01384",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01100",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01458",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01483",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01484",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01475",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01485",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01337",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00868",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01890",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00628",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00685",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01381",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01291",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01345",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00003",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00013",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01552",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01470",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01562",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01561",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02872",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02872",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03271",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02948",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02481",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02807",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02712",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02716",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02702",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02711",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02701",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02714",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02715",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02710",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02718",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02708",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02704",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02487",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02528",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02876",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02486",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03295",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02988",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02823",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02729",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02475",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02476",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02477",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02730",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02136",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02862",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02567",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02474",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02474",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02570",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02586",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02584",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02583",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02833",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02915",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02933",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02155",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02155",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02154",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02154",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03186",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03206",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02588",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02830",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02527",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02130",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02843",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02843",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02183",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02858",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02684",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02457",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02754",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03289",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02127",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02473",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02417",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02416",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02418",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02576",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02844",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02694",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03183",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02366",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02612",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02877",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03179",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02134",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02134",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02953",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02816",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02931",
+    "entry_id": "LLM10",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03015",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02652",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03269",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02161",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02338",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02832",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02771",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02771",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03215",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02511",
+    "entry_id": "ROLL-SICG",
+    "confidence": 0.125,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.125",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03343",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02834",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02351",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02257",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02132",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02989",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03255",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02516",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02538",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02864",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03345",
+    "entry_id": "LLM10",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02167",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02175",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02153",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02645",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02752",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02177",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02881",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02881",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02180",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02733",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02733",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02739",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02152",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02173",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02151",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02811",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02172",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03352",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03351",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03012",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03012",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02310",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03293",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02827",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02983",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02347",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03676",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03785",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03894",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03426",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03956",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04081",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03423",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03691",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03839",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03840",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03841",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03439",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03424",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03425",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03430",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03561",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04202",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03953",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04229",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03563",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03925",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03789",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04079",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03867",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04227",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04038",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03406",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03431",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04280",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03930",
+    "entry_id": "LLM10",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03435",
+    "entry_id": "LLM05",
+    "confidence": 0.3333333333333333,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.333",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03436",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03427",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03408",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04174",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04173",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03421",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04287",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04287",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04139",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03849",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03565",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03938",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03407",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04062",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03422",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04137",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03928",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03429",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03566",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03405",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04578",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04861",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04797",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04799",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04691",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04691",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04793",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04471",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04716",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04798",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04683",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04831",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04830",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04915",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04758",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04381",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05064",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05259",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05012",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05446",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05732",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05499",
+    "entry_id": "LLM05",
+    "confidence": 0.2222222222222222,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.222",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-06205",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-06204",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-07161",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-07343",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-07286",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-07708",
+    "entry_id": "LLM10",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00863",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00863",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00861",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01610",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00596",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01640",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00807",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01575",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01096",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00812",
+    "entry_id": "LLM03",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01136",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01795",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01732",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00613",
+    "entry_id": "NEW-MA",
+    "confidence": 0.125,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.125",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01320",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01557",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00438",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01943",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00261",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00785",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00625",
+    "entry_id": "NEW-WLA",
+    "confidence": 0.14285714285714285,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.143",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00196",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00488",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00865",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00864",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01847",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02117",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00171",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01737",
+    "entry_id": "LLM10",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00174",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02095",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00249",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00808",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00934",
+    "entry_id": "NEW-MSDA",
+    "confidence": 0.14285714285714285,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.143",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00220",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01760",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05534",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05838",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05483",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-05642",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04209",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04624",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03571",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02609",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02687",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02683",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02185",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04447",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02501",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04216",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04216",
+    "entry_id": "NEW-PMP",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03989",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04371",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04194",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02602",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02602",
+    "entry_id": "NEW-PMP",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03808",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02434",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02299",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02638",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02789",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02302",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02513",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02456",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03377",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03377",
+    "entry_id": "NEW-PMP",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02552",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02608",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04000",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02692",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03868",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03868",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04369",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01641",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01681",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-04255",
+    "entry_id": "NEW-WLA",
+    "confidence": 0.14285714285714285,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.143",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03920",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03920",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02372",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02373",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02542",
+    "entry_id": "LLM09",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02770",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-00735",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-01438",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03693",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02181",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-03297",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "security"
+  },
+  {
+    "incident_id": "INC-02432",
+    "entry_id": "LLM02",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "security"
+  }
+]

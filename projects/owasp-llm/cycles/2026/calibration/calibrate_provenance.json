@@ -1,0 +1,10 @@
+{
+  "engine_version": "1.1.0",
+  "input_hashes": {
+    "tally": "7e18566248498b9105dea5d12103818cdcec303a51fc9bcf17e1bc300041b3f9"
+  },
+  "manifest_lock_hash": "125c9d8b742f4a773011ab027358eaf7a2d9d1a059ba30ab017824e1a8ed1e09",
+  "output_hash": "1b26185f47344a38874e402acc4c4fb9e91f11ad438d3eed8c801c115d24775e",
+  "stage_name": "calibrate",
+  "timestamp": "2026-05-22T18:40:21.283173+00:00"
+}
