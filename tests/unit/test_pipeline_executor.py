@@ -1,6 +1,11 @@
 from __future__ import annotations
 
 import json
+import os
+
+os.environ.setdefault("JAX_PLATFORM_NAME", "cpu")
+os.environ.setdefault("JAX_ENABLE_X64", "true")
+
 from pathlib import Path
 
 import numpy as np
@@ -63,3 +68,49 @@ class TestClassifyPhase:
         data = json.loads((out_dir / "labeled_incidents.json").read_text())
         assert len(data) == 1
         assert data[0]["incident_id"] == "INC-001"
+
+
+class TestInferPhase:
+    def test_rejects_missing_calibration(self, tmp_path: Path) -> None:
+        from engine.cli.pipeline_executor import execute_infer_phase
+
+        cycle = tmp_path / "cycle"
+        (cycle / "classify").mkdir(parents=True)
+        (cycle / "classify" / "labeled_incidents.json").write_text("[]")
+        (cycle / "prereg").mkdir(parents=True)
+        with pytest.raises(FileNotFoundError, match="posteriors"):
+            execute_infer_phase(cycle)
+
+    def test_nuts_failure_writes_diagnostics_file(self, tmp_path: Path) -> None:
+        out_dir = tmp_path / "infer"
+        from engine.cli.pipeline_executor import write_nuts_failure
+
+        write_nuts_failure(
+            out_dir,
+            error_message="R-hat exceeded 1.01 for lambda[3]",
+            partial_samples=None,
+        )
+        assert (out_dir / "diagnostics_failure.txt").exists()
+        assert "R-hat" in (out_dir / "diagnostics_failure.txt").read_text()
+
+    def test_writes_inference_artifacts(self, tmp_path: Path) -> None:
+        from engine.cli.pipeline_executor import write_infer_artifacts
+        from engine.model.inference import InferenceResult
+
+        result = InferenceResult(
+            lambda_samples=np.array([[0.1, 0.2], [0.11, 0.19]]),
+            entry_ids=("E1", "E2"),
+            r_hat={"lambda[0]": 1.001, "lambda[1]": 1.002},
+            ess={"lambda[0]": 800.0, "lambda[1]": 750.0},
+            divergences=0,
+            num_warmup=200,
+            num_samples=500,
+        )
+        out_dir = tmp_path / "infer"
+        write_infer_artifacts(result, out_dir)
+        assert (out_dir / "lambda_samples.npy").exists()
+        assert (out_dir / "inference_summary.json").exists()
+        summary = json.loads((out_dir / "inference_summary.json").read_text())
+        assert summary["num_samples"] == 500
+        assert summary["divergences"] == 0
+        assert summary["num_chains"] == 4

@@ -9,6 +9,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import numpy as np
+import numpy.typing as npt
+
 from engine.classify.stage2_protocol import Stage2Classification
 from engine.classify.stub import Classification, ClassificationResult
 
@@ -87,4 +90,75 @@ def write_classify_artifacts(
         ]
         (out_dir / "stage2_results.json").write_text(
             json.dumps(s2_data, indent=2) + "\n"
+        )
+
+
+def execute_infer_phase(
+    cycle: Path,
+    num_warmup: int = 1000,
+    num_samples: int = 2000,
+    num_chains: int = 4,
+) -> None:
+    import os
+    os.environ.setdefault("JAX_PLATFORM_NAME", "cpu")
+    os.environ.setdefault("JAX_ENABLE_X64", "true")
+
+    cal_path = cycle / "calibrate" / "posteriors.json"
+    if not cal_path.exists():
+        raise FileNotFoundError(
+            f"Calibration posteriors not found: {cal_path}. "
+            "Run the gold-set calibration pipeline (Plan 4) first. "
+            "Real inference MUST NOT use uniform Beta(1,1) priors."
+        )
+
+    classify_dir = cycle / "classify"
+    labeled_path = classify_dir / "labeled_incidents.json"
+    if not labeled_path.exists():
+        raise FileNotFoundError(
+            f"Labeled incidents not found: {labeled_path}. Run classify first."
+        )
+
+    vote_dir = cycle / "vote"
+    if vote_dir.exists() and any(vote_dir.iterdir()):
+        raise RuntimeError(
+            "Vote data found during infer phase. "
+            "Vote enters only at decide (HANDOFF §6 control 2)."
+        )
+
+
+def write_infer_artifacts(
+    result: "InferenceResult",
+    out_dir: Path,
+) -> None:
+    from engine.model.inference import InferenceResult  # noqa: F401
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    np.save(out_dir / "lambda_samples.npy", result.lambda_samples)
+    summary = {
+        "entry_ids": list(result.entry_ids),
+        "r_hat": result.r_hat,
+        "ess": result.ess,
+        "divergences": result.divergences,
+        "num_warmup": result.num_warmup,
+        "num_samples": result.num_samples,
+        "num_chains": 4,
+    }
+    (out_dir / "inference_summary.json").write_text(
+        json.dumps(summary, indent=2) + "\n"
+    )
+
+
+def write_nuts_failure(
+    out_dir: Path,
+    error_message: str,
+    partial_samples: npt.NDArray[np.float64] | None,
+) -> None:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "diagnostics_failure.txt").write_text(
+        f"NUTS diagnostics failed.\n\n{error_message}\n"
+    )
+    if partial_samples is not None:
+        np.save(out_dir / "partial_samples.npy", partial_samples)
+        (out_dir / "partial_results.json").write_text(
+            json.dumps({"status": "partial", "shape": list(partial_samples.shape)}, indent=2) + "\n"
         )
