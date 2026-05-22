@@ -160,7 +160,8 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
 
         # Write artifacts
         out_dir = cycle / "classify"
-        write_classify_artifacts(result, out_dir, stage2_results=stage2_results)
+        incident_strata = {inc.id: inc.corpus_stratum for inc in incidents}
+        write_classify_artifacts(result, out_dir, stage2_results=stage2_results, incident_strata=incident_strata)
         click.echo(f"Classify phase complete. Artifacts written to {out_dir}")
     except Exception as e:
         raise click.ClickException(f"Classify phase failed: {e}")
