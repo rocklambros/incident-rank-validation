@@ -15,12 +15,19 @@
     {
       "incident_id": "INC-00625",
       "text": "Anthropic's Mythos AI Sparks Cybersecurity Crisis Over Autonomous Vulnerability Discovery Anthropic's advanced AI model, Claude Mythos, can autonomously identify software vulnerabilities faster than human experts, raising alarms across U.S. banks, tech firms, and government agencies. Fears of AI-driven cyberattacks on critical infrastructure have led to restricted access, emergency industry meetings, and calls for stricter AI oversight and regulation.",
-      "labels": null
+      "labels": [
+        "NEW-WLA"
+      ],
+      "notes": "TP. 'Autonomous vulnerability discovery' is a NEW-WLA positive indicator and matches in_scope. Note: framed as capability-disclosure rather than discrete attack incident, but rubric in_scope explicitly covers autonomous-vuln-discovery capability stories."
     },
     {
       "incident_id": "INC-04255",
       "text": "Sysdig LLMjacking: Stolen Cloud Credentials Hijack LLMs Sysdig TRT identified LLMjacking in May 2024: attackers using stolen cloud credentials (initially AWS) to hijack Anthropic Claude 2.x access, costing victims ~$46K/day; later $100K+/day with newer models. Evolved into industrial marketplace.",
-      "labels": null
+      "labels": [
+        "NEW-WLA",
+        "LLM10"
+      ],
+      "notes": "TP for NEW-WLA + LLM10 co-label per the NEW-WLA boundary rule: 'LLMjacking involves both: cost to operator (LLM10) and attack infrastructure for adversary (NEW-WLA). Co-label.' Text explicitly cites $46K/day → $100K+/day cost (LLM10 denial-of-wallet) and 'industrial marketplace' (NEW-WLA weaponization)."
     }
   ]
 }

@@ -14,203 +14,339 @@
   "incidents": [
     {
       "incident_id": "INC-03928",
-      "text": "Kohya_ss \u2014 Command Injection (CVE-2024-32022) Kohya_ss is a GUI for Kohya's Stable Diffusion trainers. Kohya_ss is vulnerable to command injection in basic_caption_gui.py. This vulnerability is fixed in 23.1.5.",
-      "labels": null
+      "text": "Kohya_ss — Command Injection (CVE-2024-32022) Kohya_ss is a GUI for Kohya's Stable Diffusion trainers. Kohya_ss is vulnerable to command injection in basic_caption_gui.py. This vulnerability is fixed in 23.1.5.",
+      "labels": [],
+      "notes": "FP. Kohya_ss is a Stable Diffusion trainer GUI; cmd injection in user-input handling, not LLM-related. No LLM output flow to downstream."
     },
     {
       "incident_id": "INC-00993",
-      "text": "FastGPT \u2014 Ssrf (CVE-2026-44284) FastGPT is an AI Agent building platform. Prior to version 4.14.17, FastGPT had an inconsistent SSRF protection gap in MCP tool URL handling. The direct MCP preview/run endpoints already rejected internal/private network URLs, but the MCP tool create/update endpoints could still save an internal MCP server URL. That stored URL could later be used by workflow execution without revalidating the destination. An authenticated user with permission to create or manage MCP toolsets could store an internal endpoint such as http://localhost:3000/mcp and later cause the FastGPT backend workflow runner to connect to that internal destination. This issue has been patched in version 4.14.17.",
-      "labels": null
+      "text": "FastGPT — Ssrf (CVE-2026-44284) FastGPT is an AI Agent building platform. Prior to version 4.14.17, FastGPT had an inconsistent SSRF protection gap in MCP tool URL handling. The direct MCP preview/run endpoints already rejected internal/private network URLs, but the MCP tool create/update endpoints could still save an internal MCP server URL. That stored URL could later be used by workflow execution without revalidating the destination. An authenticated user with permission to create or manage MCP toolsets could store an internal endpoint such as http://localhost:3000/mcp and later cause the FastGPT backend workflow runner to connect to that internal destination. This issue has been patched in version 4.14.17.",
+      "labels": [],
+      "notes": "FP. FastGPT SSRF stems from missing validation on tool URL CREATE endpoint (a config bug). Not LLM-output mediated — the URL is stored config, not LLM-generated. Generic CWE-918 in an LLM app."
     },
     {
       "incident_id": "INC-02878",
       "text": "mcp-remote OAuth Command Injection (CVE-2025-6514) CVSS 9.6. mcp-remote (437K+ downloads), a popular OAuth proxy for MCP, achieved full RCE on the client machine when connecting to a malicious MCP server. The server sends a crafted authorization_endpoint URL triggering OS command injection via the open() function. First demonstrated real-world full RCE on an MCP client OS. Affected 0.0.5-0.1.15, fixed in 0.1.16.",
-      "labels": null
+      "labels": [
+        "LLM03"
+      ],
+      "notes": "FP for LLM05. mcp-remote CVE is in MCP client library's URL handling, not LLM-output flow. Best taxonomy fit is LLM03 (widely-deployed MCP client = supply chain vector for many LLM agents)."
     },
     {
       "incident_id": "INC-01587",
-      "text": "OpenChatBI \u2014 Path Traversal (CVE-2026-28795) OpenChatBI is an intelligent chat-based BI tool powered by large language models, designed to help users query, analyze, and visualize data through natural language conversations. Prior to version 0.2.2, the save_report tool in openchatbi/tool/save_report.py suffers from a critical path traversal vulnerability due to insufficient input sanitization of the file_format parameter. This issue has been patched in version 0.2.2.",
-      "labels": null
+      "text": "OpenChatBI — Path Traversal (CVE-2026-28795) OpenChatBI is an intelligent chat-based BI tool powered by large language models, designed to help users query, analyze, and visualize data through natural language conversations. Prior to version 0.2.2, the save_report tool in openchatbi/tool/save_report.py suffers from a critical path traversal vulnerability due to insufficient input sanitization of the file_format parameter. This issue has been patched in version 0.2.2.",
+      "labels": [
+        "LLM05",
+        "LLM06"
+      ],
+      "notes": "TP. OpenChatBI save_report path traversal — file_format param flows from chat→tool. Insufficient sanitization = LLM05. Tool can write arbitrary paths = LLM06."
     },
     {
       "incident_id": "INC-00692",
-      "text": "bigsk1 openai-realtime-ui \u2014 Ssrf (CVE-2026-5803) A security flaw has been discovered in bigsk1 openai-realtime-ui up to 188ccde27fdf3d8fab8da81f3893468f53b2797c. The affected element is an unknown function of the file server.js of the component API Proxy Endpoint. Performing a manipulation of the argument Query results in server-side request forgery. The attack can be initiated remotely. The exploit has been released to the public and may be used for attacks. Continious delivery with rolling releases is used by this product. Therefore, no version details of affected nor updated releases are available. The patch is named 54f8f50f43af97c334a881af7b021e84b5b8310f. It is suggested to install a patch to address this issue.",
-      "labels": null
+      "text": "bigsk1 openai-realtime-ui — Ssrf (CVE-2026-5803) A security flaw has been discovered in bigsk1 openai-realtime-ui up to 188ccde27fdf3d8fab8da81f3893468f53b2797c. The affected element is an unknown function of the file server.js of the component API Proxy Endpoint. Performing a manipulation of the argument Query results in server-side request forgery. The attack can be initiated remotely. The exploit has been released to the public and may be used for attacks. Continious delivery with rolling releases is used by this product. Therefore, no version details of affected nor updated releases are available. The patch is named 54f8f50f43af97c334a881af7b021e84b5b8310f. It is suggested to install a patch to address this issue.",
+      "labels": [
+        "LLM05"
+      ],
+      "notes": "TP. SSRF in OpenAI realtime UI proxy endpoint — Query param from LLM/user flow. LLM05."
     },
     {
       "incident_id": "INC-00669",
       "text": "aws-mcp-server AWS CLI Command Injection Remote Code Execution Vulnerability. aws-mcp-server AWS CLI Command Injection Remote Code Execution Vulnerability. This vulnerability allows remote attackers to execute arbitrary code on affected installations of aws-mcp-server. Authentication is not required to exploit this vulnerability. The specific flaw exists within the handling of the allowed commands list. The issue results from the lack of proper validation of a user-supplied string before using it to execute a system call. An attacker can leverage this vulnerability to execute code in the context of the MCP server. Was ZDI-CAN-27969.",
-      "labels": null
+      "labels": [
+        "LLM05",
+        "LLM06"
+      ],
+      "notes": "TP. aws-mcp-server cmd injection in AWS CLI exec — agent supplies command string, no validation. LLM05 + LLM06 (agent has AWS CLI execution = excessive agency)."
     },
     {
       "incident_id": "INC-01596",
       "text": "OpenClaw before 2026.4.20 contains a guard bypass vulnerability in the agent-facing gateway config.patch and config.apply endpoints that fails to protect operator-trusted settin... OpenClaw before 2026.4.20 contains a guard bypass vulnerability in the agent-facing gateway config.patch and config.apply endpoints that fails to protect operator-trusted settings including sandbox policy, plugin enablement, gateway auth/TLS, hook routing, MCP server configuration, SSRF policy, and filesystem hardening. A prompt-injected model with access to the owner-only gateway tool can persist unauthorized changes to protected operator settings.",
-      "labels": null
+      "labels": [
+        "LLM01",
+        "LLM06"
+      ],
+      "notes": "TP. OpenClaw gateway guard bypass: prompt-injected model invokes owner-only tool to persist config changes. LLM01 (injection) + LLM06 (agent has access to owner-only tool that should require human approval)."
     },
     {
       "incident_id": "INC-01166",
       "text": "HuggingFace Transformers RCE Remote code execution vulnerability in HuggingFace Transformers via unsafe model-file parsing.",
-      "labels": null
+      "labels": [
+        "LLM03"
+      ],
+      "notes": "FP for LLM05. HuggingFace Transformers RCE via unsafe model file parsing = supply chain (malicious model artifact) → LLM03, same family as INC-03876/INC-00004."
     },
     {
       "incident_id": "INC-05259",
-      "text": "TensorFlow \u2014 Rce (CVE-2022-41900) TensorFlow is an open source platform for machine learning. The security vulnerability results in FractionalMax(AVG)Pool with illegal pooling_ratio. Attackers using Tensorflow can exploit the vulnerability. They can access heap memory which is not in the control of user, leading to a crash or remote code execution. We have patched the issue in GitHub commit 216525144ee7c910296f5b05d214ca1327c9ce48. The fix will be included in TensorFlow 2.11.0. We will also cherry pick this commit on TensorFlow 2.10.1.",
-      "labels": null
+      "text": "TensorFlow — Rce (CVE-2022-41900) TensorFlow is an open source platform for machine learning. The security vulnerability results in FractionalMax(AVG)Pool with illegal pooling_ratio. Attackers using Tensorflow can exploit the vulnerability. They can access heap memory which is not in the control of user, leading to a crash or remote code execution. We have patched the issue in GitHub commit 216525144ee7c910296f5b05d214ca1327c9ce48. The fix will be included in TensorFlow 2.11.0. We will also cherry pick this commit on TensorFlow 2.10.1.",
+      "labels": [],
+      "notes": "FP. TensorFlow FractionalMaxPool heap memory bug is a generic ML library RCE; no LLM-output flow, not LLM-specific."
     },
     {
       "incident_id": "INC-02739",
       "text": "In the `manim` plugin of binary-husky/gpt_academic, versions prior to the fix, a vulnerability exists due to improper handling of user-provided prompts. In the `manim` plugin of binary-husky/gpt_academic, versions prior to the fix, a vulnerability exists due to improper handling of user-provided prompts. The root cause is the execution of untrusted code generated by the LLM without a proper sandbox. This allows an attacker to perform remote code execution (RCE) on the app backend server by injecting malicious code through the prompt.",
-      "labels": null
+      "labels": [
+        "LLM01",
+        "LLM05",
+        "LLM06"
+      ],
+      "notes": "TP. gpt_academic manim plugin: prompt injection (LLM01) → LLM-generated code executed unsandboxed (LLM05 — direct positive indicator 'RCE from LLM output') + LLM06 (code exec)."
     },
     {
       "incident_id": "INC-03999",
       "text": "Microsoft Copilot Studio SSRF -> cloud metadata exposure Authenticated SSRF bypass in Microsoft Copilot Studio. Tenable researchers reached Microsoft's internal infrastructure, including IMDS and internal Cosmos DB. CVSS 8.5.",
-      "labels": null
+      "labels": [
+        "LLM05",
+        "LLM02"
+      ],
+      "notes": "TP. Copilot Studio SSRF → IMDS + internal Cosmos DB. LLM05 (SSRF positive indicator) + LLM02 (cloud metadata = sensitive info disclosure)."
     },
     {
       "incident_id": "INC-04202",
       "text": "Server-Side Request Forgery (SSRF) vulnerability in Jordy Meow AI Engine: ChatGPT Chatbot allows Server Side Request Forgery.This issue affects AI Engine: ChatGPT Chatbot: from ... Server-Side Request Forgery (SSRF) vulnerability in Jordy Meow AI Engine: ChatGPT Chatbot allows Server Side Request Forgery.This issue affects AI Engine: ChatGPT Chatbot: from n/a through 2.4.7.",
-      "labels": null
+      "labels": [
+        "LLM05"
+      ],
+      "notes": "TP. SSRF in ChatGPT-integrated WP plugin. LLM05."
     },
     {
       "incident_id": "INC-02136",
       "text": "A command injection vulnerability exists in the MCP Data Science Server's (reading-plus-ai/mcp-server-data-exploration) 0.1.6 in the safe_eval() function (src/mcp_server_ds/serv... A command injection vulnerability exists in the MCP Data Science Server's (reading-plus-ai/mcp-server-data-exploration) 0.1.6 in the safe_eval() function (src/mcp_server_ds/server.py:108). The function uses Python's exec() to execute user-supplied scripts but fails to restrict the __builtins__ dictionary in the globals parameter. When __builtins__ is not explicitly defined, Python automatically provides access to all built-in functions including __import__, exec, eval, and open. This allows an attacker to execute arbitrary Python code with full system privileges, leading to complete system compromise. The vulnerability can be exploited by submitting a malicious script to the run_script tool, requiring no authentication or special privileges.",
-      "labels": null
+      "labels": [
+        "LLM05",
+        "LLM06"
+      ],
+      "notes": "TP. MCP Data Science Server safe_eval() exec without __builtins__ restriction → arbitrary code. LLM05 (model-supplied script via run_script tool → RCE) + LLM06."
     },
     {
       "incident_id": "INC-02841",
       "text": "LLMSmith: RCE Vulnerabilities in LLM-Integrated Applications Researchers identified 20 remote code execution (RCE) vulnerabilities across 11 different LLM frameworks. They discovered applications deployed on the public internet built using these LLM frameworks and demonstrated the RCE vulnerabilities could be exploited using prompt injection. The 11 LLM frameworks the researchers evaluated were: LangChain, LlamaIndex, Pandas-ai, Langflow, Pandas-llm, Auto-GPT, Griptape, Lagent, MetaGPT, vanna, and langroid.",
-      "labels": null
+      "labels": [
+        "LLM01",
+        "LLM05",
+        "LLM06"
+      ],
+      "notes": "TP. LLMSmith: 20 RCEs across 11 frameworks via prompt injection. LLM01 (vector) + LLM05 (LLM output → RCE downstream) + LLM06 (agent execution capability)."
     },
     {
       "incident_id": "INC-01589",
-      "text": "OpenClaw 1-Click Remote Code Execution A security researcher demonstrated a 1-click remote code execution (RCE) vulnerability to the OpenClaw AI Agent via a malicious link containing a JavaScript script that only takes milliseconds to execute. This vulnerability has been reported and is being tracked to versions of OpenClaw as CVE-2026-25253. [<sup>\\[1\\]</sup>][1] OpenClaw \u201cis a personal AI assistant you run on your own devices. It answers you on the chat apps you already use. Unlike SaaS assistants where your data lives on someone else\u2019s servers, OpenClaw runs where you choose \u2013 laptop, homelab, or VPS. Your infrastructure. Your keys. Your data.\u201d [<sup>\\[2\\]</sup>][2] The researcher demonstrated that when the victim clicks a malicious link, a client-side JavaScript script is executed on the victim\u2019s browser that can steal authentication tokens from the OpenClaw control interface via a WebSocket connection. It then uses Cross-Site WebSocket Hijacking to bypass localhost restrictions to the OpenClaw Gateway API. Once the connection was established, it uses the stolen token to authenticate and modify the OpenClaw agent configuration to disable user confirmation and escape the container, allowing shell commands to be run directly on the host machine. [1]: https://nvd.nist.gov/vuln/detail/CVE-2026-25253 [2]: https://openclaw.ai/blog/introducing-openclaw",
-      "labels": null
+      "text": "OpenClaw 1-Click Remote Code Execution A security researcher demonstrated a 1-click remote code execution (RCE) vulnerability to the OpenClaw AI Agent via a malicious link containing a JavaScript script that only takes milliseconds to execute. This vulnerability has been reported and is being tracked to versions of OpenClaw as CVE-2026-25253. [<sup>\\[1\\]</sup>][1] OpenClaw “is a personal AI assistant you run on your own devices. It answers you on the chat apps you already use. Unlike SaaS assistants where your data lives on someone else’s servers, OpenClaw runs where you choose – laptop, homelab, or VPS. Your infrastructure. Your keys. Your data.” [<sup>\\[2\\]</sup>][2] The researcher demonstrated that when the victim clicks a malicious link, a client-side JavaScript script is executed on the victim’s browser that can steal authentication tokens from the OpenClaw control interface via a WebSocket connection. It then uses Cross-Site WebSocket Hijacking to bypass localhost restrictions to the OpenClaw Gateway API. Once the connection was established, it uses the stolen token to authenticate and modify the OpenClaw agent configuration to disable user confirmation and escape the container, allowing shell commands to be run directly on the host machine. [1]: https://nvd.nist.gov/vuln/detail/CVE-2026-25253 [2]: https://openclaw.ai/blog/introducing-openclaw",
+      "labels": [
+        "LLM02"
+      ],
+      "notes": "FP for LLM05. OpenClaw 1-click RCE via CSWSH/XSS in web UI is a generic client-side web vuln, not LLM-output mediated. Token theft outcome → LLM02."
     },
     {
       "incident_id": "INC-03663",
       "text": "Chinese ChatGPT-clone (pictureproxy.php) SSRF exploited in the wild Server-side request forgery in an open-source ChatGPT clone's pictureproxy.php (insufficient url parameter validation -> arbitrary file_get_contents). Actively exploited against US financial/government orgs (Veriti reported 10,479 attacks in one week). Note: not OpenAI's ChatGPT product.",
-      "labels": null
+      "labels": [
+        "LLM05"
+      ],
+      "notes": "TP. ChatGPT-clone pictureproxy.php SSRF in the wild (10K+ attacks/week). LLM-app SSRF = LLM05."
     },
     {
       "incident_id": "INC-01000",
-      "text": "FastMCP \u2014 Ssrf (CVE-2026-32871) FastMCP is a Pythonic way to build MCP servers and clients. Prior to version 3.2.0, the OpenAPIProvider in FastMCP exposes internal APIs to MCP clients by parsing OpenAPI specifications. The RequestDirector class is responsible for constructing HTTP requests to the backend service. A vulnerability exists in the _build_url() method. When an OpenAPI operation defines path parameters (e.g., /api/v1/users/{user_id}), the system directly substitutes parameter values into the URL template string without URL-encoding. Subsequently, urllib.parse.urljoin() resolves the final URL. Since urljoin() interprets ../ sequences as directory traversal, an attacker controlling a path parameter can perform path traversal attacks to escape the intended API prefix and access arbitrary backend endpoints. This results in authenticated SSRF, as requests are sent with the authorization headers configured in the MCP provider. This issue has been patched in version 3.2.0.",
-      "labels": null
+      "text": "FastMCP — Ssrf (CVE-2026-32871) FastMCP is a Pythonic way to build MCP servers and clients. Prior to version 3.2.0, the OpenAPIProvider in FastMCP exposes internal APIs to MCP clients by parsing OpenAPI specifications. The RequestDirector class is responsible for constructing HTTP requests to the backend service. A vulnerability exists in the _build_url() method. When an OpenAPI operation defines path parameters (e.g., /api/v1/users/{user_id}), the system directly substitutes parameter values into the URL template string without URL-encoding. Subsequently, urllib.parse.urljoin() resolves the final URL. Since urljoin() interprets ../ sequences as directory traversal, an attacker controlling a path parameter can perform path traversal attacks to escape the intended API prefix and access arbitrary backend endpoints. This results in authenticated SSRF, as requests are sent with the authorization headers configured in the MCP provider. This issue has been patched in version 3.2.0.",
+      "labels": [
+        "LLM05"
+      ],
+      "notes": "TP. FastMCP OpenAPI URL building flaw → authenticated SSRF. LLM05."
     },
     {
       "incident_id": "INC-00028",
       "text": "A vulnerability was found in 1Panel-dev MaxKB up to 2.6.1. A vulnerability was found in 1Panel-dev MaxKB up to 2.6.1. The affected element is the function execute of the file apps/application/flow/step_node/mcp_node/impl/base_mcp_node.py of the component Model Context Protocol Node. Performing a manipulation results in os command injection. The attack is possible to be carried out remotely. The exploit has been made public and could be used. You should upgrade the affected component. The vendor was contacted early, responded in a very professional manner and quickly released a fixed version of the affected product.",
-      "labels": null
+      "labels": [
+        "LLM05",
+        "LLM06"
+      ],
+      "notes": "TP. MaxKB MCP node OS command injection. LLM05 + LLM06."
     },
     {
       "incident_id": "INC-02338",
-      "text": "AstrBot \u2014 Path Traversal (CVE-2025-48957) AstrBot is a large language model chatbot and development framework. A path traversal vulnerability present in versions 3.4.4 through 3.5.12 may lead to information disclosure, such as API keys for LLM providers, account passwords, and other sensitive data. The vulnerability has been addressed in Pull Request #1676 and is included in version 3.5.13. As a workaround, users can edit the `cmd_config.json` file to disable the dashboard feature as a temporary workaround. However, it is strongly recommended to upgrade to version v3.5.13 or later to fully resolve this issue.",
-      "labels": null
+      "text": "AstrBot — Path Traversal (CVE-2025-48957) AstrBot is a large language model chatbot and development framework. A path traversal vulnerability present in versions 3.4.4 through 3.5.12 may lead to information disclosure, such as API keys for LLM providers, account passwords, and other sensitive data. The vulnerability has been addressed in Pull Request #1676 and is included in version 3.5.13. As a workaround, users can edit the `cmd_config.json` file to disable the dashboard feature as a temporary workaround. However, it is strongly recommended to upgrade to version v3.5.13 or later to fully resolve this issue.",
+      "labels": [
+        "LLM05",
+        "LLM02"
+      ],
+      "notes": "TP. AstrBot path traversal exposing API keys/passwords. LLM05 (path traversal positive indicator) + LLM02 (credential disclosure outcome)."
     },
     {
       "incident_id": "INC-03406",
       "text": "A command injection vulnerability exists in the gradio-app/gradio repository, specifically within the 'test-functional.yml' workflow. A command injection vulnerability exists in the gradio-app/gradio repository, specifically within the 'test-functional.yml' workflow. The vulnerability arises due to improper neutralization of special elements used in a command, allowing for unauthorized modification of the base repository or secrets exfiltration. The issue affects versions up to and including '@gradio/video@0.6.12'. The flaw is present in the workflow's handling of GitHub context information, where it echoes the full name of the head repository, the head branch, and the workflow reference without adequate sanitization. This could potentially lead to the exfiltration of sensitive secrets such as 'GITHUB_TOKEN', 'COMMENT_TOKEN', and 'CHROMATIC_PROJECT_TOKEN'.",
-      "labels": null
+      "labels": [
+        "LLM03"
+      ],
+      "notes": "FP for LLM05. Gradio test-functional.yml GHA cmd injection is generic CI/CD vuln. Affects an LLM tool's release pipeline → LLM03 (supply chain)."
     },
     {
       "incident_id": "INC-02793",
       "text": "Kiro IDE Command Injection (CVE-2026-0830) Command injection in AWS Kiro's helper function for querying Git repository state. The workspace path itself could force unintended command execution. Fixed in Kiro v0.6.18.",
-      "labels": null
+      "labels": [
+        "LLM05"
+      ],
+      "notes": "TP. Kiro IDE git-helper cmd injection via workspace path. AI-assisted IDE, workspace path flows through helper unsanitized = LLM05 borderline."
     },
     {
       "incident_id": "INC-03293",
       "text": "The Post Saint: ChatGPT, GPT4, DALL-E, Stable Diffusion, Pexels, Dezgo AI Text & Image Generator plugin for WordPress is vulnerable to arbitrary files uploads due to a missing c... The Post Saint: ChatGPT, GPT4, DALL-E, Stable Diffusion, Pexels, Dezgo AI Text & Image Generator plugin for WordPress is vulnerable to arbitrary files uploads due to a missing capability check and file type validation on the add_image_to_library AJAX action function in all versions up to, and including, 1.3.1. This makes it possible for authenticated attackers, with subscriber-level access and above, to upload arbitrary files that make remote code execution possible.",
-      "labels": null
+      "labels": [],
+      "notes": "FP. WordPress plugin arbitrary file upload due to missing capability check is generic WP auth bug; AI branding only."
     },
     {
       "incident_id": "INC-01294",
-      "text": "LangChain \u2014 Ssrf (CVE-2026-41488) LangChain is a framework for building agents and LLM-powered applications. Prior to 1.1.14, langchain-openai's _url_to_size() helper (used by get_num_tokens_from_messages for image token counting) validated URLs for SSRF protection and then fetched them in a separate network operation with independent DNS resolution. This left a TOCTOU / DNS rebinding window: an attacker-controlled hostname could resolve to a public IP during validation and then to a private/localhost IP during the actual fetch.",
-      "labels": null
+      "text": "LangChain — Ssrf (CVE-2026-41488) LangChain is a framework for building agents and LLM-powered applications. Prior to 1.1.14, langchain-openai's _url_to_size() helper (used by get_num_tokens_from_messages for image token counting) validated URLs for SSRF protection and then fetched them in a separate network operation with independent DNS resolution. This left a TOCTOU / DNS rebinding window: an attacker-controlled hostname could resolve to a public IP during validation and then to a private/localhost IP during the actual fetch.",
+      "labels": [
+        "LLM05"
+      ],
+      "notes": "TP. LangChain TOCTOU/DNS rebinding SSRF in image token counting. LLM05."
     },
     {
       "incident_id": "INC-04861",
       "text": "Server-Side Request Forgery (SSRF) in kubeflow/kubeflow Server-Side Request Forgery (SSRF) in kubeflow/kubeflow",
-      "labels": null
+      "labels": [
+        "LLM05"
+      ],
+      "notes": "TP borderline. Generic SSRF in kubeflow (ML orchestration). Conservatively LLM05 since LLM workloads run there."
     },
     {
       "incident_id": "INC-01575",
       "text": "OpenAI Codex Flaw Exposed GitHub Credentials via Command Injection A critical vulnerability in OpenAI's Codex coding agent allowed attackers to exploit unsanitized branch names, enabling command injection and theft of GitHub OAuth tokens. This flaw exposed developers' credentials and private repositories, risking unauthorized access and enterprise security breaches. OpenAI has since patched the vulnerability after researchers demonstrated its exploitability.",
-      "labels": null
+      "labels": [
+        "LLM05",
+        "LLM02"
+      ],
+      "notes": "TP. OpenAI Codex cmd injection via branch name (LLM-agent-processed) → GitHub OAuth theft. LLM05 + LLM02."
     },
     {
       "incident_id": "INC-02477",
-      "text": "Cursor \u2014 Rce (CVE-2025-64109) Cursor is a code editor built for programming with AI. In versions and below, a vulnerability in the Cursor CLI Beta allowed an attacker to achieve remote code execution through the MCP (Model Context Protocol) server mechanism by uploading a malicious MCP configuration in .cursor/mcp.json file in a GitHub repository. Once a victim clones the project and opens it using Cursor CLI, the command to run the malicious MCP server is immediately executed without any warning, leading to potential code execution as soon as the command runs. This issue is fixed in version 2025.09.17-25b418f.",
-      "labels": null
+      "text": "Cursor — Rce (CVE-2025-64109) Cursor is a code editor built for programming with AI. In versions and below, a vulnerability in the Cursor CLI Beta allowed an attacker to achieve remote code execution through the MCP (Model Context Protocol) server mechanism by uploading a malicious MCP configuration in .cursor/mcp.json file in a GitHub repository. Once a victim clones the project and opens it using Cursor CLI, the command to run the malicious MCP server is immediately executed without any warning, leading to potential code execution as soon as the command runs. This issue is fixed in version 2025.09.17-25b418f.",
+      "labels": [
+        "NEW-MTIE",
+        "LLM03",
+        "LLM06"
+      ],
+      "notes": "FP for LLM05. Malicious .cursor/mcp.json in cloned repo = NEW-MTIE (tool definition trust failure on load — direct positive indicator) + LLM03 (cloned repo as supply chain vector) + LLM06 (MCP server runs without warning)."
     },
     {
       "incident_id": "INC-01055",
-      "text": "FrontMCP \u2014 Ssrf (CVE-2026-39885) FrontMCP is a TypeScript-first framework for the Model Context Protocol (MCP). Prior to 2.3.0, the mcp-from-openapi library uses @apidevtools/json-schema-ref-parser to dereference $ref pointers in OpenAPI specifications without configuring any URL restrictions or custom resolvers. A malicious OpenAPI specification containing $ref values pointing to internal network addresses, cloud metadata endpoints, or local files will cause the library to fetch those resources during the initialize() call. This enables Server-Side Request Forgery (SSRF) and local file read attacks when processing untrusted OpenAPI specifications. This vulnerability is fixed in 2.3.0.",
-      "labels": null
+      "text": "FrontMCP — Ssrf (CVE-2026-39885) FrontMCP is a TypeScript-first framework for the Model Context Protocol (MCP). Prior to 2.3.0, the mcp-from-openapi library uses @apidevtools/json-schema-ref-parser to dereference $ref pointers in OpenAPI specifications without configuring any URL restrictions or custom resolvers. A malicious OpenAPI specification containing $ref values pointing to internal network addresses, cloud metadata endpoints, or local files will cause the library to fetch those resources during the initialize() call. This enables Server-Side Request Forgery (SSRF) and local file read attacks when processing untrusted OpenAPI specifications. This vulnerability is fixed in 2.3.0.",
+      "labels": [
+        "LLM05"
+      ],
+      "notes": "TP. FrontMCP OpenAPI $ref dereferencing without URL restrictions → SSRF + local file read. LLM05."
     },
     {
       "incident_id": "INC-03206",
       "text": "Server-Side Request Forgery (SSRF) vulnerability in aitool Ai Auto Tool Content Writing Assistant (Gemini Writer, ChatGPT ) All in One ai-auto-tool allows Server Side Request Fo... Server-Side Request Forgery (SSRF) vulnerability in aitool Ai Auto Tool Content Writing Assistant (Gemini Writer, ChatGPT ) All in One ai-auto-tool allows Server Side Request Forgery.This issue affects Ai Auto Tool Content Writing Assistant (Gemini Writer, ChatGPT ) All in One: from n/a through <= 2.3.3.",
-      "labels": null
+      "labels": [
+        "LLM05"
+      ],
+      "notes": "TP. SSRF in AI auto-tool content writing assistant. LLM05."
     },
     {
       "incident_id": "INC-03430",
       "text": "A Server-Side Request Forgery (SSRF) vulnerability exists in berriai/litellm version 1.38.10. A Server-Side Request Forgery (SSRF) vulnerability exists in berriai/litellm version 1.38.10. This vulnerability allows users to specify the `api_base` parameter when making requests to `POST /chat/completions`, causing the application to send the request to the domain specified by `api_base`. This request includes the OpenAI API key. A malicious user can set the `api_base` to their own domain and intercept the OpenAI API key, leading to unauthorized access and potential misuse of the API key.",
-      "labels": null
+      "labels": [
+        "LLM05",
+        "LLM02"
+      ],
+      "notes": "TP. LiteLLM SSRF via api_base param → OpenAI API key interception. LLM05 + LLM02 (credential exposure)."
     },
     {
       "incident_id": "INC-01804",
-      "text": "SQLBot \u2014 Prompt Injection (CVE-2026-32622) SQLBot is an intelligent data query system based on a large language model and RAG. Versions 1.5.0 and below contain a Stored Prompt Injection vulnerability that chains three flaws: a missing permission check on the Excel upload API allowing any authenticated user to upload malicious terminology, unsanitized storage of terminology descriptions containing dangerous payloads, and a lack of semantic fencing when injecting terminology into the LLM's system prompt. Together, these flaws allow an attacker to hijack the LLM's reasoning to generate malicious PostgreSQL commands (e.g., COPY ... TO PROGRAM), ultimately achieving Remote Code Execution on the database or application server with postgres user privileges. The issue is fixed in v1.6.0.",
-      "labels": null
+      "text": "SQLBot — Prompt Injection (CVE-2026-32622) SQLBot is an intelligent data query system based on a large language model and RAG. Versions 1.5.0 and below contain a Stored Prompt Injection vulnerability that chains three flaws: a missing permission check on the Excel upload API allowing any authenticated user to upload malicious terminology, unsanitized storage of terminology descriptions containing dangerous payloads, and a lack of semantic fencing when injecting terminology into the LLM's system prompt. Together, these flaws allow an attacker to hijack the LLM's reasoning to generate malicious PostgreSQL commands (e.g., COPY ... TO PROGRAM), ultimately achieving Remote Code Execution on the database or application server with postgres user privileges. The issue is fixed in v1.6.0.",
+      "labels": [
+        "LLM01",
+        "NEW-PMP",
+        "LLM05",
+        "LLM06"
+      ],
+      "notes": "TP. SQLBot stored prompt injection via Excel terminology upload → LLM injects malicious SQL → COPY TO PROGRAM RCE. LLM01 (stored injection vector) + NEW-PMP (terminology persists in LLM context across sessions — long-term store manipulation) + LLM05 (SQL injection from LLM output) + LLM06 (DB privileged exec)."
     },
     {
       "incident_id": "INC-02447",
       "text": "Claude Desktop PromptJacking RCE Critical RCE in official Claude Desktop extensions (Chrome, iMessage, Apple Notes) allowed malicious websites to execute arbitrary code via unsanitized command injection.",
-      "labels": null
+      "labels": [
+        "LLM01",
+        "LLM05",
+        "LLM06"
+      ],
+      "notes": "TP. Claude Desktop PromptJacking RCE in browser/iMessage/Notes extensions via malicious websites. LLM01 (injection) + LLM05 (cmd injection from LLM output) + LLM06 (extension capabilities)."
     },
     {
       "incident_id": "INC-00601",
       "text": "Anthropic Claude Code CLI and Claude Agent SDK contain an OS command injection vulnerability in the command lookup helper and deep-link terminal launcher that allows local attac... Anthropic Claude Code CLI and Claude Agent SDK contain an OS command injection vulnerability in the command lookup helper and deep-link terminal launcher that allows local attackers to execute arbitrary commands by manipulating the TERMINAL environment variable. Attackers can inject shell metacharacters into the TERMINAL variable which are interpreted by /bin/sh when the command lookup helper constructs and executes shell commands with shell=true. The vulnerability can be triggered during normal CLI execution as well as via the deep-link handler path, resulting in arbitrary command execution with the privileges of the user running the CLI.",
-      "labels": null
+      "labels": [],
+      "notes": "FP. Claude Code CLI cmd injection via TERMINAL env var is generic CWE-78 in CLI startup; no LLM-output mediation. The user's shell env, not LLM output, is the attack source."
     },
     {
       "incident_id": "INC-00861",
       "text": "Critical AI System Vulnerabilities in OpenClaw and Langflow Lead to Security Risks and Exploitation 360 Security discovered and reported a zero-day vulnerability in OpenClaw's intelligent agent gateway, confirmed by its founder, allowing attackers to bypass authentication and potentially crash systems. Separately, Langflow's API flaw enabled remote code execution, actively exploited within 20 hours of disclosure, causing unauthorized access and data theft. Both incidents highlight urgent AI security challenges.",
-      "labels": null
+      "labels": [
+        "LLM05",
+        "LLM06",
+        "LLM03"
+      ],
+      "notes": "TP. Multi-incident news summary. Langflow API RCE actively exploited within 20h = LLM05 (likely from agent output flow) + LLM06 (agent execution capability) + LLM03 (LLM-tool supply chain — multiple widely-deployed tools)."
     },
     {
       "incident_id": "INC-01458",
       "text": "MLflow Tracking Server Artifact Handler Directory Traversal Remote Code Execution Vulnerability. MLflow Tracking Server Artifact Handler Directory Traversal Remote Code Execution Vulnerability. This vulnerability allows remote attackers to execute arbitrary code on affected installations of MLflow Tracking Server. Authentication is not required to exploit this vulnerability. The specific flaw exists within the handling of artifact file paths. The issue results from the lack of proper validation of a user-supplied path prior to using it in file operations. An attacker can leverage this vulnerability to execute code in the context of the service account. Was ZDI-CAN-26649.",
-      "labels": null
+      "labels": [
+        "LLM05"
+      ],
+      "notes": "TP. MLflow Tracking Server directory traversal in artifact handler. LLM05 (path traversal positive indicator)."
     },
     {
       "incident_id": "INC-01622",
-      "text": "Paperclip \u2014 Command Injection (CVE-2026-41208) Paperclip is a Node.js server and React UI that orchestrates a team of AI agents to run a business. Versions of @paperclipai/server prior to 2026.416.0 contain a privilege escalation vulnerability that allows an attacker with an Agent API key to execute arbitrary OS commands on the Paperclip server host. An attacker with an agent credential can escalate privileges from the agent runtime to the Paperclip server host. The vulnerability occurs because agents are allowed to update their own adapterConfig via the /agents/:id API endpoint. The configuration field adapterConfig.workspaceStrategy.provisionCommand is later executed by the server runtime. As a result, an attacker controlling an agent credential can inject arbitrary shell commands which are executed by the Paperclip server during workspace provisioning. This breaks the intended trust boundary between agent runtime configuration and server host execution, allowing a compromised or malicious agent to escalate privileges and run commands on the host system. This vulnerability allows remote code execution on the server host. @paperclipai/server version 2026.416.0 fixes the issue.",
-      "labels": null
+      "text": "Paperclip — Command Injection (CVE-2026-41208) Paperclip is a Node.js server and React UI that orchestrates a team of AI agents to run a business. Versions of @paperclipai/server prior to 2026.416.0 contain a privilege escalation vulnerability that allows an attacker with an Agent API key to execute arbitrary OS commands on the Paperclip server host. An attacker with an agent credential can escalate privileges from the agent runtime to the Paperclip server host. The vulnerability occurs because agents are allowed to update their own adapterConfig via the /agents/:id API endpoint. The configuration field adapterConfig.workspaceStrategy.provisionCommand is later executed by the server runtime. As a result, an attacker controlling an agent credential can inject arbitrary shell commands which are executed by the Paperclip server during workspace provisioning. This breaks the intended trust boundary between agent runtime configuration and server host execution, allowing a compromised or malicious agent to escalate privileges and run commands on the host system. This vulnerability allows remote code execution on the server host. @paperclipai/server version 2026.416.0 fixes the issue.",
+      "labels": [
+        "LLM05",
+        "LLM06"
+      ],
+      "notes": "TP. Paperclip: agent updates own adapterConfig.workspaceStrategy.provisionCommand which the server executes. LLM05 (LLM-output-equivalent config flowing to shell exec) + LLM06 (agent's privilege boundary broken)."
     },
     {
       "incident_id": "INC-01559",
       "text": "Open Neural Network Exchange (ONNX) is an open standard for machine learning interoperability. Open Neural Network Exchange (ONNX) is an open standard for machine learning interoperability. Prior to version 1.21.0, a path traversal vulnerability via symlink allows to read arbitrary files outside model or user-provided directory. This issue has been patched in version 1.21.0.",
-      "labels": null
+      "labels": [
+        "LLM03"
+      ],
+      "notes": "FP for LLM05. ONNX symlink path traversal = model file format library vuln → LLM03 (supply chain for model artifact loading), same family as INC-03876/INC-00004/INC-01166."
     },
     {
       "incident_id": "INC-01773",
-      "text": "SillyTavern \u2014 Ssrf (CVE-2026-26286) SillyTavern is a locally installed user interface that allows users to interact with text generation large language models, image generation engines, and text-to-speech voice models. In versions prior to 1.16.0, a Server-Side Request Forgery (SSRF) vulnerability in the asset download endpoint allows authenticated users to make arbitrary HTTP requests from the server and read the full response body, enabling access to internal services, cloud metadata, and private network resources. The vulnerability has been patched in the version 1.16.0 by introducing a whitelist domain check for asset download requests. It can be reviewed and customized by editing the `whitelistImportDomains` array in the `config.yaml` file.",
-      "labels": null
+      "text": "SillyTavern — Ssrf (CVE-2026-26286) SillyTavern is a locally installed user interface that allows users to interact with text generation large language models, image generation engines, and text-to-speech voice models. In versions prior to 1.16.0, a Server-Side Request Forgery (SSRF) vulnerability in the asset download endpoint allows authenticated users to make arbitrary HTTP requests from the server and read the full response body, enabling access to internal services, cloud metadata, and private network resources. The vulnerability has been patched in the version 1.16.0 by introducing a whitelist domain check for asset download requests. It can be reviewed and customized by editing the `whitelistImportDomains` array in the `config.yaml` file.",
+      "labels": [
+        "LLM05"
+      ],
+      "notes": "TP. SillyTavern SSRF in asset download endpoint. LLM05."
     },
     {
       "incident_id": "INC-02807",
-      "text": "Langflow \u2014 Ssrf (CVE-2025-68477) Langflow is a tool for building and deploying AI-powered agents and workflows. Prior to version 1.7.0, Langflow provides an API Request component that can issue arbitrary HTTP requests within a flow. This component takes a user-supplied URL, performs only normalization and basic format checks, and then sends the request using a server-side httpx client. It does not block private IP ranges (127[.]0[.]0[.]1, the 10/172/192 ranges) or cloud metadata endpoints (169[.]254[.]169[.]254), and it returns the response body as the result. Because the flow execution endpoints (/api/v1/run, /api/v1/run/advanced) can be invoked with just an API key, if an attacker can control the API Request URL in a flow, non-blind SSRF is possible\u2014accessing internal resources from the server\u2019s network context. This enables requests to, and collection of responses from, internal administrative endpoints, metadata services, and internal databases/services, leading to information disclosure and providing a foothold for further attacks. Version 1.7.0 contains a patch for this issue.",
-      "labels": null
+      "text": "Langflow — Ssrf (CVE-2025-68477) Langflow is a tool for building and deploying AI-powered agents and workflows. Prior to version 1.7.0, Langflow provides an API Request component that can issue arbitrary HTTP requests within a flow. This component takes a user-supplied URL, performs only normalization and basic format checks, and then sends the request using a server-side httpx client. It does not block private IP ranges (127[.]0[.]0[.]1, the 10/172/192 ranges) or cloud metadata endpoints (169[.]254[.]169[.]254), and it returns the response body as the result. Because the flow execution endpoints (/api/v1/run, /api/v1/run/advanced) can be invoked with just an API key, if an attacker can control the API Request URL in a flow, non-blind SSRF is possible—accessing internal resources from the server’s network context. This enables requests to, and collection of responses from, internal administrative endpoints, metadata services, and internal databases/services, leading to information disclosure and providing a foothold for further attacks. Version 1.7.0 contains a patch for this issue.",
+      "labels": [
+        "LLM05",
+        "LLM02"
+      ],
+      "notes": "TP. Langflow SSRF in API Request component, reaches cloud metadata. LLM05 + LLM02."
     },
     {
       "incident_id": "INC-02354",
       "text": "Azure OpenAI SSRF -> privilege escalation SSRF in Azure OpenAI integration enabling attackers to access internal endpoints and escalate privileges within the Azure tenant.",
-      "labels": null
+      "labels": [
+        "LLM05",
+        "LLM02"
+      ],
+      "notes": "TP. Azure OpenAI SSRF → internal endpoints + privilege escalation. LLM05 + LLM02."
     },
     {
       "incident_id": "INC-01381",
       "text": "MCP Manager for Claude Desktop execute-command Command Injection Sandbox Escape Vulnerability. MCP Manager for Claude Desktop execute-command Command Injection Sandbox Escape Vulnerability. This vulnerability allows remote attackers to bypass the sandbox on affected installations of MCP Manager for Claude Desktop. User interaction is required to exploit this vulnerability in that the target must visit a malicious page or open a malicious file. The specific flaw exists within the processing of MCP config objects. The issue results from the lack of proper validation of a user-supplied string before using it to execute a system call. An attacker can leverage this vulnerability to escape the sandbox and execute arbitrary code in the context of the current process at medium integrity. Was ZDI-CAN-27810.",
-      "labels": null
+      "labels": [
+        "LLM05",
+        "LLM06"
+      ],
+      "notes": "TP. MCP Manager for Claude Desktop cmd injection sandbox escape. LLM05 + LLM06 (sandbox capability boundary broken)."
     }
   ]
 }
