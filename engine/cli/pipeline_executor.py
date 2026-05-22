@@ -170,6 +170,7 @@ def execute_infer_phase(
     num_warmup: int = 1000,
     num_samples: int = 2000,
     num_chains: int = 4,
+    wandb_logger: object | None = None,
 ) -> None:
     import os
     os.environ.setdefault("JAX_PLATFORM_NAME", "cpu")
@@ -217,10 +218,20 @@ def execute_infer_phase(
     overlap = OverlapWeights(weights={})
 
     # Run NUTS inference
+    import time
+
     from engine.model.inference import DiagnosticsFailure, run_inference
 
     out_dir = cycle / "infer"
 
+    if wandb_logger is not None:
+        wandb_logger.log_inference_start(
+            num_warmup=num_warmup,
+            num_samples=num_samples,
+            num_chains=num_chains,
+        )
+
+    t0 = time.monotonic()
     try:
         result = run_inference(
             manifest=manifest,
@@ -234,6 +245,16 @@ def execute_infer_phase(
             num_samples=num_samples,
             num_chains=num_chains,
         )
+        wall_seconds = time.monotonic() - t0
+
+        if wandb_logger is not None:
+            wandb_logger.log_inference_result(
+                r_hat=result.r_hat,
+                ess=result.ess,
+                divergences=result.divergences,
+                wall_seconds=wall_seconds,
+            )
+
         write_infer_artifacts(result, out_dir)
     except DiagnosticsFailure as e:
         write_nuts_failure(out_dir, str(e), None)
