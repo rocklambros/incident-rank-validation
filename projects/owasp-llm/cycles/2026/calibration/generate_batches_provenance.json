@@ -1,0 +1,10 @@
+{
+  "engine_version": "1.1.0",
+  "input_hashes": {
+    "sample": "b04e437a5b04f2ddc9f15b4d18122198e98f9e328b2b1d295adb8db326f17c2b"
+  },
+  "manifest_lock_hash": "125c9d8b742f4a773011ab027358eaf7a2d9d1a059ba30ab017824e1a8ed1e09",
+  "output_hash": "2cc6f81fa2d20e3ad250e267b505779b07ba9e68fa60e640ebef015bf50418de",
+  "stage_name": "generate-batches",
+  "timestamp": "2026-05-22T17:56:27.602621+00:00"
+}

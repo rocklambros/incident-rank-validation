@@ -1,0 +1,26 @@
+{
+  "header": {
+    "cycle_id": "2026",
+    "batch_id": "c590bc8e-0f61-4d5b-950e-a57a406824b9",
+    "frame": "precision",
+    "entry_id": "NEW-WLA",
+    "stratum": "security",
+    "sample_hash": "b7a0758e017b3f40dc823a6b611aff124390043fedd7b10b9efe8b9c41cbdd3e",
+    "rubric_hash": "a9f4592c2ebcc2eddfcef52ef3ec70b9afc604c95d1b7ab3d49259f01fc90911",
+    "manifest_lock_hash": "125c9d8b742f4a773011ab027358eaf7a2d9d1a059ba30ab017824e1a8ed1e09",
+    "coder_id": "rock",
+    "generated_at": "2026-05-22T17:56:27.593022+00:00"
+  },
+  "incidents": [
+    {
+      "incident_id": "INC-00625",
+      "text": "Anthropic's Mythos AI Sparks Cybersecurity Crisis Over Autonomous Vulnerability Discovery Anthropic's advanced AI model, Claude Mythos, can autonomously identify software vulnerabilities faster than human experts, raising alarms across U.S. banks, tech firms, and government agencies. Fears of AI-driven cyberattacks on critical infrastructure have led to restricted access, emergency industry meetings, and calls for stricter AI oversight and regulation.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04255",
+      "text": "Sysdig LLMjacking: Stolen Cloud Credentials Hijack LLMs Sysdig TRT identified LLMjacking in May 2024: attackers using stolen cloud credentials (initially AWS) to hijack Anthropic Claude 2.x access, costing victims ~$46K/day; later $100K+/day with newer models. Evolved into industrial marketplace.",
+      "labels": null
+    }
+  ]
+}

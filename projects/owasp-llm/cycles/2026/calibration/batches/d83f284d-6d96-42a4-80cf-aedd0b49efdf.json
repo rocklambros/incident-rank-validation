@@ -1,0 +1,36 @@
+{
+  "header": {
+    "cycle_id": "2026",
+    "batch_id": "d83f284d-6d96-42a4-80cf-aedd0b49efdf",
+    "frame": "precision",
+    "entry_id": "NEW-PMP",
+    "stratum": "security",
+    "sample_hash": "c383fe1b55ff21239b621f348eaaa9c97b63a1c79bc40fac023e4e72dd5152bc",
+    "rubric_hash": "a9f4592c2ebcc2eddfcef52ef3ec70b9afc604c95d1b7ab3d49259f01fc90911",
+    "manifest_lock_hash": "125c9d8b742f4a773011ab027358eaf7a2d9d1a059ba30ab017824e1a8ed1e09",
+    "coder_id": "rock",
+    "generated_at": "2026-05-22T17:56:27.591234+00:00"
+  },
+  "incidents": [
+    {
+      "incident_id": "INC-03376",
+      "text": "Windsurf Data Exfiltration & SpAIware (Multiple Vectors) Multiple vulnerabilities: (a) indirect prompt injection via analyzed files exfiltrating source code and secrets; (b) SpAIware -- persistent memory poisoning allowing long-term malicious instruction storage across sessions; (c) invisible Unicode tag character injection; (d) MCP tool invocation without human-in-the-loop. CVE-2025-36730: prompt injection via filename.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04216",
+      "text": "SpAIware: Persistent Memory Spyware Injection into ChatGPT macOS Johann Rehberger demonstrated injecting persistent malicious instructions into ChatGPT's long-term memory via indirect prompt injection, causing continuous exfiltration of all future conversations. Fixed by OpenAI September 2024.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02602",
+      "text": "Gemini Memory Persistence via Prompt Injection Rehberger demonstrated tricking Google Gemini Advanced into storing false long-term memory using delayed tool invocation triggered by future user confirmations like yes/sure.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03377",
+      "text": "Windsurf Memory-Persistent Data Exfiltration (SpAIware) Indirect prompt injection abused Windsurf's create_memory tool without approval to persist malicious instructions, enabling continuous data exfiltration across sessions.",
+      "labels": null
+    }
+  ]
+}

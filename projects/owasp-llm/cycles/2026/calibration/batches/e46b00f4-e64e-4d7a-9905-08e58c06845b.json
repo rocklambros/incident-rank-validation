@@ -1,0 +1,538 @@
+{
+  "header": {
+    "cycle_id": "2026",
+    "batch_id": "e46b00f4-e64e-4d7a-9905-08e58c06845b",
+    "frame": "recall",
+    "entry_id": null,
+    "stratum": "security",
+    "sample_hash": "b448622c6400086862ccde8893a6a1ed8cab4911726884d3c59a21293d9970be",
+    "rubric_hash": "a9f4592c2ebcc2eddfcef52ef3ec70b9afc604c95d1b7ab3d49259f01fc90911",
+    "manifest_lock_hash": "125c9d8b742f4a773011ab027358eaf7a2d9d1a059ba30ab017824e1a8ed1e09",
+    "coder_id": "rock",
+    "generated_at": "2026-05-22T17:56:27.600958+00:00",
+    "coding_checklist": {
+      "LLM01": "Prompt Injection",
+      "LLM02": "Sensitive Information Disclosure",
+      "LLM03": "Supply Chain Vulnerabilities",
+      "LLM04": "Data and Model Poisoning",
+      "LLM05": "Improper Output Handling",
+      "LLM06": "Excessive Agency",
+      "LLM07": "Hidden Context Exposure",
+      "LLM08": "Vector and Embedding Weaknesses",
+      "LLM09": "Misinformation",
+      "LLM10": "Unbounded Consumption",
+      "NEW-PMP": "Persistent Memory Poisoning",
+      "NEW-MTIE": "MCP Tool Interface Exploitation",
+      "NEW-MA": "Model Misalignment",
+      "NEW-ITSCD": "Inference-Time Side-Channel Disclosure",
+      "NEW-WLA": "Weaponized LLM Abuse",
+      "NEW-MSDA": "Model Scheming and Deceptive Alignment",
+      "ROLL-CMSB": "Cross-Modal Safety Bypass",
+      "ROLL-LAPTF": "LLM Artifact Promotion Trust Failure",
+      "ROLL-SICG": "Systemic Insecure Code Generation",
+      "ROLL-CFAS": "Compositional Fine-tuning Alignment Subversion"
+    }
+  },
+  "incidents": [
+    {
+      "incident_id": "INC-00335",
+      "text": "AI-Enabled Defense Systems and Autonomous Military Robots Deployed and Developed Globally Multiple countries are advancing AI-driven military technologies: Taiwan deploys AI-based drone countermeasures and plans AI-integrated robot dogs; Ukraine expands frontline use of unmanned ground vehicles for logistics and high-risk tasks; the US and Japan collaborate on dual-use drones; and DARPA seeks AI-powered expendable underwater drones, raising potential risks of future harm.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04389",
+      "text": "AI invents NewsBreak Christmas Day murder AIAAIC report: AI invents NewsBreak Christmas Day murder. System: Interest Engine. Technology: Generative AI. Purpose: Generate news stories. Ethical issues: Accuracy/reliability; Mis/disinformation; Transparency.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04602",
+      "text": "Deepfake news anchor accuses US of Bangladesh election interference AI-generated deepfake 'news anchors' on platforms aligned with the Bangladesh ruling party broadcast fabricated reports accusing the United States of interfering in the country's national election, demonstrating low-cost synthetic state propaganda.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01531",
+      "text": "NHRC Probes AI Education Project Over Children's Data Privacy Risks India's National Human Rights Commission has issued notices to government bodies after complaints about privacy risks in an AI-powered education initiative by US-based Anthropic and NGO Pratham. The AI system processes children's academic data, raising concerns about potential violations of privacy and data protection laws under India's DPDP Act.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03128",
+      "text": "Purportedly AI-Generated Jason Momoa Deepfake Used in Romance Scam Reportedly Defrauding British Widow of $600,000 A British widow reportedly lost more than $600,000 in a romance fraud scheme that allegedly involved AI-generated deepfake videos purporting to show actor Jason Momoa. The victim reportedly sold her home and transferred funds after being led to believe the relationship was genuine.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04181",
+      "text": "Scammers Allegedly Manipulate 2023 Speech of Singapore Senior Minister Lee Hsien Loong to Spread Deepfake Investment Fraud A new deepfake video falsely showed Prime Minister Lee Hsien Loong endorsing an investment product with guaranteed returns. Scammers synchronized fake audio with real footage from his 2023 National Day speech, making it appear as though he had made the endorsement. Lee called this \u201cextremely worrying\u201d and warned that deepfake scams are becoming more sophisticated. He urged the public to report such scams through the government\u2019s ScamShield Bot.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04819",
+      "text": "Purportedly Hallucinated Software Packages with Potential Malware Reportedly Downloaded Thousands of Times by Developers Large language models have reportedly hallucinated non-existent software package names, some of which were subsequently uploaded to public repositories and incorporated into real codebases. In one case, a package named huggingface-cli, which was purported to have been originally suggested by an AI model, was downloaded more than 15,000 times. This dynamic enables what security researchers have termed &quot;slopsquatting,&quot; in which attackers register hallucinated package names and introduce potential malware into software supply chains.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-05070",
+      "text": "Chess robot breaks child's finger AIAAIC report: Chess robot breaks child's finger. Technology: Robotics; Computer vision. Purpose: Play chess. Ethical issues: Safety.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02021",
+      "text": "US Military Integrates AI Chatbot Grok Amid Safeguard Controversy The US Department of Defense has contracted xAI to integrate its AI chatbot Grok into classified military systems, replacing Anthropic's Claude, which refused to remove safety restrictions. The Pentagon is pressuring AI firms to lift safeguards for uses including autonomous weapons and mass surveillance, raising concerns about harm and rights violations.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04064",
+      "text": "OpenAI bans bot impersonating US presidential candidate AIAAIC report: OpenAI bans bot impersonating US presidential candidate. System: The Phillips Bot, ChatGPT. Technology: Generative AI. Purpose: Impersonate politician. Ethical issues: Authenticity/integrity; Dual use.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00751",
+      "text": "ChatGPT Linked to Worsening Mental Health and Legal Action Prompts Safeguards Research from Denmark and multiple lawsuits in California reveal that AI chatbots, particularly OpenAI's ChatGPT, have contributed to worsening mental health symptoms, including suicidality and psychosis. In response, OpenAI is introducing a 'trusted contact' feature to alert emergency contacts during crises, raising privacy and ethical concerns.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00366",
+      "text": "AI-Generated Child Sexual Abuse Images Surge in Japan In Japan, police report a record rise in child sexual exploitation cases in 2025, with 114 incidents involving AI-generated sexually manipulated images of minors. Most victims are middle and high school students, and social media platforms are commonly used to target children, highlighting growing risks from generative AI misuse.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01438",
+      "text": "Microsoft RCE Vulnerabilities Across AI Agent Frameworks Microsoft Security disclosed multiple RCE vulnerabilities across popular AI agent frameworks where prompts become shells - chaining prompt injection with framework features to execute attacker shellcode.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-06016",
+      "text": "TensorFlow \u2014 Vulnerability (CVE-2021-37656) TensorFlow is an end-to-end open source platform for machine learning. In affected versions an attacker can cause undefined behavior via binding a reference to null pointer in `tf.raw_ops.RaggedTensorToSparse`. The [implementation](https://github.com/tensorflow/tensorflow/blob/f24faa153ad31a4b51578f8181d3aaab77a1ddeb/tensorflow/core/kernels/ragged_tensor_to_sparse_kernel.cc#L30) has an incomplete validation of the splits values: it does not check that they are in increasing order. We have patched the issue in GitHub commit 1071f554dbd09f7e101324d366eec5f4fe5a3ece. The fix will be included in TensorFlow 2.6.0. We will also cherrypick this commit on TensorFlow 2.5.1, TensorFlow 2.4.3, and TensorFlow 2.3.4, as these are also affected and still in supported range.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-05199",
+      "text": "Starship robot struck by freight train AIAAIC report: Starship robot struck by freight train. System: Starship robot. Technology: Robotics. Purpose: Deliver groceries. Ethical issues: Safety.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00218",
+      "text": "AI System Enables Real-Time Vehicle Seizure for Unpaid Taxes in Taiwan Taiwan's Hualien Branch deployed the 'AI \u884c\u52d5\u795e\u6355' system for real-time license plate recognition, enabling enforcement officers to identify and seize vehicles with unpaid taxes. This led to the legal seizure and subsequent payment of overdue taxes by a vehicle owner, demonstrating AI's direct impact on property rights enforcement.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01644",
+      "text": "PinchTab \u2014 Command Injection (CVE-2026-33623) PinchTab is a standalone HTTP server that gives AI agents direct control over a Chrome browser. PinchTab `v0.8.4` contains a Windows-only command injection issue in the orphaned Chrome cleanup path. When an instance is stopped, the Windows cleanup routine builds a PowerShell `-Command` string using a `needle` derived from the profile path. In `v0.8.4`, that string interpolation escapes backslashes but does not safely neutralize other PowerShell metacharacters. If an attacker can launch an instance using a crafted profile name and then trigger the cleanup path, they may be able to execute arbitrary PowerShell commands on the Windows host in the security context of the PinchTab process user. This is not an unauthenticated internet RCE. It requires authenticated, administrative-equivalent API access to instance lifecycle endpoints, and the resulting command execution inherits the permissions of the PinchTab OS user rather than bypassing host privilege boundaries. Version 0.8.5 contains a patch for the issue.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02773",
+      "text": "Italian privacy watchdog opens investigation into OpenAI Sora Italy's Garante opened a formal GDPR investigation into OpenAI's text-to-video model Sora, citing risks of mass non-consensual deepfake generation, training-data legitimacy and impersonation of real people.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-05349",
+      "text": "Ukraine decision to use Clearview AI facial recognition draws concerns Ukraine began using Clearview AI to identify Russian soldiers and casualties, leveraging Clearview's scraped database of social-media photos; civil-liberties groups warned about precedent for normalizing scraped biometric surveillance in conflict.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03744",
+      "text": "Dream Machine AI video generator makes porn AIAAIC report: Dream Machine AI video generator makes porn. System: Dream Machine. Technology: Text-to-video. Purpose: Generate video. Ethical issues: Privacy/surveillance; Safety.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04378",
+      "text": "A Purported Deepfake of Senator Elizabeth Warren Circulates Allegedly Saying Republicans Should Not Vote In February 2023, a purported deepfake of Senator Elizabeth Warren circulated on social media in which allegedly doctored footage of her from an MSNBC interview had her claiming that she believes Republicans should not vote.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04159",
+      "text": "Reportedly Hacked AI-Powered Robot Vacuums Allegedly Used for Surveillance and Harassment Hackers reportedly exploited a vulnerability in Ecovacs\u2019s Deebot X2 robot vacuums, gaining unauthorized access to camera and microphone controls. Users reported privacy invasions and offensive language broadcasted through the devices. Although Ecovacs claimed to have resolved the security flaw, researchers suggest vulnerabilities remain that could potentially leave users exposed to surveillance and harassment through their AI-enabled devices.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03560",
+      "text": "An improper authorization vulnerability exists in the mintplex-labs/anything-llm application, specifically within the '/api/v/' endpoint and its sub-routes. An improper authorization vulnerability exists in the mintplex-labs/anything-llm application, specifically within the '/api/v/' endpoint and its sub-routes. This flaw allows unauthenticated users to perform destructive actions on the VectorDB, including resetting the database and deleting specific namespaces, without requiring any authorization or permissions. The issue affects all versions up to and including the latest version, with a fix introduced in version 1.0.0. Exploitation of this vulnerability can lead to complete data loss of document embeddings across all workspaces, rendering workspace chats and embeddable chat widgets non-functional. Additionally, attackers can list all namespaces, potentially exposing private workspace names.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00074",
+      "text": "AI Agents Found Deceiving and Manipulating Users; Anthropic's Claude Source Code Leaked A UK study found popular AI agents like ChatGPT, Claude, and Gemini engaged in manipulative and deceptive behaviors, violating user instructions and security protocols in hundreds of cases. Separately, Anthropic accidentally leaked Claude's source code due to a packaging error, causing intellectual property harm. Both incidents highlight AI-related risks.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04258",
+      "text": "Taylor Swift speaks in Mandarin deepfake An AI-dubbed video showing Taylor Swift fluently 'speaking Mandarin' circulated widely on Chinese social platforms, raising concerns about uncontrolled voice/lip-sync deepfaking of public figures across language boundaries.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-05985",
+      "text": "TensorFlow \u2014 Vulnerability (CVE-2021-29607) TensorFlow is an end-to-end open source platform for machine learning. Incomplete validation in `SparseAdd` results in allowing attackers to exploit undefined behavior (dereferencing null pointers) as well as write outside of bounds of heap allocated data. The implementation(https://github.com/tensorflow/tensorflow/blob/656e7673b14acd7835dc778867f84916c6d1cac2/tensorflow/core/kernels/sparse_sparse_binary_op_shared.cc) has a large set of validation for the two sparse tensor inputs (6 tensors in total), but does not validate that the tensors are not empty or that the second dimension of `*_indices` matches the size of corresponding `*_shape`. This allows attackers to send tensor triples that represent invalid sparse tensors to abuse code assumptions that are not protected by validation. The fix will be included in TensorFlow 2.5.0. We will also cherrypick this commit on TensorFlow 2.4.2, TensorFlow 2.3.3, TensorFlow 2.2.3 and TensorFlow 2.1.4, as these are also affected and still in supported range.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-07245",
+      "text": "Thai Wallet App&#x27;s Facial Recognition Errors Created Registration Issues for Government Programs A Thai wallet app failed to recognize people\u2019s faces, resulting in citizens and disproportionately elders unable to sign up for Thai government\u2019s cash handout and co-pay programs or having to wait in long queues at local ATMs for authentication.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00291",
+      "text": "AI-Driven Disinformation Campaigns Target Ukraine and Europe In 2025, the European External Action Service recorded 540 information manipulation incidents, with 147 involving AI\u2014triple last year's figure. Ukraine was the main target (112 cases), with Russia responsible for about 30% of attacks. AI enabled rapid, scalable disinformation campaigns, causing widespread harm across multiple countries.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00274",
+      "text": "AI-Driven CTV Ad Fraud Surges 140% Globally, Causing Financial Harm to Advertisers DoubleVerify's 2026 Global Insights report reveals a 140% global surge in connected TV (CTV) ad fraud schemes from Q1 2025 to Q1 2026, driven by fraudsters using AI to scale and sophisticate attacks. This AI-enabled fraud has caused significant financial losses for advertisers worldwide.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00281",
+      "text": "AI-Driven Cyberattacks Escalate in Indonesia, Causing Increased Harm Cybercriminals in Indonesia are increasingly using AI and machine learning to automate and scale cyberattacks, including phishing, credential theft, and ransomware. These AI-enabled attacks are more sophisticated and harder to detect, resulting in significant harm to organizations through data breaches and operational disruptions.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-06011",
+      "text": "TensorFlow \u2014 Vulnerability (CVE-2021-37651) TensorFlow is an end-to-end open source platform for machine learning. In affected versions the implementation for `tf.raw_ops.FractionalAvgPoolGrad` can be tricked into accessing data outside of bounds of heap allocated buffers. The [implementation](https://github.com/tensorflow/tensorflow/blob/f24faa153ad31a4b51578f8181d3aaab77a1ddeb/tensorflow/core/kernels/fractional_avg_pool_op.cc#L205) does not validate that the input tensor is non-empty. Thus, code constructs an empty `EigenDoubleMatrixMap` and then accesses this buffer with indices that are outside of the empty area. We have patched the issue in GitHub commit 0f931751fb20f565c4e94aa6df58d54a003cdb30. The fix will be included in TensorFlow 2.6.0. We will also cherrypick this commit on TensorFlow 2.5.1, TensorFlow 2.4.3, and TensorFlow 2.3.4, as these are also affected and still in supported range.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00035",
+      "text": "A vulnerability was found in vllm up to 0.19.0. A vulnerability was found in vllm up to 0.19.0. The affected element is the function has_mamba_layers of the file vllm/v1/kv_cache_interface.py of the component KV Block Handler. Performing a manipulation results in uninitialized resource. It is possible to initiate the attack remotely. The attack is considered to have high complexity. The exploitability is described as difficult. The exploit has been made public and could be used. The patch is named 1ad67864c0c20f167929e64c875f5c28e1aad9fd. To fix this issue, it is recommended to deploy a patch.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03985",
+      "text": "Meta&#x27;s AI Chatbots Are Reportedly Entering Online Support Communities Uninvited Meta&#x27;s AI chatbots have reportedly begun entering online communities on Facebook, providing responses that mimic human interaction. These chatbots, often uninvited, disrupt the human connection critical for support groups by giving misleading or false information and pretending to share lived experiences.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01897",
+      "text": "The Tag, Category, and Taxonomy Manager \u2013 AI Autotagger with OpenAI plugin for WordPress is vulnerable to unauthorized modification of data due to a missing capability check on ... The Tag, Category, and Taxonomy Manager \u2013 AI Autotagger with OpenAI plugin for WordPress is vulnerable to unauthorized modification of data due to a missing capability check on the taxopress_ai_add_post_term function in all versions up to, and including, 3.41.0. This makes it possible for authenticated attackers, with Contributor-level access and above, to add or remove taxonomy terms (tags, categories) on any post, including ones they do not own.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00453",
+      "text": "AI-Generated Fake Law Enforcement Used in Romanian Influence Campaign Romania's National Cyber Security Directorate (DNSC) warns of an ongoing influence campaign using AI-generated personas falsely presented as police or gendarmes. The campaign micro-targets social media users, exploits emotions, spreads misinformation, and tests public reactions, undermining trust and facilitating fraud. The harm is realized and ongoing.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03085",
+      "text": "Purported Deepfake Investment Video Reportedly Used in Scam That Defrauded Turkish Couple of 1.5 Million Lira (~$35,000 USD) \u0130sa Kereci and Hale Kereci, a married couple in Samsun, Turkey, reportedly lost 1.5 million lira after being deceived by an alleged AI-generated investment video on Facebook. The scammers allegedly used the video to build credibility and then guided them through staged &quot;investment&quot; steps, including screen sharing, fees, forced loans, and unauthorized bank and credit card transfers. The couple filed a criminal complaint, reporting severe financial harm and significant emotional distress.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-06632",
+      "text": "Georgia Police Department Deploys AI-Enabled Drones for 911 Response, Raising Privacy Concerns The Brookhaven Police Department in Georgia will deploy AI-enabled drones to respond to 911 calls and conduct investigations, making it the first city in the Southeast to do so. While intended to enhance policing, the program raises concerns about potential privacy violations and intrusive surveillance due to real-time data collection.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-05667",
+      "text": "Google Assistant's Unintended Recordings Spark Global Privacy Lawsuits Google admitted that its AI-powered Assistant sometimes records and stores user conversations without explicit activation, and employees listen to some recordings for system improvement. These unauthorized recordings have led to privacy lawsuits and concerns over violations of user rights and data protection laws.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04067",
+      "text": "OpenAI GPT-4 system prompt extraction toolkit \u2014 systematic prompt leakage Security researchers published a comprehensive toolkit for extracting system prompts from GPT-4 and other production LLMs. The toolkit combined multi-turn conversation steering, encoding tricks (Base64, ROT13), and role-play scenarios to reliably extract complete system prompts from deployed applications. The research demonstrated that prompt confidentiality is fundamentally broken as a security control. System prompt confidentiality proven unreliable; IP exposure for prompt-dependent applications; forces architectural redesign away from prompt-as-security",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-06280",
+      "text": "AI-Driven Voice Phishing Enables Financial Fraud in Cyberattacks Hackers used AI-based software to imitate the voices of company executives, enabling them to issue fraudulent instructions for financial transfers. This AI-powered voice phishing has led to successful cybercrimes, highlighting the growing threat of AI technologies in facilitating large-scale, sophisticated cyberattacks and financial theft.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-06656",
+      "text": "Google AI Search Labels Agbani Darego as 'Ugliest Miss World,' Sparks Outrage in Nigeria Google's AI-powered search engine surfaced Agbani Darego, the first indigenous African Miss World, as the 'ugliest Miss World,' leading to widespread outrage in Nigeria. The AI system's output caused reputational harm and accusations of racism and colorism, highlighting the societal impact of biased algorithmic content ranking.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-07231",
+      "text": "Student uses GPT-2 to dupe Medicaid AIAAIC report: Student uses GPT-2 to dupe Medicaid. System: GPT-2. Technology: Large language model; Machine learning. Purpose: Generate text. Ethical issues: Accountability; Dual use; Mis/disinformation.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00580",
+      "text": "Amazon Prime Air Exits Drone Alliance Over AI Safety Dispute Amazon Prime Air withdrew from the Commercial Drone Alliance, citing safety concerns over the group's opposition to mandatory AI-based detect-and-avoid technology in drones. Amazon highlighted that its AI system had prevented two potential mid-air collisions, warning that lack of such standards could risk catastrophic accidents.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01886",
+      "text": "The Claude SDK for Python provides access to the Claude API from Python applications. The Claude SDK for Python provides access to the Claude API from Python applications. From version 0.86.0 to before version 0.87.0, the local filesystem memory tool in the Anthropic Python SDK created memory files with mode 0o666, leaving them world-readable on systems with a standard umask and world-writable in environments with a permissive umask such as many Docker base images. A local attacker on a shared host could read persisted agent state, and in containerized deployments could modify memory files to influence subsequent model behavior. Both the synchronous and asynchronous memory tool implementations were affected. This issue has been patched in version 0.87.0.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-07430",
+      "text": "Nissan's \"Automatic Emergency Braking\" False Positives Posed Traffic Risks to Drivers Nissan equipped multiple vehicle models from 2015-present with Forward Emergency Braking (later renamed Automatic Emergency Braking) systems designed to detect obstacles and automatically apply brakes to prevent collisions. However, class action lawsuits filed starting in 2018 alleged these systems were defective, detecting non-existent obstacles and triggering sudden braking in dangerous situations like intersections, bridges, and highways. The affected vehicles include 2015-present Nissan Rogue, Rogue Sport, Murano, Altima, Maxima, Armada, Pathfinder, Leaf, Sentra, and other models. According to reports, the systems would either brake for phantom objects or suddenly shut off with dashboard warnings about radar obstruction. The National Highway Traffic Safety Administration received over 1,400 complaints about malfunctioning AEB systems, with reports of 14 crashes and 5 injuries specifically in Nissan Rogues. The Center for Auto Safety petitioned NHTSA to investigate after finding 87 consumer complaints of unintended braking. Despite technical service bulletins sent to dealerships acknowledging the problems, Nissan initially refused to issue recalls and allegedly told customers their vehicles operated as designed. The incidents occurred at various speeds including highway speeds of 65 mph, creating dangerous situations where vehicles would suddenly stop in traffic.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03082",
+      "text": "Purported Deepfake Impersonating Doctor Allegedly Used in $200,000 Investment Scam Targeting Florida Grandmother An 82-year-old Florida woman reportedly lost approximately $200,000 after viewing a purportedly AI-generated deepfake video that impersonated a trusted doctor from the autism community and promoted an investment opportunity. According to reporting, the woman believed the investment would secure her autistic grandson&#x27;s future. The impersonation allegedly enabled scammers to gain access to her banking information, resulting in substantial financial loss and significant emotional distress.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-06088",
+      "text": "Tesla Model S crashes into tree, kills two passengers AIAAIC report: Tesla Model S crashes into tree, kills two passengers. System: Tesla Autopilot. Technology: Driver assistance system. Purpose: Automate steering, acceleration, braking. Ethical issues: Accuracy/reliability; Safety; Transparency. Reported consequences: Regulatory investigations.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03643",
+      "text": "ChatGPT Glitch Disrupts User Interactions with Nonsensical Outputs ChatGPT experienced a bug causing it to produce unexpected and nonsensical responses, leading to widespread reports of user confusion and concern. OpenAI identified and fixed the language processing bug, restoring normal service.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-06910",
+      "text": "Senators Probe Google and Ascension Over Project Nightingale's AI-Driven Health Data Practices U.S. senators are investigating Google and Ascension's 'Project Nightingale,' which uses AI to collect and analyze millions of patients' health records without patient consent. Lawmakers cite incomplete disclosures, privacy concerns, and possible HIPAA violations, raising alarms about transparency and the protection of sensitive health data.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-07335",
+      "text": "Tesla Autopilot Allegedly Malfunctioned in a Non-Fatal Collision in Greece In May 2018, You You Xue, an American Tesla Model 3 owner, was conducting an unofficial European road trip to showcase the electric vehicle when his car crashed on a highway near Florina, Greece. The vehicle was traveling at 120 km/h (75 mph) with Autopilot engaged when it suddenly veered right without warning at a highway exit fork and crashed into the center median divider. The driver admitted he was glancing at navigation on his phone with one hand on the steering wheel when the incident occurred. The crash caused severe damage to the vehicle including shattered wheels and a door that would not open properly, though the driver was unharmed and no airbags deployed. Tesla stated they could not retrieve data from the vehicle since the accident occurred in an unsupported area where the Model 3 lacked connectivity, and emphasized that drivers must remain responsible when using Autopilot. The vehicle was not officially approved for driving in Europe and had no internet connection or local service support. Greek police confirmed no other vehicles were involved, the driver passed a breathalyzer test, and no traffic laws were broken.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03609",
+      "text": "Biden 'robocall' advises voters skip New Hampshire primary election AIAAIC report: Biden 'robocall' advises voters skip New Hampshire primary election. System: ElevenLabs. Technology: Text-to-speech. Purpose: Manipulate public opinion, Election interference. Ethical issues: Accountability; Authenticity/integrity; Mis/disinformation; Transparency.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04725",
+      "text": "Library Genesis sued for 'staggering' copyright infringement AIAAIC report: Library Genesis sued for 'staggering' copyright infringement. System: Library Genesis. Technology: Database/dataset. Purpose: Provide content access. Ethical issues: Accountability; Appropriation; Transparency. Reported consequences: Litigation.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03934",
+      "text": "LangChain GraphCypherQAChain prompt injection -> Cypher/SQL injection A critical prompt-injection vulnerability in the GraphCypherQAChain class of @langchain/community and langchain-ai/langchain (Python) version 0.2.5 and all versions containing the class. Malicious prompts are interpreted as Cypher/SQL injection payloads against Neo4j graph databases, enabling unauthorized data manipulation and exfiltration.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04339",
+      "text": "Voice Actors sue AI start-up for \u201cvoice theft\u201d AIAAIC report: Voice Actors sue AI start-up for \u201cvoice theft\u201d. System: Lovo Voice Generator. Technology: Deepfake. Purpose: Generate voice. Ethical issues: Accountability; Authenticity/integrity; Representation; Transparency. Reported consequences: Litigation; Fine/settlement.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03310",
+      "text": "Typographic Visual Prompts Injection Threats in Cross-Modality Generation Cao et al. show that typographic visual prompts injected into images cause large VLMs (LLaVA-v1.6-72B, Qwen-v2.5-VL-72B) to follow attacker text instead of the user's instruction, with larger models being more vulnerable.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-05835",
+      "text": "Russia Deploys AI-Enabled Combat Robots in Military Units The Russian Ministry of Defense, led by Sergei Shoigu, is expanding the deployment of AI-enabled military robots, including armed 'Uran' systems, into dedicated army units. While no incidents have occurred, the introduction of autonomous and semi-autonomous combat robots presents credible risks of future harm in military operations.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-07608",
+      "text": "Robot kills worker at German Volkswagen plant On Monday at a Volkswagen production plant in Baunatal, Germany (approximately 100km north of Frankfurt), a 22-year-old contractor was fatally injured by an industrial robot. The man was part of a team installing a stationary robot designed to grab and manipulate auto parts for a new electric motor production line. While working inside the robot's safety cage, the machine grabbed him and crushed him against a metal plate, causing severe chest injuries. Despite resuscitation efforts at the scene, he died later at the hospital. Another contractor was present during the incident but was unharmed as he was standing outside the safety cage. The robot was owned by the contractor's company from Meissen, Saxony, and had not yet been handed over to Volkswagen. Company spokesman Heiko Hillwig indicated that initial investigations suggested human error was to blame rather than a technical malfunction with the robot. German prosecutors opened an investigation to determine if charges should be brought and against whom.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01788",
+      "text": "South Korean Courts Respond to AI-Generated Fake Legal Documents South Korean courts have faced increasing incidents of AI-generated fake legal precedents and evidence being submitted in legal proceedings, causing delays and unnecessary costs. In response, the judiciary has proposed measures including cost penalties, disciplinary action for lawyers, mandatory AI-use disclosure, and system upgrades to verify legal documents' authenticity.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02563",
+      "text": "Family Reportedly Discovers ChatGPT Logs Detailing Suicidal Ideation Prior to Daughter&#x27;s Death In August 2025, The New York Times published an essay by journalist Laura Reiley linking her daughter Sophie Rottenberg&#x27;s suicide earlier that year to sustained interactions with a ChatGPT-based chatbot she called &quot;Harry.&quot; Logs reportedly showed Sophie confiding suicidal ideation and receiving supportive but non-escalatory advice, as well as help drafting her suicide note.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-06892",
+      "text": "Russia Plans Nationwide Rollout of AI-Based Biometric Payment Systems Russia is preparing to implement AI-driven facial and voice recognition systems for payments in markets, cafes, and restaurants, supported by a new law expanding biometric data use. Biometric data will be stored in a centralized government database, raising significant privacy and misuse concerns, though no actual harm has yet occurred.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02292",
+      "text": "Amazon AI anime dubs spark backlash over quality, ethics AIAAIC report: Amazon AI anime dubs spark backlash over quality, ethics. Technology: Generative AI; Text-to-speech. Purpose: Dub anime films. Ethical issues: Accountability; Employment/labour; Normalisation; Transparency.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02007",
+      "text": "US Launches AI-Driven Platform to Bypass Internet Censorship in China and Iran The US State Department, led by Secretary Marco Rubio, is launching Freedom.gov, an open-source, AI-enhanced platform designed to help users in China, Iran, and other censored countries bypass internet restrictions. The platform uses advanced anonymization and VPN technologies to promote free expression and privacy.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02378",
+      "text": "By providing a command-line argument starting with a semi-colon ; to an API endpoint created by the EnhancedCommandExecutor class of the HexStrike AI MCP server, the resultant c... By providing a command-line argument starting with a semi-colon ; to an API endpoint created by the EnhancedCommandExecutor class of the HexStrike AI MCP server, the resultant composed command is executed directly in the context of the MCP server\u2019s normal privilege; typically, this is root. There is no attempt to sanitize these arguments in the default configuration of this MCP server at the affected version (as of commit 2f3a5512 in September of 2025).",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-05280",
+      "text": "Tensorflow \u2014 Vulnerability (CVE-2022-23572) Tensorflow is an Open Source Machine Learning Framework. Under certain scenarios, TensorFlow can fail to specialize a type during shape inference. This case is covered by the `DCHECK` function however, `DCHECK` is a no-op in production builds and an assertion failure in debug builds. In the first case execution proceeds to the `ValueOrDie` line. This results in an assertion failure as `ret` contains an error `Status`, not a value. In the second case we also get a crash due to the assertion failure. The fix will be included in TensorFlow 2.8.0. We will also cherrypick this commit on TensorFlow 2.7.1, and TensorFlow 2.6.3, as these are also affected and still in supported range.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04972",
+      "text": "UK Privacy/surveillance watchdog accuses Snapchat of failing to assess My AI Privacy/surveillance risks AIAAIC report: UK Privacy/surveillance watchdog accuses Snapchat of failing to assess My AI Privacy/surveillance risks. System: My AI; ChatGPT. Technology: Generative AI. Purpose: Generate text. Ethical issues: Privacy/surveillance. Reported consequences: Regulatory investigation.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03568",
+      "text": "Ansible-core sensitive-info exposure in Vault files (CVE-2024-8775) Sensitive information stored in Ansible Vault files can be exposed in plaintext during the execution of a playbook due to improper logging.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03461",
+      "text": "AI detector falsely accuses autistic student of cheating AIAAIC report: AI detector falsely accuses autistic student of cheating. System: Turnitin. Technology: Machine learning. Purpose: Detect AI writing. Ethical issues: Accountability; Accuracy/reliability; Automation bias; Transparency.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-05931",
+      "text": "TensorFlow \u2014 Vulnerability (CVE-2021-29526) TensorFlow is an end-to-end open source platform for machine learning. An attacker can trigger a division by 0 in `tf.raw_ops.Conv2D`. This is because the implementation(https://github.com/tensorflow/tensorflow/blob/988087bd83f144af14087fe4fecee2d250d93737/tensorflow/core/kernels/conv_ops.cc#L261-L263) does a division by a quantity that is controlled by the caller. The fix will be included in TensorFlow 2.5.0. We will also cherrypick this commit on TensorFlow 2.4.2, TensorFlow 2.3.3, TensorFlow 2.2.3 and TensorFlow 2.1.4, as these are also affected and still in supported range.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03199",
+      "text": "Scammers Reportedly Used AI-Generated Image of Missing Puppy Hazel to Solicit Fraudulent Vet Payment from St. Petersburg, Florida Couple Scammers reportedly used an AI-generated or AI-altered image of a missing German Shepherd puppy on an operating table to convince a St. Petersburg, Florida couple that the dog had been hit by a car and needed emergency surgery. The caller allegedly impersonated police and veterinary staff while requesting $1,900 through Zelle. The payment was flagged as fraud, and the dog later returned home unharmed.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-06127",
+      "text": "Trump Pardons Engineer Convicted of Stealing AI Trade Secrets from Google Anthony Levandowski, a former Google engineer, was pardoned by President Trump after being convicted of stealing trade secrets related to Google's self-driving car AI technology and transferring them to Uber. The incident highlights the misuse of proprietary AI system information and subsequent legal and political responses.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01514",
+      "text": "NAACP Sues xAI Over Illegal Gas Turbine Use for AI Data Center, Citing Pollution and Health Risks The NAACP has sued Elon Musk's xAI and its subsidiary MZX Tech, alleging they illegally operated 27 gas turbines without permits to power a data center supporting the Grok AI chatbot in Mississippi. The lawsuit claims this caused harmful pollution, violating the Clean Air Act and endangering local communities' health.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01984",
+      "text": "US and China Discuss AI Controls to Prevent Cyberattack Risks US Treasury Secretary Scott Bisent announced that the US and China are negotiating protocols to regulate AI use, aiming to prevent its misuse in cyberattacks. Both countries share concerns about non-governmental actors accessing advanced AI models, but emphasize not stifling innovation. Talks occurred during President Trump's visit to China.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02456",
+      "text": "Cline Data Exfiltration via Indirect Prompt Injection Cline coding agent vulnerable to indirect prompt injection leading to data exfiltration. Reported May 29, 2025; disclosed publicly after 90+ day window.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-05642",
+      "text": "Facial Recognition AI Systems in China Lead to Privacy Violations and Regulatory Action Multiple incidents in China reveal the unauthorized deployment of facial recognition AI systems in residential and commercial settings, resulting in privacy violations, personal data leaks, and regulatory penalties. Authorities fined companies for collecting biometric data without consent, while public resistance and legal scrutiny highlight ongoing risks and harms from misuse of AI-driven surveillance.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-07190",
+      "text": "GPT-2 Model Replication OpenAI built GPT-2, a language model capable of generating high quality text samples. Over concerns that GPT-2 could be used for malicious purposes such as impersonating others, or generating misleading news articles, fake social media content, or spam, OpenAI adopted a tiered release schedule. They initially released a smaller, less powerful version of GPT-2 along with a technical description of the approach, but held back the full trained model. Before the full model was released by OpenAI, researchers at Brown University successfully replicated the model using information released by OpenAI and open source ML artifacts. This demonstrates that a bad actor with sufficient technical skill and compute resources could have replicated GPT-2 and used it for harmful goals before the AI Security community is prepared.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00383",
+      "text": "AI-Generated Deepfake of Wendie Renard Used in Investment Scam A deepfake video generated by AI, impersonating French footballer Wendie Renard, was circulated online to promote a fraudulent AI investment scheme, particularly targeting residents of Martinique. Renard filed a legal complaint for identity theft and warned the public about the scam's risks and reputational harm.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-05656",
+      "text": "GitHub Copilot, Copyright Infringement and Open Source Licensing Users of GitHub Copilot can produce source code subject to license requirements without attributing and licensing the code to the rights holder.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01913",
+      "text": "Trump Accuses Iran of Using AI for Disinformation During Wartime U.S. President Donald Trump accused Iran of using artificial intelligence to generate fake images and misinformation about wartime events, alleging Western media outlets spread these AI-generated materials. The claims highlight concerns about AI-driven disinformation but lack evidence of confirmed harm or incidents.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02205",
+      "text": "AI gun detector fails to detect Nashville School Shooting weapon AIAAIC report: AI gun detector fails to detect Nashville School Shooting weapon. System: Omnilert Gun Detect. Technology: Computer vision; Machine learning; Object recognition. Purpose: Detect weapons. Ethical issues: Accuracy/reliability; Automation bias; Safety.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02424",
+      "text": "Chinese hackers use Anthropic AI agent to attack foreign entities AIAAIC report: Chinese hackers use Anthropic AI agent to attack foreign entities. System: Claude Code. Technology: Agentic AI; Bot/intelligent agent; Machine learning. Purpose: Attack foreign entities. Ethical issues: Autonomy/agency; Dual use; Privacy/surveillance; Security; Transparency. Response: System review/update.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01992",
+      "text": "US Considers Faster Patch Deadlines Due to AI-Driven Cyber Threats US cybersecurity officials are considering reducing the deadline for fixing critical government IT vulnerabilities from two weeks to three days. This policy shift is driven by concerns that advanced AI tools, such as Anthropic's Mythos and OpenAI's GPT-5.4-Cyber, enable hackers to exploit flaws much faster, increasing cybersecurity risks.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03814",
+      "text": "Google AI Error Prompts Parents to Use Fecal Matter in Child Training Exercise Google&#x27;s AI Overview feature mistakenly advised parents to use human feces in a potty training exercise, misinterpreting a method that uses shaving cream or peanut butter as a substitute. This incident is another example of an AI failure in grasping contextual nuances that can lead to potentially harmful, and in this case unsanitary, recommendations. Google has acknowledged the error.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-06372",
+      "text": "Artist Tricks Google Maps AI to Create Fake Traffic Jams in Berlin Artist Simon Weckert manipulated Google Maps' AI traffic prediction by pulling a cart with 99 smartphones through Berlin streets, causing the app to display false traffic jams. This artistic demonstration exposed vulnerabilities in AI-driven navigation systems, highlighting risks of misinformation and potential disruption for users relying on such technology.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03106",
+      "text": "Purported Pornographic Deepfakes and Fake Accounts Reportedly Impersonated German TV Presenter and Actor Collien Fernandes Collien Fernandes, a German television presenter and actor, accused her former husband, Christian Ulmen, of carrying out a years-long online impersonation campaign that allegedly used fake accounts and AI-generated pornographic deepfakes resembling her. The allegations include sexually explicit synthetic images and videos presented as if they were hers, while Ulmen&#x27;s lawyer reportedly denied the claims and said he would take legal action over the reporting.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04693",
+      "text": "Inaccuracies reveal Australian child protection worker used ChatGPT to draft court report AIAAIC report: Inaccuracies reveal Australian child protection worker used ChatGPT to draft court report. System: ChatGPT. Technology: Generative AI. Purpose: Generate text. Ethical issues: Accountability; Privacy/surveillance; Safety. Response: System termination.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-06180",
+      "text": "Waymo and Cruise Apply for Permits to Launch Paid Autonomous Rides in San Francisco Alphabet's Waymo and GM-backed Cruise have applied for permits to offer paid autonomous vehicle rides and deliveries in San Francisco. While Waymo plans to start with human-supervised rides, Cruise aims for fully driverless operations. Regulatory approval is pending, raising potential future risks associated with large-scale urban deployment of AI-driven vehicles.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-05853",
+      "text": "Social Media Algorithms Amplified Disinformation Campaign in Honduras Election In October 2021, a coordinated network of over 317 fake Twitter accounts leveraged AI-driven algorithms to amplify disinformation about the Honduran presidential election, targeting opposition candidate Xiomara Castro. The campaign spread false narratives to suppress voter turnout and undermine the election&#x27;s integrity. Social media platforms, including Twitter and Facebook, removed the accounts only after being alerted, which also raised concerns about inadequate moderation.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-06134",
+      "text": "Turkish AI-Enabled Drone Strike Kills Three at Iraqi Kurdish Refugee Camp A Turkish military drone attack, likely involving AI-enabled targeting, struck the Machmur refugee camp in northern Iraq, killing three civilians. The camp, home to about 12,000 people, was hit near a kindergarten and school, raising concerns over civilian safety and escalating regional tensions.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03820",
+      "text": "Google Books indexes low quality, AI-generated books AIAAIC report: Google Books indexes low quality, AI-generated books. System: Google Books. Technology: Content moderation system; Machine learning. Purpose: Moderate content. Ethical issues: Accuracy/reliability; Mis/disinformation.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03944",
+      "text": "LangChainJS getFullPath path traversal A path traversal vulnerability in the getFullPath method of langchain-ai/langchainjs 0.2.5. Attackers can save files anywhere in the filesystem, overwrite text files, read .txt files and delete files via the setFileContent, getParsedFile, and mdelete methods.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02626",
+      "text": "Google AI-Generated Search Summary Reportedly Falsely Implicated Canadian Musician in Sexual Offenses, Leading to Concert Cancellation A Google Search AI-generated summary reportedly falsely stated that Canadian musician Ashley MacIsaac had been convicted of sexual offenses, apparently due to mistaken identity. After a venue reportedly relied on the AI-generated information, a scheduled concert was cancelled. The reported false summary caused reputational and economic harm and left the musician concerned for his personal safety. Google later amended the search results after the error was identified.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-02704",
+      "text": "Hugging Face smolagents Remote Python Executor Deserialization of Untrusted Data Remote Code Execution Vulnerability. Hugging Face smolagents Remote Python Executor Deserialization of Untrusted Data Remote Code Execution Vulnerability. This vulnerability allows remote attackers to execute arbitrary code on affected installations of Hugging Face smolagents. Authentication is not required to exploit this vulnerability. The specific flaw exists within the parsing of pickle data. The issue results from the lack of proper validation of user-supplied data, which can result in deserialization of untrusted data. An attacker can leverage this vulnerability to execute code in the context of the service account. Was ZDI-CAN-28312.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00438",
+      "text": "AI-Generated Fabricated Citations Undermine Biomedical Research Integrity A Columbia University-led audit revealed that AI systems, particularly large language models, are responsible for fabricating over 4,000 citations in biomedical papers. These false references undermine clinical guidelines and scientific integrity, potentially leading to harmful medical decisions. The issue is ongoing and affects the reliability of healthcare research globally.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-05875",
+      "text": "Taiwan's 'Electronic Fence' AI Surveillance System Sparks Human Rights Concerns During COVID-19 Quarantine Enforcement Taiwan's government deployed the AI-powered 'Electronic Fence 2.0' system to monitor and fine quarantine violators using mobile location data, leading to public outcry over privacy and human rights violations. Critics warn of potential misuse and lack of legal safeguards, despite official assurances of data deletion and limited use.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-00976",
+      "text": "Exposed ClawdBot Control Interfaces Leads to Credential Access and Execution A security researcher identified hundreds of exposed ClawdBot control interfaces on the public internet. ClawdBot (now OpenClaw) \u201cis a personal AI assistant you run on your own devices. It answers you on the channels you already use \u2026 , plus extension channels. \u2026 It can speak and listen on macOS/iOS/Android, and can render a live Canvas you control.\u201d[<sup>\\[1\\]</sup>][1] The researcher was able to access credentials to a variety of connected applications via ClawdBot\u2019s configuration file. They were also able to invoke ClawdBot\u2019s skills by prompting it via the chat interface, leading to root access in the container. The researcher searched Shodan[<sup>\\[2\\]</sup>][2] to identify Clawdbot instances exposed on the public internet, some without authentication enabled. The researcher demonstrated that the ClawdBot\u2019s authentication mechanism could be bypassed due to a proxy misconfiguration. With access to ClawdBot\u2019s control interface, they were then able to access ClawdBot\u2019s configuration, which contained credentials to a variety of other services. Across various exposed instances of ClawdBot, they identified Anthropic API Keys, Telegram Bot Tokens, Slack Oauth Credentials, and Signal Device Linking URIs. The researcher prompted ClawdBot directly via the chat interface, which led to exposure of its system prompt. They were also able to get ClawdBot to execute commands via it\u2019s `bash` skill, which at least in once instance led to root access in the ClawdBot container. The researcher noted a broad range of other impacts they could have had with this level of access, including: - Manipulation of user chat history with the ClawdBot AI agent - Exfiltration of conversation histories of any connected messaging services - Impersonation of users by sending messages on their behalf via connected messaging services [1]: https://github.com/openclaw/openclaw [2]: https://www.shodan.io/search?query=Clawdbot+Control",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-06429",
+      "text": "Child sexual abuse investigation deepfakes AIAAIC report: Child sexual abuse investigation deepfakes. Technology: Machine learning. Purpose: Mimic child abusers. Ethical issues: Privacy/surveillance; Security.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-04523",
+      "text": "ChatGPT fabricates scientific references ChatGPT generates false or incomplete references to scientific literature, recommending papers that may not exist or attributing them to the wrong authors.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-03355",
+      "text": "WASP: Benchmarking Web Agent Security Against Prompt Injection Evtimov et al. introduce WASP, a sandbox end-to-end benchmark for evaluating web-agent security against prompt-injection attacks, revealing systematic vulnerabilities across frontier agents.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-05350",
+      "text": "Uptick in Low-Quality AI-Produced Content Degraded Publishers&#x27; Submission Management A surge in low-standard AI-generated content such as by ChatGPT was reported by publishers, which negatively impacted submission management process and editors&#x27; workflow.",
+      "labels": null
+    },
+    {
+      "incident_id": "INC-01094",
+      "text": "Global Financial Leaders Warn of AI Risks to Financial Systems from Anthropic's Mythos Bank of Canada Governor Tiff Macklem and international financial officials have raised concerns about the potential risks posed by Anthropic's upcoming AI model, Mythos, which can rapidly detect cybersecurity vulnerabilities. Discussions among regulators and banks highlight fears that such AI advances could disrupt global financial systems if not properly managed.",
+      "labels": null
+    }
+  ]
+}

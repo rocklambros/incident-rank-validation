@@ -18,6 +18,7 @@
   "ess_fraction": 0.4,
   "meaningful_kappa_n": 4,
   "prng_seed": 20260520,
+  "confidence_threshold": 0.1,
   "rubric_drafting_attestation": {
     "viewed_corpus_before_drafting": false,
     "viewed_corpus_details": "",
@@ -33,7 +34,7 @@
     "viewed_results_before_signoff": false
   },
   "statistical_reviewer": null,
-  "classifier_rule_hash": null,
+  "classifier_rule_hash": "f493ac216ad5d384aa310ef874a9aea9f81aba7a026afdd3b3c34fe5dcf9ef08",
   "rubric_hash": "2383f39825e4949251d514df49d1fed586874714aa9396fa24f3c0774534b120",
   "post_hoc_register_path": null
 }
