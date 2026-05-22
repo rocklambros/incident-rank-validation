@@ -9,7 +9,7 @@ import pytest
 
 from engine.calibrate.beta import BetaPosterior, Calibration
 from engine.calibrate.cv import CVResult, cross_validate_calibration
-from engine.calibrate.sampler import SampleFrame, SampleRequest, SampleResult, Sampler
+from engine.calibrate.sampler import SampleFrame, SampleRequest, SampleResult
 
 # ---------------------------------------------------------------------------
 # BetaPosterior

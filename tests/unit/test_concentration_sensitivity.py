@@ -97,6 +97,7 @@ def _run_inference_with_manifest(manifest: PreregManifest) -> npt.NDArray[np.flo
             overlap=overlap,
             num_warmup=NUM_WARMUP,
             num_samples=NUM_SAMPLES,
+            num_chains=1,
         )
     return result.lambda_samples
 

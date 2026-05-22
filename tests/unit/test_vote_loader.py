@@ -2,10 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import numpy as np
-
-from engine.vote.loader import load_vote_data, VoteData
-
+from engine.vote.loader import VoteData, load_vote_data
 
 FIXTURE = Path(__file__).parent.parent / "fixtures" / "vote_fixture.xlsx"
 
@@ -34,7 +31,7 @@ class TestVoteLoader:
     def test_missing_sheet_raises(self) -> None:
         try:
             load_vote_data(FIXTURE, sheet_name="Nonexistent")
-            assert False, "should raise"
+            raise AssertionError("should raise")
         except ValueError:
             pass
 

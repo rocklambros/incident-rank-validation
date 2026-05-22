@@ -32,11 +32,12 @@ _SYSTEM_TEMPLATE = (
 
 
 def build_prompt(incident: IncidentRecord, rubric_json: str) -> str:
+    safe_text = incident.text.replace("{", "{{").replace("}", "}}")
     return _SYSTEM_TEMPLATE.format(
         begin=INCIDENT_DELIMITER_BEGIN,
         end=INCIDENT_DELIMITER_END,
         rubric=rubric_json,
-        incident_text=incident.text,
+        incident_text=safe_text,
     )
 
 

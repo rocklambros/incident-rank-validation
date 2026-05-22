@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from engine.calibrate.sampler import SampleFrame, SampleRequest, SampleResult, Sampler
+from engine.calibrate.sampler import SampleFrame, Sampler, SampleRequest
 from engine.calibrate.two_frame_sampler import TwoFrameSampler
 from engine.classify.stub import Classification, ClassificationResult
 from engine.schema import IncidentRecord

@@ -8,12 +8,22 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import numpy as np
 import numpy.typing as npt
 
 from engine.classify.stage2_protocol import Stage2Classification
 from engine.classify.stub import Classification, ClassificationResult
+
+if TYPE_CHECKING:
+    from engine.calibrate.beta import Calibration
+    from engine.decide.concordance import ConcordanceResult
+    from engine.decide.rollup import RollupResult
+    from engine.decide.selection_bias import SelectionBiasDisclosure
+    from engine.model.inference import InferenceResult
+    from engine.monitoring.wandb_logger import WandBLogger
+    from engine.prereg.manifest import PreregManifest
 
 
 def route_to_stage2(
@@ -53,6 +63,7 @@ def write_classify_artifacts(
     result: ClassificationResult,
     out_dir: Path,
     stage2_results: tuple[Stage2Classification, ...] = (),
+    incident_strata: dict[str, str] | None = None,
 ) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -63,6 +74,7 @@ def write_classify_artifacts(
             "confidence": c.confidence,
             "stage": c.stage,
             "rationale": c.rationale,
+            "stratum": (incident_strata or {}).get(c.incident_id, "default"),
         }
         for c in result.classifications
     ]
@@ -93,11 +105,84 @@ def write_classify_artifacts(
         )
 
 
+def _load_calibration(cal_path: Path) -> Calibration:
+    """Deserialize calibration posteriors from JSON."""
+    from engine.calibrate.beta import BetaPosterior, Calibration
+
+    data = json.loads(cal_path.read_text())
+
+    def _parse_posteriors(
+        d: dict[str, dict[str, float]],
+    ) -> dict[tuple[str, str], BetaPosterior]:
+        result: dict[tuple[str, str], BetaPosterior] = {}
+        for key_str, params in d.items():
+            parts = key_str.split("::")
+            if len(parts) == 2:
+                result[(parts[0], parts[1])] = BetaPosterior(
+                    alpha=float(params["alpha"]),
+                    beta=float(params["beta"]),
+                )
+        return result
+
+    recall = _parse_posteriors(data.get("recall", {}))
+    precision = _parse_posteriors(data.get("precision", {}))
+    return Calibration(recall=recall, precision=precision)
+
+
+def _load_manifest(manifest_path: Path) -> PreregManifest:
+    """Load PreregManifest from JSON file."""
+    import dataclasses
+
+    from engine.prereg.manifest import PreregManifest
+
+    data = json.loads(manifest_path.read_text())
+
+    field_names = {f.name for f in dataclasses.fields(PreregManifest)}
+    filtered = {k: v for k, v in data.items() if k in field_names}
+
+    if "robustness_specs" in filtered and isinstance(filtered["robustness_specs"], list):
+        filtered["robustness_specs"] = tuple(filtered["robustness_specs"])
+
+    return PreregManifest(**filtered)
+
+
+def _build_counts_from_labeled(
+    labeled: list[dict[str, object]],
+) -> tuple[dict[tuple[str, str], int], dict[str, int], tuple[str, ...], tuple[str, ...]]:
+    """Build observation counts from labeled_incidents.json.
+
+    Returns (observed_counts, stratum_sizes, measurable_entries, strata).
+    """
+    from collections import Counter
+
+    entry_stratum_counts: Counter[tuple[str, str]] = Counter()
+    stratum_doc_counts: Counter[str] = Counter()
+    entry_set: set[str] = set()
+    stratum_set: set[str] = set()
+
+    for item in labeled:
+        eid = str(item.get("entry_id", ""))
+        stratum = str(item.get("stratum", "default"))
+        entry_stratum_counts[(eid, stratum)] += 1
+        stratum_doc_counts[stratum] += 1
+        entry_set.add(eid)
+        stratum_set.add(stratum)
+
+    measurable_entries = tuple(sorted(entry_set))
+    strata = tuple(sorted(stratum_set))
+
+    observed_counts = dict(entry_stratum_counts)
+    stratum_sizes = {s: max(stratum_doc_counts[s], 1) for s in strata}
+
+    return observed_counts, stratum_sizes, measurable_entries, strata
+
+
 def execute_infer_phase(
     cycle: Path,
     num_warmup: int = 1000,
     num_samples: int = 2000,
     num_chains: int = 4,
+    wandb_logger: WandBLogger | None = None,
 ) -> None:
     import os
     os.environ.setdefault("JAX_PLATFORM_NAME", "cpu")
@@ -125,9 +210,71 @@ def execute_infer_phase(
             "Vote enters only at decide (HANDOFF §6 control 2)."
         )
 
+    # Load manifest
+    prereg = cycle / "prereg"
+    manifest = _load_manifest(prereg / "manifest.json")
+
+    # Load calibration posteriors
+    calibration = _load_calibration(cal_path)
+
+    # Load labeled incidents
+    labeled = json.loads(labeled_path.read_text())
+
+    # Build observation arrays
+    from engine.model.overlap import OverlapWeights
+
+    observed_counts, stratum_sizes, measurable_entries, strata = _build_counts_from_labeled(
+        labeled
+    )
+
+    overlap = OverlapWeights(weights={})
+
+    # Run NUTS inference
+    import time
+
+    from engine.model.inference import DiagnosticsFailure, run_inference
+
+    out_dir = cycle / "infer"
+
+    if wandb_logger is not None:
+        wandb_logger.log_inference_start(
+            num_warmup=num_warmup,
+            num_samples=num_samples,
+            num_chains=num_chains,
+        )
+
+    t0 = time.monotonic()
+    try:
+        result = run_inference(
+            manifest=manifest,
+            measurable_entries=measurable_entries,
+            strata=strata,
+            observed_counts=observed_counts,
+            stratum_sizes=stratum_sizes,
+            calibration=calibration,
+            overlap=overlap,
+            num_warmup=num_warmup,
+            num_samples=num_samples,
+            num_chains=num_chains,
+        )
+        wall_seconds = time.monotonic() - t0
+
+        if wandb_logger is not None:
+            wandb_logger.log_inference_result(
+                r_hat=result.r_hat,
+                ess=result.ess,
+                divergences=result.divergences,
+                wall_seconds=wall_seconds,
+            )
+
+        write_infer_artifacts(result, out_dir)
+    except DiagnosticsFailure as e:
+        write_nuts_failure(out_dir, str(e), None)
+        raise
+
 
 def write_infer_artifacts(
-    result: "InferenceResult",
+    result: InferenceResult,
     out_dir: Path,
 ) -> None:
     from engine.model.inference import InferenceResult  # noqa: F401
@@ -165,10 +312,10 @@ def write_nuts_failure(
 
 
 def write_decide_artifacts(
-    concordance: "ConcordanceResult",
+    concordance: ConcordanceResult,
     out_dir: Path,
-    rollup_results: tuple = (),
-    selection_bias: object | None = None,
+    rollup_results: tuple[RollupResult, ...] = (),
+    selection_bias: SelectionBiasDisclosure | None = None,
     twin_agreement: object | None = None,
     robustness: object | None = None,
 ) -> None:
@@ -178,7 +325,11 @@ def write_decide_artifacts(
 
     conc_dict = {
         "weighted_kappa_median": concordance.weighted_kappa_median,
-        "weighted_kappa_ci": list(concordance.weighted_kappa_ci) if concordance.weighted_kappa_ci else None,
+        "weighted_kappa_ci": (
+            list(concordance.weighted_kappa_ci)
+            if concordance.weighted_kappa_ci
+            else None
+        ),
         "measurable_count": concordance.measurable_count,
         "total_count": concordance.total_count,
         "coverage_ratio": concordance.coverage_ratio,
