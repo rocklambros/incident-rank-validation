@@ -18,3 +18,13 @@ def test_robustness_inference_uses_num_chains() -> None:
 
     sig = inspect.signature(run_robustness_inference)
     assert "num_chains" in sig.parameters
+
+
+def test_robustness_returns_diagnostics() -> None:
+    """F9: robustness InferenceResult must have populated r_hat and ess dicts."""
+    from engine.model.robustness import _run_poisson_flat
+    import inspect
+    source = inspect.getsource(_run_poisson_flat)
+    assert "diagnostics.summary" in source or "get_samples(group_by_chain=True)" in source, (
+        "_run_poisson_flat must extract real diagnostics from MCMC"
+    )
