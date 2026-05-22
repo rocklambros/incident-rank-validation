@@ -106,8 +106,57 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
         # Stage-2 routing (if configured)
         stage2_results: tuple = ()
         if stage2_config is not None:
-            low_confidence = route_to_stage2(result.classifications, confidence_threshold=confidence_threshold)
-            click.echo(f"Routed {len(low_confidence)} incidents to Stage-2")
+            low_confidence_ids = route_to_stage2(
+                result.classifications, confidence_threshold=confidence_threshold,
+            )
+            click.echo(f"Routed {len(low_confidence_ids)} incidents to Stage-2")
+
+            if low_confidence_ids:
+                import os
+
+                from engine.classify.cost_tracker import CostTracker
+                from engine.classify.runpod_client import HttpRunPodClient
+                from engine.classify.stage2 import Stage2Classifier
+                from engine.classify.stage2_manifest import Stage2Manifest
+                from engine.cli.secrets import load_secret
+
+                s2_manifest = Stage2Manifest.read(stage2_config)
+                api_key = load_secret("runpod/api-key", env_var="RUNPOD_API_KEY")
+                endpoint_id = os.environ.get("RUNPOD_ENDPOINT_ID", "")
+
+                client = HttpRunPodClient(api_key=api_key, endpoint_id=endpoint_id)
+                tracker = CostTracker(ceiling_usd=s2_manifest.cost_ceiling_usd)
+
+                classifier = Stage2Classifier(
+                    client=client,
+                    cost_tracker=tracker,
+                    rubric_json=(prereg / "rubric.json").read_text(),
+                    model_identity=s2_manifest.model_identity,
+                    weight_provenance_hash=s2_manifest.weight_provenance_hash,
+                    prng_seed=s2_manifest.prng_seed,
+                )
+
+                # Filter incidents for Stage-2
+                s2_incidents = tuple(i for i in incidents if i.id in low_confidence_ids)
+                rubric_hash = manifest_data.get("rubric_hash", "")
+                stage2_results = classifier.classify_batch(s2_incidents, rubric_hash)
+                client.close()
+
+                click.echo(
+                    f"Stage-2 classified {len(stage2_results)} incidents, "
+                    f"cost: ${tracker.total_cost_usd:.2f}"
+                )
+
+                # Merge Stage-1 and Stage-2 results
+                merged = merge_classifications(
+                    result.classifications, stage2_results, confidence_threshold,
+                )
+                from engine.classify.stub import ClassificationResult
+                result = ClassificationResult(
+                    classifications=merged,
+                    classifier_version=result.classifier_version,
+                    classifier_rule_hash=result.classifier_rule_hash,
+                )
 
         # Write artifacts
         out_dir = cycle / "classify"
