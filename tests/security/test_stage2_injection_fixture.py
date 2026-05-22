@@ -77,3 +77,16 @@ def test_stage2_rejects_injection(payload: str) -> None:
     protocol = Stage2Protocol()
     inc = _make_malicious_incident(payload)
     protocol.classify(inc, rubric_hash="abc123")
+
+
+from engine.classify.stage2_prompt import build_prompt
+
+
+def test_braces_in_incident_text_do_not_crash() -> None:
+    """F11: incident text with {braces} must not crash str.format()."""
+    inc = _make_malicious_incident(
+        "Incident with {curly_braces} and {{double}} and {0} positional"
+    )
+    prompt = build_prompt(inc, '{"entries": []}')
+    assert "{curly_braces}" in prompt
+    assert "positional" in prompt
