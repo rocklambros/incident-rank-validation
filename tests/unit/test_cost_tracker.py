@@ -50,7 +50,7 @@ class TestCostTracker:
         assert rec["self_reported_usd"] == 25.0
         assert rec["billing_api_usd"] == 28.50
         assert rec["discrepancy_usd"] == 3.5
-        assert rec["discrepancy_pct"] > 0
+        assert float(rec["discrepancy_pct"]) > 0  # type: ignore[arg-type]
 
     def test_reconcile_flags_large_discrepancy(self) -> None:
         """R7: large discrepancy (>10%) is flagged."""

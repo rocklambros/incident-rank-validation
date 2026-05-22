@@ -1,6 +1,8 @@
 """Tests for engine.calibrate.tally — aggregation of coded labels."""
 from __future__ import annotations
 
+from typing import Any
+
 from engine.calibrate.batch import BatchHeader, BatchIncident, CodingBatch
 from engine.calibrate.tally import (
     tally_batches,
@@ -10,7 +12,7 @@ from engine.calibrate.tally import (
 def _precision_batch(
     entry_id: str = "LLM01",
     stratum: str = "security",
-    incidents: list[dict] | None = None,
+    incidents: list[dict[str, Any]] | None = None,
 ) -> CodingBatch:
     if incidents is None:
         incidents = [
@@ -38,7 +40,7 @@ def _precision_batch(
 
 def _recall_batch(
     stratum: str = "security",
-    incidents: list[dict] | None = None,
+    incidents: list[dict[str, Any]] | None = None,
 ) -> CodingBatch:
     if incidents is None:
         incidents = [

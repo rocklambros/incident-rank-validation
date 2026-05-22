@@ -58,7 +58,7 @@ python_version = "3.12"
 packages = ["engine", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["scipy.*", "jax.*", "jaxlib.*", "numpyro.*"]
+module = ["scipy.*", "jax.*", "jaxlib.*", "numpyro.*", "openpyxl.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

@@ -8,7 +8,7 @@ from engine.schema import IncidentRecord
 def test_incident_record_requires_all_fields() -> None:
     """F1: IncidentRecord needs all 9 positional fields."""
     with pytest.raises(TypeError):
-        IncidentRecord(
+        IncidentRecord(  # type: ignore[call-arg]
             id="INC-001",
             text="test",
             corpus_stratum="stratum_a",

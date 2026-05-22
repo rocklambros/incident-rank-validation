@@ -56,9 +56,9 @@ def compute_calibration(
             rt.true_positives, rt.false_negatives,
         )
 
-    for key, rt in tally.rollup_counts.items():
+    for key, pt_rollup in tally.rollup_counts.items():
         precision_posteriors[key] = BetaPosterior.from_counts(
-            rt.true_positives, rt.false_positives,
+            pt_rollup.true_positives, pt_rollup.false_positives,
         )
 
     cal = Calibration(recall=recall_posteriors, precision=precision_posteriors)

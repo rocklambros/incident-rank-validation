@@ -7,9 +7,13 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import click
 import numpy as np
+
+if TYPE_CHECKING:
+    from engine.classify.stage2_protocol import Stage2Classification
 
 
 def _default_tier_boundaries(n_entries: int) -> tuple[int, ...]:
@@ -105,7 +109,7 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
         click.echo(f"Stage-1 produced {len(result.classifications)} classifications")
 
         # Stage-2 routing (if configured)
-        stage2_results: tuple = ()
+        stage2_results: tuple[Stage2Classification, ...] = ()
         if stage2_config is not None:
             low_confidence_ids = route_to_stage2(
                 result.classifications, confidence_threshold=confidence_threshold,
