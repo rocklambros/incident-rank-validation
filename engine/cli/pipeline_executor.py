@@ -162,3 +162,85 @@ def write_nuts_failure(
         (out_dir / "partial_results.json").write_text(
             json.dumps({"status": "partial", "shape": list(partial_samples.shape)}, indent=2) + "\n"
         )
+
+
+def write_decide_artifacts(
+    concordance: "ConcordanceResult",
+    out_dir: Path,
+    rollup_results: tuple = (),
+    selection_bias: object | None = None,
+    twin_agreement: object | None = None,
+    robustness: object | None = None,
+) -> None:
+    from engine.decide.concordance import ConcordanceResult  # noqa: F401
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    conc_dict = {
+        "weighted_kappa_median": concordance.weighted_kappa_median,
+        "weighted_kappa_ci": list(concordance.weighted_kappa_ci) if concordance.weighted_kappa_ci else None,
+        "measurable_count": concordance.measurable_count,
+        "total_count": concordance.total_count,
+        "coverage_ratio": concordance.coverage_ratio,
+        "below_prereg_minimum": concordance.below_prereg_minimum,
+        "flags": [
+            {"entry_id": f.entry_id, "probability": f.probability, "direction": f.direction.value}
+            for f in concordance.flags
+        ],
+    }
+    (out_dir / "concordance.json").write_text(
+        json.dumps(conc_dict, indent=2) + "\n"
+    )
+
+    if rollup_results:
+        rollup_data = [
+            {
+                "parent_entry_id": r.parent_entry_id,
+                "child_entry_id": r.child_entry_id,
+                "verdict": r.verdict.value,
+                "p_distinct_cluster": r.p_distinct_cluster,
+            }
+            for r in rollup_results
+        ]
+        (out_dir / "rollup.json").write_text(
+            json.dumps(rollup_data, indent=2) + "\n"
+        )
+
+    if selection_bias is not None:
+        (out_dir / "selection_bias.json").write_text(
+            json.dumps({
+                "statistic_name": selection_bias.statistic_name,
+                "statistic_value": selection_bias.statistic_value,
+                "p_value": selection_bias.p_value,
+                "severity": selection_bias.severity,
+            }, indent=2) + "\n"
+        )
+
+
+def write_reproduction_bundle(
+    out_dir: Path,
+    cycle_id: str,
+    engine_version: str,
+    snapshot_hash: str,
+    manifest_hash: str,
+    lockfile_hash: str,
+    stage2_manifest_hash: str = "",
+    calibration_hash: str = "",
+    vote_data_hash: str = "",
+) -> None:
+    from engine.repro.bundle import ReproductionBundle
+
+    bundle = ReproductionBundle(
+        cycle_id=cycle_id,
+        engine_version=engine_version,
+        snapshot_hash=snapshot_hash,
+        manifest_hash=manifest_hash,
+        lockfile_hash=lockfile_hash,
+        provenance={
+            "stage2_manifest_hash": stage2_manifest_hash,
+            "calibration_hash": calibration_hash,
+            "vote_data_hash": vote_data_hash,
+        },
+    )
+    out_dir.mkdir(parents=True, exist_ok=True)
+    bundle.write(out_dir / "repro_bundle.json")

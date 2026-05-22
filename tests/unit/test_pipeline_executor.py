@@ -114,3 +114,52 @@ class TestInferPhase:
         assert summary["num_samples"] == 500
         assert summary["divergences"] == 0
         assert summary["num_chains"] == 4
+
+
+class TestDecidePhase:
+    def test_writes_concordance_artifacts(self, tmp_path: Path) -> None:
+        from engine.cli.pipeline_executor import write_decide_artifacts
+        from engine.decide.concordance import ConcordanceResult, STANDING_CAVEAT
+
+        concordance = ConcordanceResult(
+            weighted_kappa_median=0.72,
+            weighted_kappa_ci=(0.55, 0.88),
+            measurable_count=15,
+            total_count=20,
+            coverage_ratio=0.75,
+            below_prereg_minimum=False,
+            meaningful_kappa_n=4,
+            flags=(),
+            standing_caveat=STANDING_CAVEAT,
+        )
+        out_dir = tmp_path / "results"
+        write_decide_artifacts(
+            concordance=concordance,
+            out_dir=out_dir,
+            rollup_results=(),
+            selection_bias=None,
+            twin_agreement=None,
+            robustness=None,
+        )
+        assert (out_dir / "concordance.json").exists()
+        data = json.loads((out_dir / "concordance.json").read_text())
+        assert data["weighted_kappa_median"] == 0.72
+
+    def test_writes_reproduction_bundle(self, tmp_path: Path) -> None:
+        from engine.cli.pipeline_executor import write_reproduction_bundle
+
+        out_dir = tmp_path / "results"
+        write_reproduction_bundle(
+            out_dir=out_dir,
+            cycle_id="2026",
+            engine_version="1.0.0",
+            snapshot_hash="snap123",
+            manifest_hash="man456",
+            lockfile_hash="lock789",
+            stage2_manifest_hash="s2hash",
+            calibration_hash="calhash",
+            vote_data_hash="votehash",
+        )
+        assert (out_dir / "repro_bundle.json").exists()
+        data = json.loads((out_dir / "repro_bundle.json").read_text())
+        assert data["provenance"]["stage2_manifest_hash"] == "s2hash"
