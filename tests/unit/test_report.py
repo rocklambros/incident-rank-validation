@@ -4,7 +4,8 @@ from __future__ import annotations
 
 from engine.decide.concordance import STANDING_CAVEAT, ConcordanceResult
 from engine.decide.measurability import MeasurabilityMap
-from engine.decide.robustness_multiplicity import FlagDirection, FlagFinding
+from engine.decide.robustness_multiplicity import FlagDirection, FlagFinding, RobustnessSpread, SpecResult
+from engine.decide.rollup import RollupResult, RollupVerdict
 from engine.decide.selection_bias import SelectionBiasDisclosure
 from engine.model.censoring import MeasurabilityVerdict
 from engine.report.diff import PreregDiff
@@ -69,6 +70,11 @@ def _make_inputs(
     non_publishable: bool = False,
     with_flags: bool = False,
     kappa: float | None = 0.65,
+    rollup_results: tuple[RollupResult, ...] = (),
+    prereg_diff: PreregDiff | None = None,
+    robustness: RobustnessSpread | None = None,
+    runpod_cost_usd: float | None = None,
+    cost_ceiling_usd: float | None = None,
 ) -> ReportInputs:
     return ReportInputs(
         cycle_id="cycle-001",
@@ -76,9 +82,13 @@ def _make_inputs(
         measurability_map=_make_measurability_map(),
         concordance=_make_concordance(with_flags=with_flags, kappa=kappa),
         selection_bias=_make_selection_bias(),
-        robustness=None,
+        robustness=robustness,
         twin_agreement=None,
         non_publishable=non_publishable,
+        rollup_results=rollup_results,
+        prereg_diff=prereg_diff,
+        runpod_cost_usd=runpod_cost_usd,
+        cost_ceiling_usd=cost_ceiling_usd,
     )
 
 
@@ -171,3 +181,71 @@ class TestPreregDiff:
         assert "## Pre-registration Deviations" in md
         assert "- changed threshold" in md
         assert "- added stratum" in md
+
+
+# ---------------------------------------------------------------------------
+# New report sections (Plan 5 Task 12)
+# ---------------------------------------------------------------------------
+
+
+def test_report_includes_rollup_section() -> None:
+    rollup = (
+        RollupResult(
+            parent_entry_id="LLM06",
+            child_entry_id="mcp-tool",
+            verdict=RollupVerdict.SUPPORTED,
+            p_distinct_cluster=0.85,
+            child_median_lambda=0.04,
+            parent_median_lambda=0.12,
+            ratio_median=0.33,
+        ),
+    )
+    inputs = _make_inputs(rollup_results=rollup)
+    report = render_report(inputs)
+    assert "Rollup" in report
+    assert "mcp-tool" in report
+    assert "SUPPORTED" in report or "supported" in report
+
+
+def test_report_includes_prereg_diff_section() -> None:
+    diff = PreregDiff(deviations=("flag_threshold_tau changed: 0.8 to 0.7",))
+    inputs = _make_inputs(prereg_diff=diff)
+    report = render_report(inputs)
+    assert "Pre-registration" in report or "Deviation" in report
+
+
+def test_report_no_prereg_diff_when_clean() -> None:
+    diff = PreregDiff(deviations=())
+    inputs = _make_inputs(prereg_diff=diff)
+    report = render_report(inputs)
+    assert "No deviations" in report or "Deviation" not in report
+
+
+def test_report_includes_robustness_section() -> None:
+    spread = RobustnessSpread(
+        primary=SpecResult(
+            spec_name="negative_binomial_per_stratum",
+            weighted_kappa_median=0.80,
+            weighted_kappa_ci=(0.65, 0.92),
+            flags=(),
+        ),
+        robustness=(
+            SpecResult(
+                spec_name="poisson_flat",
+                weighted_kappa_median=0.72,
+                weighted_kappa_ci=(0.55, 0.88),
+                flags=(),
+            ),
+        ),
+    )
+    inputs = _make_inputs(robustness=spread)
+    report = render_report(inputs)
+    assert "Robustness" in report
+    assert "poisson_flat" in report
+    assert "0.72" in report
+
+
+def test_report_runpod_cost_disclosure() -> None:
+    inputs = _make_inputs(runpod_cost_usd=87.50, cost_ceiling_usd=500.0)
+    report = render_report(inputs)
+    assert "87.50" in report or "87.5" in report
