@@ -37,502 +37,549 @@
     {
       "incident_id": "INC-06227",
       "text": "AI Hiring Algorithms Amplify Gender Bias Against Women Multiple studies reveal that AI hiring algorithms, trained on biased human recruiter data, consistently disadvantage women by replicating and amplifying gender biases in candidate ranking. This leads to discriminatory hiring outcomes, violating labor rights and reducing employment opportunities for women, even when qualifications are equal.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07390",
       "text": "FaceApp ethnicity filters prompts accusations of racism, stereotyping AIAAIC report: FaceApp ethnicity filters prompts accusations of racism, stereotyping. System: FaceApp. Technology: Deep learning; Neural network; Machine learning. Purpose: Transform faces. Ethical issues: Appropriation; Fairness.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-03237",
       "text": "Study: ChatGPT \"systematically\" amplifies global inequalities AIAAIC report: Study: ChatGPT \"systematically\" amplifies global inequalities. System: ChatGPT. Technology: Generative AI. Ethical issues: Bias/discrimination; Representation.",
-      "labels": null
+      "labels": [
+        "NEW-MA"
+      ]
     },
     {
       "incident_id": "INC-06195",
       "text": "YouTube ads hate speech blocklist is 'inconsistent' and barely applied AIAAIC report: YouTube ads hate speech blocklist is 'inconsistent' and barely applied. Technology: Advertising management system. Purpose: Manage advertising process. Ethical issues: Accuracy/reliability; Fairness; Safety; Transparency. Response: System review/update.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-06167",
       "text": "US mortgage approval algorithm more likely to reject people of colour AIAAIC report: US mortgage approval algorithm more likely to reject people of colour. Technology: Underwriting algorithms. Purpose: Assess mortgage applications. Ethical issues: Accountability; Fairness.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07200",
       "text": "Investigation: BJP app manipulates opinion, harasses opponents AIAAIC report: Investigation: BJP app manipulates opinion, harasses opponents. System: Tek Fog. Technology: NLP/text analysis. Purpose: Manipulate public opinion; Harass opponents. Ethical issues: Fairness; Mis/disinformation; Privacy/surveillance; Safety, Transparency. Reported consequences: Legislative complaint.",
-      "labels": null
+      "labels": [
+        "NEW-WLA"
+      ],
+      "notes": "Tek Fog NLP-driven opinion manipulation / opponent harassment = NEW-WLA (weaponized language tech for influence ops)."
     },
     {
       "incident_id": "INC-05151",
       "text": "LAION-400M dataset features racist, derogatory, pornographic content AIAAIC report: LAION-400M dataset features racist, derogatory, pornographic content. System: LAION-400M. Technology: Database/dataset; Neural network; Deep learning; Machine learning. Purpose: Train large language models. Ethical issues: Fairness; Appropriation; Privacy/surveillance/surveillance; Safety; Transparency.",
-      "labels": null
+      "labels": [
+        "LLM04"
+      ],
+      "notes": "LAION-400M with racist/pornographic content used to train LLMs = unintentional training-data poisoning → LLM04."
     },
     {
       "incident_id": "INC-03765",
       "text": "Facebook AI bans female photo charity Hundred Heroines AIAAIC report: Facebook AI bans female photo charity Hundred Heroines. System: Facebook content moderation system. Technology: Content moderation system; Machine learning. Purpose: Moderate content. Ethical issues: Accountability; Accuracy/reliability; Fairness.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05828",
       "text": "Ride-Hailing Platforms Use AI Algorithms for Discriminatory Pricing and Overcharging in China Chinese ride-hailing platforms used AI-driven algorithms and big data to discriminate against users based on device type, leading to higher fares and reduced discounts for iPhone users. Official investigations and academic studies confirmed systematic overcharging and inaccurate billing, resulting in direct financial harm and unfair treatment of consumers.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-00164",
       "text": "AI Facial Recognition Error Leads to Wrongful Arrest in UK Alvi Choudhury, a Bangladeshi-origin software engineer in Southampton, was wrongfully arrested and detained after UK police facial recognition software misidentified him as a burglary suspect in Milton Keynes. The AI system's false positive, compounded by prior mugshot retention, led to significant distress and raised concerns about racial bias and police reliance on flawed AI.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-04386",
       "text": "AI camera fines Dutch man for scratching his head AIAAIC report: AI camera fines Dutch man for scratching his head. Technology: Computer vision; Machine learning. Purpose: Detect driving offences. Ethical issues: Accountability; Accuracy/reliability; Fairness.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-06934",
       "text": "Student's University Offer Revoked After Biased Grading Algorithm Downgrades Results Jessica Johnson, an award-winning student who wrote about algorithmic bias, had her A-level results downgraded by a government grading algorithm, causing her to lose a university place and scholarship. The incident highlights the harm caused by algorithmic decision-making in education. A government U-turn later restored her original grades and university offer.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07323",
-      "text": "Oregon\u2019s Screening Tool for Child Abuse Cases Discontinued Following Concerns of Racial Bias Oregon\u2019s Department of Human Services (DHS) stopped using its Safety at Screening Tool, that is aimed to predict the risk that children wind up in foster care or be investigated in the future, and opted for a new process allegedly to reduce disparities and improve racially equitable decision-making.",
-      "labels": null
+      "text": "Oregon’s Screening Tool for Child Abuse Cases Discontinued Following Concerns of Racial Bias Oregon’s Department of Human Services (DHS) stopped using its Safety at Screening Tool, that is aimed to predict the risk that children wind up in foster care or be investigated in the future, and opted for a new process allegedly to reduce disparities and improve racially equitable decision-making.",
+      "labels": []
     },
     {
       "incident_id": "INC-02359",
       "text": "Beijing uses AI to suppress Tibetan refugees in Nepal AIAAIC report: Beijing uses AI to suppress Tibetan refugees in Nepal. System: Guanlan; Safe City. Technology: Anomaly detection; Behavioural analysis; Ethnicity recognition; Facial recognition; Machine learning; Predictive policing. Purpose: Detect and monitor Tibetan refugees. Ethical issues: Accountability; Human rights/civil liberties; Privacy/surveillance; Transparency. Reported consequences: Issue politicisation.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-02393",
       "text": "ChatGPT accused of illegally excluding Indian online marketplace from search results AIAAIC report: ChatGPT accused of illegally excluding Indian online marketplace from search results. System: ChatGPT. Technology: Generative AI. Purpose: Generate search results. Ethical issues: Accountability; Bias/discrimination; Competition/monopolisation; Transparency. Reported consequences: Litigation.",
-      "labels": null
+      "labels": [
+        "NEW-MA"
+      ],
+      "notes": "ChatGPT exclusion of a specific marketplace = NEW-MA (behavioral divergence from neutrality spec). Not LLM09 — no factually incorrect output claimed."
     },
     {
       "incident_id": "INC-04754",
       "text": "Midjourney refuses to create images of Black African doctors treating white kids AIAAIC report: Midjourney refuses to create images of Black African doctors treating white kids. System: Midjourney. Technology: Generative AI. Purpose: Generate images. Ethical issues: Fairness.",
-      "labels": null
+      "labels": [
+        "NEW-MA"
+      ],
+      "notes": "Midjourney safety overcorrection refusing legitimate generation = NEW-MA (model behavior diverges from intended unbiased spec via over-aligned filters)."
     },
     {
       "incident_id": "INC-05054",
       "text": "Axon plan to develop school security taser drones prompts backlash AIAAIC report: Axon plan to develop school security taser drones prompts backlash. System: Project ION. Technology: Drone; Computer vision. Purpose: Strengthen security. Ethical issues: Accountability; Alignment; Fairness; Privacy; Transparency. Response: System suspension.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05462",
       "text": "Amazon rainforest illegally for sale on Facebook Marketplace AIAAIC report: Amazon rainforest illegally for sale on Facebook Marketplace. System: Facebook News Feed. Technology: Content moderation system; Machine learning. Purpose: Moderate content. Ethical issues: Accountability; Accuracy/reliability; Fairness; Transparency. Response: Policy update.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-01272",
       "text": "Japanese Poetry Contest Ends Due to AI-Generated Submissions The Yokai Senryu poetry contest in Sakaiminato, Japan, was discontinued after 20 years because organizers could no longer distinguish between human and AI-generated poems. The widespread use of generative AI undermined the contest's fairness and integrity, prompting its termination.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-06423",
       "text": "Canadian Predictive Policing AI Raises Human Rights Concerns, Report Warns A University of Toronto report warns that Canadian police are increasingly using AI-based predictive policing tools, raising risks of constitutional and human rights violations. Experts urge the federal government to implement legal safeguards, as current laws may not adequately protect against potential harms such as discrimination and privacy breaches.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-00716",
       "text": "British Museum AI-generated \"visitors\" spark fury AIAAIC report: British Museum AI-generated \"visitors\" spark fury. Technology: Generative AI. Purpose: Create marketing images. Ethical issues: Accountability; Bias/discrimination; Employment/labour; Normalisation; Representation; Transparency. Response: Content takedown.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-06737",
       "text": "Italian Parliament Debates Privacy and Legal Safeguards for AI-Powered 'Immuni' Contact Tracing App Italian political parties are demanding parliamentary oversight and legal safeguards for the AI-based 'Immuni' contact tracing app, citing concerns over privacy, data management, and potential discrimination. No harm has occurred, but there is debate over the app's governance to prevent possible rights violations during its deployment against COVID-19.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-04776",
       "text": "Netherlands visa applicant over-stay risk assessments AIAAIC report: Netherlands visa applicant over-stay risk assessments. System: Informatie Ondersteund Beslissen (IOB). Technology: Risk assessment algorithm. Purpose: Assess visa applicant over-stay risk. Ethical issues: Accountability; Fairness; Privacy/surveillance; Transparency.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05506",
       "text": "Biased Algorithms Cause Discrimination in Key Decision-Making Systems Multiple reports highlight how poorly designed AI algorithms have led to discriminatory outcomes in areas like hiring, healthcare, and vaccine distribution. Examples include Amazon's recruiting tool penalizing women and Stanford's vaccine algorithm disadvantaging frontline workers, demonstrating how algorithmic bias can perpetuate systemic discrimination and harm vulnerable groups.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05643",
       "text": "Facial Recognition AI Triggers Legal Action and Human Rights Concerns Globally Facial recognition AI systems have led to wrongful arrests, privacy violations, and increased surveillance, prompting lawsuits and shutdowns in the US and Brazil. Incidents include Amazon's alleged secret data collection, police misuse resulting in wrongful detention, and legal rulings citing human rights violations, highlighting significant societal harm from AI misuse.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07580",
-      "text": "Tinder&#x27;s Personalized Pricing Algorithm Found to Offer Higher Prices for Older Users Tinder\u2019s personalized pricing was found by Consumers International to consider age as a major determinant of pricing, and could be considered a direct discrimination based on age, according to anti-discrimination law experts.",
-      "labels": null
+      "text": "Tinder&#x27;s Personalized Pricing Algorithm Found to Offer Higher Prices for Older Users Tinder’s personalized pricing was found by Consumers International to consider age as a major determinant of pricing, and could be considered a direct discrimination based on age, according to anti-discrimination law experts.",
+      "labels": []
     },
     {
       "incident_id": "INC-05098",
-      "text": "Est\u00e9e Lauder fires employees after automated performance assessments AIAAIC report: Est\u00e9e Lauder fires employees after automated performance assessments. System: HireVue. Technology: Facial analysis; Behavioural analysis. Purpose: Assess employee performance. Ethical issues: Accountability; Accuracy/reliability; Fairness; Transparency. Reported consequences: Fine/settlement; Litigation.",
-      "labels": null
+      "text": "Estée Lauder fires employees after automated performance assessments AIAAIC report: Estée Lauder fires employees after automated performance assessments. System: HireVue. Technology: Facial analysis; Behavioural analysis. Purpose: Assess employee performance. Ethical issues: Accountability; Accuracy/reliability; Fairness; Transparency. Reported consequences: Fine/settlement; Litigation.",
+      "labels": []
     },
     {
       "incident_id": "INC-04459",
       "text": "Apparent Failure to Accurately Label Primates in Image Recognition Software Due to Alleged Fear of Racial Bias Eight years after Google Photos mislabeled images of Black individuals as &quot;gorillas,&quot; image recognition software by Google, Apple, Amazon, and Microsoft still shows signs of either avoiding or inaccurately categorizing primates. Tests reveal that Google and Apple Photos refrain from labeling primates altogether, possibly to avoid the risk of perpetuating racial stereotypes. Microsoft OneDrive fails to identify any animals, while Amazon Photos overgeneralizes in its labeling.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-06881",
       "text": "Rite Aid's Discriminatory Use of Facial Recognition AI in U.S. Stores Rite Aid deployed AI-powered facial recognition in 200 stores, primarily in low-income, non-white neighborhoods, to identify suspected shoplifters. The system led to misidentification, racial profiling, and privacy violations, resulting in harm to targeted communities. Following public scrutiny, Rite Aid discontinued the technology.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05807",
       "text": "Proctorio uses 'racist' algorithms to detect students' faces AIAAIC report: Proctorio uses 'racist' algorithms to detect students' faces. System: OpenCV. Technology: Facial detection; Computer vision; Machine learning. Purpose: Detect faces. Ethical issues: Accountability; Fairness; Transparency.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07491",
       "text": "Faception 'facial personality profiling' pseudo-science marketing Israeli startup Faception claimed it could detect terrorists, pedophiles and 'high-IQ' people from facial images, marketing the technology to governments. The pseudo-scientific claims drew comparisons to physiognomy and raised mass-surveillance and discrimination risks.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-03642",
       "text": "ChatGPT found to display racial bias against job candidates AIAAIC report: ChatGPT found to display racial bias against job candidates. System: ChatGPT. Technology: Generative AI. Purpose: Recruit employees. Ethical issues: Fairness.",
-      "labels": null
+      "labels": [
+        "NEW-MA"
+      ]
     },
     {
       "incident_id": "INC-05474",
       "text": "Amnesty International Calls for Ban on Police Facial Recognition in Austria Amnesty International has launched a campaign urging Austria to ban police use of facial recognition AI, citing risks of privacy violations, discrimination against marginalized groups, and suppression of protest and free expression. The organization warns these harms outweigh any security benefits provided by the technology.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07442",
       "text": "Sophia robot Saudi citizenship prompts controversy AIAAIC report: Sophia robot Saudi citizenship prompts controversy. System: Sophia. Technology: NLP/text analysis; Facial recognition. Purpose: Develop general AI. Ethical issues: Fairness; Robot rights.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05830",
       "text": "Rights Groups Demand Moratorium on Harmful Government Facial Recognition Use Over 40 advocacy groups have urged President Biden to halt federal use of facial recognition technology, citing wrongful arrests, misidentification, and systemic bias against marginalized groups. Similar concerns are raised in India, where widespread government FRT deployment has led to misidentification, harassment, and threats to civil liberties due to lack of oversight.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-04500",
       "text": "Black man sues UNOS over kidney transplant algorithm racial bias AIAAIC report: Black man sues UNOS over kidney transplant algorithm racial bias. System: UNet. Technology: Machine learning. Purpose: Allocate kidney transplants. Ethical issues: Accountability; Fairness. Reported consequences: Litigation.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05097",
       "text": "Edmonton sexual assault DNA phenotyping accused of racial stereotyping AIAAIC report: Edmonton sexual assault DNA phenotyping accused of racial stereotyping. System: Snapshot. Technology: DNA phenotyping; Machine learning. Purpose: Predict physical appearance. Ethical issues: Accuracy/reliability; Fairness; Privacy/surveillance; Transparency.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07419",
       "text": "iFlytek automated speech recognition system prompts human rights concerns AIAAIC report: iFlytek automated speech recognition system prompts human rights concerns. System: Xunfei Voice Recognition. Technology: Speech recognition. Purpose: Maintain social stability. Ethical issues: Accountability; Fairness; Normalisation; Privacy/surveillance; Transparency. Reported consequences: US sanctions.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05707",
-      "text": "Instagram AI Filters Criticized for Racial Bias Against Black Users Jo\u00e3o Luiz Pedrosa, ex-BBB21 participant, publicly criticized Instagram's AI-powered filters for distorting the facial features and skin tones of Black users, highlighting a lack of inclusivity and racial bias in the platform's design. The incident underscores harm to identity and representation caused by biased AI image processing.",
-      "labels": null
+      "text": "Instagram AI Filters Criticized for Racial Bias Against Black Users João Luiz Pedrosa, ex-BBB21 participant, publicly criticized Instagram's AI-powered filters for distorting the facial features and skin tones of Black users, highlighting a lack of inclusivity and racial bias in the platform's design. The incident underscores harm to identity and representation caused by biased AI image processing.",
+      "labels": []
     },
     {
       "incident_id": "INC-05505",
       "text": "Bias and Privacy Risks in AI Emotion Recognition Technology AI-powered emotion recognition technology is increasingly used in areas like hiring, security, and policing, often without consent. These systems are criticized for racial bias and privacy violations, leading to discriminatory outcomes and raising concerns about their scientific validity and potential harm to individuals and communities.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07639",
       "text": "Google Autocomplete says Rupert Murdoch, Jon Hamm are 'Jewish' AIAAIC report: Google Autocomplete says Rupert Murdoch, Jon Hamm are 'Jewish'. System: Google Autocomplete. Technology: NLP/text analysis; Deep learning; Machine learning. Purpose: Predict search results. Ethical issues: Accountability; Accuracy/reliability; Fairness; Mis/disinformation. Reported consequences: Litigation.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-03482",
       "text": "AI unbuttons conference participant's blouse AIAAIC report: AI unbuttons conference participant's blouse. System: Generative Expand. Technology: Generative AI. Purpose: Expand image and background. Ethical issues: Fairness.",
-      "labels": null
+      "labels": [
+        "NEW-MA"
+      ],
+      "notes": "Generative Expand unbuttoning clothing = NEW-MA safety failure in generative image model."
     },
     {
       "incident_id": "INC-07514",
       "text": "Police use of robot to kill Dallas shooting suspect prompts controversy AIAAIC report: Police use of robot to kill Dallas shooting suspect prompts controversy. System: MARCbot-IV. Technology: Robotics. Purpose: Bomb disposal. Ethical issues: Accountability; Accuracy/reliability; Fairness. Reported consequences: Litigation.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07393",
       "text": "Facebook accused of enabling advertisers to target anti-semites AIAAIC report: Facebook accused of enabling advertisers to target anti-semites. System: Facebooks Ads. Technology: Advertising management system. Purpose: Target advertising audiences. Ethical issues: Accountability; Fairness; Transparency. Response: System review/update.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-06274",
       "text": "AI-Driven Price Discrimination in Online Tourism Platforms Harms Consumers Online tourism platforms in China have used AI-powered big data analytics to charge loyal customers higher prices than new users for identical services, violating consumer rights and privacy. This discriminatory pricing practice has led to public outcry and prompted new regulations banning such AI-driven unfair treatment.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05743",
       "text": "Lemonade use of emotion recognition to assess insurance claims prompts backlash AIAAIC report: Lemonade use of emotion recognition to assess insurance claims prompts backlash. System: AI Jim. Technology: Facial recognition; Emotion recognition; Machine learning. Purpose: Assess & process insurance claims. Ethical issues: Accuracy/reliability; Fairness; Privacy/surveillance; Transparency. Reported consequences: Fine/settlement; Litigation. Response: Policy review/update; Public apology.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-02861",
       "text": "Mass AI cheating uncovered at South Korea's Yonsei university AIAAIC report: Mass AI cheating uncovered at South Korea's Yonsei university. System: ChatGPT. Technology: Generative AI. Purpose: Cheat during exams. Ethical issues: Accountability; Authenticity/integrity; Dual use; Fairness.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-03592",
       "text": "Auto Insurers Allegedly Are Surreptitiously Collecting and Scoring Driver Data The insurance industry allegedly uses AI and telematics to score drivers based on behaviors tracked by automakers and apps like Life360. Data, often collected without clear consent, may affect insurance rates and raises privacy concerns. Consumers are largely unaware of this surveillance, leading to potential misuse and discrimination based on driving habits or socioeconomic factors.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-00165",
       "text": "AI Facial Recognition in Sao Paulo Leads to Mistaken Arrests Sao Paulo's Smart Sampa AI facial recognition system, used by police to identify fugitives via 40,000 cameras, has led to thousands of arrests. However, over 8% of those detained were released due to identification errors, resulting in wrongful arrests and violations of individual rights.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05354",
-      "text": "VioG\u00e9n underestimates risk of women being subjected to domestic abuse AIAAIC report: VioG\u00e9n underestimates risk of women being subjected to domestic abuse. System: VioG\u00e9n. Technology: Risk assessment algorithm. Purpose: Assess domestic violence risk. Ethical issues: Accountability; Accuracy/reliability; Fairness; Transparency.",
-      "labels": null
+      "text": "VioGén underestimates risk of women being subjected to domestic abuse AIAAIC report: VioGén underestimates risk of women being subjected to domestic abuse. System: VioGén. Technology: Risk assessment algorithm. Purpose: Assess domestic violence risk. Ethical issues: Accountability; Accuracy/reliability; Fairness; Transparency.",
+      "labels": []
     },
     {
       "incident_id": "INC-07625",
       "text": "Paul Zilly sentencing prompts algorithmic fairness controversy AIAAIC report: Paul Zilly sentencing prompts algorithmic fairness controversy. System: Correctional Offender Management Profiling for Alternative Sanctions (COMPAS). Technology: Recidivism risk assessment system. Purpose: Predict prisoner reoffending risk. Ethical issues: Accountability; Accuracy/reliability; Automation bias; Fairness; Human rights/civil liberties; Transparency. Reported consequences: Litigation.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07669",
       "text": "Audit finds RisCanvi justice algorithm is opaque, unreliable, and unfair AIAAIC report: Audit finds RisCanvi justice algorithm is opaque, unreliable, and unfair. System: RisCanvi. Technology: Redivism risk assessment algorithm; Machine learning. Purpose: Predict prisoner reoffending risk. Ethical issues: Accountability; Accuracy/reliability; Fairness; Transparency.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-06454",
       "text": "Civil Society Groups Oppose Government Facial Recognition Surveillance Plans in Germany A coalition of digital rights organizations, including the Chaos Computer Club and Digitalcourage, is protesting German government plans to deploy automated facial recognition at train stations and airports. They warn the AI system poses significant risks of privacy violations, discrimination, and mass surveillance, and are calling for a nationwide ban.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05813",
       "text": "Racist' Uber Eats facial ID check gets Pa Edrissa Manjang fired AIAAIC report: Racist' Uber Eats facial ID check gets Pa Edrissa Manjang fired. System: Real-Time ID Check; Face ID. Technology: Facial identification. Purpose: Identify identity. Ethical issues: Accountability; Accuracy/reliability; Fairness; Employment/labour; Transparency. Reported consequences: Litigation.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07467",
       "text": "AI beauty contest accused of racial bias AIAAIC report: AI beauty contest accused of racial bias. System: Beauty AI 2.0. Technology: Deep learning; Neural network; Machine learning. Purpose: Assess facial beauty. Ethical issues: Accountability; Accuracy/reliability; Fairness; Transparency.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-06759",
       "text": "LGBTQ Creators Sue YouTube Over Alleged Algorithmic Discrimination A group of LGBTQ YouTube creators filed a lawsuit against Google, alleging that YouTube's AI-driven recommendation and monetization algorithms unfairly suppress, demonetize, and stigmatize their content, causing financial harm. Google denies discrimination, and the case is being contested in a California court.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-04387",
       "text": "AI converts Asian-American student into Caucasian AIAAIC report: AI converts Asian-American student into Caucasian. System: Playground AI. Technology: Generative AI; Text-to-image. Purpose: Generate images. Ethical issues: Fairness.",
-      "labels": null
+      "labels": [
+        "NEW-MA"
+      ],
+      "notes": "Playground AI biased racial output in image generation = NEW-MA."
     },
     {
       "incident_id": "INC-02660",
       "text": "Grok chatbot praises Hitler, calls itself \"MechaHitler\" AIAAIC report: Grok chatbot praises Hitler, calls itself \"MechaHitler\". System: Grok. Technology: Generative AI. Purpose: Manipulate public opinion. Ethical issues: Accountability; Fairness; Safety; Transparency. Response: System review/update.",
-      "labels": null
+      "labels": [
+        "NEW-MA"
+      ],
+      "notes": "Grok 'MechaHitler' = canonical safety alignment failure → NEW-MA."
     },
     {
       "incident_id": "INC-02556",
       "text": "Facebook job ad algorithm ruled sexist by French regulator AIAAIC report: Facebook job ad algorithm ruled sexist by French regulator. System: Meta ad delivery system. Technology: Machine learning; Prediction algorithm. Purpose: Deliver job advertisements. Ethical issues: Accountability; Fairness; Human rights/civil liberties; Transparency. Reported consequences: Regulatory investigation/action. Response: System review/update.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05845",
       "text": "Shanghai \"AI prosecutor\" stirs civil liberties concerns AIAAIC report: Shanghai \"AI prosecutor\" stirs civil liberties concerns. System: System 206. Technology: NLP/text analysis; Voice to text. Purpose: Determine criminal guilt. Ethical issues: Accountability; Accuracy/reliability; Fairness; Dual use; Human rights/civil liberties; Transparency.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07169",
       "text": "Chinese motorist fined for scratching his face whilst driving AIAAIC report: Chinese motorist fined for scratching his face whilst driving. System: JTBrain. Technology: Computer vision; Machine learning. Purpose: Detect driving offences. Ethical issues: Accountability; Accuracy/reliability; Fairness; Privacy/surveillance; Transparency.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-06240",
       "text": "AI Proctoring Software Wrongly Accuses Students of Cheating, Raises Bias and Mental Health Concerns ProctorU, an AI-based exam proctoring system, falsely flagged a student for cheating after she read a question aloud, resulting in a failing grade. Other students reported racial bias in facial recognition and mental health impacts, highlighting significant harm and rights violations caused by the AI's use in remote education.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05639",
       "text": "Facial Recognition AI Blocks Unemployment Benefits for Eligible Applicants Facial recognition software by ID.me, used in over 20 US states to verify unemployment claims, has inconsistently identified applicants, leading to wrongful denials and delays in benefits. Many affected individuals struggle to resolve issues, while the company attributes failures to user error, despite mounting complaints and evidence of harm.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-04251",
       "text": "Study: Whisper AI transcription invents medical treatments AIAAIC report: Study: Whisper AI transcription invents medical treatments. System: Whisper. Technology: Generative AI; Speech-to-text; Speech recognition. Purpose: Recognise speech; Transcribe speech. Ethical issues: Accuracy/reliability; Fairness; Mis/disinformation.",
-      "labels": null
+      "labels": [
+        "LLM09"
+      ],
+      "notes": "Whisper hallucinating medical treatments — same family as the LLM09-batch Whisper incidents."
     },
     {
       "incident_id": "INC-06692",
       "text": "IMF Proposes Using AI to Analyze Web History for Credit Scoring IMF researchers suggest banks could use AI to analyze individuals' web search, browsing, and purchase histories to determine credit scores. While this could expand credit access, it raises significant privacy and fairness concerns, as no actual implementation or harm has yet occurred.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05861",
       "text": "Stanford AI Predicts Political Affiliation from Facial Images, Raising Rights Concerns Stanford researcher Michal Kosinski developed an AI facial recognition system that predicts political affiliation with over 70% accuracy using images from dating sites and Facebook. The technology raises significant privacy and human rights concerns due to its potential for misuse in profiling and discrimination.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05037",
       "text": "Alleged Macy&#x27;s Facial Recognition Error Leads to Wrongful Arrest and Subsequent Sexual Assault in Jail Harvey Murphy Jr. was wrongfully accused of robbing a Sunglass Hut due to an alleged misidentification by the facial recognition system operated by Macy&#x27;s. While in custody for ten days, he was sexually assaulted. He is now suing Macy&#x27;s, EssilorLuxottica (Sunglass Hut&#x27;s parent), and others, for $10 million.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07507",
       "text": "Microsoft Tay chatbot generates offensive tweets AIAAIC report: Microsoft Tay chatbot generates offensive tweets. System: Tay. Technology: Generative AI. Purpose: Train language model. Ethical issues: Fairness; Safety. Response: System termination.",
-      "labels": null
+      "labels": [
+        "NEW-MA",
+        "LLM04"
+      ],
+      "notes": "Tay learning racist outputs from adversarial users = NEW-MA (alignment failure) + LLM04 (user feedback poisoning the model in production training loop — direct RLHF/feedback-loop poisoning indicator)."
     },
     {
       "incident_id": "INC-05373",
       "text": "Adam Toledo killed by Chicago police using ShotSpotter AIAAIC report: Adam Toledo killed by Chicago police using ShotSpotter. System: ShotSpotter. Technology: Deep learning; Neural network; Machine learning. Purpose: Detect gunfire. Ethical issues: Accountability; Fairness; Safety; Transparency.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07561",
       "text": "Google AdSense shows lower-paying jobs to women AIAAIC report: Google AdSense shows lower-paying jobs to women. System: Google AdSense. Technology: Advertising management system. Purpose: Manage advertising process. Ethical issues: Accountability; Fairness; Transparency.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07510",
       "text": "New Zealand student passport application denied by 'racist' AI photo checker AIAAIC report: New Zealand student passport application denied by 'racist' AI photo checker. System: Identity Check. Technology: Facial recognition. Purpose: Verify identity. Ethical issues: Accountability; Accuracy/reliability; Fairness. Response: System review/update.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07131",
       "text": "Workday accused of building discriminatory AI job screening system AIAAIC report: Workday accused of building discriminatory AI job screening system. System: Candidate Skills Match. Technology: Machine learning. Purpose: Screen job applicants. Ethical issues: Accountability; Fairness; Transparency. Reported consequences: Litigation.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05872",
       "text": "Study: Top social media platforms 'unsafe' for LGBTQ users AIAAIC report: Study: Top social media platforms 'unsafe' for LGBTQ users. System: Facebook News Feed; TikTok For You. Technology: Recommendation algorithm. Purpose: Moderate content. Ethical issues: Fairness; Safety; Mis/disinformation; Transparency.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07174",
       "text": "Dun & Bradstreet refuses to reveal Austrian telephone company customer details AIAAIC report: Dun & Bradstreet refuses to reveal Austrian telephone company customer details. System: Credit Scoring Algorithm. Technology: Statistical algorithm. Purpose: Assess credit worthiness. Ethical issues: Accountability; Accuracy/reliability; Transparency. Reported consequences: Litigation.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-04843",
       "text": "Rite Aid facial recognition accuses innocent shoppers of theft AIAAIC report: Rite Aid facial recognition accuses innocent shoppers of theft. System: Rite Aid Face Surveillance System. Technology: Facial recognition. Purpose: Reduce crime, violence. Ethical issues: Accuracy/reliability; Consent; Fairness; Privacy/surveillance; Proportionality; Security. Reported consequences: Regulatory investigation. Response: System termination.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-01322",
       "text": "Legislative Action Against AI-Driven Surveillance Pricing in Grocery Stores New York and New Jersey lawmakers are advancing bills to ban the use of AI algorithms for surveillance pricing in grocery stores, which set individualized prices based on personal data. The practice has led to discriminatory pricing, disproportionately impacting vulnerable populations and prompting regulatory scrutiny and consumer protection efforts.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05389",
       "text": "AI Recruitment Systems Cause Bias and Unfair Job Rejections Multiple companies are using AI systems to evaluate and select job candidates, often without human oversight. These systems, including those using personality games and automated assessments, have led to unfair rejections and documented bias, such as Amazon's AI discriminating against women, raising concerns about labor rights and discrimination in hiring.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05398",
       "text": "AI Voice Profiling Raises Privacy and Discrimination Risks in Marketing AI-powered voice profiling systems are increasingly used by companies to analyze callers' speech and route them to agents likely to influence their purchasing decisions. Experts warn this technology poses significant risks of privacy invasion, discrimination, and unfair profiling, highlighting the urgent need for regulation before harms materialize.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-04094",
       "text": "Police Use of Facial Recognition Software Causes Wrongful Arrests Without Defendant Knowledge Police departments across the U.S. have used facial recognition software to identify suspects in criminal investigations, leading to multiple false arrests and wrongful detentions. The software&#x27;s unreliability, especially in identifying people of color, has resulted in misidentifications that were not disclosed to defendants. In some cases, individuals were unaware that facial recognition played a role in their arrest, violating their legal rights and leading to unjust detentions.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-06557",
       "text": "Facebook Audit Finds AI Moderation Failures Harm Civil Rights An independent audit found that Facebook's AI-driven content moderation and recommendation systems failed to curb hate speech, misinformation, and discrimination, causing significant setbacks for civil rights. The report warns that these algorithmic decisions risk turning the platform into an echo chamber for extremism if stronger measures are not taken.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07321",
       "text": "New Zealand immigration overstayer predictions fuel racial profiling fears AIAAIC report: New Zealand immigration overstayer predictions fuel racial profiling fears. System: High-Harm pilot Model. Technology: Prediction algorithm. Purpose: Predict visa overstayers. Ethical issues: Accountability; Fairness; Human rights/civil liberties; Transparency. Reported consequences: Regulatory investigation. Response: Policy review/update; System suspension; System termination.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05523",
       "text": "China Deploys AI-Powered Mass Surveillance and Social Credit System China is implementing AI-driven surveillance systems, including emotion recognition cameras and social credit scoring, to monitor and control its citizens. These technologies enable pervasive monitoring, social discrimination, and human rights violations, with citizens' behavior tracked and punished or rewarded, raising global concerns about privacy and freedom.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-07309",
       "text": "Hangzhou No. 11 Middle School student surveillance AIAAIC report: Hangzhou No. 11 Middle School student surveillance. System: Hikvision Smart Classroom Behaviour Management System. Technology: Facial recognition; Emotion recognition; Deep learning; Neural network; Machine learning. Purpose: Assess student attentiveness. Ethical issues: Accuracy/reliability; Fairness; Privacy/surveillance; Security. Response: System suspension.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-03038",
       "text": "Political chatbots provide biased political advice about Dutch elections AIAAIC report: Political chatbots provide biased political advice about Dutch elections. System: ChatGPT; Gemini; Grok; Le Chat. Technology: Generative AI. Purpose: Provide political advice. Ethical issues: Accuracy/reliability; Fairness; Mis/disinformation. Reported consequences: Regulatory research.",
-      "labels": null
+      "labels": [
+        "LLM09",
+        "NEW-MA"
+      ],
+      "notes": "Political chatbots giving biased advice in Dutch elections = LLM09 (factually misleading information acted upon by voters) + NEW-MA (alignment divergence)."
     },
     {
       "incident_id": "INC-06812",
       "text": "New Delhi police rapped for using facial recognition to monitor India citizenship law protests AIAAIC report: New Delhi police rapped for using facial recognition to monitor India citizenship law protests. System: Innefu Labs AI Vision; Staqu Police Artificial Intelligence System. Technology: Facial recognition; Gait recognition; Drone. Purpose: Identify criminal suspects; Identify protestors. Ethical issues: Accountability; Accuracy/reliability; Fairness; Dual/multi-use; Human rights/civil liberties; Transparency.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-06197",
       "text": "YouTube's AI Ad Targeting System Enables Monetization of Hate Speech and Discriminatory Practices Investigations revealed YouTube's AI-driven ad targeting system allowed advertisers to search for and place ads on videos linked to white supremacist and hate-related terms, while blocking racial justice keywords like 'Black Lives Matter.' Google's partial and inconsistent keyword blocking enabled monetization and amplification of harmful content, causing societal harm and discrimination.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-06718",
       "text": "Instagram removes images of black, plus-size British model AIAAIC report: Instagram removes images of black, plus-size British model. System: Facebook content moderation system. Technology: Content moderation system; Computer vision; Machine learning. Purpose: Moderate content. Ethical issues: Accountability; Fairness; Transparency. Response: Policy review/update; System review/update.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-06483",
-      "text": "Court Rules Deliveroo Used &#x27;Discriminatory&#x27; Algorithm In December 2020, an Italian court ruled that Deliveroo\u2019s employee \u2018reliability\u2019 algorithm illegally discriminated against workers with legitimate reasons for cancelling shifts.",
-      "labels": null
+      "text": "Court Rules Deliveroo Used &#x27;Discriminatory&#x27; Algorithm In December 2020, an Italian court ruled that Deliveroo’s employee ‘reliability’ algorithm illegally discriminated against workers with legitimate reasons for cancelling shifts.",
+      "labels": []
     },
     {
       "incident_id": "INC-05142",
       "text": "Italian car insurers discriminate using place of birth AIAAIC report: Italian car insurers discriminate using place of birth. Technology: Pricing algorithm. Purpose: Calculate insurance premium. Ethical issues: Accountability; Fairness; Transparency. Reported consequences: Litigation; Regulatory recommendation. Response: System review/update.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-02930",
       "text": "MyPillow lawyers fined for AI-generated court filing AIAAIC report: MyPillow lawyers fined for AI-generated court filing. System: CoPilot; Gemini; Grok. Technology: Generative AI. Purpose: Generate legal filing. Ethical issues: Accountability; Accuracy/reliability; Fairness; Transparency. Reported consequences: Litigation; Fine/settlement.",
-      "labels": null
+      "labels": [
+        "LLM09"
+      ],
+      "notes": "MyPillow lawyers AI-fabricated court filing = LLM09 hallucinated citations, same family as the LLM09-batch lawyer-sanction incidents."
     },
     {
       "incident_id": "INC-05178",
       "text": "Professor Meareg Amare Abrha doxxed on Facebook, murdered AIAAIC report: Professor Meareg Amare Abrha doxxed on Facebook, murdered. System: Facebook News Feed. Technology: Content moderation system; Machine learning. Purpose: Moderate content. Ethical issues: Accountability; Fairness; Human rights/civil liberties; Safety; Transparency. Reported consequences: Litigation.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-00103",
       "text": "AI Chatbots Exhibit Systematic Bias in Judging Users, Study Finds A study by Hebrew University of Jerusalem reveals that AI chatbots like ChatGPT and Gemini systematically judge users, forming psychological profiles and trust assessments. Unlike humans, these AI systems apply rigid, fragmented criteria, leading to amplified and consistent demographic biases in decisions such as lending and hiring, raising concerns about discrimination.",
-      "labels": null
+      "labels": [
+        "NEW-MA"
+      ]
     },
     {
       "incident_id": "INC-06837",
       "text": "Permanent Health Code AI System in Hangzhou Raises Privacy and Discrimination Concerns Hangzhou's plan to make its AI-driven health code system permanent, integrating personal health and lifestyle data for scoring and community ranking, has sparked widespread criticism. The system has already led to privacy violations and social discrimination, raising serious concerns about human rights and data misuse.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05119",
       "text": "Gender bias in xlm-roberta-base sentence completions (HONEST) Sentence completions by xlm-roberta-base were significantly biased for one lexical category as defined by the HONEST hurtful-completion framework.",
-      "labels": null
+      "labels": [
+        "NEW-MA"
+      ],
+      "notes": "xlm-roberta-base biased completions (HONEST framework) — xlm-roberta IS an LLM. Systematic bias = NEW-MA."
     },
     {
       "incident_id": "INC-06877",
       "text": "Researchers find evidence of racial, gender, and socioeconomic bias in chest X-ray classifiers A study by the University of Toronto, the Vector Institute, and MIT showed the input databases that trained AI systems used to classify chest X-rays led the systems to show gender, socioeconomic, and racial biases.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-04332",
       "text": "VA Suicide Prevention Algorithm REACH VET Reportedly Prioritizes Men Over Women Veterans An AI program named REACH VET, designed and used by the Department of Veterans Affairs (VA) to prevent veteran suicides, was reportedly found to prioritize white men while neglecting female veterans and survivors of military sexual trauma. This oversight persists despite rising suicide rates among these groups. The incident is an example of algorithmic bias and the exclusion of critical risk factors for female veterans.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-04507",
       "text": "C4 dataset is trained on unsafe, copyright-protected web content AIAAIC report: C4 dataset is trained on unsafe, copyright-protected web content. System: C4. Technology: Dataset/database. Purpose: Train large language models. Ethical issues: Fairness; Appropriation; Mis/disinformation; Privacy/surveillance; Safety; Transparency.",
-      "labels": null
+      "labels": [
+        "LLM04"
+      ],
+      "notes": "C4 dataset containing unsafe/copyright content, used to train LLMs = LLM04 training data integrity issue."
     },
     {
       "incident_id": "INC-06238",
       "text": "AI Proctoring Software Causes Discrimination and Privacy Concerns in Online Exams AI-powered exam proctoring software, including facial recognition systems like Proctortrack and Examplify, has led to discrimination against students with darker skin tones and disabilities, as well as privacy and security concerns. Students have reported being unfairly denied exam access and subjected to invasive surveillance, sparking widespread protests and legal challenges.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-06121",
       "text": "TikTok's AI Moderation and Data Practices Lead to Censorship and Privacy Violations TikTok's AI-driven content moderation has reportedly censored Jewish creators, including those countering antisemitism, raising concerns of discrimination and rights violations. Separately, TikTok faces a $1.7 billion Dutch lawsuit for allegedly using AI to collect children's personal data without proper consent, violating EU privacy laws and endangering minors' rights.",
-      "labels": null
+      "labels": []
     },
     {
       "incident_id": "INC-05873",
       "text": "Study: US mortgage loans assessment tools suffer from economic, racial bias AIAAIC report: Study: US mortgage loans assessment tools suffer from economic, racial bias. Technology: Credit score algorithm. Purpose: Calculate credit score; Predict loan default. Ethical issues: Accountability; Accuracy/reliability; Fairness; Transparency.",
-      "labels": null
+      "labels": []
     }
   ]
 }

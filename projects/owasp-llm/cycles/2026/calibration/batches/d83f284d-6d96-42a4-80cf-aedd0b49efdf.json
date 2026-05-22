@@ -15,22 +15,40 @@
     {
       "incident_id": "INC-03376",
       "text": "Windsurf Data Exfiltration & SpAIware (Multiple Vectors) Multiple vulnerabilities: (a) indirect prompt injection via analyzed files exfiltrating source code and secrets; (b) SpAIware -- persistent memory poisoning allowing long-term malicious instruction storage across sessions; (c) invisible Unicode tag character injection; (d) MCP tool invocation without human-in-the-loop. CVE-2025-36730: prompt injection via filename.",
-      "labels": null
+      "labels": [
+        "NEW-PMP",
+        "LLM01",
+        "LLM02",
+        "LLM06"
+      ],
+      "notes": "TP. Multi-vector: (a) SpAIware persistent memory → NEW-PMP; (b) indirect prompt injection via files + invisible Unicode → LLM01 (these are listed as distinct attack vectors alongside the memory poisoning, not solely the memory-write mechanism); (c) source-code/secrets exfiltration → LLM02 outcome; (d) MCP tool invocation without human-in-the-loop → LLM06 excessive agency."
     },
     {
       "incident_id": "INC-04216",
       "text": "SpAIware: Persistent Memory Spyware Injection into ChatGPT macOS Johann Rehberger demonstrated injecting persistent malicious instructions into ChatGPT's long-term memory via indirect prompt injection, causing continuous exfiltration of all future conversations. Fixed by OpenAI September 2024.",
-      "labels": null
+      "labels": [
+        "NEW-PMP",
+        "LLM02"
+      ],
+      "notes": "TP. SpAIware = NEW-PMP positive indicator. Per LLM01-vs-NEW-PMP boundary, persistence makes this NEW-PMP not LLM01 (LLM01 negative-indicator: 'memory poisoning persisting across sessions'). Co-labeled LLM02 for the exfiltration outcome ('continuous exfiltration of all future conversations')."
     },
     {
       "incident_id": "INC-02602",
       "text": "Gemini Memory Persistence via Prompt Injection Rehberger demonstrated tricking Google Gemini Advanced into storing false long-term memory using delayed tool invocation triggered by future user confirmations like yes/sure.",
-      "labels": null
+      "labels": [
+        "NEW-PMP"
+      ],
+      "notes": "TP. 'Delayed tool invocation' is an explicit NEW-PMP positive indicator. No data exfiltration described — false memory storage technique only, so no LLM02 co-label. Not LLM09 because no described downstream misinformation outcome."
     },
     {
       "incident_id": "INC-03377",
       "text": "Windsurf Memory-Persistent Data Exfiltration (SpAIware) Indirect prompt injection abused Windsurf's create_memory tool without approval to persist malicious instructions, enabling continuous data exfiltration across sessions.",
-      "labels": null
+      "labels": [
+        "NEW-PMP",
+        "LLM02",
+        "LLM06"
+      ],
+      "notes": "TP. SpAIware persistent memory → NEW-PMP. 'Continuous data exfiltration across sessions' → LLM02 outcome. 'create_memory tool without approval' → LLM06 excessive agency (missing human-in-the-loop control on a privileged write tool)."
     }
   ]
 }
