@@ -84,6 +84,7 @@ class TestAnalyticNeverFalselyLow:
                     overlap=OverlapWeights(weights={}),
                     num_warmup=NUM_WARMUP,
                     num_samples=NUM_SAMPLES,
+                    num_chains=1,
                 )
             except DiagnosticsFailure:
                 # Engine refused to produce a result for this degenerate case.
@@ -125,6 +126,7 @@ class TestAnalyticNeverFalselyLow:
                 overlap=OverlapWeights(weights={}),
                 num_warmup=NUM_WARMUP,
                 num_samples=NUM_SAMPLES,
+                num_chains=1,
             )
         lam = result.lambda_samples[:, 0]
         ci_95 = float(np.percentile(lam, 95))
@@ -159,6 +161,7 @@ class TestEmpiricalNeverFalselyLow:
                 overlap=OverlapWeights(weights={}),
                 num_warmup=NUM_WARMUP,
                 num_samples=NUM_SAMPLES,
+                num_chains=1,
             )
         lam = result.lambda_samples[:, 0]
         median = float(np.median(lam))
@@ -192,6 +195,7 @@ class TestEmpiricalNeverFalselyLow:
                 overlap=OverlapWeights(weights={}),
                 num_warmup=NUM_WARMUP,
                 num_samples=NUM_SAMPLES,
+                num_chains=1,
             )
         lam = result.lambda_samples[:, 0]
         ci_5 = float(np.percentile(lam, 5))
