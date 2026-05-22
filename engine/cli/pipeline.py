@@ -14,6 +14,14 @@ import numpy as np
 from engine.classify.stage2_manifest import Stage2Manifest
 
 
+def _default_tier_boundaries(n_entries: int) -> tuple[int, ...]:
+    """Default tier boundaries: split entries into 3 tiers."""
+    if n_entries <= 3:
+        return tuple(range(1, n_entries))
+    third = n_entries // 3
+    return (third, 2 * third)
+
+
 @click.command(name="classify-real")
 @click.option("--cycle", required=True, type=click.Path(path_type=Path, exists=True))
 @click.option("--stage2-config", type=click.Path(path_type=Path), default=None,
@@ -199,43 +207,74 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool) -> None:
     # Execute real decision pipeline
     click.echo("Executing decide phase...")
     try:
-        from engine.cli.pipeline_executor import write_decide_artifacts
-
-        # Load inference summary
-        summary_path = infer_dir / "inference_summary.json"
-        if not summary_path.exists():
-            raise FileNotFoundError(
-                f"Inference summary not found: {summary_path}. Run infer first."
-            )
-        inference_summary = json.loads(summary_path.read_text())
-
-        # Load vote data
-        from engine.vote.xlsx_loader import load_vote_xlsx
-
-        vote_data = load_vote_xlsx(vote_xlsx)
-        click.echo(f"Loaded vote data: {len(vote_data.rows)} rows")
-
-        # Build concordance
+        from engine.cli.pipeline_executor import write_decide_artifacts, _load_manifest
         from engine.decide.concordance import compute_concordance
+        from engine.decide.selection_bias import compute_selection_bias
+        from engine.model.inference import InferenceResult
+        from engine.vote.bootstrap import bootstrap_vote_ranks
+        from engine.vote.loader import load_vote_data
 
+        # Load manifest
+        manifest = _load_manifest(prereg / "manifest.json")
+
+        # Load inference results
         lambda_samples_path = infer_dir / "lambda_samples.npy"
-        if lambda_samples_path.exists():
-            lambda_samples = np.load(lambda_samples_path)
-        else:
+        summary_path = infer_dir / "inference_summary.json"
+        if not lambda_samples_path.exists() or not summary_path.exists():
             raise FileNotFoundError(
-                f"Lambda samples not found: {lambda_samples_path}. Run infer first."
+                "Inference artifacts not found. Run infer --execute first."
             )
+        lambda_samples = np.load(lambda_samples_path)
+        summary = json.loads(summary_path.read_text())
+        entry_ids = tuple(summary.get("entry_ids", []))
 
-        entry_ids = tuple(inference_summary.get("entry_ids", []))
-        concordance = compute_concordance(
+        inference_result = InferenceResult(
             lambda_samples=lambda_samples,
             entry_ids=entry_ids,
-            vote_data=vote_data,
+            r_hat=summary.get("r_hat", {}),
+            ess=summary.get("ess", {}),
+            divergences=summary.get("divergences", 0),
+            num_warmup=summary.get("num_warmup", 1000),
+            num_samples=summary.get("num_samples", 2000),
+        )
+
+        # Load vote data and bootstrap
+        vote_data = load_vote_data(vote_xlsx)
+        click.echo(f"Loaded vote data: {vote_data.n_respondents} respondents")
+
+        vote_posterior = bootstrap_vote_ranks(
+            respondent_rankings=vote_data.rankings,
+            entry_ids=vote_data.entry_ids,
+            n_bootstrap=5000,
+            seed=manifest.prng_seed,
+        )
+
+        # Compute concordance with correct 8-parameter signature
+        concordance = compute_concordance(
+            inference_result=inference_result,
+            vote_posterior=vote_posterior,
+            tier_boundaries=_default_tier_boundaries(len(entry_ids)),
+            flag_threshold_tau=manifest.flag_threshold_tau,
+            measurable_count=len(entry_ids),
+            total_count=len(entry_ids),
+            meaningful_kappa_n=manifest.meaningful_kappa_n,
+            measurability_minimum=manifest.measurability_minimum,
+        )
+
+        # Compute selection bias
+        measurability_verdicts = {e: "measurable" for e in entry_ids}
+        selection_bias = compute_selection_bias(
+            measurability_verdicts=measurability_verdicts,
+            median_vote_ranks=vote_posterior.median_ranks,
         )
 
         # Write artifacts
         out_dir = cycle / "results"
-        write_decide_artifacts(concordance, out_dir)
+        write_decide_artifacts(
+            concordance,
+            out_dir,
+            selection_bias=selection_bias,
+        )
         click.echo(f"Decide phase complete. Artifacts written to {out_dir}")
     except Exception as e:
         raise click.ClickException(f"Decide phase failed: {e}")
