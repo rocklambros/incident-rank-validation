@@ -32,6 +32,14 @@ cli.add_command(cal_tally)
 cli.add_command(cal_calibrate)
 cli.add_command(cal_cv_stability)
 
+from engine.cli.pipeline import classify_real, infer_real, decide_real, report_cmd, repro_bundle_cmd
+
+cli.add_command(classify_real)
+cli.add_command(infer_real)
+cli.add_command(decide_real)
+cli.add_command(report_cmd)
+cli.add_command(repro_bundle_cmd)
+
 
 @cli.command()
 @click.option("--cycle", required=True, type=click.Path(path_type=Path))
