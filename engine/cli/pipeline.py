@@ -46,7 +46,9 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
     from engine.prereg.rubric_io import read_rubric
 
     rubric = read_rubric(prereg / "rubric.json")
-    rules = build_rules_from_rubric(rubric, confidence_threshold=0.3)
+    manifest_data = json.loads((prereg / "manifest.json").read_text())
+    confidence_threshold = manifest_data.get("confidence_threshold", 0.3)
+    rules = build_rules_from_rubric(rubric, confidence_threshold=confidence_threshold)
 
     corpus_dir = cycle / "corpora"
     if not corpus_dir.exists():
@@ -96,7 +98,7 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
         # Stage-2 routing (if configured)
         stage2_results: tuple = ()
         if stage2_config is not None:
-            low_confidence = route_to_stage2(result.classifications, confidence_threshold=0.3)
+            low_confidence = route_to_stage2(result.classifications, confidence_threshold=confidence_threshold)
             click.echo(f"Routed {len(low_confidence)} incidents to Stage-2")
 
         # Write artifacts
