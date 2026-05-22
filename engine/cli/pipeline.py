@@ -174,12 +174,14 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
 @click.option("--timeout-seconds", type=float, default=None)
 @click.option("--execute", is_flag=True, default=False,
               help="Execute inference (without flag, validates prerequisites only)")
+@click.option("--wandb/--no-wandb", default=False, help="Enable WandB monitoring")
 def infer_real(
     cycle: Path,
     num_warmup: int,
     num_samples: int,
     timeout_seconds: float | None,
     execute: bool,
+    wandb: bool,
 ) -> None:
     """Run NUTS inference on classified real data."""
     prereg = cycle / "prereg"
@@ -220,13 +222,32 @@ def infer_real(
     click.echo("Executing infer phase...")
     try:
         from engine.cli.pipeline_executor import execute_infer_phase
+        from engine.monitoring.wandb_logger import WandBLogger
+
+        wandb_logger = WandBLogger.create(enabled=False)
+        if wandb:
+            try:
+                from engine.cli.secrets import load_secret
+
+                wandb_key = load_secret("wandb/api-key", env_var="WANDB_API_KEY")
+                import os
+                os.environ.setdefault("WANDB_API_KEY", wandb_key)
+                wandb_logger = WandBLogger.create(
+                    enabled=True,
+                    cycle_id=str(cycle),
+                    tags=["infer"],
+                )
+            except RuntimeError:
+                click.echo("WandB credentials not found; continuing without monitoring")
 
         execute_infer_phase(
             cycle,
             num_warmup=num_warmup,
             num_samples=num_samples,
             num_chains=4,
+            wandb_logger=wandb_logger,
         )
+        wandb_logger.finish()
         click.echo("Infer phase complete.")
     except Exception as e:
         raise click.ClickException(f"Infer phase failed: {e}")
@@ -238,7 +259,8 @@ def infer_real(
               help="Path to vote results XLSX file")
 @click.option("--execute", is_flag=True, default=False,
               help="Execute decision phase (without flag, validates prerequisites only)")
-def decide_real(cycle: Path, vote_xlsx: Path, execute: bool) -> None:
+@click.option("--wandb/--no-wandb", default=False, help="Enable WandB monitoring")
+def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> None:
     """Run decision layer: vote posterior + concordance + flags."""
     prereg = cycle / "prereg"
     if not (prereg / "manifest.lock").exists():
@@ -261,8 +283,25 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool) -> None:
         from engine.decide.concordance import compute_concordance
         from engine.decide.selection_bias import compute_selection_bias
         from engine.model.inference import InferenceResult
+        from engine.monitoring.wandb_logger import WandBLogger
         from engine.vote.bootstrap import bootstrap_vote_ranks
         from engine.vote.loader import load_vote_data
+
+        wandb_logger = WandBLogger.create(enabled=False)
+        if wandb:
+            try:
+                from engine.cli.secrets import load_secret
+
+                wandb_key = load_secret("wandb/api-key", env_var="WANDB_API_KEY")
+                import os
+                os.environ.setdefault("WANDB_API_KEY", wandb_key)
+                wandb_logger = WandBLogger.create(
+                    enabled=True,
+                    cycle_id=str(cycle),
+                    tags=["decide"],
+                )
+            except RuntimeError:
+                click.echo("WandB credentials not found; continuing without monitoring")
 
         # Load manifest
         manifest = _load_manifest(prereg / "manifest.json")
@@ -311,6 +350,13 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool) -> None:
             measurability_minimum=manifest.measurability_minimum,
         )
 
+        wandb_logger.log_concordance(
+            kappa_median=concordance.weighted_kappa_median,
+            kappa_ci=concordance.weighted_kappa_ci,
+            measurable_count=concordance.measurable_count,
+            total_count=concordance.total_count,
+        )
+
         # Compute selection bias
         measurability_verdicts = {e: "measurable" for e in entry_ids}
         selection_bias = compute_selection_bias(
@@ -325,6 +371,7 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool) -> None:
             out_dir,
             selection_bias=selection_bias,
         )
+        wandb_logger.finish()
         click.echo(f"Decide phase complete. Artifacts written to {out_dir}")
     except Exception as e:
         raise click.ClickException(f"Decide phase failed: {e}")
