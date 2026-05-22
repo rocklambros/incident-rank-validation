@@ -1,14 +1,7 @@
 """Tests for engine.calibrate.calibrate — calibration computation + diagnostic."""
 from __future__ import annotations
 
-import math
-
-import pytest
-
-from engine.calibrate.beta import BetaPosterior, Calibration
 from engine.calibrate.calibrate import (
-    CalibrationDiagnostic,
-    EntryCalibrationReport,
     compute_calibration,
 )
 from engine.calibrate.tally import PrecisionTally, RecallTally, TallyResult

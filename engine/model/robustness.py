@@ -91,8 +91,17 @@ def _run_poisson_flat(
         numpyro.sample("obs", dist.Poisson(rate=expected), obs=jnp.array(obs_data))
 
     kernel = NUTS(model)
-    mcmc = MCMC(kernel, num_warmup=num_warmup, num_samples=num_samples, num_chains=num_chains, progress_bar=False)
-    mcmc.run(jax.random.PRNGKey(manifest.prng_seed + 1000), obs, sizes, recall_a, recall_b, prec_a, prec_b, W)
+    mcmc = MCMC(
+        kernel,
+        num_warmup=num_warmup,
+        num_samples=num_samples,
+        num_chains=num_chains,
+        progress_bar=False,
+    )
+    mcmc.run(
+        jax.random.PRNGKey(manifest.prng_seed + 1000),
+        obs, sizes, recall_a, recall_b, prec_a, prec_b, W,
+    )
 
     samples = mcmc.get_samples()
     lambda_samples = np.asarray(samples["lambda"], dtype=np.float64)

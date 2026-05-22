@@ -35,6 +35,7 @@ def test_wandb_logger_create_returns_noop_on_import_error() -> None:
     with patch.dict(sys.modules, {"wandb": None}):
         # Force reimport
         import importlib
+
         import engine.monitoring.wandb_logger as mod
         importlib.reload(mod)
         logger = mod.WandBLogger.create(project="test", enabled=True)

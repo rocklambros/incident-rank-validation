@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from engine.classify.cost_tracker import CostTracker, CostCeilingExceeded
+from engine.classify.cost_tracker import CostCeilingExceeded, CostTracker
 
 
 class TestCostTracker:
@@ -29,7 +29,7 @@ class TestCostTracker:
         tracker.record(job_id="j1", cost_usd=13.0, execution_time_ms=1000.0)
         try:
             tracker.check_or_abort()
-            assert False, "should raise"
+            raise AssertionError("should raise")
         except CostCeilingExceeded as e:
             assert "13.0" in str(e) or "10.0" in str(e)
 

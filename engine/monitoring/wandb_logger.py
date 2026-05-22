@@ -117,7 +117,9 @@ class WandBLogger:
                 "stage2/total_cost_usd": total_cost_usd,
                 "stage2/job_count": job_count,
                 "stage2/ceiling_usd": ceiling_usd,
-                "stage2/utilization_pct": (total_cost_usd / ceiling_usd) * 100 if ceiling_usd > 0 else 0,
+                "stage2/utilization_pct": (
+                    (total_cost_usd / ceiling_usd) * 100 if ceiling_usd > 0 else 0
+                ),
             })
         except Exception:
             pass

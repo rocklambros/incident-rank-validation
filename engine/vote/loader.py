@@ -25,7 +25,10 @@ def load_vote_data(
     wb = load_workbook(xlsx_path, read_only=True, data_only=True)
     if sheet_name not in wb.sheetnames:
         wb.close()
-        raise ValueError(f"Sheet '{sheet_name}' not found in {xlsx_path}. Available: {wb.sheetnames}")
+        raise ValueError(
+            f"Sheet '{sheet_name}' not found in {xlsx_path}. "
+            f"Available: {wb.sheetnames}"
+        )
     ws = wb[sheet_name]
 
     rows = list(ws.iter_rows(values_only=True))

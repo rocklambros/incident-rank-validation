@@ -1,13 +1,8 @@
 """Tests for engine.calibrate.tally — aggregation of coded labels."""
 from __future__ import annotations
 
-import pytest
-
 from engine.calibrate.batch import BatchHeader, BatchIncident, CodingBatch
 from engine.calibrate.tally import (
-    PrecisionTally,
-    RecallTally,
-    TallyResult,
     tally_batches,
 )
 

@@ -4,13 +4,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
 from engine.calibrate.batch import (
-    BatchHeader,
-    BatchIncident,
-    CodingBatch,
-    ValidationError,
     code_synthetic,
     generate_batch,
     validate_coded_batch,

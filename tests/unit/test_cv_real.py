@@ -1,9 +1,7 @@
 """Tests for engine.calibrate.cv — real k-fold cross-validation."""
 from __future__ import annotations
 
-import pytest
-
-from engine.calibrate.cv import CVResult, cross_validate_calibration
+from engine.calibrate.cv import cross_validate_calibration
 
 
 class TestCrossValidateCalibration:
