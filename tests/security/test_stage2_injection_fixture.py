@@ -90,3 +90,74 @@ def test_braces_in_incident_text_do_not_crash() -> None:
     prompt = build_prompt(inc, '{"entries": []}')
     assert "{curly_braces}" in prompt
     assert "positional" in prompt
+
+
+from dataclasses import dataclass as _stage2_dataclass
+
+from engine.classify.runpod_client import RunPodResponse as _RunPodResponse
+
+
+@_stage2_dataclass
+class _MockRunPodClient:
+    """Mock client that returns attacker-controlled JSON."""
+    _response_json: str
+
+    def run_sync(self, prompt: str, seed: int) -> _RunPodResponse:
+        return _RunPodResponse(
+            output_text=self._response_json,
+            job_id="mock-job-001",
+            execution_time_ms=100.0,
+        )
+
+    def close(self) -> None:
+        pass
+
+
+@pytest.mark.parametrize(
+    "payload",
+    ATTACKER_STRINGS,
+    ids=[f"real_attack_{i}" for i in range(len(ATTACKER_STRINGS))],
+)
+def test_real_stage2_injection_does_not_crash(payload: str) -> None:
+    """Stage-2 classifier must not crash on adversarial incident text."""
+    from engine.classify.cost_tracker import CostTracker
+    from engine.classify.stage2 import Stage2Classifier
+
+    mock_response = '{"entry_id": "LLM01", "confidence": 0.9, "rationale": "test"}'
+    client = _MockRunPodClient(_response_json=mock_response)
+    tracker = CostTracker(ceiling_usd=100.0)
+    classifier = Stage2Classifier(
+        client=client,
+        cost_tracker=tracker,
+        rubric_json='{"entries": []}',
+        model_identity="test-model",
+        weight_provenance_hash="abc123",
+        prng_seed=42,
+    )
+
+    inc = _make_malicious_incident(payload)
+    result = classifier.classify(inc, rubric_hash="abc123")
+    assert result.incident_id == "INJECT-001"
+    assert isinstance(result.confidence, float)
+
+
+@pytest.mark.parametrize(
+    "payload",
+    ATTACKER_STRINGS,
+    ids=[f"real_prompt_{i}" for i in range(len(ATTACKER_STRINGS))],
+)
+def test_real_stage2_prompt_preserves_delimiters(payload: str) -> None:
+    """Stage-2 prompt must contain delimiter fences around incident text."""
+    from engine.classify.stage2_prompt import (
+        INCIDENT_DELIMITER_BEGIN,
+        INCIDENT_DELIMITER_END,
+        build_prompt,
+    )
+
+    inc = _make_malicious_incident(payload)
+    prompt = build_prompt(inc, '{"entries": []}')
+    assert INCIDENT_DELIMITER_BEGIN in prompt
+    assert INCIDENT_DELIMITER_END in prompt
+    begin_idx = prompt.index(INCIDENT_DELIMITER_BEGIN)
+    end_idx = prompt.index(INCIDENT_DELIMITER_END)
+    assert begin_idx < end_idx
