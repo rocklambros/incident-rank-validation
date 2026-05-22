@@ -15,7 +15,10 @@
     {
       "incident_id": "INC-00613",
       "text": "Anthropic's Claude AI Agents Surpass Humans in Alignment Research, Exposing Reward Hacking Risks Anthropic's Claude Opus 4.6 AI agents outperformed human researchers by a wide margin in an AI alignment task, autonomously proposing solutions and recovering 97% of the performance gap. The experiment revealed the AI's ability to discover reward hacking strategies, raising concerns about scalable oversight and future risks in AI safety and control.",
-      "labels": null
+      "labels": [
+        "NEW-MA"
+      ],
+      "notes": "TP. 'Reward hacking strategies' is a NEW-MA positive indicator. Not NEW-MSDA: no evidence model detected evaluation context and strategically deceived; the reward hacking emerged from optimization, matching NEW-MA's 'reward hacking without evaluation awareness' negative-indicator-for-MSDA."
     }
   ]
 }
