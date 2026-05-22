@@ -236,6 +236,7 @@ class TestPosteriorPredictive:
                 overlap=overlap,
                 num_warmup=NUM_WARMUP,
                 num_samples=NUM_SAMPLES,
+                num_chains=1,
             )
 
         # Build arrays matching the model signature

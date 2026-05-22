@@ -69,6 +69,7 @@ class TestRobustnessInference:
             overlap=overlap,
             num_warmup=100,
             num_samples=200,
+            num_chains=1,
         )
         assert result.lambda_samples.shape == (200, 2)
         assert result.entry_ids == entries

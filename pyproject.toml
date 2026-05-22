@@ -73,6 +73,7 @@ filterwarnings = [
   "ignore::FutureWarning:jax",
   "ignore::DeprecationWarning:jax",
   "ignore::FutureWarning:numpyro",
+  "ignore:There are not enough devices to run parallel chains:UserWarning",
 ]
 markers = ["slow: NUTS / e2e tests", "timeout: per-test wall-clock timeout hint (seconds)"]
 env = ["JAX_ENABLE_X64=true", "JAX_PLATFORM_NAME=cpu"]
