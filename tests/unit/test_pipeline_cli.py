@@ -112,7 +112,7 @@ class TestExecuteFlags:
             "entries": [],
         })
         (prereg / "rubric.json").write_text(rubric_data)
-        cal_dir = cycle / "calibrate"
+        cal_dir = cycle / "calibration"
         cal_dir.mkdir(parents=True)
         (cal_dir / "posteriors.json").write_text("{}")
         corpus = cycle / "corpora"
@@ -134,7 +134,7 @@ class TestExecuteFlags:
         classify_dir = cycle / "classify"
         classify_dir.mkdir(parents=True)
         (classify_dir / "labeled_incidents.json").write_text("[]")
-        cal_dir = cycle / "calibrate"
+        cal_dir = cycle / "calibration"
         cal_dir.mkdir(parents=True)
         (cal_dir / "posteriors.json").write_text("{}")
 
@@ -176,7 +176,7 @@ class TestExecuteFlags:
             "entries": [],
         })
         (prereg / "rubric.json").write_text(rubric_data)
-        cal_dir = cycle / "calibrate"
+        cal_dir = cycle / "calibration"
         cal_dir.mkdir(parents=True)
         (cal_dir / "posteriors.json").write_text("{}")
         corpus = cycle / "corpora"

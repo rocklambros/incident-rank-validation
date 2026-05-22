@@ -188,7 +188,7 @@ def execute_infer_phase(
     os.environ.setdefault("JAX_PLATFORM_NAME", "cpu")
     os.environ.setdefault("JAX_ENABLE_X64", "true")
 
-    cal_path = cycle / "calibrate" / "posteriors.json"
+    cal_path = cycle / "calibration" / "posteriors.json"
     if not cal_path.exists():
         raise FileNotFoundError(
             f"Calibration posteriors not found: {cal_path}. "

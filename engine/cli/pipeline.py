@@ -47,7 +47,7 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
         )
 
     # R3: calibration posteriors must exist before real classification
-    cal_path = cycle / "calibrate" / "posteriors.json"
+    cal_path = cycle / "calibration" / "posteriors.json"
     if not cal_path.exists():
         raise click.ClickException(
             f"Calibration posteriors not found: {cal_path}. "
@@ -81,31 +81,30 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
             route_to_stage2,
             write_classify_artifacts,
         )
-        from engine.schema import IncidentRecord
 
-        # Load corpus incidents from corpora directory
-        incidents: list[IncidentRecord] = []
-        for jsonl_file in sorted(corpus_dir.glob("*.jsonl")):
-            for line in jsonl_file.read_text().splitlines():
-                line = line.strip()
-                if line:
-                    rec = json.loads(line)
-                    incidents.append(IncidentRecord(
-                        id=rec["id"],
-                        date=rec.get("date", "1970-01-01"),
-                        text=rec.get("text", ""),
-                        severity=rec.get("severity"),
-                        source_class=rec.get("source_class", "unknown"),
-                        corpus_stratum=rec.get("corpus_stratum", "unknown"),
-                        quality=rec.get("quality", "auto"),
-                        native_labels=tuple(rec.get("native_labels", ())),
-                        source_url=rec.get("source_url", ""),
-                    ))
+        # Load corpus incidents via adapter (handles field mapping + future-date filter)
+        from engine.adapters.genai_agentic import GenAIAgenticAdapter
 
-        click.echo(f"Loaded {len(incidents)} incidents from corpus")
+        snapshot_dirs = sorted(corpus_dir.glob("*/*/provenance.json"))
+        if not snapshot_dirs:
+            snapshot_dirs = sorted(corpus_dir.glob("*/provenance.json"))
+        if not snapshot_dirs:
+            raise click.ClickException(
+                f"No provenance.json found under {corpus_dir}. "
+                "Expected corpora/<adapter>/<hash>/provenance.json"
+            )
+        prov_path = snapshot_dirs[0]
+        prov_data = json.loads(prov_path.read_text())
+        snapshot_dir = prov_path.parent
+        snapshot_date = prov_data["pull_date"]
+
+        adapter = GenAIAgenticAdapter(snapshot_dir, snapshot_date)
+        incidents_list = list(adapter.iter_incidents())
+
+        click.echo(f"Loaded {len(incidents_list)} incidents from corpus")
 
         # Stage-1 classification
-        result = _classify(tuple(incidents), rules)
+        result = _classify(tuple(incidents_list), rules)
         click.echo(f"Stage-1 produced {len(result.classifications)} classifications")
 
         # Stage-2 routing (if configured)
@@ -142,7 +141,7 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
                 )
 
                 # Filter incidents for Stage-2
-                s2_incidents = tuple(i for i in incidents if i.id in low_confidence_ids)
+                s2_incidents = tuple(i for i in incidents_list if i.id in low_confidence_ids)
                 rubric_hash = manifest_data.get("rubric_hash", "")
                 stage2_results = classifier.classify_batch(s2_incidents, rubric_hash)
                 client.close()
@@ -165,7 +164,7 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
 
         # Write artifacts
         out_dir = cycle / "classify"
-        incident_strata = {inc.id: inc.corpus_stratum for inc in incidents}
+        incident_strata = {inc.id: inc.corpus_stratum for inc in incidents_list}
         write_classify_artifacts(
             result, out_dir,
             stage2_results=stage2_results,
@@ -209,7 +208,7 @@ def infer_real(
         raise click.ClickException("classify/labeled_incidents.json not found — run classify first")
 
     # R3: calibration posteriors must exist for real inference (no silent Beta(1,1) fallback)
-    cal_path = cycle / "calibrate" / "posteriors.json"
+    cal_path = cycle / "calibration" / "posteriors.json"
     if not cal_path.exists():
         raise click.ClickException(
             f"Calibration posteriors not found: {cal_path}. "

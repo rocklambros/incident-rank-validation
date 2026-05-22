@@ -85,25 +85,29 @@ def _build_fixture_cycle(tmp_path: Path) -> Path:
     (prereg / "rubric.json").write_text(json.dumps(rubric, indent=2))
 
     # Calibration posteriors (uniform Beta(1,1) — acceptable for testing)
-    cal_dir = cycle / "calibrate"
+    cal_dir = cycle / "calibration"
     cal_dir.mkdir(parents=True)
     cal_data: dict[str, dict[str, object]] = {"recall": {}, "precision": {}}
     (cal_dir / "posteriors.json").write_text(json.dumps(cal_data))
 
-    # Corpus with 5 incidents
-    corpus_dir = cycle / "corpora"
-    corpus_dir.mkdir(parents=True)
+    # Corpus with 5 incidents (adapter-compatible nested structure)
+    snapshot_dir = cycle / "corpora" / "genai_agentic" / "testhash"
+    snapshot_dir.mkdir(parents=True)
     incidents = [
         {
             "id": f"INC-{i:03d}",
+            "title": text,
             "date": f"2025-0{i + 1}-15",
-            "text": text,
+            "year": 2025,
+            "category": "real-world",
+            "description": text,
             "severity": "High",
-            "source_class": "advisory",
-            "corpus_stratum": "security",
-            "quality": "curated",
-            "native_labels": [],
-            "source_url": f"https://example.com/inc-{i:03d}",
+            "quality_tier": "curated",
+            "corpus": "security",
+            "source_ids": [],
+            "references": [f"https://example.com/inc-{i:03d}"],
+            "owasp_llm": [],
+            "tags": [],
         }
         for i, text in enumerate([
             "A prompt injection attack was used to jailbreak the model",
@@ -113,8 +117,17 @@ def _build_fixture_cycle(tmp_path: Path) -> Path:
             "General AI safety concern with no specific vulnerability type",
         ])
     ]
+    (snapshot_dir / "incidents.json").write_text(json.dumps(incidents, indent=2))
     lines = [json.dumps(inc) for inc in incidents]
-    (corpus_dir / "test_corpus.jsonl").write_text("\n".join(lines) + "\n")
+    (snapshot_dir / "incidents.jsonl").write_text("\n".join(lines) + "\n")
+    (snapshot_dir / "provenance.json").write_text(json.dumps({
+        "adapter_name": "genai_agentic",
+        "adapter_version": "0.2.0",
+        "pull_date": "2025-05-20",
+        "snapshot_hash": "testhash",
+        "source_commit_sha": "abc123",
+        "source_repo": "test",
+    }))
 
     return cycle
 
