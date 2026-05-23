@@ -1,0 +1,10 @@
+{
+  "source_repo": "www-project-top-10-for-large-language-model-applications",
+  "source_path": "initiatives/agent_security_initiative/ASI Agentic Exploits & Incidents/ASI_Agentic_Exploits_Incidents.md",
+  "content_hash_algorithm": "sha256",
+  "content_hash": "89ff43aea2d5a413eb94293532fe8f26093e25f1b94bdda6562b502048ea425d",
+  "pull_date": "2026-05-23",
+  "adapter_version": "owasp_asi-1.0.0",
+  "engine_version": "1.2.0",
+  "corpus_role": "qualitative_corroboration_only"
+}
