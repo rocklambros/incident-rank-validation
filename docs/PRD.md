@@ -47,7 +47,7 @@ Hard rules for every phase pickup, regardless of phase:
 | Plan 4 | Gold-set sampler, k-fold CV calibration, coding protocol, staffing + power calc | BLOCKED on gold-set coder identification (HANDOFF §9 item 1, item 2) and Plan 2 (needs real adapter to draw against); engine-side stubs from Plan 1 may be promoted | "Invoke `writing-plans` against HANDOFF v2.5 §5.3, §6 control 11(b)(c), §9 items 1–2, and PRD §5 (Plan 4). Produce `docs/superpowers/plans/<date>-goldset-calibration.md`." |
 | Plan 5 | Real LLM 2026 cycle — Stage-2 classifier on RunPod, classify, infer, decide, publish | BLOCKED on Plan 2, Plan 3 (rubric frozen + reviewer-signed), Plan 4 (gold-set built), REVIEWERS external for *publishable* output | "Invoke `writing-plans` against HANDOFF v2.5 §5.2 Stage-2, §5.4, §5.5, §6 control 11, §7.5 (GPU + RunPod), and PRD §6 (Plan 5). Produce `docs/superpowers/plans/<date>-llm2026-cycle.md`." |
 | Plan 6 | Corpus B corroboration cross-check (qualitative; not a posterior input) | FUTURE — runnable anytime after Plan 5 cycle outputs exist | "Invoke `writing-plans` against HANDOFF v2.5 §4 (Corpus B role), §5.5 (corpus B corroboration bullet), and PRD §7 (Plan 6). Produce `docs/superpowers/plans/<date>-corpus-b-corroboration.md`." |
-| Plan 7 | Staged frame-coverage audit extension (per-entry; gated; optional) | FUTURE — only if external-reference list is feasible per HANDOFF §9 item 9 | "Invoke `writing-plans` against HANDOFF v2.5 §4 (Frame-coverage audit), §6 control 7, §9 item 9, and PRD §8 (Plan 7). Produce `docs/superpowers/plans/<date>-frame-coverage-audit.md`." |
+| Plan 7 | Staged frame-coverage audit extension (per-entry; gated; optional) | FUTURE — 3 frame-blind entries (LLM04, LLM08, LLM10) exist as upgrade candidates; gated on external-reference list feasibility per HANDOFF §9 item 9 | "Invoke `writing-plans` against HANDOFF v2.5 §4 (Frame-coverage audit), §6 control 7, §9 item 9, and PRD §8 (Plan 7). Produce `docs/superpowers/plans/<date>-frame-coverage-audit.md`." |
 | Plan 8 | OWASP ASI Top 10 cycle (different taxonomy, same engine) | FUTURE — engine reuse, no engine changes | "Invoke `writing-plans` against HANDOFF v2.5 §7.4 and PRD §9 (Plan 8). Produce `docs/superpowers/plans/<date>-asi-cycle.md`." |
 
 Status definitions:
@@ -268,7 +268,7 @@ Read docs/HANDOFF.md (focus on §5.3, §5.4 Priors bullet, §6 control 11(b)(c),
 
 ### 6.1 Status: DONE — internal-only (tags: v1.0.0-plan5-internal, v1.1.0-plan5)
 
-Cycle complete with `non_publishable=True` (REVIEWERS.md = INTERIM). Kappa 0.228 [-0.08, 0.54], 100% measurability, 4 flagged entries. Full results at `projects/owasp-llm/cycles/2026/results/`.
+Cycle complete with `non_publishable=True` (REVIEWERS.md = INTERIM). Kappa 0.228 [-0.08, 0.54], 85% measurability (17/20; 3 frame-blind: LLM04, LLM08, LLM10), 4 flagged entries. Full results at `projects/owasp-llm/cycles/2026/results/`.
 
 ### 6.2 Goal
 
@@ -377,7 +377,7 @@ Read docs/HANDOFF.md (focus on §4 Corpus B role row, §5.5 corpus B corroborati
 
 ## 8. Plan 7 — Staged frame-coverage audit extension
 
-### 8.1 Status: NO-OP FOR 2026 LLM CYCLE (0 frame-blind entries; optional for future cycles if frame-blind entries exist)
+### 8.1 Status: FUTURE — 3 frame-blind entries exist (LLM04, LLM08, LLM10) as upgrade candidates
 
 ### 8.2 Goal
 
