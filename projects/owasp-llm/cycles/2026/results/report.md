@@ -27,6 +27,16 @@ Severity: low
 
 No deviations from pre-registration.
 
+## Corpus B Corroboration
+Declared qualitative artifact — NOT a posterior input (HANDOFF §4, §5.4).
+
+Corpus B incidents: 46. Shared with corpus A: 46.
+Label agreement on shared incidents: 12 agree, 34 disagree (rate = 26%).
+
+Context: cycle headline kappa = 0.275. Agreement reporting at N = 46 is qualitative, not statistical.
+
+Note: 3 entries are frame-blind (LLM04, LLM08, LLM10). Agreement on incidents classified to these entries is reported but has no bearing on posterior estimates.
+
 ## Threats to Validity
 - **F1-ingestion-frame**: corpus sampling frame is blind to incidents that never become CVE/GHSA/OSV entries or harm-database rows
 - **F2-default-seed-contamination**: CVE ingest seeds every entry with LLM03; bare-default labels are contamination

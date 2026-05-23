@@ -1,0 +1,98 @@
+[
+  {
+    "incident_id": "ASIB-007",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "corroboration"
+  },
+  {
+    "incident_id": "ASIB-008",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "corroboration"
+  },
+  {
+    "incident_id": "ASIB-011",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "corroboration"
+  },
+  {
+    "incident_id": "ASIB-019",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "corroboration"
+  },
+  {
+    "incident_id": "ASIB-021",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "corroboration"
+  },
+  {
+    "incident_id": "ASIB-023",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "corroboration"
+  },
+  {
+    "incident_id": "ASIB-024",
+    "entry_id": "LLM05",
+    "confidence": 0.1111111111111111,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.111",
+    "stratum": "corroboration"
+  },
+  {
+    "incident_id": "ASIB-029",
+    "entry_id": "LLM01",
+    "confidence": 0.2,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.200",
+    "stratum": "corroboration"
+  },
+  {
+    "incident_id": "ASIB-039",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "corroboration"
+  },
+  {
+    "incident_id": "ASIB-041",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "corroboration"
+  },
+  {
+    "incident_id": "ASIB-042",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "corroboration"
+  },
+  {
+    "incident_id": "ASIB-046",
+    "entry_id": "LLM01",
+    "confidence": 0.1,
+    "stage": 1,
+    "rationale": "indicator match: confidence=0.100",
+    "stratum": "corroboration"
+  }
+]

@@ -1,0 +1,629 @@
+{
+  "corpus_b_incident_count": 46,
+  "corpus_a_incident_count": 7714,
+  "overlap_count": 46,
+  "classification_stages_used": "stage1",
+  "agreement_count": 12,
+  "disagreement_count": 34,
+  "agreement_rate": 0.2608695652173913,
+  "baseline_kappa": 0.2753623188405798,
+  "overlap_method_limitations": [
+    "URL matching may miss equivalent URLs with different query parameters or redirects",
+    "CVE matching requires both corpora to reference the same CVE ID in text or URLs",
+    "Title keyword matching (fallback) may produce false positives from keyword collision on unrelated incidents",
+    "Incidents described with different terminology may not match across corpora"
+  ],
+  "per_incident": [
+    {
+      "corpus_a_id": "INC-02451",
+      "corpus_b_id": "ASIB-001",
+      "corpus_b_title": "Claude Skills Ransomware Deployment Cato Networks demonstrated that",
+      "match_method": "url_match",
+      "corpus_a_label": "NEW-WLA",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI04",
+        "ASI05"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02627",
+      "corpus_b_id": "ASIB-002",
+      "corpus_b_title": "Google Antigravity AI Data Wipe AI-powered IDE misinterpreted",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM05",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI02",
+        "ASI05"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02480",
+      "corpus_b_id": "ASIB-003",
+      "corpus_b_title": "Cursorignore Bypass via New Cursorignore Write A logic",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM02",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI02",
+        "ASI05"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02611",
+      "corpus_b_id": "ASIB-004",
+      "corpus_b_title": "GitHub Copilot Multi-Root Workspace RCE Agent exploits multi-root",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM05",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI05",
+        "ASI02"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-04455",
+      "corpus_b_id": "ASIB-005",
+      "corpus_b_title": "ShadowRay 2.0 Botnet Attackers exploited an unpatched flaw",
+      "match_method": "cve_match",
+      "corpus_a_label": "LLM06",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI05",
+        "ASI01"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-03211",
+      "corpus_b_id": "ASIB-006",
+      "corpus_b_title": "ShadowMQ Vulnerabilities Critical RCE in AI inference servers",
+      "match_method": "cve_match",
+      "corpus_a_label": "LLM05",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI05",
+        "ASI04"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02447",
+      "corpus_b_id": "ASIB-007",
+      "corpus_b_title": "Claude Desktop PromptJacking RCE Critical RCE in official",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM05",
+      "corpus_b_label": "LLM05",
+      "corpus_b_native_labels": [
+        "ASI05",
+        "ASI01"
+      ],
+      "agrees": true
+    },
+    {
+      "corpus_a_id": "INC-02629",
+      "corpus_b_id": "ASIB-008",
+      "corpus_b_title": "Google Antigravity IDE Vulnerabilities RCE via indirect prompt",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM01",
+      "corpus_b_label": "LLM01",
+      "corpus_b_native_labels": [
+        "ASI01",
+        "ASI02",
+        "ASI05",
+        "ASI09"
+      ],
+      "agrees": true
+    },
+    {
+      "corpus_a_id": "INC-02426",
+      "corpus_b_id": "ASIB-009",
+      "corpus_b_title": "Claude Hijacked for State-Sponsored Cyberattack A Chinese state-sponsored",
+      "match_method": "title_keyword_match",
+      "corpus_a_label": "NEW-WLA",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI01",
+        "ASI03",
+        "ASI10"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-03020",
+      "corpus_b_id": "ASIB-010",
+      "corpus_b_title": "Perplexity Agentic Shopping Tool Unauthorized Access Amazon filed",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM06",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI02",
+        "ASI03",
+        "ASI09"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02450",
+      "corpus_b_id": "ASIB-011",
+      "corpus_b_title": "Claude Skills Data Exfiltration Researchers demonstrated using Claude's",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM01",
+      "corpus_b_label": "LLM01",
+      "corpus_b_native_labels": [
+        "ASI01",
+        "ASI02",
+        "ASI04"
+      ],
+      "agrees": true
+    },
+    {
+      "corpus_a_id": "INC-02449",
+      "corpus_b_id": "ASIB-012",
+      "corpus_b_title": "Claude Pirate Data Exfiltration Claude Code Interpreter's default",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM02",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI02",
+        "ASI01"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02848",
+      "corpus_b_id": "ASIB-013",
+      "corpus_b_title": "Malicious MCP Package Backdoor NPM package hosted backdoored",
+      "match_method": "title_keyword_match",
+      "corpus_a_label": "LLM03",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI04"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02592",
+      "corpus_b_id": "ASIB-014",
+      "corpus_b_title": "Framelink Figma MCP RCE Unsanitized user input in",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM05",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI05",
+        "ASI02"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02468",
+      "corpus_b_id": "ASIB-015",
+      "corpus_b_title": "Cursor Config Overwrite via Case Mismatch Case-insensitive filesystems",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM01",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI05"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02471",
+      "corpus_b_id": "ASIB-016",
+      "corpus_b_title": "Cursor Workspace File Injection Cursor agent prompt led",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM05",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI05"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02871",
+      "corpus_b_id": "ASIB-017",
+      "corpus_b_title": "MCP OAuth Response Exploit OAuth flow in untrusted",
+      "match_method": "url_match",
+      "corpus_a_label": "NEW-MTIE",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI07"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02467",
+      "corpus_b_id": "ASIB-018",
+      "corpus_b_title": "Cursor CLI Project Config RCE Cloned projects with",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM05",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI04"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02476",
+      "corpus_b_id": "ASIB-019",
+      "corpus_b_title": "Cursor Agent File Protections Bypassed Cursor CLI Agent's",
+      "match_method": "title_keyword_match",
+      "corpus_a_label": "LLM01",
+      "corpus_b_label": "LLM01",
+      "corpus_b_native_labels": [
+        "ASI05"
+      ],
+      "agrees": true
+    },
+    {
+      "corpus_a_id": "INC-04027",
+      "corpus_b_id": "ASIB-020",
+      "corpus_b_title": "Roo Code Multi-Root Workspace RCE Agent exploits multi-root",
+      "match_method": "title_keyword_match",
+      "corpus_a_label": "NEW-PMP",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI05",
+        "ASI02"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02636",
+      "corpus_b_id": "ASIB-021",
+      "corpus_b_title": "Google Gemini Trifecta Indirect prompt injection through logs,",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM01",
+      "corpus_b_label": "LLM01",
+      "corpus_b_native_labels": [
+        "ASI01",
+        "ASI02"
+      ],
+      "agrees": true
+    },
+    {
+      "corpus_a_id": "INC-02849",
+      "corpus_b_id": "ASIB-022",
+      "corpus_b_title": "Malicious MCP Server Impersonating Postmark Reported as the",
+      "match_method": "url_match",
+      "corpus_a_label": "ROLL-LAPTF",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI02",
+        "ASI04",
+        "ASI07"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02590",
+      "corpus_b_id": "ASIB-023",
+      "corpus_b_title": "ForcedLeak (Salesforce Agentforce) Critical indirect prompt injection in",
+      "match_method": "title_keyword_match",
+      "corpus_a_label": "LLM01",
+      "corpus_b_label": "LLM01",
+      "corpus_b_native_labels": [
+        "ASI01",
+        "ASI02"
+      ],
+      "agrees": true
+    },
+    {
+      "corpus_a_id": "INC-03334",
+      "corpus_b_id": "ASIB-024",
+      "corpus_b_title": "Visual Studio Code & Agentic AI workflows RCE",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM05",
+      "corpus_b_label": "LLM05",
+      "corpus_b_native_labels": [
+        "ASI01",
+        "ASI02",
+        "ASI05"
+      ],
+      "agrees": true
+    },
+    {
+      "corpus_a_id": "INC-03807",
+      "corpus_b_id": "ASIB-025",
+      "corpus_b_title": "GitHub Copilot Settings Overwrite RCE Agent exploits base",
+      "match_method": "title_keyword_match",
+      "corpus_a_label": "LLM01",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI05",
+        "ASI02"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02484",
+      "corpus_b_id": "ASIB-026",
+      "corpus_b_title": "Cursor Settings Overwrite RCE Agent exploits base IDE",
+      "match_method": "title_keyword_match",
+      "corpus_a_label": "LLM01",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI05",
+        "ASI02"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02874",
+      "corpus_b_id": "ASIB-027",
+      "corpus_b_title": "JetBrains Junie Remote JSON Schema Exfiltration Agent exploits",
+      "match_method": "title_keyword_match",
+      "corpus_a_label": "NEW-MTIE",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI02",
+        "ASI04"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-07397",
+      "corpus_b_id": "ASIB-028",
+      "corpus_b_title": "Zed.dev Settings Overwrite RCE Agent exploits base IDE",
+      "match_method": "title_keyword_match",
+      "corpus_a_label": "LLM02",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI05",
+        "ASI02"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-03010",
+      "corpus_b_id": "ASIB-029",
+      "corpus_b_title": "OpenHands ZombAI RCE Indirect prompt injection hijacked the",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM01",
+      "corpus_b_label": "LLM01",
+      "corpus_b_native_labels": [
+        "ASI01",
+        "ASI05"
+      ],
+      "agrees": true
+    },
+    {
+      "corpus_a_id": "INC-00813",
+      "corpus_b_id": "ASIB-030",
+      "corpus_b_title": "Roo Code Settings Overwrite RCE Agent exploits base",
+      "match_method": "title_keyword_match",
+      "corpus_a_label": "LLM05",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI05",
+        "ASI02"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02300",
+      "corpus_b_id": "ASIB-031",
+      "corpus_b_title": "Amazon Q Prompt Poisoning Destructive prompt in extension",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM01",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI01",
+        "ASI02",
+        "ASI04"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02631",
+      "corpus_b_id": "ASIB-032",
+      "corpus_b_title": "Google Gemini CLI File Loss Agent misunderstood file",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM06",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI05"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-03300",
+      "corpus_b_id": "ASIB-033",
+      "corpus_b_title": "ToolShell RCE via SharePoint RCE exploit in SharePoint",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM05",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI05"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-03152",
+      "corpus_b_id": "ASIB-034",
+      "corpus_b_title": "Replit Vibe Coding Meltdown Agent hallucinated data, deleted",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM09",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI01",
+        "ASI09",
+        "ASI10"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02899",
+      "corpus_b_id": "ASIB-035",
+      "corpus_b_title": "Microsoft Copilot Studio Security Flaw Agents were public",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM02",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI03",
+        "ASI07"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-00815",
+      "corpus_b_id": "ASIB-036",
+      "corpus_b_title": "Cursor Remote JSON Schema Exfiltration Agent exploits remote",
+      "match_method": "title_keyword_match",
+      "corpus_a_label": "LLM05",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI02",
+        "ASI04"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-04715",
+      "corpus_b_id": "ASIB-037",
+      "corpus_b_title": "Roo Code Remote JSON Schema Exfiltration Agent exploits",
+      "match_method": "title_keyword_match",
+      "corpus_a_label": "LLM05",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI02",
+        "ASI04"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02690",
+      "corpus_b_id": "ASIB-038",
+      "corpus_b_title": "Heroku MCP App Ownership Hijack Malicious tool input",
+      "match_method": "url_match",
+      "corpus_a_label": "NEW-MTIE",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI03"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02700",
+      "corpus_b_id": "ASIB-039",
+      "corpus_b_title": "Hub MCP Prompt Injection (Cross-Context) A malicious web",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM01",
+      "corpus_b_label": "LLM01",
+      "corpus_b_native_labels": [
+        "ASI01",
+        "ASI02",
+        "ASI05"
+      ],
+      "agrees": true
+    },
+    {
+      "corpus_a_id": "INC-02191",
+      "corpus_b_id": "ASIB-040",
+      "corpus_b_title": "AgentSmith Prompt-Hub Proxy Attack Proxy prompt agent exfiltrated",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM02",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI04"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02539",
+      "corpus_b_id": "ASIB-041",
+      "corpus_b_title": "EchoLeak (Zero-Click Prompt Injection) Critical zero-click exploit allowing",
+      "match_method": "cve_match",
+      "corpus_a_label": "LLM01",
+      "corpus_b_label": "LLM01",
+      "corpus_b_native_labels": [
+        "ASI01",
+        "ASI02",
+        "ASI06"
+      ],
+      "agrees": true
+    },
+    {
+      "corpus_a_id": "INC-02613",
+      "corpus_b_id": "ASIB-042",
+      "corpus_b_title": "GitPublic Issue Repo Hijack Public issue text hijacked",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM01",
+      "corpus_b_label": "LLM01",
+      "corpus_b_native_labels": [
+        "ASI01",
+        "ASI02",
+        "ASI06",
+        "ASI07",
+        "ASI08"
+      ],
+      "agrees": true
+    },
+    {
+      "corpus_a_id": "INC-02186",
+      "corpus_b_id": "ASIB-043",
+      "corpus_b_title": "Agent-in-the-Middle (A2A Protocol Spoofing) A malicious agent published",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM07",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI03",
+        "ASI06",
+        "ASI07",
+        "ASI08",
+        "ASI10"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02607",
+      "corpus_b_id": "ASIB-044",
+      "corpus_b_title": "GitHub Copilot & Cursor Code-Agent Exploit Manipulated AI",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM04",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI04",
+        "ASI08",
+        "ASI09"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02582",
+      "corpus_b_id": "ASIB-045",
+      "corpus_b_title": "Flowise Pre-Auth Arbitrary File Upload Unauthenticated arbitrary file",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM05",
+      "corpus_b_label": "unclassified",
+      "corpus_b_native_labels": [
+        "ASI05"
+      ],
+      "agrees": false
+    },
+    {
+      "corpus_a_id": "INC-02997",
+      "corpus_b_id": "ASIB-046",
+      "corpus_b_title": "OpenAI ChatGPT Operator Vulnerability Prompt injection in web",
+      "match_method": "url_match",
+      "corpus_a_label": "LLM01",
+      "corpus_b_label": "LLM01",
+      "corpus_b_native_labels": [
+        "ASI01",
+        "ASI02",
+        "ASI03",
+        "ASI04",
+        "ASI06",
+        "ASI07",
+        "ASI09"
+      ],
+      "agrees": true
+    }
+  ],
+  "systematic_divergences": []
+}
