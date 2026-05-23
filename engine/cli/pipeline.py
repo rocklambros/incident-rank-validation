@@ -17,6 +17,34 @@ if TYPE_CHECKING:
     from engine.schema import IncidentRecord
 
 
+def _load_measurability_verdicts(
+    calibration_dir: Path,
+    entry_ids: tuple[str, ...],
+) -> dict[str, str]:
+    """Read measurability verdicts from calibration/diagnostic.json.
+
+    Maps diagnostic flags to selection-bias verdict groups:
+    - "no-data" → "frame_blind_unmeasurable"
+    - anything else → "measurable"
+    """
+    diag_path = calibration_dir / "diagnostic.json"
+    if not diag_path.exists():
+        return {e: "measurable" for e in entry_ids}
+
+    diag = json.loads(diag_path.read_text())
+    entry_reports = diag.get("entry_reports", {})
+
+    verdicts: dict[str, str] = {}
+    for eid in entry_ids:
+        report = entry_reports.get(eid, {})
+        flag = report.get("flag", "")
+        if flag == "no-data":
+            verdicts[eid] = "frame_blind_unmeasurable"
+        else:
+            verdicts[eid] = "measurable"
+    return verdicts
+
+
 def _default_tier_boundaries(n_entries: int) -> tuple[int, ...]:
     """Default tier boundaries: split entries into 3 tiers."""
     if n_entries <= 3:
@@ -387,13 +415,23 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
             seed=manifest.prng_seed,
         )
 
+        # Load measurability verdicts from calibration diagnostic
+        measurability_verdicts = _load_measurability_verdicts(
+            cycle / "calibration", entry_ids,
+        )
+        measurable_ids = [
+            e for e, v in measurability_verdicts.items()
+            if v != "frame_blind_unmeasurable"
+        ]
+        measurable_count = len(measurable_ids)
+
         # Compute concordance with correct 8-parameter signature
         concordance = compute_concordance(
             inference_result=inference_result,
             vote_posterior=vote_posterior,
             tier_boundaries=_default_tier_boundaries(len(entry_ids)),
             flag_threshold_tau=manifest.flag_threshold_tau,
-            measurable_count=len(entry_ids),
+            measurable_count=measurable_count,
             total_count=len(entry_ids),
             meaningful_kappa_n=manifest.meaningful_kappa_n,
             measurability_minimum=manifest.measurability_minimum,
@@ -407,7 +445,6 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
         )
 
         # Compute selection bias
-        measurability_verdicts = {e: "measurable" for e in entry_ids}
         selection_bias = compute_selection_bias(
             measurability_verdicts=measurability_verdicts,
             median_vote_ranks=vote_posterior.median_ranks,
@@ -494,12 +531,32 @@ def report_cmd(cycle: Path) -> None:
         entry_ids = tuple(summary.get("entry_ids", []))
 
         from engine.model.censoring import MeasurabilityVerdict
+        verdicts = _load_measurability_verdicts(
+            cycle / "calibration", entry_ids,
+        )
+        measurable_eids = tuple(
+            e for e, v in verdicts.items() if v != "frame_blind_unmeasurable"
+        )
+        frame_blind_eids = tuple(
+            e for e, v in verdicts.items() if v == "frame_blind_unmeasurable"
+        )
+        verdict_enum = {
+            eid: (
+                MeasurabilityVerdict.FRAME_BLIND_UNMEASURABLE
+                if v == "frame_blind_unmeasurable"
+                else MeasurabilityVerdict.MEASURABLE
+            )
+            for eid, v in verdicts.items()
+        }
         meas_map = MeasurabilityMap(
-            verdict={eid: MeasurabilityVerdict.MEASURABLE for eid in entry_ids},
-            recall_p_above_threshold={eid: 1.0 for eid in entry_ids},
-            measurable=entry_ids,
+            verdict=verdict_enum,
+            recall_p_above_threshold={
+                eid: (0.0 if eid in frame_blind_eids else 1.0)
+                for eid in entry_ids
+            },
+            measurable=measurable_eids,
             classifier_blind=(),
-            frame_blind=(),
+            frame_blind=frame_blind_eids,
             coverage_ratio=concordance.coverage_ratio,
             below_prereg_minimum=concordance.below_prereg_minimum,
         )
