@@ -254,3 +254,31 @@ def test_report_runpod_cost_disclosure() -> None:
     inputs = _make_inputs(runpod_cost_usd=87.50, cost_ceiling_usd=500.0)
     report = render_report(inputs)
     assert "87.50" in report or "87.5" in report
+
+
+def test_render_report_with_corpus_b_section() -> None:
+    inputs_with_cb = ReportInputs(
+        cycle_id="cycle-001",
+        engine_version="0.1.0",
+        measurability_map=_make_measurability_map(),
+        concordance=_make_concordance(),
+        selection_bias=_make_selection_bias(),
+        robustness=None,
+        twin_agreement=None,
+        non_publishable=False,
+        corpus_b_corroboration={
+            "overlap_count": 5,
+            "agreement_count": 3,
+            "disagreement_count": 2,
+            "agreement_rate": 0.6,
+            "corpus_b_incident_count": 46,
+            "baseline_kappa": 0.275,
+            "systematic_divergences": [],
+        },
+    )
+    report = render_report(inputs_with_cb)
+    assert "## Corpus B Corroboration" in report
+    assert "Shared with corpus A: 5" in report
+    assert "3 agree" in report
+    assert "NOT a posterior input" in report
+    assert "frame-blind" in report

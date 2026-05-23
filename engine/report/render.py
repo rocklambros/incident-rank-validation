@@ -27,6 +27,7 @@ class ReportInputs:
     prereg_diff: PreregDiff | None = None
     runpod_cost_usd: float | None = None
     cost_ceiling_usd: float | None = None
+    corpus_b_corroboration: dict[str, object] | None = None
 
 
 def render_report(inputs: ReportInputs) -> str:
@@ -127,6 +128,55 @@ def render_report(inputs: ReportInputs) -> str:
             f"RunPod actual: ${inputs.runpod_cost_usd:.2f} / "
             f"${inputs.cost_ceiling_usd:.2f} ceiling\n"
         )
+
+    # Corpus B corroboration
+    if inputs.corpus_b_corroboration is not None:
+        cb = inputs.corpus_b_corroboration
+        lines.append("\n## Corpus B Corroboration\n")
+        lines.append(
+            "Declared qualitative artifact — NOT a posterior input "
+            "(HANDOFF §4, §5.4).\n\n"
+        )
+        overlap = cb.get("overlap_count", 0)
+        agree = cb.get("agreement_count", 0)
+        disagree = cb.get("disagreement_count", 0)
+        rate = cb.get("agreement_rate", 0.0)
+        b_count = cb.get("corpus_b_incident_count", 0)
+        lines.append(
+            f"Corpus B incidents: {b_count}. "
+            f"Shared with corpus A: {overlap}.\n"
+        )
+        if overlap > 0:
+            lines.append(
+                f"Label agreement on shared incidents: "
+                f"{agree} agree, {disagree} disagree "
+                f"(rate = {rate:.0%}).\n"
+            )
+        else:
+            lines.append("No shared incidents detected.\n")
+
+        baseline = cb.get("baseline_kappa", 0.0)
+        lines.append(
+            f"\nContext: cycle headline kappa = {baseline:.3f}. "
+            f"Agreement reporting at N = {overlap} is qualitative, "
+            f"not statistical.\n"
+        )
+
+        lines.append(
+            "\nNote: 3 entries are frame-blind (LLM04, LLM08, LLM10). "
+            "Agreement on incidents classified to these entries is reported "
+            "but has no bearing on posterior estimates.\n"
+        )
+
+        divergences = cb.get("systematic_divergences", [])
+        if divergences:
+            lines.append("\nSystematic divergences (published finding):\n")
+            for d in divergences:
+                if isinstance(d, dict):
+                    lines.append(
+                        f"- {d.get('pattern', 'unknown')} "
+                        f"({d.get('count', 0)} incidents)\n"
+                    )
 
     lines.append("\n## Threats to Validity\n")
     for t in get_threats_register():
