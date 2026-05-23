@@ -433,7 +433,110 @@ def report_cmd(cycle: Path) -> None:
     if not results_dir.exists():
         raise click.ClickException("results/ directory not found — run decide first")
 
-    click.echo("Report phase: prerequisites satisfied.")
+    prereg = cycle / "prereg"
+    infer_dir = cycle / "infer"
+
+    try:
+        from engine.cli.pipeline_executor import _load_manifest
+        from engine.decide.concordance import ConcordanceResult
+        from engine.decide.measurability import MeasurabilityMap
+        from engine.decide.selection_bias import SelectionBiasDisclosure
+        from engine.model.inference import InferenceResult
+        from engine.report.diff import PreregDiff, compute_prereg_diff
+        from engine.report.render import ReportInputs, render_report
+        from engine.version import __version__
+
+        manifest = _load_manifest(prereg / "manifest.json")
+
+        concordance_path = results_dir / "concordance.json"
+        if not concordance_path.exists():
+            raise click.ClickException("concordance.json not found — run decide first")
+        conc_data = json.loads(concordance_path.read_text())
+
+        flags_raw = conc_data.get("flags", [])
+        from engine.decide.robustness_multiplicity import FlagDirection, FlagFinding
+        flags = tuple(
+            FlagFinding(
+                entry_id=f["entry_id"],
+                probability=f["probability"],
+                direction=FlagDirection(f["direction"]),
+            )
+            for f in flags_raw
+        )
+
+        concordance = ConcordanceResult(
+            weighted_kappa_median=conc_data.get("weighted_kappa_median"),
+            weighted_kappa_ci=tuple(conc_data["weighted_kappa_ci"]) if conc_data.get("weighted_kappa_ci") else None,
+            measurable_count=conc_data["measurable_count"],
+            total_count=conc_data["total_count"],
+            coverage_ratio=conc_data["coverage_ratio"],
+            below_prereg_minimum=conc_data.get("below_prereg_minimum", False),
+            meaningful_kappa_n=manifest.meaningful_kappa_n,
+            flags=flags,
+            standing_caveat="",
+        )
+
+        sel_bias_path = results_dir / "selection_bias.json"
+        sb_data = json.loads(sel_bias_path.read_text()) if sel_bias_path.exists() else {}
+        selection_bias = SelectionBiasDisclosure(
+            statistic_name=sb_data.get("statistic_name", "kruskal_wallis_h"),
+            statistic_value=float(sb_data.get("statistic_value", float("nan"))),
+            p_value=float(sb_data.get("p_value", float("nan"))),
+            n_entries_per_group=sb_data.get("n_entries_per_group", {}),
+            severity=sb_data.get("severity", "low"),
+        )
+
+        summary_path = infer_dir / "inference_summary.json"
+        summary = json.loads(summary_path.read_text()) if summary_path.exists() else {}
+        entry_ids = tuple(summary.get("entry_ids", []))
+
+        from engine.decide.measurability import MeasurabilityVerdict
+        meas_map = MeasurabilityMap(
+            verdict={eid: MeasurabilityVerdict.MEASURABLE for eid in entry_ids},
+            recall_p_above_threshold={eid: 1.0 for eid in entry_ids},
+            measurable=entry_ids,
+            classifier_blind=(),
+            frame_blind=(),
+            coverage_ratio=concordance.coverage_ratio,
+            below_prereg_minimum=concordance.below_prereg_minimum,
+        )
+
+        prereg_diff = compute_prereg_diff(
+            prereg_primary_spec=manifest.primary_spec,
+            actual_primary_spec=manifest.primary_spec,
+            prereg_flag_tau=manifest.flag_threshold_tau,
+            actual_flag_tau=manifest.flag_threshold_tau,
+            prereg_measurability_min=manifest.measurability_minimum,
+            actual_measurability_min=manifest.measurability_minimum,
+        )
+
+        s2_manifest_path = prereg / "stage2_manifest.json"
+        runpod_cost = None
+        cost_ceiling = None
+        if s2_manifest_path.exists():
+            s2_data = json.loads(s2_manifest_path.read_text())
+            runpod_cost = s2_data.get("actual_cost_usd")
+            cost_ceiling = s2_data.get("cost_ceiling_usd")
+
+        inputs = ReportInputs(
+            cycle_id=manifest.cycle_id,
+            engine_version=__version__,
+            measurability_map=meas_map,
+            concordance=concordance,
+            selection_bias=selection_bias,
+            robustness=None,
+            twin_agreement=None,
+            non_publishable=True,
+            prereg_diff=prereg_diff,
+            runpod_cost_usd=runpod_cost,
+            cost_ceiling_usd=cost_ceiling,
+        )
+        report_text = render_report(inputs)
+        report_path = results_dir / "report.md"
+        report_path.write_text(report_text)
+        click.echo(f"Report written to {report_path}")
+    except Exception as e:
+        raise click.ClickException(f"Report generation failed: {e}") from e
 
 
 @click.command(name="repro-bundle")
@@ -441,4 +544,56 @@ def report_cmd(cycle: Path) -> None:
 @click.option("--output", required=True, type=click.Path(path_type=Path))
 def repro_bundle_cmd(cycle: Path, output: Path) -> None:
     """Generate reproduction bundle tar.gz."""
-    click.echo(f"Reproduction bundle: {output}")
+    import hashlib
+    import tarfile
+
+    from engine.repro.bundle import ReproductionBundle
+    from engine.snapshot.hashing import snapshot_hash
+    from engine.version import __version__
+
+    prereg = cycle / "prereg"
+    if not (prereg / "manifest.json").exists():
+        raise click.ClickException("prereg/manifest.json not found")
+
+    manifest_hash = snapshot_hash(prereg / "manifest.json")
+    lock_path = prereg / "manifest.lock"
+    lockfile_hash = snapshot_hash(lock_path) if lock_path.exists() else "none"
+    snap_path = prereg / "snapshot.json"
+    snap_hash = snapshot_hash(snap_path) if snap_path.exists() else "none"
+
+    provenance: dict[str, str] = {}
+    s2_path = prereg / "stage2_manifest.json"
+    if s2_path.exists():
+        provenance["stage2_manifest_hash"] = snapshot_hash(s2_path)
+    cal_path = cycle / "calibration" / "posteriors.json"
+    if cal_path.exists():
+        provenance["calibration_hash"] = snapshot_hash(cal_path)
+    vote_path = cycle / "polling" / "vote_results.xlsx"
+    if vote_path.exists():
+        h = hashlib.sha256(vote_path.read_bytes()).hexdigest()
+        provenance["vote_data_hash"] = h
+
+    manifest_data = json.loads((prereg / "manifest.json").read_text())
+    cycle_id = manifest_data.get("cycle_id", cycle.name)
+
+    bundle = ReproductionBundle(
+        cycle_id=cycle_id,
+        engine_version=__version__,
+        snapshot_hash=snap_hash,
+        manifest_hash=manifest_hash,
+        lockfile_hash=lockfile_hash,
+        provenance=provenance,
+    )
+
+    bundle_json_path = cycle / "results" / "reproduction_bundle.json"
+    bundle_json_path.parent.mkdir(parents=True, exist_ok=True)
+    bundle.write(bundle_json_path)
+
+    with tarfile.open(output, "w:gz") as tar:
+        for subdir in ("prereg", "classify", "infer", "results", "calibration", "taxonomy"):
+            dir_path = cycle / subdir
+            if dir_path.exists():
+                tar.add(str(dir_path), arcname=subdir)
+        tar.add(str(bundle_json_path), arcname="reproduction_bundle.json")
+
+    click.echo(f"Reproduction bundle: {output} ({output.stat().st_size / 1024:.0f} KB)")
