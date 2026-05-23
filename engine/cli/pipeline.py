@@ -657,3 +657,245 @@ def repro_bundle_cmd(cycle: Path, output: Path) -> None:
         tar.add(str(bundle_json_path), arcname="reproduction_bundle.json")
 
     click.echo(f"Reproduction bundle: {output} ({output.stat().st_size / 1024:.0f} KB)")
+
+
+@click.command(name="corroborate")
+@click.option("--cycle", required=True, type=click.Path(path_type=Path, exists=True))
+@click.option("--corpus-b-dir", required=True, type=click.Path(path_type=Path, exists=True),
+              help="Path to vendored corpus B snapshot directory")
+@click.option("--execute", is_flag=True, default=False,
+              help="Execute corroboration (without flag, validates prerequisites only)")
+def corroborate(cycle: Path, corpus_b_dir: Path, execute: bool) -> None:
+    """Run corpus B corroboration cross-check (Plan 6).
+
+    Classifies corpus B through Stage-1 (+ Stage-2 if available),
+    detects incident overlap with corpus A, computes agreement,
+    and writes the corroboration artifact.
+
+    Corpus B is qualitative corroboration only — NEVER a posterior input.
+    """
+    prereg = cycle / "prereg"
+    if not (prereg / "rubric.json").exists():
+        raise click.ClickException("prereg/rubric.json not found — rubric must be frozen")
+
+    classify_dir = cycle / "classify"
+    corpus_a_labels_path = classify_dir / "labeled_incidents.json"
+    if not corpus_a_labels_path.exists():
+        raise click.ClickException(
+            "classify/labeled_incidents.json not found — run classify first"
+        )
+
+    results_dir = cycle / "results"
+    conc_path = results_dir / "concordance.json"
+    if not conc_path.exists():
+        raise click.ClickException(
+            "results/concordance.json not found — run decide first"
+        )
+
+    click.echo(f"Corpus B corroboration: loading from {corpus_b_dir}")
+
+    if not execute:
+        click.echo(
+            "Corroborate: prerequisites satisfied. "
+            "Run with --execute to compute corroboration."
+        )
+        return
+
+    click.echo("Executing corpus B corroboration...")
+    try:
+        from engine.adapters.owasp_asi import OWASPASIAdapter
+        from engine.classify.classifier import build_rules_from_rubric, classify_real
+        from engine.cli.pipeline_executor import _load_manifest
+        from engine.decide.corpus_b_corroboration import (
+            compute_agreement,
+            detect_overlaps,
+        )
+        from engine.prereg.rubric_io import read_rubric
+
+        rubric = read_rubric(prereg / "rubric.json")
+        manifest = _load_manifest(prereg / "manifest.json")
+        confidence_threshold = manifest.confidence_threshold
+
+        adapter = OWASPASIAdapter(corpus_b_dir)
+        corpus_b_incidents = list(adapter.iter_incidents())
+        click.echo(f"Loaded {len(corpus_b_incidents)} corpus B incidents")
+
+        rules = build_rules_from_rubric(rubric, confidence_threshold=confidence_threshold)
+        b_result = classify_real(tuple(corpus_b_incidents), rules)
+        click.echo(f"Stage-1 classified corpus B: {len(b_result.classifications)} classifications")
+
+        classification_stages = "stage1"
+
+        stage2_config = prereg / "stage2_manifest.json"
+        if stage2_config.exists():
+            from engine.cli.pipeline_executor import merge_classifications, route_to_stage2
+
+            all_b_ids = {inc.id for inc in corpus_b_incidents}
+            low_conf_ids = route_to_stage2(
+                b_result.classifications, all_b_ids,
+                confidence_threshold=confidence_threshold,
+            )
+            click.echo(f"Stage-2 candidates: {len(low_conf_ids)} corpus B incidents")
+
+            if low_conf_ids:
+                try:
+                    import os
+
+                    from engine.classify.cost_tracker import CostTracker
+                    from engine.classify.runpod_client import HttpRunPodClient
+                    from engine.classify.stage2 import Stage2Classifier
+                    from engine.classify.stage2_manifest import Stage2Manifest
+                    from engine.cli.secrets import load_secret
+
+                    s2_manifest = Stage2Manifest.read(stage2_config)
+                    api_key = load_secret("runpod/api-key", env_var="RUNPOD_API_KEY")
+                    endpoint_id = os.environ.get("RUNPOD_ENDPOINT_ID", "")
+
+                    client = HttpRunPodClient(
+                        api_key=api_key,
+                        endpoint_id=endpoint_id,
+                        model_name=s2_manifest.model_identity,
+                    )
+                    tracker = CostTracker(ceiling_usd=s2_manifest.cost_ceiling_usd)
+                    classifier = Stage2Classifier(
+                        client=client,
+                        cost_tracker=tracker,
+                        rubric_json=(prereg / "rubric.json").read_text(),
+                        model_identity=s2_manifest.model_identity,
+                        weight_provenance_hash=s2_manifest.weight_provenance_hash,
+                        prng_seed=s2_manifest.prng_seed,
+                    )
+
+                    s2_incidents = tuple(i for i in corpus_b_incidents if i.id in low_conf_ids)
+                    rubric_hash = manifest.rubric_hash or ""
+                    click.echo(f"Stage-2: classifying {len(s2_incidents)} corpus B incidents...")
+
+                    s2_results = tuple(
+                        classifier.classify(inc, rubric_hash) for inc in s2_incidents
+                    )
+                    client.close()
+
+                    merged = merge_classifications(
+                        b_result.classifications, s2_results, confidence_threshold,
+                    )
+                    from engine.classify.stub import ClassificationResult
+                    b_result = ClassificationResult(
+                        classifications=merged,
+                        classifier_version=b_result.classifier_version,
+                        classifier_rule_hash=b_result.classifier_rule_hash,
+                    )
+                    classification_stages = "stage1+stage2"
+                    click.echo(f"Stage-2 complete for corpus B ({len(s2_results)} results)")
+                except (RuntimeError, OSError) as exc:
+                    click.echo(
+                        f"Stage-2 unavailable for corpus B ({exc}); "
+                        f"proceeding with Stage-1 only"
+                    )
+
+        b_labeled = [
+            {
+                "incident_id": c.incident_id,
+                "entry_id": c.entry_id,
+                "confidence": c.confidence,
+                "stage": c.stage,
+                "rationale": c.rationale,
+                "stratum": "corroboration",
+            }
+            for c in b_result.classifications
+        ]
+        b_labeled_path = classify_dir / "corpus_b_labeled.json"
+        b_labeled_path.write_text(json.dumps(b_labeled, indent=2) + "\n")
+        click.echo(f"Corpus B classifications written to {b_labeled_path}")
+
+        a_labels_raw = json.loads(corpus_a_labels_path.read_text())
+        a_label_map: dict[str, str] = {}
+        a_label_conf: dict[str, float] = {}
+        for rec in a_labels_raw:
+            iid = rec["incident_id"]
+            conf = rec["confidence"]
+            if iid not in a_label_map or conf > a_label_conf.get(iid, -1.0):
+                a_label_map[iid] = rec["entry_id"]
+                a_label_conf[iid] = conf
+
+        b_label_map: dict[str, str] = {}
+        b_label_conf: dict[str, float] = {}
+        for c in b_result.classifications:
+            prev_conf = b_label_conf.get(c.incident_id, -1.0)
+            if c.incident_id not in b_label_map or c.confidence > prev_conf:
+                b_label_map[c.incident_id] = c.entry_id
+                b_label_conf[c.incident_id] = c.confidence
+
+        snapshot_dirs = list((cycle / "corpora" / "genai_agentic").iterdir())
+        if not snapshot_dirs:
+            raise click.ClickException("No corpus A snapshot found")
+        from engine.adapters.genai_agentic import GenAIAgenticAdapter
+        corpus_a_adapter = GenAIAgenticAdapter(snapshot_dirs[0], "2099-12-31")
+        corpus_a_incidents = list(corpus_a_adapter.iter_incidents())
+
+        overlaps = detect_overlaps(corpus_a_incidents, corpus_b_incidents)
+        click.echo(f"Detected {len(overlaps)} incident overlaps between corpora")
+
+        conc_data = json.loads(conc_path.read_text())
+        baseline_kappa = conc_data.get("weighted_kappa_median", 0.0) or 0.0
+
+        b_records_map = {inc.id: inc for inc in corpus_b_incidents}
+        corroboration = compute_agreement(
+            overlaps=overlaps,
+            corpus_a_labels=a_label_map,
+            corpus_b_labels=b_label_map,
+            corpus_b_records=b_records_map,
+            baseline_kappa=baseline_kappa,
+            corpus_a_count=len(corpus_a_incidents),
+            corpus_b_count=len(corpus_b_incidents),
+            classification_stages=classification_stages,
+        )
+
+        results_dir.mkdir(parents=True, exist_ok=True)
+        artifact = {
+            "corpus_b_incident_count": corroboration.corpus_b_incident_count,
+            "corpus_a_incident_count": corroboration.corpus_a_incident_count,
+            "overlap_count": corroboration.overlap_count,
+            "classification_stages_used": corroboration.classification_stages_used,
+            "agreement_count": corroboration.agreement_count,
+            "disagreement_count": corroboration.disagreement_count,
+            "agreement_rate": corroboration.agreement_rate,
+            "baseline_kappa": corroboration.baseline_kappa,
+            "overlap_method_limitations": list(corroboration.overlap_method_limitations),
+            "per_incident": [
+                {
+                    "corpus_a_id": a.corpus_a_id,
+                    "corpus_b_id": a.corpus_b_id,
+                    "corpus_b_title": a.corpus_b_title,
+                    "match_method": a.match_method,
+                    "corpus_a_label": a.corpus_a_label,
+                    "corpus_b_label": a.corpus_b_label,
+                    "corpus_b_native_labels": list(a.corpus_b_native_labels),
+                    "agrees": a.agrees,
+                }
+                for a in corroboration.per_incident
+            ],
+            "systematic_divergences": [
+                {
+                    "pattern": d.pattern,
+                    "count": d.count,
+                    "incidents": list(d.incidents),
+                }
+                for d in corroboration.systematic_divergences
+            ],
+        }
+        artifact_path = results_dir / "corpus_b_corroboration.json"
+        artifact_path.write_text(json.dumps(artifact, indent=2) + "\n")
+        click.echo(f"Corroboration artifact written to {artifact_path}")
+        click.echo(
+            f"Result: {corroboration.overlap_count} shared incidents, "
+            f"{corroboration.agreement_count} agree, "
+            f"{corroboration.disagreement_count} disagree "
+            f"(rate={corroboration.agreement_rate:.2f})"
+        )
+        if corroboration.systematic_divergences:
+            click.echo("Systematic divergences detected:")
+            for d in corroboration.systematic_divergences:
+                click.echo(f"  {d.pattern} ({d.count} incidents)")
+
+    except Exception as e:
+        raise click.ClickException(f"Corroboration failed: {e}") from e
