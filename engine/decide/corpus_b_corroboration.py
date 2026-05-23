@@ -186,7 +186,8 @@ class CorpusBCorroboration:
     overlap_method_limitations: tuple[str, ...] = field(default=(
         "URL matching may miss equivalent URLs with different query parameters or redirects",
         "CVE matching requires both corpora to reference the same CVE ID in text or URLs",
-        "Title keyword matching (fallback) may produce false positives from keyword collision on unrelated incidents",
+        "Title keyword matching (fallback) may produce false positives from keyword"
+        " collision on unrelated incidents",
         "Incidents described with different terminology may not match across corpora",
     ))
 
@@ -228,13 +229,18 @@ def compute_agreement(
 
     divergence_patterns: dict[str, list[str]] = {}
     for a in agreements:
-        if not a.agrees and a.corpus_a_label != "unclassified" and a.corpus_b_label != "unclassified":
+        if (not a.agrees
+                and a.corpus_a_label != "unclassified"
+                and a.corpus_b_label != "unclassified"):
             pattern_key = f"{a.corpus_a_label}_vs_{a.corpus_b_label}"
             divergence_patterns.setdefault(pattern_key, []).append(a.corpus_b_id)
 
     divergences = tuple(
         SystematicDivergence(
-            pattern=f"Corpus A labels as {key.split('_vs_')[0]}, corpus B labels as {key.split('_vs_')[1]}",
+            pattern=(
+                f"Corpus A labels as {key.split('_vs_')[0]},"
+                f" corpus B labels as {key.split('_vs_')[1]}"
+            ),
             count=len(ids),
             incidents=tuple(ids),
         )

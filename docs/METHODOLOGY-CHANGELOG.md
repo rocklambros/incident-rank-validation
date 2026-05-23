@@ -1,5 +1,16 @@
 # Methodology Changelog
 
+## 1.2.0 (Plan 6, 2026-05-22): Corpus B corroboration artifact
+
+- OWASP ASI Agentic Exploits & Incidents tracker adapter (`engine/adapters/owasp_asi.py`): parses ~46 human-curated incidents from vendored Markdown snapshot into canonical IncidentRecords.
+- Corpus B incidents classified through the same Stage-1 (+ Stage-2 if available) pipeline as corpus A for consistency.
+- Incident overlap detection via URL/CVE/title matching between corpus A and corpus B.
+- Per-incident agreement computation with systematic divergence detection (HANDOFF §4: divergence is a published finding, never a silent adjustment).
+- Report section added: declared qualitative artifact, NOT a posterior input.
+- Regression test enforces that `engine/model/inference.py` never imports corpus B artifacts.
+
+Methodology decision: corpus B has ~46 incidents (N too small for statistical testing). Agreement is reported as raw counts (N shared, N agree, N disagree) with qualitative interpretation against the baseline kappa. No kappa, no hypothesis test, no confidence intervals on the agreement rate. Overlap detection limitations are declared in the artifact.
+
 ## 1.0.0 (Plan 5, 2026-05-21): First real LLM 2026 cycle
 
 - Stage-2 LLM-assisted classifier with RunPod integration, delimiter-fenced prompts (HANDOFF §5.2), cost tracking with $500 ceiling auto-abort.

@@ -8,7 +8,6 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-
 _INFERENCE_PATH = Path(__file__).resolve().parents[2] / "engine" / "model" / "inference.py"
 
 _CORPUS_B_MARKERS = frozenset({
