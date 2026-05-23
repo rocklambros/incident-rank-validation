@@ -28,13 +28,21 @@ if TYPE_CHECKING:
 
 def route_to_stage2(
     classifications: tuple[Classification, ...],
+    all_incident_ids: set[str],
     confidence_threshold: float,
 ) -> set[str]:
-    return {
-        c.incident_id
-        for c in classifications
-        if c.confidence < confidence_threshold
+    best_confidence: dict[str, float] = {}
+    for c in classifications:
+        prev = best_confidence.get(c.incident_id, -1.0)
+        if c.confidence > prev:
+            best_confidence[c.incident_id] = c.confidence
+
+    low_confidence = {
+        iid for iid, conf in best_confidence.items()
+        if conf < confidence_threshold
     }
+    unclassified = all_incident_ids - set(best_confidence.keys())
+    return low_confidence | unclassified
 
 
 def merge_classifications(
@@ -43,10 +51,26 @@ def merge_classifications(
     confidence_threshold: float,
 ) -> tuple[Classification, ...]:
     stage2_by_id = {s.incident_id: s for s in stage2}
+    seen_s2_ids: set[str] = set()
     merged: list[Classification] = []
+
     for c in stage1:
         if c.confidence < confidence_threshold and c.incident_id in stage2_by_id:
             s2 = stage2_by_id[c.incident_id]
+            if s2.entry_id != "out-of-scope":
+                merged.append(Classification(
+                    incident_id=s2.incident_id,
+                    entry_id=s2.entry_id,
+                    confidence=s2.confidence,
+                    stage=2,
+                    rationale=s2.rationale,
+                ))
+            seen_s2_ids.add(c.incident_id)
+        else:
+            merged.append(c)
+
+    for s2 in stage2:
+        if s2.incident_id not in seen_s2_ids and s2.entry_id != "out-of-scope":
             merged.append(Classification(
                 incident_id=s2.incident_id,
                 entry_id=s2.entry_id,
@@ -54,8 +78,7 @@ def merge_classifications(
                 stage=2,
                 rationale=s2.rationale,
             ))
-        else:
-            merged.append(c)
+
     return tuple(merged)
 
 

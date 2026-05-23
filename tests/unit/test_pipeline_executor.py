@@ -33,8 +33,9 @@ class TestClassifyPhase:
                 confidence=0.25, stage=1, rationale="ambig",
             ),
         )
-        ambiguous = route_to_stage2(classifications, confidence_threshold=0.3)
-        assert set(ambiguous) == {"INC-002", "INC-003"}
+        all_ids = {"INC-001", "INC-002", "INC-003", "INC-004"}
+        ambiguous = route_to_stage2(classifications, all_ids, confidence_threshold=0.3)
+        assert set(ambiguous) == {"INC-002", "INC-003", "INC-004"}
 
     def test_merge_stage1_stage2_results(self) -> None:
         from engine.classify.stub import Classification
@@ -61,6 +62,34 @@ class TestClassifyPhase:
         ids = {c.incident_id: c.entry_id for c in merged}
         assert ids["INC-001"] == "LLM01"
         assert ids["INC-002"] == "LLM03"
+
+    def test_merge_adds_newly_classified_incidents(self) -> None:
+        from engine.classify.stub import Classification
+        from engine.cli.pipeline_executor import merge_classifications
+
+        stage1 = (
+            Classification(
+                incident_id="INC-001", entry_id="LLM01",
+                confidence=0.8, stage=1, rationale="high",
+            ),
+        )
+        stage2 = (
+            Stage2Classification(
+                incident_id="INC-099", entry_id="LLM05", confidence=0.7,
+                rationale="newly classified by LLM", model_identity="test",
+                weight_provenance_hash="h", prompt_hash="p",
+            ),
+            Stage2Classification(
+                incident_id="INC-100", entry_id="out-of-scope", confidence=0.0,
+                rationale="no match", model_identity="test",
+                weight_provenance_hash="h", prompt_hash="p",
+            ),
+        )
+        merged = merge_classifications(stage1, stage2, confidence_threshold=0.3)
+        ids = {c.incident_id: c.entry_id for c in merged}
+        assert ids["INC-001"] == "LLM01"
+        assert ids["INC-099"] == "LLM05"
+        assert "INC-100" not in ids
 
     def test_classify_writes_artifacts(self, tmp_path: Path) -> None:
         from engine.classify.stub import Classification, ClassificationResult

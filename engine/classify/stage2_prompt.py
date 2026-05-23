@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 
 from engine.schema import IncidentRecord
 
@@ -31,12 +32,23 @@ _SYSTEM_TEMPLATE = (
 )
 
 
+def compact_rubric(rubric_json: str) -> str:
+    rubric = json.loads(rubric_json)
+    lines = []
+    for entry in rubric.get("entries", []):
+        eid = entry["entry_id"]
+        name = entry["canonical_name"]
+        scope = entry.get("in_scope", "")
+        lines.append(f"- **{eid}**: {name} — {scope}")
+    return "\n".join(lines)
+
+
 def build_prompt(incident: IncidentRecord, rubric_json: str) -> str:
     safe_text = incident.text.replace("{", "{{").replace("}", "}}")
     return _SYSTEM_TEMPLATE.format(
         begin=INCIDENT_DELIMITER_BEGIN,
         end=INCIDENT_DELIMITER_END,
-        rubric=rubric_json,
+        rubric=compact_rubric(rubric_json),
         incident_text=safe_text,
     )
 
@@ -45,7 +57,7 @@ def compute_prompt_hash(rubric_json: str) -> str:
     template_with_rubric = _SYSTEM_TEMPLATE.format(
         begin=INCIDENT_DELIMITER_BEGIN,
         end=INCIDENT_DELIMITER_END,
-        rubric=rubric_json,
+        rubric=compact_rubric(rubric_json),
         incident_text="",
     )
     return hashlib.sha256(template_with_rubric.encode()).hexdigest()
