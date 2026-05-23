@@ -37,7 +37,7 @@ def compact_rubric(rubric_json: str) -> str:
     lines = []
     for entry in rubric.get("entries", []):
         eid = entry["entry_id"]
-        name = entry["canonical_name"]
+        name = entry.get("canonical_name", entry.get("name", eid))
         scope = entry.get("in_scope", "")
         lines.append(f"- **{eid}**: {name} — {scope}")
     return "\n".join(lines)
