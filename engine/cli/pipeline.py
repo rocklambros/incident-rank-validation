@@ -110,8 +110,10 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
         # Stage-2 routing (if configured)
         stage2_results: tuple[Stage2Classification, ...] = ()
         if stage2_config is not None:
+            all_ids = {inc.id for inc in incidents_list}
             low_confidence_ids = route_to_stage2(
-                result.classifications, confidence_threshold=confidence_threshold,
+                result.classifications, all_ids,
+                confidence_threshold=confidence_threshold,
             )
             click.echo(f"Routed {len(low_confidence_ids)} incidents to Stage-2")
 
@@ -128,7 +130,11 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
                 api_key = load_secret("runpod/api-key", env_var="RUNPOD_API_KEY")
                 endpoint_id = os.environ.get("RUNPOD_ENDPOINT_ID", "")
 
-                client = HttpRunPodClient(api_key=api_key, endpoint_id=endpoint_id)
+                client = HttpRunPodClient(
+                    api_key=api_key,
+                    endpoint_id=endpoint_id,
+                    model_name=s2_manifest.model_identity,
+                )
                 tracker = CostTracker(ceiling_usd=s2_manifest.cost_ceiling_usd)
 
                 classifier = Stage2Classifier(
@@ -143,7 +149,38 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
                 # Filter incidents for Stage-2
                 s2_incidents = tuple(i for i in incidents_list if i.id in low_confidence_ids)
                 rubric_hash = manifest_data.get("rubric_hash", "")
-                stage2_results = classifier.classify_batch(s2_incidents, rubric_hash)
+                total_s2 = len(s2_incidents)
+                click.echo(f"Stage-2: classifying {total_s2} incidents via RunPod (concurrent)...")
+
+                import concurrent.futures
+                import threading
+
+                s2_results_map: dict[int, Stage2Classification] = {}
+                completed_count = 0
+                lock = threading.Lock()
+
+                def _classify_one(idx_inc: tuple[int, object]) -> tuple[int, Stage2Classification]:
+                    idx, inc = idx_inc
+                    return idx, classifier.classify(inc, rubric_hash)
+
+                max_concurrent = 18  # 3 workers × 6 batch slots each
+                with concurrent.futures.ThreadPoolExecutor(max_workers=max_concurrent) as pool:
+                    future_to_idx = {
+                        pool.submit(_classify_one, (i, inc)): i
+                        for i, inc in enumerate(s2_incidents)
+                    }
+                    for future in concurrent.futures.as_completed(future_to_idx):
+                        idx, result_s2 = future.result()
+                        s2_results_map[idx] = result_s2
+                        with lock:
+                            completed_count += 1
+                            if completed_count % 100 == 0 or completed_count == total_s2:
+                                click.echo(
+                                    f"  Stage-2 progress: {completed_count}/{total_s2} "
+                                    f"(${tracker.total_cost_usd:.2f})"
+                                )
+
+                stage2_results = tuple(s2_results_map[i] for i in range(total_s2))
                 client.close()
 
                 click.echo(

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import threading
 from dataclasses import dataclass
 from typing import Protocol
 
@@ -23,16 +24,15 @@ class RunPodClient(Protocol):
 
 
 class HttpRunPodClient:
-    """Production RunPod client using httpx."""
+    """Thread-safe RunPod client using OpenAI-compatible chat API."""
 
     def __init__(
         self,
         api_key: str | None = None,
         endpoint_id: str | None = None,
+        model_name: str = "",
         timeout_seconds: float = 300.0,
     ) -> None:
-        import httpx
-
         self._api_key = api_key or os.environ.get("RUNPOD_API_KEY", "")
         self._endpoint_id = endpoint_id or os.environ.get("RUNPOD_ENDPOINT_ID", "")
         if not self._api_key:
@@ -40,37 +40,63 @@ class HttpRunPodClient:
         if not self._endpoint_id:
             raise RunPodError("RUNPOD_ENDPOINT_ID not set")
         self._base_url = f"https://api.runpod.ai/v2/{self._endpoint_id}"
-        self._client = httpx.Client(
-            headers={"Authorization": f"Bearer {self._api_key}"},
-            timeout=timeout_seconds,
-        )
+        self._model_name = model_name
+        self._timeout = timeout_seconds
+        self._local = threading.local()
+        self._clients: list[object] = []
+        self._lock = threading.Lock()
+
+    def _get_client(self) -> object:
+        import httpx
+
+        client = getattr(self._local, "client", None)
+        if client is None:
+            client = httpx.Client(
+                headers={"Authorization": f"Bearer {self._api_key}"},
+                timeout=self._timeout,
+            )
+            self._local.client = client
+            with self._lock:
+                self._clients.append(client)
+        return client
 
     def run_sync(self, prompt: str, seed: int) -> RunPodResponse:
         import httpx
 
+        client = self._get_client()
         payload = {
-            "input": {
-                "prompt": prompt,
-                "max_tokens": 256,
-                "temperature": 0.0,
-                "top_p": 1.0,
-                "seed": seed,
-            }
+            "model": self._model_name,
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": 256,
+            "temperature": 0.0,
+            "seed": seed,
         }
         try:
-            resp = self._client.post(f"{self._base_url}/runsync", json=payload)
+            resp = client.post(
+                f"{self._base_url}/openai/v1/chat/completions",
+                json=payload,
+            )
             resp.raise_for_status()
         except httpx.HTTPError as e:
             raise RunPodError(f"RunPod HTTP error: {e}") from e
 
         data = resp.json()
-        if data.get("status") == "FAILED":
-            raise RunPodError(f"RunPod job failed: {data.get('error', 'unknown')}")
+        choices = data.get("choices", [])
+        if not choices:
+            raise RunPodError(f"RunPod returned no choices: {data}")
+
+        output_text = choices[0].get("message", {}).get("content", "").strip()
         return RunPodResponse(
-            output_text=str(data.get("output", "")),
+            output_text=output_text,
             job_id=str(data.get("id", "")),
-            execution_time_ms=float(data.get("executionTime", 0.0)),
+            execution_time_ms=0.0,
         )
 
     def close(self) -> None:
-        self._client.close()
+        with self._lock:
+            for client in self._clients:
+                try:
+                    client.close()
+                except Exception:
+                    pass
+            self._clients.clear()

@@ -1,0 +1,19 @@
+{
+  "model_identity": "casperhansen/llama-3.3-70b-instruct-awq",
+  "weight_provenance_hash": "c809cd8e56dbc1a96aa471f8383000e8ecfd38feab4ed386076c84d3915b77eb",
+  "prompt_hash": "fbe8cd2cf3be7df536c449bbcade44e16d2f4d3b7016edab85dcb5f65e59b0b5",
+  "prompt_template_version": "1.0.0",
+  "batch_size": 1,
+  "prng_seed": 20260520,
+  "temperature": 0.0,
+  "top_p": 1.0,
+  "cost_ceiling_usd": 500.0,
+  "provider": "runpod",
+  "gpu_type": "A100 80GB / H100 80GB (AMPERE_80 pool)",
+  "gpu_count": 1,
+  "region": null,
+  "runpod_job_ids": [],
+  "wall_time_seconds": null,
+  "actual_cost_usd": null,
+  "incidents_classified": null
+}
