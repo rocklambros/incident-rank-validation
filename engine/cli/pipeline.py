@@ -578,6 +578,11 @@ def report_cmd(cycle: Path) -> None:
             runpod_cost = s2_data.get("actual_cost_usd")
             cost_ceiling = s2_data.get("cost_ceiling_usd")
 
+        corpus_b_corr = None
+        cb_path = results_dir / "corpus_b_corroboration.json"
+        if cb_path.exists():
+            corpus_b_corr = json.loads(cb_path.read_text())
+
         inputs = ReportInputs(
             cycle_id=manifest.cycle_id,
             engine_version=__version__,
@@ -590,6 +595,7 @@ def report_cmd(cycle: Path) -> None:
             prereg_diff=prereg_diff,
             runpod_cost_usd=runpod_cost,
             cost_ceiling_usd=cost_ceiling,
+            corpus_b_corroboration=corpus_b_corr,
         )
         report_text = render_report(inputs)
         report_path = results_dir / "report.md"
