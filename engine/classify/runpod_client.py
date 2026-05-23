@@ -5,7 +5,7 @@ import contextlib
 import os
 import threading
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Any, Protocol
 
 
 @dataclass(frozen=True, slots=True)
@@ -44,10 +44,10 @@ class HttpRunPodClient:
         self._model_name = model_name
         self._timeout = timeout_seconds
         self._local = threading.local()
-        self._clients: list[object] = []
+        self._clients: list[Any] = []
         self._lock = threading.Lock()
 
-    def _get_client(self) -> object:
+    def _get_client(self) -> Any:
         import httpx
 
         client = getattr(self._local, "client", None)
