@@ -59,7 +59,7 @@ Status definitions:
 
 ## 3. Plan 2 — Corpus A adapter + snapshot + per-stratum bias profiles
 
-### 3.1 Status: NEXT
+### 3.1 Status: DONE (tag: v0.2.0-plan2)
 
 ### 3.2 Goal
 
@@ -126,9 +126,9 @@ Read docs/HANDOFF.md (focus on §3, §4 Corpus-A-is-a-mixture row, §5.1 corpus-
 
 ## 4. Plan 3 — Rubric drafting + adjudication + independent-reviewer signoff workflow
 
-### 4.1 Status: BLOCKED (workflow construction may proceed; freeze cannot)
+### 4.1 Status: DONE (tags: v0.3.0-rc1 scaffolding, v0.3.0-plan3 freeze)
 
-Blocker: external rubric reviewer not identified. Per HANDOFF §4 Crosswalk authorship, the rubric must be signed off by "an independent OWASP working-group member who is not the ranking author." `docs/REVIEWERS.md` records the interim single-author state (Rock = rubric reviewer = ranking author). Plan 3 *workflow scaffolding* (drafting tool, adjudication log format, attestation file format) may be built. The actual rubric *freeze* requires the external signoff.
+Completed in single-author mode (REVIEWERS.md = INTERIM). Rubric freeze is non-publishable without external reviewer signoff but all engineering and drafting work is complete.
 
 ### 4.2 Goal
 
@@ -197,14 +197,9 @@ Read docs/HANDOFF.md (focus on §4 Crosswalk authorship, §5.2, §6 control 11(b
 
 ## 5. Plan 4 — Gold-set sampler, k-fold CV calibration, coding protocol, staffing + power calc
 
-### 5.1 Status: BLOCKED
+### 5.1 Status: DONE (tag: v0.4.0-plan4)
 
-Blockers:
-
-- Plan 2 must be DONE — the sampler draws from the real adapter output.
-- Plan 3 rubric must be FROZEN — coders cannot label against an unfrozen rubric (HANDOFF §6 control 11(b)).
-- Two human domain coders + a third adjudicator must be named (HANDOFF §9 item 2). This is the human bottleneck.
-- Power calculation must be produced and committed (HANDOFF §9 item 1) before sample size is set.
+All calibration engineering complete. Gold-set labels committed as 13 batch files. Beta posteriors and k-fold CV result produced.
 
 ### 5.2 Goal
 
@@ -271,14 +266,9 @@ Read docs/HANDOFF.md (focus on §5.3, §5.4 Priors bullet, §6 control 11(b)(c),
 
 ## 6. Plan 5 — Real LLM 2026 cycle (Stage-2 classifier on RunPod, classify, infer, decide, publish)
 
-### 6.1 Status: BLOCKED (publication requires external reviewers; internal-only run permitted with `non_publishable=True`)
+### 6.1 Status: DONE — internal-only (tags: v1.0.0-plan5-internal, v1.1.0-plan5)
 
-Blockers:
-
-- Plans 2, 3, 4 all DONE.
-- For *publishable* output: both external reviewers identified per `docs/REVIEWERS.md` (rubric reviewer and statistical reviewer, neither = Rock).
-- `docs/PROVISIONING-PLAN.md` populated with concrete GPU type, model identity, weight hash, batch size, wall-time budget, cost ceiling (default $500, HANDOFF §7.5 + M9).
-- Two-cycle parity holdout (HANDOFF §11 v2.3→v2.4 row M17): 30-day reviewer audit before any external sharing.
+Cycle complete with `non_publishable=True` (REVIEWERS.md = INTERIM). Kappa 0.228 [-0.08, 0.54], 100% measurability, 4 flagged entries. Full results at `projects/owasp-llm/cycles/2026/results/`.
 
 ### 6.2 Goal
 
@@ -353,7 +343,7 @@ Read docs/HANDOFF.md (focus on §5.2 Stage-2, §5.4, §5.5, §6 control 11, §7.
 
 ## 7. Plan 6 — Corpus B corroboration cross-check
 
-### 7.1 Status: FUTURE (runnable after Plan 5 cycle outputs exist)
+### 7.1 Status: NEXT (Plan 5 cycle outputs now exist)
 
 ### 7.2 Goal
 
@@ -387,7 +377,7 @@ Read docs/HANDOFF.md (focus on §4 Corpus B role row, §5.5 corpus B corroborati
 
 ## 8. Plan 7 — Staged frame-coverage audit extension
 
-### 8.1 Status: FUTURE (optional; only runnable if external-reference list is feasible per HANDOFF §9 item 9)
+### 8.1 Status: NO-OP FOR 2026 LLM CYCLE (0 frame-blind entries; optional for future cycles if frame-blind entries exist)
 
 ### 8.2 Goal
 
