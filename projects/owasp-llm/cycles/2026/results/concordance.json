@@ -1,8 +1,8 @@
 {
-  "weighted_kappa_median": 0.22764227642276424,
+  "weighted_kappa_median": 0.2753623188405798,
   "weighted_kappa_ci": [
-    -0.08130081300813019,
-    0.5365853658536586
+    -0.014492753623188248,
+    0.5652173913043479
   ],
   "measurable_count": 17,
   "total_count": 20,

@@ -4,19 +4,19 @@ Engine version: 1.1.0
 
 ## Measurability Map
 Coverage ratio: 85.00%
-Measurable: LLM01, LLM02, LLM03, LLM05, LLM06, LLM07, LLM09, NEW-ITSCD, NEW-MA, NEW-MSDA, NEW-MTIE, NEW-PMP, NEW-WLA, ROLL-CMSB, ROLL-LAPTF, ROLL-SICG, ROLL-WLA
+Measurable: LLM01, LLM02, LLM03, LLM05, LLM06, LLM07, LLM09, NEW-ITSCD, NEW-MA, NEW-MSDA, NEW-MTIE, NEW-PMP, NEW-WLA, ROLL-CMSB, ROLL-LAPTF, ROLL-SICG, ROLL-CFAS
 Classifier-blind: none
 Frame-blind: LLM04, LLM08, LLM10
 
 ## Concordance
-Weighted kappa: 0.23 [-0.08, 0.54]
+Weighted kappa: 0.28 [-0.01, 0.57]
 Computed over 17 of 20 entries (85% coverage)
 
 > Internal triangulation against a contaminated index, not validation against reality. This concordance is computed over the measurable subset only; entries the corpus frame cannot observe or the classifier cannot recover are listed separately in the measurability map.
 
 ## Selection Bias
 Statistic: kruskal_wallis_h
-H = 0.3795, p = 0.5379
+H = 0.5507, p = 0.4580
 Severity: low
 
 ## Flags

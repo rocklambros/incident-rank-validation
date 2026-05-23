@@ -1,6 +1,6 @@
 {
   "statistic_name": "kruskal_wallis_h",
-  "statistic_value": 0.37945642605633517,
-  "p_value": 0.5378942915510476,
+  "statistic_value": 0.5506757755892756,
+  "p_value": 0.45804170401295274,
   "severity": "low"
 }

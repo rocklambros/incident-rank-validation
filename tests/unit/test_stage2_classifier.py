@@ -56,7 +56,7 @@ class TestStage2Classifier:
         classifier = Stage2Classifier(
             client=client,
             cost_tracker=tracker,
-            rubric_json='{"entries": []}',
+            rubric_json='{"entries": [{"entry_id": "LLM01"}]}',
             model_identity="test-model",
             weight_provenance_hash="abc123",
             prng_seed=42,
@@ -75,7 +75,7 @@ class TestStage2Classifier:
         classifier = Stage2Classifier(
             client=client,
             cost_tracker=tracker,
-            rubric_json='{"entries": []}',
+            rubric_json='{"entries": [{"entry_id": "LLM01"}]}',
             model_identity="test-model",
             weight_provenance_hash="abc123",
             prng_seed=42,
@@ -93,7 +93,7 @@ class TestStage2Classifier:
         classifier = Stage2Classifier(
             client=client,
             cost_tracker=tracker,
-            rubric_json='{"entries": []}',
+            rubric_json='{"entries": [{"entry_id": "LLM01"}]}',
             model_identity="test-model",
             weight_provenance_hash="abc123",
             prng_seed=42,
@@ -109,7 +109,7 @@ class TestStage2Classifier:
         classifier = Stage2Classifier(
             client=client,
             cost_tracker=tracker,
-            rubric_json='{"entries": []}',
+            rubric_json='{"entries": [{"entry_id": "LLM01"}]}',
             model_identity="test-model",
             weight_provenance_hash="abc123",
             prng_seed=42,
@@ -119,13 +119,86 @@ class TestStage2Classifier:
         assert result.entry_id == "out-of-scope"
         assert result.confidence == 0.0
 
+    def test_hallucinated_entry_id_rejected(self) -> None:
+        hallucinated_response = json.dumps({
+            "entry_id": "ROLL-WLA",
+            "confidence": 0.9,
+            "rationale": "Some rationale",
+        })
+        rubric = json.dumps({
+            "entries": [
+                {"entry_id": "LLM01"},
+                {"entry_id": "NEW-WLA"},
+                {"entry_id": "ROLL-CFAS"},
+            ]
+        })
+        client = _MockClient([hallucinated_response])
+        tracker = CostTracker(ceiling_usd=500.0)
+        classifier = Stage2Classifier(
+            client=client,
+            cost_tracker=tracker,
+            rubric_json=rubric,
+            model_identity="test-model",
+            weight_provenance_hash="abc123",
+            prng_seed=42,
+        )
+        result = classifier.classify(_make_incident(), rubric_hash="hash123")
+        assert result.entry_id == "out-of-scope"
+        assert result.confidence == 0.0
+
+    def test_valid_entry_id_accepted(self) -> None:
+        valid_response = json.dumps({
+            "entry_id": "ROLL-CFAS",
+            "confidence": 0.85,
+            "rationale": "Correct classification",
+        })
+        rubric = json.dumps({
+            "entries": [
+                {"entry_id": "LLM01"},
+                {"entry_id": "ROLL-CFAS"},
+            ]
+        })
+        client = _MockClient([valid_response])
+        tracker = CostTracker(ceiling_usd=500.0)
+        classifier = Stage2Classifier(
+            client=client,
+            cost_tracker=tracker,
+            rubric_json=rubric,
+            model_identity="test-model",
+            weight_provenance_hash="abc123",
+            prng_seed=42,
+        )
+        result = classifier.classify(_make_incident(), rubric_hash="hash123")
+        assert result.entry_id == "ROLL-CFAS"
+        assert result.confidence == 0.85
+
+    def test_out_of_scope_entry_id_accepted(self) -> None:
+        oos_response = json.dumps({
+            "entry_id": "out-of-scope",
+            "confidence": 0.0,
+            "rationale": "No match",
+        })
+        rubric = json.dumps({"entries": [{"entry_id": "LLM01"}]})
+        client = _MockClient([oos_response])
+        tracker = CostTracker(ceiling_usd=500.0)
+        classifier = Stage2Classifier(
+            client=client,
+            cost_tracker=tracker,
+            rubric_json=rubric,
+            model_identity="test-model",
+            weight_provenance_hash="abc123",
+            prng_seed=42,
+        )
+        result = classifier.classify(_make_incident(), rubric_hash="hash123")
+        assert result.entry_id == "out-of-scope"
+
     def test_prompt_hash_captured(self) -> None:
         client = _MockClient([_GOOD_RESPONSE])
         tracker = CostTracker(ceiling_usd=500.0)
         classifier = Stage2Classifier(
             client=client,
             cost_tracker=tracker,
-            rubric_json='{"entries": []}',
+            rubric_json='{"entries": [{"entry_id": "LLM01"}]}',
             model_identity="test-model",
             weight_provenance_hash="abc123",
             prng_seed=42,
