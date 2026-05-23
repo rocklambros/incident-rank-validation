@@ -268,7 +268,7 @@ Read docs/HANDOFF.md (focus on §5.3, §5.4 Priors bullet, §6 control 11(b)(c),
 
 ### 6.1 Status: DONE — internal-only (tags: v1.0.0-plan5-internal, v1.1.0-plan5)
 
-Cycle complete with `non_publishable=True` (REVIEWERS.md = INTERIM). Kappa 0.228 [-0.08, 0.54], 85% measurability (17/20; 3 frame-blind: LLM04, LLM08, LLM10), 4 flagged entries. Full results at `projects/owasp-llm/cycles/2026/results/`.
+Cycle complete with `non_publishable=True` (REVIEWERS.md = INTERIM). Kappa 0.275 [-0.01, 0.57], 85% measurability (17/20; 3 frame-blind: LLM04, LLM08, LLM10), 4 flagged entries. Full results at `projects/owasp-llm/cycles/2026/results/`.
 
 ### 6.2 Goal
 
