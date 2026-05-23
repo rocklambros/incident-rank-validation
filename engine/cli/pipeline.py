@@ -76,14 +76,12 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
     # Execute real classification pipeline
     click.echo("Executing classify phase...")
     try:
+        from engine.adapters.genai_agentic import GenAIAgenticAdapter
         from engine.cli.pipeline_executor import (
             merge_classifications,
             route_to_stage2,
             write_classify_artifacts,
         )
-
-        # Load corpus incidents via adapter (handles field mapping + future-date filter)
-        from engine.adapters.genai_agentic import GenAIAgenticAdapter
 
         snapshot_dirs = sorted(corpus_dir.glob("*/*/provenance.json"))
         if not snapshot_dirs:
@@ -441,8 +439,7 @@ def report_cmd(cycle: Path) -> None:
         from engine.decide.concordance import ConcordanceResult
         from engine.decide.measurability import MeasurabilityMap
         from engine.decide.selection_bias import SelectionBiasDisclosure
-        from engine.model.inference import InferenceResult
-        from engine.report.diff import PreregDiff, compute_prereg_diff
+        from engine.report.diff import compute_prereg_diff
         from engine.report.render import ReportInputs, render_report
         from engine.version import __version__
 
@@ -466,7 +463,10 @@ def report_cmd(cycle: Path) -> None:
 
         concordance = ConcordanceResult(
             weighted_kappa_median=conc_data.get("weighted_kappa_median"),
-            weighted_kappa_ci=tuple(conc_data["weighted_kappa_ci"]) if conc_data.get("weighted_kappa_ci") else None,
+            weighted_kappa_ci=(
+                tuple(conc_data["weighted_kappa_ci"])
+                if conc_data.get("weighted_kappa_ci") else None
+            ),
             measurable_count=conc_data["measurable_count"],
             total_count=conc_data["total_count"],
             coverage_ratio=conc_data["coverage_ratio"],

@@ -1,6 +1,7 @@
 """RunPod API client for Stage-2 LLM classification."""
 from __future__ import annotations
 
+import contextlib
 import os
 import threading
 from dataclasses import dataclass
@@ -95,8 +96,6 @@ class HttpRunPodClient:
     def close(self) -> None:
         with self._lock:
             for client in self._clients:
-                try:
+                with contextlib.suppress(Exception):
                     client.close()
-                except Exception:
-                    pass
             self._clients.clear()
