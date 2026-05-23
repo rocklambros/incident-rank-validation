@@ -271,7 +271,12 @@ def calibrate_with_gold(
        - Precision TP++ if is_correct, FP++ if not
        - Stratum: "gold-precision"
     4. Multi-label: each label in true_entry_ids is independent
-    5. Return combined tally with gold strata appended
+    5. Gold precision data is stratum-independent: precision is a property
+       of the classifier, not the incident's origin stratum. Gold-precision
+       counts apply to the entry globally, not per-stratum.
+    6. Recall denominators are only charged against entries present in each
+       stratum — do not charge against all entries uniformly.
+    7. Return combined tally with gold strata appended
     """
 ```
 
@@ -293,9 +298,17 @@ Add a loader for manually curated incidents at
 The loader:
 1. Reads the JSON file and validates against `IncidentRecord` schema
 2. Deduplicates against existing corpus A incident IDs
-3. Converts each curated incident into `GoldRecallLabel` records
-   (source="manual-curated")
-4. Validates that all `native_labels` reference valid entry IDs
+3. Derives `true_entry_ids` using this priority:
+   a. If `native_labels` is non-empty, use it directly
+   b. If `native_labels` is empty (all 42 current incidents), parse the entry
+      ID from the incident ID prefix: `MANUAL-LLM06-001` → `LLM06`,
+      `MANUAL-ROLL-CFAS-001` → `ROLL-CFAS`. The prefix convention is
+      `MANUAL-{ENTRY_ID}-{NNN}`.
+   c. If neither source yields an entry ID, reject the record with an error.
+4. Converts each curated incident into `GoldRecallLabel` records
+   (source="manual-curated") using the derived `true_entry_ids`
+5. Validates that all derived entry IDs reference valid entry IDs in the
+   frozen rubric
 
 This provides a first-class path for human-curated incidents to enter the
 gold calibration pipeline without going through LLM pre-labeling. The 42
@@ -303,7 +316,39 @@ incidents already committed at
 `projects/owasp-llm/cycles/2026/calibration/manual_curated_incidents.json`
 are the initial seed for the 6 zero-precision entries.
 
+The loader also reads Frame 2 output
+(`precision_verification.jsonl`) and populates
+`GoldCalibration.precision_labels`. Both files feed through the same
+`--gold-calibration` flag on `cal-tally`. The flag accepts either:
+- A single JSONL file (Frame 1 only — recall labels)
+- A directory containing `adjudicated_goldset.jsonl` and/or
+  `precision_verification.jsonl` (both frames)
+
+When a directory is provided, the loader reads both files if present and
+merges them into a single `GoldCalibration` object.
+
 **Files:** `engine/calibrate/gold_loader.py` (new)
+
+#### A5b. Fix ESS gate denominator in inference.py
+
+`inference.py` lines 273-279 compute ESS ratio as
+`min(v / num_samples for v in ess_dict.values())` where `num_samples` is
+the per-chain count (2000). The correct denominator is
+`num_samples * num_chains` (total draws = 8000). The current gate is 4x too
+loose — it accepts ESS ratios that would fail with the correct base.
+
+```python
+# CURRENT (bug):
+ess_ratio = min(v / num_samples for v in ess_dict.values())
+
+# REPLACE with:
+total_draws = num_samples * num_chains
+ess_ratio = min(v / total_draws for v in ess_dict.values())
+```
+
+The threshold stays the same; only the denominator changes.
+
+**Files:** `engine/model/inference.py`
 
 #### A6. Define `lambda_min` and pre-register
 
@@ -347,6 +392,23 @@ zero-precision entries:
 | ROLL-CMSB | 10 | Cross-Modal Safety Bypass |
 | ROLL-LAPTF | 5 | Lack of Adversarial Prompt Testing Frameworks |
 | ROLL-CFAS | 2 | Cascading Failures in Agentic Systems |
+
+**Data quality notes for implementation:**
+
+- **ROLL-LAPTF (5 incidents):** All 5 are model supply chain attacks
+  (pickle backdoors, namespace hijacking). ROLL-LAPTF has
+  `rolled_into: "LLM03"` — the classifier architecturally routes all LAPTF
+  detections to LLM03 (Supply Chain Vulnerabilities). These incidents are
+  conceptually LAPTF but will be classified as LLM03 in practice. The gold
+  loader should use the curated label (ROLL-LAPTF), not the classifier
+  routing target. This tests whether the classifier correctly routes LAPTF
+  concepts to LLM03.
+- **ROLL-CFAS (2 incidents):** Both describe compositional fine-tuning
+  alignment subversion (CoLoRA, MergeBackdoor), not cascading failures in
+  agentic systems. These are adjacent but not on-target for CFAS. During
+  B3 (LLM pre-labeling), additional incidents that describe actual
+  multi-agent cascading failures should be prioritized for CFAS to
+  supplement these 2. Minimum target: 5 CFAS incidents total.
 
 These 42 incidents provide recall calibration immediately. Precision
 calibration for these entries comes from Frame 2 (B4).
@@ -394,6 +456,19 @@ Build `tools/adjudicate.py` — a CLI tool with two modes:
 4. Prompts: "Is this correctly classified as [entry]?" (yes/no)
 5. Writes `precision_verification.jsonl` with `GoldPrecisionLabel` records
 
+Each line in `precision_verification.jsonl`:
+
+```json
+{
+  "incident_id": "GA-04821",
+  "claimed_entry_id": "LLM06",
+  "is_correct": true,
+  "source": "stage2-verified",
+  "adjudicator_id": "RL",
+  "session_timestamp": "2026-06-15T14:30:00Z"
+}
+```
+
 Frame 2 is fast (~30 seconds per incident) because the adjudicator only
 needs to answer a binary question, not determine the correct label from
 scratch. For 6 zero-precision entries × ~30 verified per entry = ~180
@@ -430,7 +505,9 @@ After gold labels update the posteriors, re-run NUTS inference with the new
 calibration, then recompute kappa with the full draws and recycling fix.
 
 ```bash
-incident-rank infer --cycle projects/owasp-llm/cycles/2026
+# 4 chains x 2000 samples = 8,000 total draws.
+# If chain count changes, adjust --num-samples to maintain >= 8,000 total.
+incident-rank infer --cycle projects/owasp-llm/cycles/2026 --num-samples 2000
 incident-rank decide --cycle projects/owasp-llm/cycles/2026
 ```
 
@@ -479,6 +556,10 @@ chosen after seeing the result.
    now have precision data? Target: all 6.
 8. **Frame 2 precision TP rate:** what fraction of classifier claims were
    confirmed correct? Low rates indicate systematic classifier bias.
+9. **Inter-rater reliability (aspirational):** if a second adjudicator labels
+   a random 10% subsample (~120 incidents), compute Krippendorff's alpha
+   between adjudicators. The minimum viable path uses a single adjudicator
+   with the `blind_label` audit trail as the anchoring check.
 
 ### What This Does Not Fix
 
@@ -512,6 +593,14 @@ chosen after seeing the result.
 | R9 | No checkpoint/resume for pre-labeling batch | Checkpoint file in `pre_label_batch()` | A3 |
 | R10 | No kappa decision framework pre-registered | Three-regime interpretation table | Kappa Decision Framework |
 | R11 | Zero-precision entries have no input path for manual curation | Manual curation loader + 42 committed incidents | A5, B1 |
+| R12 | Empty native_labels on all 42 curated incidents (F1.1) | Loader derives entry ID from incident ID prefix when native_labels is empty | A5 |
+| R13 | ESS gate divides by per-chain count, 4x too loose (F2.1) | Fix denominator to total_draws = num_samples × num_chains | A5b |
+| R14 | Frame 2 output has no CLI ingestion path (F4.2) | gold_loader.py reads precision_verification.jsonl; --gold-calibration accepts directory | A5 |
+| R15 | Frame 2 JSONL schema unspecified (F1.2) | Explicit JSON example in B4 | B4 |
+| R16 | Precision calibration stratum-dependent (F1.6) | Gold precision is stratum-independent; documented in A4 | A4 |
+| R17 | Recall denominator inflated (F1.8) | Per-stratum recall denomination documented in A4 | A4 |
+| R18 | B6 chain-count assumption undocumented (F4.1) | Explicit --num-samples with chain annotation in B6 | B6 |
+| R19 | No inter-rater reliability baseline (F1.7) | Aspirational 10% subsample protocol in Quality Metrics | Quality Metrics |
 
 ## Residual Risks
 
