@@ -7,6 +7,7 @@ from engine.decide.corpus_b_corroboration import (
     CorpusBCorroboration,
     IncidentOverlap,
     OverlapMethod,
+    compute_agreement,
     detect_overlaps,
 )
 from engine.schema import IncidentRecord
@@ -96,3 +97,82 @@ class TestOverlapDetection:
         ]
         overlaps = detect_overlaps(corpus_a, corpus_b)
         assert len(overlaps) == 1
+
+
+class TestAgreementComputation:
+    def test_full_agreement(self) -> None:
+        overlaps = [
+            IncidentOverlap("INC-001", "ASIB-001", OverlapMethod.URL, "url match"),
+            IncidentOverlap("INC-002", "ASIB-002", OverlapMethod.CVE, "cve match"),
+        ]
+        a_labels = {"INC-001": "LLM01", "INC-002": "LLM05"}
+        b_labels = {"ASIB-001": "LLM01", "ASIB-002": "LLM05"}
+        b_records = {
+            "ASIB-001": _make_record("ASIB-001", text="Incident Alpha"),
+            "ASIB-002": _make_record("ASIB-002", text="Incident Beta"),
+        }
+
+        result = compute_agreement(
+            overlaps, a_labels, b_labels, b_records,
+            baseline_kappa=0.275, corpus_a_count=100, corpus_b_count=10,
+        )
+        assert result.agreement_count == 2
+        assert result.disagreement_count == 0
+        assert result.agreement_rate == 1.0
+
+    def test_partial_agreement(self) -> None:
+        overlaps = [
+            IncidentOverlap("INC-001", "ASIB-001", OverlapMethod.URL, "match"),
+            IncidentOverlap("INC-002", "ASIB-002", OverlapMethod.CVE, "match"),
+        ]
+        a_labels = {"INC-001": "LLM01", "INC-002": "LLM05"}
+        b_labels = {"ASIB-001": "LLM01", "ASIB-002": "LLM03"}
+        b_records = {
+            "ASIB-001": _make_record("ASIB-001", text="Incident Alpha"),
+            "ASIB-002": _make_record("ASIB-002", text="Incident Beta"),
+        }
+
+        result = compute_agreement(
+            overlaps, a_labels, b_labels, b_records,
+            baseline_kappa=0.275, corpus_a_count=100, corpus_b_count=10,
+        )
+        assert result.agreement_count == 1
+        assert result.disagreement_count == 1
+        assert result.agreement_rate == 0.5
+
+    def test_systematic_divergence_detected(self) -> None:
+        overlaps = [
+            IncidentOverlap("INC-001", "ASIB-001", OverlapMethod.URL, "m"),
+            IncidentOverlap("INC-002", "ASIB-002", OverlapMethod.URL, "m"),
+            IncidentOverlap("INC-003", "ASIB-003", OverlapMethod.URL, "m"),
+        ]
+        a_labels = {"INC-001": "LLM05", "INC-002": "LLM05", "INC-003": "LLM01"}
+        b_labels = {"ASIB-001": "LLM03", "ASIB-002": "LLM03", "ASIB-003": "LLM01"}
+        b_records = {
+            f"ASIB-{i:03d}": _make_record(f"ASIB-{i:03d}", text=f"Inc {i}")
+            for i in range(1, 4)
+        }
+
+        result = compute_agreement(
+            overlaps, a_labels, b_labels, b_records,
+            baseline_kappa=0.275, corpus_a_count=100, corpus_b_count=10,
+        )
+        assert len(result.systematic_divergences) >= 1
+        assert any(d.count >= 2 for d in result.systematic_divergences)
+
+    def test_empty_overlap_produces_zero_rate(self) -> None:
+        result = compute_agreement(
+            [], {}, {}, {},
+            baseline_kappa=0.275, corpus_a_count=100, corpus_b_count=10,
+        )
+        assert result.overlap_count == 0
+        assert result.agreement_rate == 0.0
+
+    def test_baseline_kappa_propagated(self) -> None:
+        result = compute_agreement(
+            [], {}, {}, {},
+            baseline_kappa=0.275, corpus_a_count=6674, corpus_b_count=46,
+        )
+        assert result.baseline_kappa == 0.275
+        assert result.corpus_a_incident_count == 6674
+        assert result.corpus_b_incident_count == 46
