@@ -32,6 +32,16 @@ class Stage2Classifier:
         self._prompt_hash = compute_prompt_hash(rubric_json)
         self._seed = prng_seed
         self._cost_per_job = cost_per_job_usd
+        self._valid_entry_ids = self._extract_entry_ids(rubric_json)
+
+    @staticmethod
+    def _extract_entry_ids(rubric_json: str) -> frozenset[str]:
+        try:
+            rubric = json.loads(rubric_json)
+            entries = rubric.get("entries", [])
+            return frozenset(e.get("entry_id", "") for e in entries) | {"out-of-scope"}
+        except (json.JSONDecodeError, AttributeError):
+            return frozenset({"out-of-scope"})
 
     def classify(
         self,
@@ -62,9 +72,16 @@ class Stage2Classifier:
     def _parse_response(self, incident_id: str, output: str) -> Stage2Classification:
         try:
             data = json.loads(output)
+            entry_id = str(data.get("entry_id", "out-of-scope"))
+            if entry_id not in self._valid_entry_ids:
+                logger.warning(
+                    "Stage-2 returned invalid entry_id %r for %s (not in rubric)",
+                    entry_id, incident_id,
+                )
+                return self._fallback(incident_id)
             return Stage2Classification(
                 incident_id=incident_id,
-                entry_id=str(data.get("entry_id", "out-of-scope")),
+                entry_id=entry_id,
                 confidence=float(data.get("confidence", 0.0)),
                 rationale=str(data.get("rationale", "")),
                 model_identity=self._model_identity,

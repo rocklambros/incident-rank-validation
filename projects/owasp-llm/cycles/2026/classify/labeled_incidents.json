@@ -37353,7 +37353,7 @@
   },
   {
     "incident_id": "INC-01926",
-    "entry_id": "ROLL-WLA",
+    "entry_id": "ROLL-CFAS",
     "confidence": 0.9,
     "stage": 2,
     "rationale": "The incident describes China using stolen AI technology for adversarial military actions, which aligns with the definition of Weaponized LLM Abuse as leveraging LLM capabilities to automate and enhance cyberattacks against third-party targets.",
