@@ -14,6 +14,7 @@ import numpy as np
 
 if TYPE_CHECKING:
     from engine.classify.stage2_protocol import Stage2Classification
+    from engine.schema import IncidentRecord
 
 
 def _default_tier_boundaries(n_entries: int) -> tuple[int, ...]:
@@ -157,7 +158,9 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
                 completed_count = 0
                 lock = threading.Lock()
 
-                def _classify_one(idx_inc: tuple[int, object]) -> tuple[int, Stage2Classification]:
+                def _classify_one(
+                    idx_inc: tuple[int, IncidentRecord],
+                ) -> tuple[int, Stage2Classification]:
                     idx, inc = idx_inc
                     return idx, classifier.classify(inc, rubric_hash)
 
@@ -490,7 +493,7 @@ def report_cmd(cycle: Path) -> None:
         summary = json.loads(summary_path.read_text()) if summary_path.exists() else {}
         entry_ids = tuple(summary.get("entry_ids", []))
 
-        from engine.decide.measurability import MeasurabilityVerdict
+        from engine.model.censoring import MeasurabilityVerdict
         meas_map = MeasurabilityMap(
             verdict={eid: MeasurabilityVerdict.MEASURABLE for eid in entry_ids},
             recall_p_above_threshold={eid: 1.0 for eid in entry_ids},

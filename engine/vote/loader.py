@@ -4,6 +4,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import numpy.typing as npt
@@ -103,8 +104,8 @@ def load_vote_data(
 
 
 def _load_simple_format(
-    header: tuple,
-    data_rows: list[tuple],
+    header: tuple[Any, ...],
+    data_rows: list[tuple[Any, ...]],
     column_id_mapping: dict[str, str] | None,
 ) -> VoteData:
     raw_ids = tuple(str(h) for h in header[1:] if h is not None)
@@ -132,8 +133,8 @@ def _load_simple_format(
 
 
 def _load_survey_format(
-    header: tuple,
-    data_rows: list[tuple],
+    header: tuple[Any, ...],
+    data_rows: list[tuple[Any, ...]],
 ) -> VoteData:
     importance_cols: list[tuple[int, str]] = []
     for i, h in enumerate(header):
