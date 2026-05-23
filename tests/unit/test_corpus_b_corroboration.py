@@ -1,10 +1,7 @@
 """Unit tests for corpus B corroboration: overlap detection and agreement."""
 from __future__ import annotations
 
-import pytest
-
 from engine.decide.corpus_b_corroboration import (
-    CorpusBCorroboration,
     IncidentOverlap,
     OverlapMethod,
     compute_agreement,
