@@ -187,3 +187,12 @@ class TestExecuteFlags:
             "classify-real", "--cycle", str(cycle),
         ])
         assert "prerequisites satisfied" in (result.output or "").lower()
+
+
+def test_corroborate_requires_cycle(tmp_path: Path) -> None:
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        ["corroborate", "--cycle", str(tmp_path), "--corpus-b-dir", str(tmp_path)],
+    )
+    assert result.exit_code != 0
