@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from engine.calibrate.batch import CodingBatch, ValidationError, validate_coded_batch
+from engine.calibrate.gold_schema import GoldCalibration
 
 
 @dataclass(frozen=True, slots=True)
@@ -196,4 +197,97 @@ def validate_and_tally(
         batches,
         all_entry_ids=all_entry_ids,
         rollup_children=rollup_children,
+    )
+
+
+def calibrate_with_gold(
+    base_tally: TallyResult,
+    gold: GoldCalibration,
+    base_incident_ids: set[str],
+    all_entry_ids: set[str],
+    merge_stratum: str = "security",
+) -> TallyResult:
+    """Merge gold calibration labels into an existing tally.
+
+    Gold data is keyed under ``merge_stratum`` so that
+    ``_build_observation_arrays`` picks it up when iterating corpus strata.
+    """
+    precision_counts = dict(base_tally.precision_counts)
+    recall_counts = dict(base_tally.recall_counts)
+    rollup_counts = dict(base_tally.rollup_counts)
+    gold_coded = 0
+
+    recall_tp: dict[tuple[str, str], int] = {}
+    recall_fn: dict[tuple[str, str], int] = {}
+    recall_total: dict[tuple[str, str], int] = {}
+    precision_tp: dict[tuple[str, str], int] = {}
+    precision_fp: dict[tuple[str, str], int] = {}
+    precision_total: dict[tuple[str, str], int] = {}
+
+    for label in gold.recall_labels:
+        if label.incident_id in base_incident_ids:
+            continue
+        gold_coded += 1
+
+        if label.classifier_entry_id is None:
+            continue
+
+        for true_eid in label.true_entry_ids:
+            rk = (true_eid, merge_stratum)
+            recall_total[rk] = recall_total.get(rk, 0) + 1
+
+            if label.classifier_entry_id == true_eid:
+                recall_tp[rk] = recall_tp.get(rk, 0) + 1
+            else:
+                recall_fn[rk] = recall_fn.get(rk, 0) + 1
+
+        if label.classifier_entry_id not in label.true_entry_ids:
+            pk = (label.classifier_entry_id, merge_stratum)
+            precision_fp[pk] = precision_fp.get(pk, 0) + 1
+            precision_total[pk] = precision_total.get(pk, 0) + 1
+
+    for label in gold.precision_labels:
+        pk = (label.claimed_entry_id, merge_stratum)
+        precision_total[pk] = precision_total.get(pk, 0) + 1
+        if label.is_correct:
+            precision_tp[pk] = precision_tp.get(pk, 0) + 1
+        else:
+            precision_fp[pk] = precision_fp.get(pk, 0) + 1
+
+    for k in recall_total:
+        existing = recall_counts.get(k)
+        if existing:
+            recall_counts[k] = RecallTally(
+                true_positives=existing.true_positives + recall_tp.get(k, 0),
+                false_negatives=existing.false_negatives + recall_fn.get(k, 0),
+                total_in_sample=existing.total_in_sample + recall_total[k],
+            )
+        else:
+            recall_counts[k] = RecallTally(
+                true_positives=recall_tp.get(k, 0),
+                false_negatives=recall_fn.get(k, 0),
+                total_in_sample=recall_total[k],
+            )
+
+    for k in precision_total:
+        existing = precision_counts.get(k)
+        if existing:
+            precision_counts[k] = PrecisionTally(
+                true_positives=existing.true_positives + precision_tp.get(k, 0),
+                false_positives=existing.false_positives + precision_fp.get(k, 0),
+                total=existing.total + precision_total[k],
+            )
+        else:
+            precision_counts[k] = PrecisionTally(
+                true_positives=precision_tp.get(k, 0),
+                false_positives=precision_fp.get(k, 0),
+                total=precision_total[k],
+            )
+
+    return TallyResult(
+        precision_counts=precision_counts,
+        recall_counts=recall_counts,
+        rollup_counts=rollup_counts,
+        total_coded=base_tally.total_coded + gold_coded,
+        amendments_applied=base_tally.amendments_applied,
     )
