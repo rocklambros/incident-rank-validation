@@ -539,6 +539,47 @@ After B6, the recomputed kappa falls into one of three regimes:
 This framework is pre-registered before B6 runs so the interpretation is not
 chosen after seeing the result.
 
+### Rank Comparison Report (computed after B6)
+
+Kappa answers WHETHER the incident-derived signal is worth consulting. The
+Rank Comparison Report answers HOW to use it — which entries are confirmed
+by both signals, which are contested, and in which direction.
+
+The decide phase produces a per-entry comparison table:
+
+| Entry | Lambda Rank (90% CI) | Vote Rank (90% CI) | Tier Agreement | Direction | Action |
+|-------|---------------------|--------------------|--------------------|-----------|--------|
+
+**Columns:**
+- **Lambda Rank:** Median rank from NUTS posterior draws, with 5th-95th percentile CI
+- **Vote Rank:** Median rank from vote bootstrap samples, with 5th-95th percentile CI
+- **Tier Agreement:** Same tier / ±1 tier / ±2+ tiers (using pre-registered tier boundaries)
+- **Direction:** Which signal ranks the entry higher (lambda-over-votes, votes-over-lambda, or concordant)
+- **Action:** Pre-registered decision rule based on kappa regime and tier agreement
+
+**Per-entry action rules (pre-registered):**
+
+| Tier Agreement | Kappa ≥ 0.40 | Kappa 0.20–0.40 | Kappa < 0.20 |
+|----------------|-------------|-----------------|-------------|
+| Same tier | Confirmed | Confirmed (advisory) | — |
+| ±1 tier | Note: minor disagreement, disclosed as context | Note (advisory) | — |
+| ±2+ tiers | **Review:** mandatory human review before finalizing position, with direction and magnitude disclosed | Note (advisory) | — |
+
+When kappa < 0.20, the report is generated but marked "signals too divergent
+for entry-level comparison" and only aggregate statistics are shown.
+
+**"Review" entries** require the ranking decision-maker to explicitly document
+why the final position was chosen — whether they followed the lambda signal,
+the vote signal, or a third rationale. This creates an auditable record of
+data-informed ranking decisions.
+
+**Implementation:** Extend `ConcordanceResult` with per-entry rank comparison
+data. Add a report formatter to the decide phase. Pre-register the
+tier-agreement thresholds in `PreregManifest`.
+
+**This report is the primary output that facilitates data-driven ranking
+decisions.** Kappa is the gate; the comparison report is the tool.
+
 ### Quality Metrics (computed after B6)
 
 1. **Override rate by tier and by entry** — which entries did LLMs get wrong
@@ -601,6 +642,17 @@ chosen after seeing the result.
 | R17 | Recall denominator inflated (F1.8) | Per-stratum recall denomination documented in A4 | A4 |
 | R18 | B6 chain-count assumption undocumented (F4.1) | Explicit --num-samples with chain annotation in B6 | B6 |
 | R19 | No inter-rater reliability baseline (F1.7) | Aspirational 10% subsample protocol in Quality Metrics | Quality Metrics |
+| R20 | Gold strata invisible to NUTS observation arrays (F7.1) | Remap gold stratum keys to corpus strata in calibrate_with_gold | A4 |
+| R21 | Missing NUTS re-run task after gold calibration (F10.1) | Add explicit B6 re-inference task to plan | B6 |
+| R22 | PREFIX_PATTERN regex fails on 40/47 actual gold IDs (F6.1) | Fix regex to match actual ID format (CFAS, ITSCD, MTIE, etc.) | A5 |
+| R23 | classifier_entry_id=None causes 100% FN in tally (F7.2) | Handle None classifier_entry_id in gold recall path | A4 |
+| R24 | ESS gate fix blocks all future NUTS runs (F10.2) | Exempt auxiliary parameters or lower threshold for concentration | A5b |
+| R25 | Incident ID prefix leaks label to blind reviewer (F9.1) | Display opaque ID, not MANUAL-PREFIX in adjudication tool | B4 |
+| R26 | No incident text in prelabels checkpoint (F9.2) | Write text field into pre_label_batch checkpoint | A3 |
+| R27 | Precision-mode schema mismatch with labeled_incidents.json (F9.7) | Handle bare JSON array in run_precision_mode | B4 |
+| R28 | Tier boundaries from full count, not common count (F8.2) | Compute boundaries from len(common) inside compute_concordance | Phase 1 |
+| R29 | Kappa doesn't produce ranking — no aggregation rule (F10.3) | Rank Comparison Report with per-entry actions | B6 |
+| R30 | CFAS label incoherence — rubric vs gold vs plan (F9.4) | Option C: remove CFAS-001/002, add native_labels to CFAS-003-007 | B1 |
 
 ## Residual Risks
 
@@ -620,12 +672,26 @@ chosen after seeing the result.
    than 3 entries remain unmeasured, the empirical prior is based on a small
    sample.
 
-5. **Manual curation sample size.** 42 incidents across 6 entries (2-10 per
-   entry) is a floor, not a ceiling. ROLL-CFAS has only 2 incidents — its
-   posterior will remain wide. The LLM pre-labeling in B3 will surface
-   additional incidents for these entries.
+5. **Manual curation sample size.** 45 incidents across 6 entry namespaces
+   (~2.25 per entry on average). 14 of 20 entries have zero gold records.
+   The empirical prior (R7) borrows strength but the pooling assumption is
+   unjustified. The LLM pre-labeling in B3 will surface additional incidents.
 
 6. **Frame 2 precision verification depends on classifier/LLM coverage.**
    Entries that neither the classifier nor any LLM ever assigns still get
    zero precision data. This risk is mitigated by using 3 diverse LLMs —
    the probability that all 3 miss an entry that exists in the corpus is low.
+
+7. **Construct validity ceiling unknown.** Lambda measures prevalence; votes
+   measure salience. The maximum achievable kappa between these constructs
+   is empirically unknown. A perfect-classifier simulation would bound it
+   but is not in scope. The 0.40 target may be structurally unreachable.
+
+8. **Pre-fix baseline (0.275) is invalid.** Computed under buggy draw cap
+   and recycling. After Phase 1 fixes, the corrected baseline may differ
+   in either direction. Progress claims must compare against the corrected
+   baseline, not 0.275.
+
+9. **Gold-to-kappa transfer coefficient unknown.** No sensitivity analysis
+   quantifies how many gold incidents per entry are needed to move kappa.
+   Gold expansion has methodology-integrity value independent of kappa.

@@ -17,7 +17,7 @@
 ### Modified files
 | File | Responsibility | Tasks |
 |------|---------------|-------|
-| `engine/decide/concordance.py` | Kappa computation | 1 |
+| `engine/decide/concordance.py` | Kappa computation + rank comparison | 1, 15 |
 | `engine/model/inference.py` | NUTS inference + ESS gate | 2 |
 | `engine/classify/stage2_prompt.py` | Stage-2 LLM prompt template | 9 |
 | `engine/classify/runpod_client.py` | RunPod HTTP client | 9 |
@@ -26,6 +26,7 @@
 | `engine/calibrate/calibrate.py` | Beta posterior computation | 8 |
 | `engine/prereg/manifest.py` | Pre-registration manifest | 7 |
 | `engine/cli/calibration.py` | Calibration CLI commands | 11 |
+| `engine/cli/pipeline.py` | Pipeline CLI (decide phase report output) | 15 |
 | `projects/owasp-llm/cycles/2026/calibration/manual_curated_incidents.json` | Gold seed data | 5 |
 
 ### New files
@@ -51,6 +52,7 @@
 | `tests/unit/test_gold_cli.py` | --gold-calibration CLI flag | 11 |
 | `tests/unit/test_multi_model.py` | MultiModelPreLabeler | 12 |
 | `tests/unit/test_adjudicate.py` | Adjudication tool modes | 13 |
+| `tests/unit/test_rank_comparison.py` | Per-entry rank comparison report | 15 |
 
 ---
 
@@ -2560,6 +2562,176 @@ priors from the measured distribution instead of Beta(1,1)."
 
 ---
 
+### Task 15: Rank Comparison Report
+
+**Files:**
+- Modify: `engine/decide/concordance.py`
+- Modify: `engine/cli/pipeline.py`
+- Test: `tests/unit/test_rank_comparison.py`
+
+**Remediations:** R29 (F10.3 — kappa doesn't produce a ranking)
+
+- [ ] **Step 1: Write failing test for per-entry rank comparison data**
+
+```python
+# tests/unit/test_rank_comparison.py
+import numpy as np
+from engine.decide.concordance import compute_concordance, ConcordanceResult
+
+def test_concordance_includes_per_entry_comparison(
+    sample_inference_result, sample_vote_posterior,
+):
+    result = compute_concordance(
+        inference_result=sample_inference_result,
+        vote_posterior=sample_vote_posterior,
+        tier_boundaries=(3, 7),
+        flag_threshold_tau=0.3,
+        measurable_count=10,
+        total_count=10,
+        meaningful_kappa_n=5,
+        measurability_minimum=0.5,
+    )
+    assert result.entry_comparisons is not None
+    assert len(result.entry_comparisons) > 0
+    first = result.entry_comparisons[0]
+    assert "entry_id" in first
+    assert "lambda_rank_median" in first
+    assert "vote_rank_median" in first
+    assert "tier_agreement" in first
+    assert "direction" in first
+    assert "action" in first
+
+
+def test_tier_agreement_labels():
+    from engine.decide.concordance import _tier_agreement_label
+    assert _tier_agreement_label(0, 0) == "same"
+    assert _tier_agreement_label(0, 1) == "±1"
+    assert _tier_agreement_label(0, 2) == "±2+"
+    assert _tier_agreement_label(2, 0) == "±2+"
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+Run: `pytest tests/unit/test_rank_comparison.py -v`
+Expected: FAIL — `ConcordanceResult` has no `entry_comparisons` attribute
+
+- [ ] **Step 3: Add per-entry comparison to ConcordanceResult**
+
+Add `entry_comparisons` field to the `ConcordanceResult` dataclass and
+`_tier_agreement_label` helper to `concordance.py`. In `compute_concordance`,
+after the kappa loop, compute per-entry median lambda rank, median vote rank,
+tier assignment for each, and tier agreement. Direction comes from the
+existing flag data. Action is determined by tier agreement and the kappa
+regime (pass kappa_median into the action logic).
+
+Each entry comparison is a dict:
+```python
+{
+    "entry_id": str,
+    "lambda_rank_median": float,
+    "lambda_rank_ci": (float, float),  # 5th, 95th percentile
+    "vote_rank_median": float,
+    "vote_rank_ci": (float, float),
+    "lambda_tier": int,
+    "vote_tier": int,
+    "tier_agreement": str,  # "same", "±1", "±2+"
+    "direction": str,  # "concordant", "lambda-over-votes", "votes-over-lambda"
+    "action": str,  # "confirmed", "note", "review"
+}
+```
+
+- [ ] **Step 4: Run test to verify it passes**
+
+Run: `pytest tests/unit/test_rank_comparison.py -v`
+Expected: PASS
+
+- [ ] **Step 5: Add report formatter**
+
+Add `format_rank_comparison_report(result: ConcordanceResult) -> str` to
+`concordance.py` that renders the per-entry comparison as a markdown table
+with columns: Entry | Lambda Rank (90% CI) | Vote Rank (90% CI) | Tier
+Agreement | Direction | Action.
+
+- [ ] **Step 6: Wire into decide phase**
+
+In `pipeline.py`, after `compute_concordance`, write the comparison report
+to `{cycle_dir}/decide/rank_comparison_report.md`. Print a summary to
+stdout showing how many entries are "confirmed", "note", and "review".
+
+- [ ] **Step 7: Run full concordance test suite**
+
+Run: `pytest tests/unit/test_concordance.py tests/unit/test_rank_comparison.py -v`
+Expected: All PASS
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add engine/decide/concordance.py engine/cli/pipeline.py tests/unit/test_rank_comparison.py
+git commit -m "feat(decide): add per-entry rank comparison report
+
+Extends ConcordanceResult with per-entry lambda vs vote rank comparison.
+Generates a markdown report showing tier agreement and recommended action
+per entry. This is the primary output for data-driven ranking decisions."
+```
+
+---
+
+### Task 16: NUTS Re-run and Final Verification (B6)
+
+**Files:**
+- No code changes — this is an operational task
+- Verify: `projects/owasp-llm/cycles/2026/inference/lambda_samples.npy` (refreshed)
+- Verify: `projects/owasp-llm/cycles/2026/decide/rank_comparison_report.md` (generated)
+
+**Remediations:** R21 (F10.1 — missing NUTS re-run task)
+
+**Prerequisite:** All prior tasks complete. Gold calibration data ingested. Posteriors updated.
+
+- [ ] **Step 1: Re-run NUTS inference with updated calibration**
+
+```bash
+incident-rank infer --cycle projects/owasp-llm/cycles/2026 --num-samples 2000 --execute
+```
+
+Verify: ESS gate passes (if it fails due to R24 concentration issue, apply
+the ESS exemption fix from the premortem remediation before retrying).
+Verify: `lambda_samples.npy` timestamp is fresh.
+
+- [ ] **Step 2: Re-run decide with rank comparison report**
+
+```bash
+incident-rank decide --cycle projects/owasp-llm/cycles/2026
+```
+
+Verify:
+- `kappa_summary.json` exists with updated kappa value and CI
+- `rank_comparison_report.md` exists with per-entry comparison table
+- Kappa CI is narrower than the pre-fix baseline
+- Per-entry actions are populated (confirmed / note / review counts)
+
+- [ ] **Step 3: Assess kappa regime and comparison report**
+
+Read the kappa value and determine which regime it falls into:
+- ≥ 0.40 with CI excluding 0 → comparison report actions are binding
+- 0.20–0.40 or CI includes 0 → comparison report is advisory
+- < 0.20 → investigate structural causes before using report
+
+Review the rank comparison report. Count how many entries are flagged
+"review" (±2+ tier disagreement). These are the entries where incident
+data and vote data most disagree — and the entries most worth investigating.
+
+- [ ] **Step 4: Commit results**
+
+```bash
+git add projects/owasp-llm/cycles/2026/inference/ projects/owasp-llm/cycles/2026/decide/
+git commit -m "data: B6 re-inference and decide with updated gold calibration
+
+Re-ran NUTS with gold-calibrated posteriors. Kappa: [VALUE] [CI].
+Rank comparison report generated with [N] confirmed, [N] note, [N] review entries."
+```
+
+---
+
 ## Post-Implementation Verification
 
 After all tasks complete, run the full test suite:
@@ -2568,13 +2740,21 @@ After all tasks complete, run the full test suite:
 pytest tests/ -v --timeout=120
 ```
 
-Then verify Phase 1 locally:
+Then run the full pipeline (Phase 1 + Phase 2):
 
 ```bash
+# Phase 1: corrected concordance
+incident-rank decide --cycle projects/owasp-llm/cycles/2026
+
+# Phase 2 (after gold calibration is ingested):
+incident-rank infer --cycle projects/owasp-llm/cycles/2026 --num-samples 2000 --execute
 incident-rank decide --cycle projects/owasp-llm/cycles/2026
 ```
 
-Compare the kappa CI width before and after. The median may shift slightly; the CI should be narrower overall.
+Verify:
+1. Kappa CI is narrower than pre-fix baseline
+2. `rank_comparison_report.md` exists with per-entry comparisons
+3. Per-entry action counts are reasonable (not all "review")
 
 ---
 
@@ -2595,9 +2775,12 @@ Task 11 (CLI wiring) ───── Tasks 4, 6
 Task 12 (multi-model) ──── Task 9
 Task 13 (adjudicate tool)─ Task 3
 Task 14 (wire empirical) ─ Task 8
+Task 15 (rank comparison)─ Task 1
+Task 16 (B6 re-run) ────── Tasks 1-15
 ```
 
 Parallel-safe groups (no deps between tasks within a group):
 - Group A: Tasks 1, 2, 3, 5, 7, 8, 9, 10
 - Group B: Tasks 4, 6 (after Task 3)
-- Group C: Tasks 11, 12, 13, 14 (after their respective deps)
+- Group C: Tasks 11, 12, 13, 14, 15 (after their respective deps)
+- Group D: Task 16 (after all others — operational, not code)
