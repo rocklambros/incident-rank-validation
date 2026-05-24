@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -12,6 +13,26 @@ from engine.classify.stage2_prompt import build_messages
 from engine.schema import IncidentRecord
 
 logger = logging.getLogger(__name__)
+
+_THINK_RE = re.compile(r"<think>.*?</think>\s*", re.DOTALL)
+
+
+def _extract_json(text: str) -> dict:
+    """Extract JSON object from model output, stripping thinking tags."""
+    cleaned = _THINK_RE.sub("", text).strip()
+    start = cleaned.find("{")
+    if start == -1:
+        raise json.JSONDecodeError("No JSON object found", text, 0)
+    depth, end = 0, start
+    for i in range(start, len(cleaned)):
+        if cleaned[i] == "{":
+            depth += 1
+        elif cleaned[i] == "}":
+            depth -= 1
+            if depth == 0:
+                end = i + 1
+                break
+    return json.loads(cleaned[start:end])
 
 
 @dataclass(frozen=True, slots=True)
@@ -49,7 +70,7 @@ class MultiModelPreLabeler:
         for client, model_id in self._models:
             try:
                 resp = client.run_sync(messages, seed=self._seed)
-                data = json.loads(resp.output_text)
+                data = _extract_json(resp.output_text)
                 votes.append(ModelVote(
                     model_id=model_id,
                     entry_id=str(data.get("entry_id", "out-of-scope")),

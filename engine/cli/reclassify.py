@@ -25,7 +25,9 @@ logger = logging.getLogger(__name__)
               help="Execute reclassification (without flag, shows plan only)")
 @click.option("--max-concurrent", type=int, default=18,
               help="Max concurrent RunPod requests per model")
-def reclassify(cycle: Path, execute: bool, max_concurrent: int) -> None:
+@click.option("--pod-mode", is_flag=True, default=False,
+              help="Use direct pod URLs instead of serverless endpoints")
+def reclassify(cycle: Path, execute: bool, max_concurrent: int, pod_mode: bool) -> None:
     """Re-classify Stage-2 incidents using multi-model consensus."""
     import os
 
@@ -66,10 +68,16 @@ def reclassify(cycle: Path, execute: bool, max_concurrent: int) -> None:
     s2_incidents = [all_incidents[iid] for iid in stage2_ids if iid in all_incidents]
     click.echo(f"Loaded {len(s2_incidents)} Stage-2 incidents from corpus")
 
-    # Discover RunPod endpoints from environment
-    api_key = load_secret("runpod/api-key", env_var="RUNPOD_API_KEY")
-    model_configs = _load_model_configs()
+    # Discover model configurations from environment
+    model_configs = _load_model_configs(pod_mode=pod_mode)
     if not model_configs:
+        if pod_mode:
+            raise click.ClickException(
+                "No model pods configured. Set environment variables:\n"
+                "  RUNPOD_MODEL_1_URL=<pod_proxy_url>  RUNPOD_MODEL_1_NAME=<model_name>\n"
+                "  RUNPOD_MODEL_2_URL=<pod_proxy_url>  RUNPOD_MODEL_2_NAME=<model_name>\n"
+                "  RUNPOD_MODEL_3_URL=<pod_proxy_url>  RUNPOD_MODEL_3_NAME=<model_name>"
+            )
         raise click.ClickException(
             "No model endpoints configured. Set environment variables:\n"
             "  RUNPOD_MODEL_1_ENDPOINT=<endpoint_id>  RUNPOD_MODEL_1_NAME=<model_name>\n"
@@ -77,9 +85,9 @@ def reclassify(cycle: Path, execute: bool, max_concurrent: int) -> None:
             "  RUNPOD_MODEL_3_ENDPOINT=<endpoint_id>  RUNPOD_MODEL_3_NAME=<model_name>"
         )
 
-    click.echo(f"Models configured: {len(model_configs)}")
-    for name, eid in model_configs:
-        click.echo(f"  {name} → {eid}")
+    click.echo(f"Models configured: {len(model_configs)} ({'pod' if pod_mode else 'serverless'} mode)")
+    for name, target in model_configs:
+        click.echo(f"  {name} → {target}")
 
     total_calls = len(s2_incidents) * len(model_configs)
     click.echo(f"\nPlan: {len(s2_incidents)} incidents × {len(model_configs)} models = {total_calls} API calls")
@@ -91,13 +99,23 @@ def reclassify(cycle: Path, execute: bool, max_concurrent: int) -> None:
     # Build clients
     from engine.classify.runpod_client import HttpRunPodClient
 
+    api_key = ""
+    if not pod_mode:
+        api_key = load_secret("runpod/api-key", env_var="RUNPOD_API_KEY")
+
     clients = []
-    for model_name, endpoint_id in model_configs:
-        client = HttpRunPodClient(
-            api_key=api_key,
-            endpoint_id=endpoint_id,
-            model_name=model_name,
-        )
+    for model_name, target in model_configs:
+        if pod_mode:
+            client = HttpRunPodClient(
+                base_url=target,
+                model_name=model_name,
+            )
+        else:
+            client = HttpRunPodClient(
+                api_key=api_key,
+                endpoint_id=target,
+                model_name=model_name,
+            )
         clients.append((client, model_name))
 
     from engine.classify.multi_model import MultiModelPreLabeler
@@ -179,15 +197,18 @@ def reclassify(cycle: Path, execute: bool, max_concurrent: int) -> None:
     _print_diff_report(old_s2, new_classifications, classify_dir)
 
 
-def _load_model_configs() -> list[tuple[str, str]]:
+def _load_model_configs(pod_mode: bool = False) -> list[tuple[str, str]]:
     import os
 
     configs = []
     for i in range(1, 10):
-        endpoint = os.environ.get(f"RUNPOD_MODEL_{i}_ENDPOINT", "")
         name = os.environ.get(f"RUNPOD_MODEL_{i}_NAME", "")
-        if endpoint and name:
-            configs.append((name, endpoint))
+        if pod_mode:
+            target = os.environ.get(f"RUNPOD_MODEL_{i}_URL", "")
+        else:
+            target = os.environ.get(f"RUNPOD_MODEL_{i}_ENDPOINT", "")
+        if target and name:
+            configs.append((name, target))
     return configs
 
 
