@@ -269,9 +269,15 @@ def run_inference(
             f"Post-warmup divergences detected: {divergences}"
         )
 
-    # Sufficient ESS
+    # Sufficient ESS — gate on lambda parameters only; auxiliary parameters
+    # (concentration) are shared scalars with inherently lower ESS.
+    _AUX_PARAMS = {"concentration"}
+    total_draws = num_samples * num_chains
+    lambda_ess = {
+        k: v for k, v in ess_dict.items() if k.split("[")[0] not in _AUX_PARAMS
+    }
     min_ess_fraction = (
-        min(v / num_samples for v in ess_dict.values()) if ess_dict else 1.0
+        min(v / total_draws for v in lambda_ess.values()) if lambda_ess else 1.0
     )
     if min_ess_fraction < ess_fraction:
         raise DiagnosticsFailure(
