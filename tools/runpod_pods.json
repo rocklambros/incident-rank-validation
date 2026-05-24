@@ -1,0 +1,17 @@
+[
+  {
+    "name": "qwen3-235b",
+    "model_id": "Qwen/Qwen3-235B-A22B",
+    "pod_id": "z7u9tujlhqzf9r"
+  },
+  {
+    "name": "llama-405b",
+    "model_id": "meta-llama/Llama-3.1-405B-Instruct-FP8",
+    "pod_id": "eboj0wtjhcxsby"
+  },
+  {
+    "name": "deepseek-v3",
+    "model_id": "deepseek-ai/DeepSeek-V3",
+    "pod_id": "9rzsue9usq5387"
+  }
+]

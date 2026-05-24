@@ -6,11 +6,15 @@ import logging
 
 from engine.classify.cost_tracker import CostTracker
 from engine.classify.runpod_client import RunPodClient, RunPodError
-from engine.classify.stage2_prompt import build_prompt, compute_prompt_hash
+from engine.classify.stage2_prompt import build_messages, build_prompt, compute_prompt_hash
 from engine.classify.stage2_protocol import Stage2Classification
 from engine.schema import IncidentRecord
 
 logger = logging.getLogger(__name__)
+
+
+class FallbackRateExceeded(RuntimeError):
+    pass
 
 
 class Stage2Classifier:
@@ -23,6 +27,7 @@ class Stage2Classifier:
         weight_provenance_hash: str,
         prng_seed: int,
         cost_per_job_usd: float = 0.01,
+        fallback_rate_window: int = 100,
     ) -> None:
         self._client = client
         self._tracker = cost_tracker
@@ -33,6 +38,10 @@ class Stage2Classifier:
         self._seed = prng_seed
         self._cost_per_job = cost_per_job_usd
         self._valid_entry_ids = self._extract_entry_ids(rubric_json)
+        self._fallback_count = 0
+        self._total_count = 0
+        self._fallback_rate_window = fallback_rate_window
+        self._fallback_rate_limit = 0.10
 
     @staticmethod
     def _extract_entry_ids(rubric_json: str) -> frozenset[str]:
@@ -43,24 +52,57 @@ class Stage2Classifier:
         except (json.JSONDecodeError, AttributeError):
             return frozenset({"out-of-scope"})
 
+    @property
+    def fallback_count(self) -> int:
+        return self._fallback_count
+
+    @property
+    def total_count(self) -> int:
+        return self._total_count
+
     def classify(
         self,
         incident: IncidentRecord,
         rubric_hash: str,
     ) -> Stage2Classification:
         self._tracker.check_or_abort()
-        prompt = build_prompt(incident, self._rubric_json)
-        try:
-            resp = self._client.run_sync(prompt, seed=self._seed)
-            self._tracker.record(
-                job_id=resp.job_id,
-                cost_usd=self._cost_per_job,
-                execution_time_ms=resp.execution_time_ms,
+
+        if (
+            self._total_count > self._fallback_rate_window
+            and self._fallback_count / self._total_count > self._fallback_rate_limit
+        ):
+            raise FallbackRateExceeded(
+                f"Fallback rate {self._fallback_count}/{self._total_count} "
+                f"exceeds {self._fallback_rate_limit:.0%} over "
+                f"{self._fallback_rate_window} incidents"
             )
-            return self._parse_response(incident.id, resp.output_text)
-        except RunPodError:
-            logger.warning("Stage-2 RunPod error for %s, classifying as out-of-scope", incident.id)
-            return self._fallback(incident.id)
+
+        messages = build_messages(incident, self._rubric_json)
+        last_error: RunPodError | None = None
+
+        for attempt in range(2):
+            try:
+                resp = self._client.run_sync(messages, seed=self._seed)
+                self._tracker.record(
+                    job_id=resp.job_id,
+                    cost_usd=self._cost_per_job,
+                    execution_time_ms=resp.execution_time_ms,
+                )
+                self._total_count += 1
+                return self._parse_response(incident.id, resp.output_text)
+            except RunPodError as e:
+                last_error = e
+                if attempt == 0:
+                    import time
+                    time.sleep(5)
+
+        logger.warning(
+            "Stage-2 RunPod error for %s after retry: %s",
+            incident.id, last_error,
+        )
+        self._total_count += 1
+        self._fallback_count += 1
+        return self._fallback(incident.id)
 
     def classify_batch(
         self,
