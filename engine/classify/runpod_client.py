@@ -20,12 +20,17 @@ class RunPodError(RuntimeError):
 
 
 class RunPodClient(Protocol):
-    def run_sync(self, prompt: str, seed: int) -> RunPodResponse: ...
+    def run_sync(self, prompt: str | list[dict[str, str]], seed: int) -> RunPodResponse: ...
     def close(self) -> None: ...
 
 
 class HttpRunPodClient:
-    """Thread-safe RunPod client using OpenAI-compatible chat API."""
+    """Thread-safe RunPod client using OpenAI-compatible chat API.
+
+    Supports two modes:
+    - Serverless: api_key + endpoint_id → https://api.runpod.ai/v2/{id}/openai/v1/...
+    - Direct pod: base_url → https://{pod}-8000.proxy.runpod.net/v1/...
+    """
 
     def __init__(
         self,
@@ -33,27 +38,38 @@ class HttpRunPodClient:
         endpoint_id: str | None = None,
         model_name: str = "",
         timeout_seconds: float = 300.0,
+        base_url: str | None = None,
     ) -> None:
-        self._api_key = api_key or os.environ.get("RUNPOD_API_KEY", "")
-        self._endpoint_id = endpoint_id or os.environ.get("RUNPOD_ENDPOINT_ID", "")
-        if not self._api_key:
-            raise RunPodError("RUNPOD_API_KEY not set")
-        if not self._endpoint_id:
-            raise RunPodError("RUNPOD_ENDPOINT_ID not set")
-        self._base_url = f"https://api.runpod.ai/v2/{self._endpoint_id}"
         self._model_name = model_name
         self._timeout = timeout_seconds
         self._local = threading.local()
         self._clients: list[Any] = []
         self._lock = threading.Lock()
 
+        if base_url:
+            self._base_url = base_url.rstrip("/")
+            self._chat_path = "/v1/chat/completions"
+            self._api_key = api_key or ""
+        else:
+            self._api_key = api_key or os.environ.get("RUNPOD_API_KEY", "")
+            self._endpoint_id = endpoint_id or os.environ.get("RUNPOD_ENDPOINT_ID", "")
+            if not self._api_key:
+                raise RunPodError("RUNPOD_API_KEY not set")
+            if not self._endpoint_id:
+                raise RunPodError("RUNPOD_ENDPOINT_ID not set")
+            self._base_url = f"https://api.runpod.ai/v2/{self._endpoint_id}"
+            self._chat_path = "/openai/v1/chat/completions"
+
     def _get_client(self) -> Any:
         import httpx
 
         client = getattr(self._local, "client", None)
         if client is None:
+            headers = {}
+            if self._api_key:
+                headers["Authorization"] = f"Bearer {self._api_key}"
             client = httpx.Client(
-                headers={"Authorization": f"Bearer {self._api_key}"},
+                headers=headers,
                 timeout=self._timeout,
             )
             self._local.client = client
@@ -61,20 +77,26 @@ class HttpRunPodClient:
                 self._clients.append(client)
         return client
 
-    def run_sync(self, prompt: str, seed: int) -> RunPodResponse:
+    def run_sync(self, prompt: str | list[dict[str, str]], seed: int) -> RunPodResponse:
         import httpx
 
         client = self._get_client()
+        messages: list[dict[str, str]]
+        if isinstance(prompt, str):
+            messages = [{"role": "user", "content": prompt}]
+        else:
+            messages = prompt
         payload = {
             "model": self._model_name,
-            "messages": [{"role": "user", "content": prompt}],
-            "max_tokens": 256,
+            "messages": messages,
+            "max_tokens": 512,
             "temperature": 0.0,
             "seed": seed,
+            "chat_template_kwargs": {"enable_thinking": False},
         }
         try:
             resp = client.post(
-                f"{self._base_url}/openai/v1/chat/completions",
+                f"{self._base_url}{self._chat_path}",
                 json=payload,
             )
             resp.raise_for_status()

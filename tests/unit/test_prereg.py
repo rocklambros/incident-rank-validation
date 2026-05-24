@@ -253,6 +253,7 @@ class TestLock:
             "rollup_threshold": 0.99,
             "rollup_p_supported": 0.5,
             "rollup_p_contradicted": 0.5,
+            "lambda_min": 0.99,
         }
 
         manifest_fields = {f.name for f in fields(m)}

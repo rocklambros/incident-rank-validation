@@ -1,7 +1,7 @@
 {
   "weighted_kappa_median": 0.2753623188405798,
   "weighted_kappa_ci": [
-    -0.014492753623188248,
+    -0.01449275362318847,
     0.5652173913043479
   ],
   "measurable_count": 17,
@@ -11,22 +11,22 @@
   "flags": [
     {
       "entry_id": "LLM01",
-      "probability": 0.868,
+      "probability": 0.8738,
       "direction": "vote_over_ranks"
     },
     {
       "entry_id": "LLM05",
-      "probability": 0.826,
+      "probability": 0.8296,
       "direction": "vote_under_ranks"
     },
     {
       "entry_id": "LLM09",
-      "probability": 0.998,
+      "probability": 0.9928,
       "direction": "vote_under_ranks"
     },
     {
       "entry_id": "NEW-PMP",
-      "probability": 0.968,
+      "probability": 0.9752,
       "direction": "vote_over_ranks"
     }
   ]

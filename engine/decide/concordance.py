@@ -15,7 +15,13 @@ from engine.decide.robustness_multiplicity import FlagDirection, FlagFinding
 from engine.model.inference import InferenceResult
 from engine.vote.bootstrap import VoteRankPosterior
 
-__all__ = ["ConcordanceResult", "STANDING_CAVEAT", "compute_concordance"]
+__all__ = [
+    "ConcordanceResult",
+    "STANDING_CAVEAT",
+    "compute_concordance",
+    "format_rank_comparison_report",
+    "_tier_agreement_label",
+]
 
 
 @dataclass(frozen=True, slots=True)
@@ -31,6 +37,7 @@ class ConcordanceResult:
     meaningful_kappa_n: int
     flags: tuple[FlagFinding, ...]
     standing_caveat: str
+    entry_comparisons: tuple[dict[str, object], ...] | None = None
 
 
 STANDING_CAVEAT = (
@@ -52,6 +59,17 @@ def _ranks_from_lambda(
     ranks = np.empty_like(order, dtype=np.float64)
     ranks[order] = np.arange(1, len(common) + 1, dtype=np.float64)
     return ranks
+
+
+def _tier_agreement_label(tier_a: int, tier_b: int) -> str:
+    """Return a human-readable tier-agreement label."""
+    diff = abs(tier_a - tier_b)
+    if diff == 0:
+        return "same"
+    elif diff == 1:
+        return "±1"
+    else:
+        return "±2+"
 
 
 def _na_result(
@@ -101,14 +119,21 @@ def compute_concordance(
     inf_idx = {e: i for i, e in enumerate(inference_result.entry_ids)}
     vote_idx = {e: i for i, e in enumerate(vote_posterior.entries)}
 
+    # Recompute tier boundaries from common set size, not caller's full count
+    n_common = len(common)
+    if n_common <= 3:
+        tier_boundaries = tuple(range(1, n_common))
+    else:
+        third = n_common // 3
+        tier_boundaries = (third, 2 * third)
+
     # Compute kappa over bootstrap x posterior draws
-    n_samples = min(len(inference_result.lambda_samples), len(vote_posterior.rank_samples))
-    n_draws = min(n_samples, 500)  # cap for speed
+    n_draws = min(len(inference_result.lambda_samples), len(vote_posterior.rank_samples))
     kappas: list[float] = []
 
     for s in range(n_draws):
         inc_ranks = _ranks_from_lambda(inference_result.lambda_samples[s], inf_idx, common)
-        vote_draw = vote_posterior.rank_samples[s % len(vote_posterior.rank_samples)]
+        vote_draw = vote_posterior.rank_samples[s]
         vote_ranks = np.array([vote_draw[vote_idx[e]] for e in common])
 
         k = quadratic_weighted_kappa(inc_ranks, vote_ranks, tier_boundaries)
@@ -128,7 +153,7 @@ def compute_concordance(
         mismatch_count = 0
         for s in range(n_draws):
             inc_ranks = _ranks_from_lambda(inference_result.lambda_samples[s], inf_idx, common)
-            vote_draw = vote_posterior.rank_samples[s % len(vote_posterior.rank_samples)]
+            vote_draw = vote_posterior.rank_samples[s]
             vote_ranks = np.array([vote_draw[vote_idx[c]] for c in common])
 
             e_pos = common.index(e)
@@ -141,7 +166,7 @@ def compute_concordance(
         if prob > flag_threshold_tau:
             # Determine direction from median ranks
             median_inc_samples = []
-            for s in range(min(n_samples, 100)):
+            for s in range(min(n_draws, 100)):
                 r = _ranks_from_lambda(inference_result.lambda_samples[s], inf_idx, common)
                 median_inc_samples.append(r[common.index(e)])
             median_inc_rank = float(np.median(median_inc_samples))
@@ -156,6 +181,58 @@ def compute_concordance(
 
             flags.append(FlagFinding(entry_id=e, direction=direction, probability=prob))
 
+    # Per-entry rank comparison
+    comparisons: list[dict[str, object]] = []
+    for e in common:
+        e_pos = common.index(e)
+
+        inc_rank_samples = []
+        vote_rank_samples = []
+        for s in range(n_draws):
+            inc_r = _ranks_from_lambda(inference_result.lambda_samples[s], inf_idx, common)
+            inc_rank_samples.append(inc_r[e_pos])
+            vote_rank_samples.append(vote_posterior.rank_samples[s][vote_idx[e]])
+
+        inc_arr = np.array(inc_rank_samples)
+        vote_arr = np.array(vote_rank_samples)
+
+        lambda_med = float(np.median(inc_arr))
+        lambda_ci = (float(np.percentile(inc_arr, 5)), float(np.percentile(inc_arr, 95)))
+        vote_med = float(np.median(vote_arr))
+        vote_ci = (float(np.percentile(vote_arr, 5)), float(np.percentile(vote_arr, 95)))
+
+        lambda_tier = sum(1 for b in tier_boundaries if lambda_med > b)
+        vote_tier = sum(1 for b in tier_boundaries if vote_med > b)
+
+        tier_agree = _tier_agreement_label(lambda_tier, vote_tier)
+
+        if abs(lambda_med - vote_med) < 0.5:
+            direction = "concordant"
+        elif vote_med < lambda_med:
+            direction = "votes-over-lambda"
+        else:
+            direction = "lambda-over-votes"
+
+        if tier_agree == "same":
+            action = "confirmed"
+        elif tier_agree == "±1":
+            action = "note"
+        else:
+            action = "review"
+
+        comparisons.append({
+            "entry_id": e,
+            "lambda_rank_median": lambda_med,
+            "lambda_rank_ci": lambda_ci,
+            "vote_rank_median": vote_med,
+            "vote_rank_ci": vote_ci,
+            "lambda_tier": lambda_tier,
+            "vote_tier": vote_tier,
+            "tier_agreement": tier_agree,
+            "direction": direction,
+            "action": action,
+        })
+
     return ConcordanceResult(
         weighted_kappa_median=median_k,
         weighted_kappa_ci=ci,
@@ -166,4 +243,43 @@ def compute_concordance(
         meaningful_kappa_n=meaningful_kappa_n,
         flags=tuple(flags),
         standing_caveat=STANDING_CAVEAT,
+        entry_comparisons=tuple(comparisons),
     )
+
+
+def format_rank_comparison_report(result: ConcordanceResult) -> str:
+    """Format a markdown rank comparison report from a ConcordanceResult."""
+    if result.entry_comparisons is None:
+        return "No rank comparison data available (insufficient entries for kappa).\n"
+
+    lines = ["# Rank Comparison Report\n"]
+    lines.append(
+        f"Kappa: {result.weighted_kappa_median:.3f} "
+        f"[{result.weighted_kappa_ci[0]:.3f}, {result.weighted_kappa_ci[1]:.3f}]\n"
+    )
+    lines.append(
+        "| Entry | Lambda Rank (90% CI) | Vote Rank (90% CI) | Tier Agreement | Direction | Action |"
+    )
+    lines.append(
+        "|-------|---------------------|-------------------|----------------|-----------|--------|"
+    )
+
+    for comp in result.entry_comparisons:
+        lci = comp["lambda_rank_ci"]
+        vci = comp["vote_rank_ci"]
+        lines.append(
+            f"| {comp['entry_id']} "
+            f"| {comp['lambda_rank_median']:.1f} ({lci[0]:.1f}–{lci[1]:.1f}) "
+            f"| {comp['vote_rank_median']:.1f} ({vci[0]:.1f}–{vci[1]:.1f}) "
+            f"| {comp['tier_agreement']} "
+            f"| {comp['direction']} "
+            f"| {comp['action']} |"
+        )
+
+    actions = [c["action"] for c in result.entry_comparisons]
+    confirmed = actions.count("confirmed")
+    noted = actions.count("note")
+    review = actions.count("review")
+    lines.append(f"\nSummary: {confirmed} confirmed, {noted} note, {review} review")
+
+    return "\n".join(lines) + "\n"

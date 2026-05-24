@@ -20,6 +20,7 @@ from engine.cli.pipeline import (
     report_cmd,
     repro_bundle_cmd,
 )
+from engine.cli.reclassify import reclassify
 from engine.cli.rubric import freeze_rubric_cmd, validate_rubric_cmd
 from engine.cli.snapshot import vendor_snapshot_cmd
 
@@ -46,6 +47,7 @@ cli.add_command(decide_real)
 cli.add_command(report_cmd)
 cli.add_command(repro_bundle_cmd)
 cli.add_command(corroborate)
+cli.add_command(reclassify)
 
 
 @cli.command()

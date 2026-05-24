@@ -457,6 +457,21 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
             out_dir,
             selection_bias=selection_bias,
         )
+
+        # Write rank comparison report
+        from engine.decide.concordance import format_rank_comparison_report
+        report_text = format_rank_comparison_report(concordance)
+        report_path = out_dir / "rank_comparison_report.md"
+        report_path.write_text(report_text)
+
+        # Summary counts
+        if concordance.entry_comparisons:
+            actions = [c["action"] for c in concordance.entry_comparisons]
+            click.echo(
+                f"Rank comparison: {actions.count('confirmed')} confirmed, "
+                f"{actions.count('note')} note, {actions.count('review')} review"
+            )
+
         wandb_logger.finish()
         click.echo(f"Decide phase complete. Artifacts written to {out_dir}")
     except Exception as e:
