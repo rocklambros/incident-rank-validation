@@ -20,7 +20,7 @@ class RunPodError(RuntimeError):
 
 
 class RunPodClient(Protocol):
-    def run_sync(self, prompt: str, seed: int) -> RunPodResponse: ...
+    def run_sync(self, prompt: str | list[dict[str, str]], seed: int) -> RunPodResponse: ...
     def close(self) -> None: ...
 
 
@@ -61,13 +61,18 @@ class HttpRunPodClient:
                 self._clients.append(client)
         return client
 
-    def run_sync(self, prompt: str, seed: int) -> RunPodResponse:
+    def run_sync(self, prompt: str | list[dict[str, str]], seed: int) -> RunPodResponse:
         import httpx
 
         client = self._get_client()
+        messages: list[dict[str, str]]
+        if isinstance(prompt, str):
+            messages = [{"role": "user", "content": prompt}]
+        else:
+            messages = prompt
         payload = {
             "model": self._model_name,
-            "messages": [{"role": "user", "content": prompt}],
+            "messages": messages,
             "max_tokens": 256,
             "temperature": 0.0,
             "seed": seed,
