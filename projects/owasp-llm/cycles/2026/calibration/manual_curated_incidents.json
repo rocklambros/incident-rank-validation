@@ -7,7 +7,9 @@
     "source_class": "harm-report",
     "corpus_stratum": "ai-harm",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "LLM06"
+    ],
     "source_url": "https://incidentdatabase.ai/cite/1152/"
   },
   {
@@ -18,7 +20,9 @@
     "source_class": "issue-report",
     "corpus_stratum": "ai-harm",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "LLM06"
+    ],
     "source_url": "https://github.com/google-gemini/gemini-cli/issues/4586"
   },
   {
@@ -29,7 +33,9 @@
     "source_class": "harm-report",
     "corpus_stratum": "ai-harm",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "LLM06"
+    ],
     "source_url": "https://incidentdatabase.ai/cite/1442/"
   },
   {
@@ -40,7 +46,9 @@
     "source_class": "harm-report",
     "corpus_stratum": "ai-harm",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "LLM06"
+    ],
     "source_url": "https://incidentdatabase.ai/cite/1424/"
   },
   {
@@ -51,7 +59,9 @@
     "source_class": "harm-report",
     "corpus_stratum": "ai-harm",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "LLM06"
+    ],
     "source_url": "https://incidentdatabase.ai/cite/1441/"
   },
   {
@@ -62,7 +72,9 @@
     "source_class": "harm-report",
     "corpus_stratum": "ai-harm",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "LLM06"
+    ],
     "source_url": "https://incidentdatabase.ai/cite/1433/"
   },
   {
@@ -73,7 +85,9 @@
     "source_class": "harm-report",
     "corpus_stratum": "ai-harm",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "LLM06"
+    ],
     "source_url": "https://incidentdatabase.ai/cite/1469/"
   },
   {
@@ -84,7 +98,9 @@
     "source_class": "advisory",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-MTIE"
+    ],
     "source_url": "https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks"
   },
   {
@@ -95,7 +111,9 @@
     "source_class": "advisory",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-MTIE"
+    ],
     "source_url": "https://blog.trailofbits.com/2025/04/21/jumping-the-line-how-mcp-servers-can-attack-you-before-you-ever-use-them/"
   },
   {
@@ -106,7 +124,9 @@
     "source_class": "advisory",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-MTIE"
+    ],
     "source_url": "https://blog.trailofbits.com/2025/04/23/how-mcp-servers-can-steal-your-conversation-history/"
   },
   {
@@ -117,7 +137,9 @@
     "source_class": "advisory",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-MTIE"
+    ],
     "source_url": "https://blog.trailofbits.com/2025/04/29/deceiving-users-with-ansi-terminal-codes-in-mcp/"
   },
   {
@@ -128,7 +150,9 @@
     "source_class": "advisory",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-MTIE"
+    ],
     "source_url": "https://invariantlabs.ai/blog/introducing-mcp-scan"
   },
   {
@@ -139,7 +163,9 @@
     "source_class": "advisory",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-MTIE"
+    ],
     "source_url": "https://invariantlabs.ai/blog/whatsapp-mcp-exploited"
   },
   {
@@ -150,7 +176,9 @@
     "source_class": "cve",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-MTIE"
+    ],
     "source_url": "https://github.com/cursor/cursor/security/advisories/GHSA-24mc-g4xr-4395"
   },
   {
@@ -161,7 +189,9 @@
     "source_class": "cve",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-MTIE"
+    ],
     "source_url": "https://github.com/cursor/cursor/security/advisories/GHSA-4cxx-hrm3-49rm"
   },
   {
@@ -172,7 +202,9 @@
     "source_class": "advisory",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-MTIE"
+    ],
     "source_url": "https://www.crowdstrike.com/en-us/blog/ai-tool-poisoning/"
   },
   {
@@ -183,7 +215,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-ITSCD"
+    ],
     "source_url": "https://arxiv.org/abs/2511.03675"
   },
   {
@@ -194,7 +228,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-ITSCD"
+    ],
     "source_url": "https://arxiv.org/abs/2411.01076"
   },
   {
@@ -205,7 +241,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-ITSCD"
+    ],
     "source_url": "https://arxiv.org/abs/2412.15431"
   },
   {
@@ -216,7 +254,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-ITSCD"
+    ],
     "source_url": "https://arxiv.org/abs/2409.20002"
   },
   {
@@ -227,7 +267,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-ITSCD"
+    ],
     "source_url": "https://www.ndss-symposium.org/ndss-paper/promptpeek-prompt-leakage-via-key-value-cache-sharing-in-multi-tenant-llm-serving/"
   },
   {
@@ -238,7 +280,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-ITSCD"
+    ],
     "source_url": "https://arxiv.org/abs/2505.06738"
   },
   {
@@ -249,7 +293,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-ITSCD"
+    ],
     "source_url": "https://arxiv.org/abs/2511.12043"
   },
   {
@@ -260,7 +306,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-ITSCD"
+    ],
     "source_url": "https://arxiv.org/abs/2510.25472"
   },
   {
@@ -271,7 +319,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "NEW-ITSCD"
+    ],
     "source_url": "https://arxiv.org/abs/2505.00817"
   },
   {
@@ -282,7 +332,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "ROLL-CMSB"
+    ],
     "source_url": "https://arxiv.org/abs/2311.05608"
   },
   {
@@ -293,7 +345,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "ROLL-CMSB"
+    ],
     "source_url": "https://openreview.net/forum?id=plmBsXHxgR"
   },
   {
@@ -304,7 +358,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "ROLL-CMSB"
+    ],
     "source_url": "https://arxiv.org/abs/2507.02844"
   },
   {
@@ -315,7 +371,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "ROLL-CMSB"
+    ],
     "source_url": "https://arxiv.org/abs/2502.21059"
   },
   {
@@ -326,7 +384,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "ROLL-CMSB"
+    ],
     "source_url": "https://openreview.net/forum?id=qVMtipJxgE"
   },
   {
@@ -337,7 +397,9 @@
     "source_class": "advisory",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "ROLL-CMSB"
+    ],
     "source_url": "https://labs.cloudsecurityalliance.org/research/csa-research-note-image-prompt-injection-multimodal-llm-2026/"
   },
   {
@@ -348,7 +410,9 @@
     "source_class": "advisory",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "ROLL-CMSB"
+    ],
     "source_url": "https://blog.trailofbits.com/2025/08/21/weaponizing-image-scaling-against-production-ai-systems/"
   },
   {
@@ -359,7 +423,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "ROLL-CMSB"
+    ],
     "source_url": "https://arxiv.org/abs/2502.00735"
   },
   {
@@ -370,7 +436,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "ROLL-CMSB"
+    ],
     "source_url": "https://arxiv.org/abs/2603.13847"
   },
   {
@@ -381,7 +449,9 @@
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "ROLL-CMSB"
+    ],
     "source_url": "https://arxiv.org/abs/2504.01444"
   },
   {
@@ -392,7 +462,9 @@
     "source_class": "advisory",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "ROLL-LAPTF"
+    ],
     "source_url": "https://jfrog.com/blog/data-scientists-targeted-by-malicious-hugging-face-ml-models-with-silent-backdoor/"
   },
   {
@@ -403,7 +475,9 @@
     "source_class": "advisory",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "ROLL-LAPTF"
+    ],
     "source_url": "https://www.rapid7.com/blog/post/from-pth-to-p0wned-abuse-of-pickle-files-in-ai-model-supply-chains/"
   },
   {
@@ -414,7 +488,9 @@
     "source_class": "advisory",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "ROLL-LAPTF"
+    ],
     "source_url": "https://unit42.paloaltonetworks.com/model-namespace-reuse/"
   },
   {
@@ -425,7 +501,9 @@
     "source_class": "advisory",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "ROLL-LAPTF"
+    ],
     "source_url": "https://www.hiddenlayer.com/research/malware-found-in-trending-hugging-face-repository-open-oss-privacy-filter"
   },
   {
@@ -436,29 +514,74 @@
     "source_class": "advisory",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
+    "native_labels": [
+      "ROLL-LAPTF"
+    ],
     "source_url": "https://www.reversinglabs.com/blog/rl-identifies-malware-ml-model-hosted-on-hugging-face"
   },
   {
-    "id": "MANUAL-CFAS-001",
-    "date": "2026-03-30",
-    "text": "Colluding LoRA, or CoLoRA, demonstrated a compositional vulnerability in LLM safety alignment. Each LoRA adapter appeared benign and plausibly functional when tested alone, but when a particular set of adapters was linearly composed, the model broadly suppressed refusals and complied with harmful requests under standard prompts. The record maps directly to compositional fine tuning alignment subversion because unit level adapter evaluation failed to detect the unsafe behavior that emerged only in the combined inference state.",
+    "id": "MANUAL-CFAS-003",
+    "date": "2025-11-19",
+    "text": "AppOmni demonstrated a ServiceNow Now Assist agent to agent discovery attack in which a low privileged user planted an indirect prompt injection inside an incident ticket. When an administrator triggered a benign categorization agent, that agent recruited more powerful record management and email capable agents, causing sensitive ticket contents to be copied into the attacker controlled ticket and enabling role assignment or outbound exfiltration paths. The root cause is cascading failure because a compromised low impact agent propagated attacker instructions through the orchestrator to downstream higher privilege agents that trusted the handoff and executed unauthorized actions.",
     "severity": "High",
-    "source_class": "research-paper",
+    "source_class": "advisory",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
-    "source_url": "https://arxiv.org/abs/2603.12681"
+    "native_labels": [
+      "ROLL-CFAS"
+    ],
+    "source_url": "https://appomni.com/ao-labs/ai-agent-to-agent-discovery-prompt-injection/"
   },
   {
-    "id": "MANUAL-CFAS-002",
-    "date": "2025-08-13",
-    "text": "MergeBackdoor showed that multiple ostensibly harmless model components can be merged into a backdoored model. The upstream models show backdoor behavior near random guessing before merging, but the merged model reaches near perfect attack success rates, and knowledgeable detectors fail to identify the anomaly before merge. While this paper focuses on model merging rather than LoRA composition specifically, it is a strong adjacent seed for compositional fine tuning alignment subversion because individually benign artifacts become unsafe only after automated composition.",
+    "id": "MANUAL-CFAS-004",
+    "date": "2024-10-09",
+    "text": "Prompt Infection demonstrated LLM to LLM prompt injection in multi agent systems. A malicious prompt embedded in external content could infect an initial reader agent, replicate to other agents, coordinate data exchange, and direct tool specialized agents toward theft, scams, misinformation, or disruption. The root cause is cascading failure because the first compromised agent transmitted the payload through dependent agents until specialized downstream agents combined their tools to complete the harmful action.",
     "severity": "High",
     "source_class": "research-paper",
     "corpus_stratum": "security",
     "quality": "curated",
-    "native_labels": [],
-    "source_url": "https://www.usenix.org/conference/usenixsecurity25/presentation/wang-lijin"
+    "native_labels": [
+      "ROLL-CFAS"
+    ],
+    "source_url": "https://arxiv.org/abs/2410.07283"
+  },
+  {
+    "id": "MANUAL-CFAS-005",
+    "date": "2024-02-13",
+    "text": "Agent Smith showed infectious jailbreak behavior in multimodal multi agent environments. A single adversarial image placed in one LLaVA agent memory propagated through randomized pairwise chats, with simulations showing near total infection across environments containing up to one million agents. The root cause is cascading failure because one agent poisoned memory state spread through agent to agent interaction until otherwise benign peer agents adopted unsafe behavior.",
+    "severity": "High",
+    "source_class": "research-paper",
+    "corpus_stratum": "security",
+    "quality": "curated",
+    "native_labels": [
+      "ROLL-CFAS"
+    ],
+    "source_url": "https://arxiv.org/abs/2402.08567"
+  },
+  {
+    "id": "MANUAL-CFAS-006",
+    "date": "2024-03-05",
+    "text": "Morris II demonstrated a zero click GenAI worm against RAG based email assistant ecosystems. A poisoned email entered one assistant RAG store, then draft generation replicated the adversarial prompt into outbound messages while leaking private data and contaminating other assistants. The root cause is cascading failure because a single poisoned RAG retrieval caused one assistant to generate output that became the next assistant trusted input and repeated the compromise across the ecosystem.",
+    "severity": "High",
+    "source_class": "research-paper",
+    "corpus_stratum": "security",
+    "quality": "curated",
+    "native_labels": [
+      "ROLL-CFAS"
+    ],
+    "source_url": "https://arxiv.org/abs/2403.02817"
+  },
+  {
+    "id": "MANUAL-CFAS-007",
+    "date": "2025-03-15",
+    "text": "Multi Agent Systems Execute Arbitrary Malicious Code introduced control flow hijacking against multi agent frameworks including AutoGen, CrewAI, and MetaGPT. Adversarial files, webpages, images, video, or audio could manipulate status metadata so orchestrators and sub agents invoked unsafe capabilities, executed reverse shells, or exfiltrated data even when individual agents refused unsafe requests. The root cause is cascading failure because a manipulated status or metadata output from one agent redirected the orchestrator and downstream agents into unsafe tool paths that the individual components did not intend.",
+    "severity": "Critical",
+    "source_class": "research-paper",
+    "corpus_stratum": "security",
+    "quality": "curated",
+    "native_labels": [
+      "ROLL-CFAS"
+    ],
+    "source_url": "https://arxiv.org/abs/2503.12188"
   }
 ]
