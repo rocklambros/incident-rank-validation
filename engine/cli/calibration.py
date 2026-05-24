@@ -323,7 +323,16 @@ def cal_generate_batches(
 @click.option("--cycle", required=True, type=click.Path(path_type=Path))
 @click.option("--manifest", required=True, type=click.Path(exists=True, path_type=Path))
 @click.option("--rubric", required=True, type=click.Path(exists=True, path_type=Path))
-def cal_tally(cycle: Path, manifest: Path, rubric: Path) -> None:
+@click.option(
+    "--gold-calibration",
+    type=click.Path(path_type=Path),
+    default=None,
+    help=(
+        "Path to gold calibration file or directory (adjudicated_goldset.jsonl "
+        "and/or precision_verification.jsonl)"
+    ),
+)
+def cal_tally(cycle: Path, manifest: Path, rubric: Path, gold_calibration: Path | None) -> None:
     """Stage 4: Aggregate coded labels into per-entry per-stratum counts."""
     from engine.calibrate.provenance import (
         StageProvenance,
@@ -367,6 +376,36 @@ def cal_tally(cycle: Path, manifest: Path, rubric: Path) -> None:
         all_entry_ids=all_entry_ids,
         expected_incident_ids=corpus_ids,
     )
+
+    if gold_calibration is not None:
+        from engine.calibrate.gold_loader import load_gold_calibration
+
+        gold_path = Path(gold_calibration)
+        gold_kwargs: dict[str, Path | None] = {}
+        if gold_path.is_dir():
+            gold_kwargs["gold_dir"] = gold_path
+        elif gold_path.suffix == ".jsonl":
+            if "precision" in gold_path.name:
+                gold_kwargs["precision_path"] = gold_path
+            else:
+                gold_kwargs["curation_path"] = gold_path
+        else:
+            gold_kwargs["curation_path"] = gold_path
+
+        gold = load_gold_calibration(
+            **gold_kwargs,
+            valid_entry_ids=all_entry_ids,
+            rubric_hash=rubric_hash,
+            adjudicator_id="cli",
+        )
+
+        from engine.calibrate.tally import calibrate_with_gold
+
+        tally = calibrate_with_gold(tally, gold, set(), all_entry_ids)
+        click.echo(
+            f"Gold calibration applied: {len(gold.recall_labels)} recall + "
+            f"{len(gold.precision_labels)} precision labels."
+        )
 
     tally_data = {
         "total_coded": tally.total_coded,
