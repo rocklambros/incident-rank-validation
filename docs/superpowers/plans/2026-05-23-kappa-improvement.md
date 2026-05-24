@@ -210,6 +210,14 @@ Note: These tests verify output validity. The actual bug fix is verified by ensu
 In `engine/decide/concordance.py`, replace lines 104-116 (the kappa loop):
 
 ```python
+    # Recompute tier boundaries from common set size, not caller's full count
+    n_common = len(common)
+    if n_common <= 3:
+        tier_boundaries = tuple(range(1, n_common))
+    else:
+        third = n_common // 3
+        tier_boundaries = (third, 2 * third)
+
     # Compute kappa over bootstrap x posterior draws
     n_draws = min(len(inference_result.lambda_samples), len(vote_posterior.rank_samples))
     kappas: list[float] = []
@@ -243,10 +251,11 @@ Then replace the per-entry flag loop (lines 127-140) to use the same `n_draws` w
                 mismatch_count += 1
 ```
 
-Three changes total:
-1. Line 106: `n_draws = min(n_samples, 500)` → `n_draws = min(len(inference_result.lambda_samples), len(vote_posterior.rank_samples))`
-2. Line 111: `vote_posterior.rank_samples[s % len(vote_posterior.rank_samples)]` → `vote_posterior.rank_samples[s]`
-3. Line 131: same recycling removal as line 111
+Four changes total:
+1. After `common` computation: recompute `tier_boundaries` from `len(common)` (fixes R28 — caller passes boundaries based on full entry count, but kappa uses only common entries)
+2. Line 106: `n_draws = min(n_samples, 500)` → `n_draws = min(len(inference_result.lambda_samples), len(vote_posterior.rank_samples))`
+3. Line 111: `vote_posterior.rank_samples[s % len(vote_posterior.rank_samples)]` → `vote_posterior.rank_samples[s]`
+4. Line 131: same recycling removal as line 111
 
 - [ ] **Step 4: Run all concordance tests**
 
@@ -257,12 +266,13 @@ Expected: All PASS
 
 ```bash
 git add engine/decide/concordance.py tests/unit/test_concordance_recycling.py
-git commit -m "fix(concordance): remove 500-draw cap and vote draw recycling
+git commit -m "fix(concordance): remove draw cap, vote recycling, and tier boundary mismatch
 
 Remove n_draws cap at 500 — use all available draws from both posteriors.
 Replace modular indexing (s % len) with direct indexing bounded by
 min(inference_draws, vote_draws), eliminating spurious correlation from
-recycled vote draws."
+recycled vote draws. Recompute tier boundaries from len(common) instead
+of using caller-supplied boundaries based on full entry count."
 ```
 
 ---
@@ -313,6 +323,33 @@ def test_ess_gate_denominator_uses_total_draws() -> None:
     buggy_ratio = ess_value / num_samples
     assert buggy_ratio == pytest.approx(1.2)
     assert buggy_ratio >= ess_fraction_threshold  # Bug: passes gate incorrectly
+
+
+def test_concentration_exempted_from_ess_gate() -> None:
+    """concentration is a shared scalar — should not drag down the ESS gate.
+
+    If concentration ESS is low but all lambda ESS values are healthy,
+    the gate should pass.
+    """
+    _AUX_PARAMS = {"concentration"}
+    ess_dict = {
+        "lambda[0]": 6000.0,
+        "lambda[1]": 5500.0,
+        "concentration": 800.0,  # Low — would fail gate if included
+    }
+    total_draws = 8000
+    ess_fraction_threshold = 0.4
+
+    # Without exemption: min is 800/8000 = 0.1, fails
+    all_ratios = min(v / total_draws for v in ess_dict.values())
+    assert all_ratios < ess_fraction_threshold
+
+    # With exemption: min is 5500/8000 = 0.6875, passes
+    lambda_ess = {
+        k: v for k, v in ess_dict.items() if k.split("[")[0] not in _AUX_PARAMS
+    }
+    min_ratio = min(v / total_draws for v in lambda_ess.values())
+    assert min_ratio >= ess_fraction_threshold
 ```
 
 - [ ] **Step 2: Run test to verify it passes (documents the math)**
@@ -320,15 +357,20 @@ def test_ess_gate_denominator_uses_total_draws() -> None:
 Run: `pytest tests/unit/test_ess_gate.py -v`
 Expected: PASS (this test documents the expected math, not the runtime behavior)
 
-- [ ] **Step 3: Fix the ESS gate denominator in inference.py**
+- [ ] **Step 3: Fix the ESS gate denominator and exempt auxiliary parameters**
 
 In `engine/model/inference.py`, replace lines 272-274:
 
 ```python
-    # Sufficient ESS
+    # Sufficient ESS — gate on lambda parameters only; auxiliary parameters
+    # (concentration) are shared scalars with inherently lower ESS.
+    _AUX_PARAMS = {"concentration"}
     total_draws = num_samples * num_chains
+    lambda_ess = {
+        k: v for k, v in ess_dict.items() if k.split("[")[0] not in _AUX_PARAMS
+    }
     min_ess_fraction = (
-        min(v / total_draws for v in ess_dict.values()) if ess_dict else 1.0
+        min(v / total_draws for v in lambda_ess.values()) if lambda_ess else 1.0
     )
 ```
 
@@ -341,11 +383,11 @@ Expected: All PASS
 
 ```bash
 git add engine/model/inference.py tests/unit/test_ess_gate.py
-git commit -m "fix(inference): ESS gate denominator uses total draws not per-chain
+git commit -m "fix(inference): ESS gate denominator uses total draws, exempt concentration
 
 Divide ESS by num_samples * num_chains instead of num_samples alone.
-With 4 chains the gate was 4x too loose, accepting ESS ratios that
-should have triggered DiagnosticsFailure."
+Exempt auxiliary parameters (concentration) from the min-ESS gate since
+shared scalars have inherently lower ESS than per-entry lambdas."
 ```
 
 ---
@@ -552,6 +594,13 @@ class TestParseEntryIdFromPrefix:
     def test_new_entry(self) -> None:
         assert parse_entry_id_from_prefix("MANUAL-NEW-MTIE-003") == "NEW-MTIE"
 
+    def test_short_prefix_mapped_to_full_entry_id(self) -> None:
+        assert parse_entry_id_from_prefix("MANUAL-MTIE-001") == "NEW-MTIE"
+        assert parse_entry_id_from_prefix("MANUAL-ITSCD-004") == "NEW-ITSCD"
+        assert parse_entry_id_from_prefix("MANUAL-CMSB-001") == "ROLL-CMSB"
+        assert parse_entry_id_from_prefix("MANUAL-LAPTF-001") == "ROLL-LAPTF"
+        assert parse_entry_id_from_prefix("MANUAL-CFAS-003") == "ROLL-CFAS"
+
     def test_invalid_prefix_raises(self) -> None:
         with pytest.raises(ValueError, match="Cannot parse entry ID"):
             parse_entry_id_from_prefix("BADPREFIX")
@@ -756,8 +805,16 @@ from engine.calibrate.gold_schema import (
 )
 
 _PREFIX_PATTERN = re.compile(
-    r"^MANUAL-((?:ROLL|NEW)-[A-Z]+|LLM\d+)-\d+$"
+    r"^MANUAL-((?:ROLL-|NEW-)?[A-Z][A-Z0-9]*)-(\d+)$"
 )
+
+_SHORT_PREFIX_TO_ENTRY_ID: dict[str, str] = {
+    "MTIE": "NEW-MTIE",
+    "ITSCD": "NEW-ITSCD",
+    "CMSB": "ROLL-CMSB",
+    "LAPTF": "ROLL-LAPTF",
+    "CFAS": "ROLL-CFAS",
+}
 
 
 def parse_entry_id_from_prefix(incident_id: str) -> str:
@@ -767,7 +824,8 @@ def parse_entry_id_from_prefix(incident_id: str) -> str:
             f"Cannot parse entry ID from incident ID '{incident_id}'. "
             f"Expected format: MANUAL-{{ENTRY_ID}}-{{NNN}}"
         )
-    return m.group(1)
+    raw = m.group(1)
+    return _SHORT_PREFIX_TO_ENTRY_ID.get(raw, raw)
 
 
 def _load_recall_from_curation(
@@ -897,55 +955,72 @@ directory input."
 **Files:**
 - Modify: `projects/owasp-llm/cycles/2026/calibration/manual_curated_incidents.json`
 
-**Context:** The curation review (curation_review.md) flagged 5 ITSCD incidents as LLM02 and 2 CFAS incidents for replacement. The JSON needs reconciliation:
-- ITSCD-004, 005, 006, 007, 009: populate `native_labels: ["LLM02"]` (loader priority: native_labels > prefix)
-- CFAS-001, 002: keep in file but add `native_labels: ["LLM04"]` per review (adjacent to data poisoning; the 5 replacement CFAS-003 through 007 are the actual cascading failure incidents)
+**Remediations:** R22 (verification), R30 (CFAS Option C)
 
-- [ ] **Step 1: Add native_labels to the 5 relabeled ITSCD incidents**
+**Context:** The curation review (curation_review.md) flagged changes. Additionally, the prefix parser cannot map short prefixes (MTIE, CMSB, etc.) to rubric entry IDs (NEW-MTIE, ROLL-CMSB, etc.) without a lookup table. The robust fix is to populate `native_labels` on ALL records so the prefix parser is never needed at runtime.
 
-In `manual_curated_incidents.json`, for each of MANUAL-ITSCD-004, MANUAL-ITSCD-005, MANUAL-ITSCD-006, MANUAL-ITSCD-007, MANUAL-ITSCD-009, change:
+Actions:
+- **Remove** MANUAL-CFAS-001 and MANUAL-CFAS-002 entirely (curation review action: "replace")
+- **Relabel** ITSCD-004, 005, 006, 007, 009: `native_labels: ["LLM02"]`
+- **Populate** ALL remaining records with correct `native_labels` so prefix parser is bypassed
 
-```json
-"native_labels": []
-```
+- [ ] **Step 1: Remove CFAS-001 and CFAS-002**
 
-to:
+Delete the two records with IDs `MANUAL-CFAS-001` and `MANUAL-CFAS-002` from `manual_curated_incidents.json`. These are compositional LoRA and model merging incidents that do not fit the "Cascading Failures in Agentic Systems" target definition. File drops from 47 to 45 records.
 
-```json
-"native_labels": ["LLM02"]
-```
+- [ ] **Step 2: Populate native_labels on ALL records**
 
-- [ ] **Step 2: Add native_labels to the 2 original CFAS incidents**
+For every record in `manual_curated_incidents.json`, set `native_labels` according to this mapping:
 
-For MANUAL-CFAS-001 and MANUAL-CFAS-002, change:
-
-```json
-"native_labels": []
-```
-
-to:
-
-```json
-"native_labels": ["LLM04"]
-```
-
-These are compositional fine-tuning attacks — adjacent to data/model poisoning (LLM04). The gold loader will use `native_labels` (priority over prefix), so they contribute to LLM04 calibration rather than CFAS.
+| ID pattern | native_labels |
+|-----------|--------------|
+| MANUAL-LLM06-001 through 007 | `["LLM06"]` |
+| MANUAL-MTIE-001 through 009 | `["NEW-MTIE"]` |
+| MANUAL-ITSCD-001, 002, 003, 008 | `["NEW-ITSCD"]` |
+| MANUAL-ITSCD-004, 005, 006, 007, 009 | `["LLM02"]` |
+| MANUAL-CMSB-001 through 010 | `["ROLL-CMSB"]` |
+| MANUAL-LAPTF-001 through 005 | `["ROLL-LAPTF"]` |
+| MANUAL-CFAS-003 through 007 | `["ROLL-CFAS"]` |
 
 - [ ] **Step 3: Verify the reconciliation**
 
-Run: `python -c "import json; d=json.load(open('projects/owasp-llm/cycles/2026/calibration/manual_curated_incidents.json')); empty=[r['id'] for r in d if not r['native_labels']]; print(f'{len(empty)} incidents with empty native_labels'); relabeled=[r for r in d if r['native_labels']]; print(f'{len(relabeled)} incidents with native_labels set'); [print(f'  {r[\"id\"]}: {r[\"native_labels\"]}') for r in relabeled]"`
+Run:
+```python
+python3 -c "
+import json
+d = json.load(open('projects/owasp-llm/cycles/2026/calibration/manual_curated_incidents.json'))
+assert len(d) == 45, f'Expected 45 records, got {len(d)}'
+empty = [r['id'] for r in d if not r.get('native_labels')]
+assert len(empty) == 0, f'Records with empty native_labels: {empty}'
+# Verify specific relabels
+lookup = {r['id']: r['native_labels'] for r in d}
+assert lookup['MANUAL-ITSCD-004'] == ['LLM02'], 'ITSCD-004 should be LLM02'
+assert lookup['MANUAL-ITSCD-009'] == ['LLM02'], 'ITSCD-009 should be LLM02'
+assert lookup['MANUAL-CFAS-003'] == ['ROLL-CFAS'], 'CFAS-003 should be ROLL-CFAS'
+assert lookup['MANUAL-MTIE-001'] == ['NEW-MTIE'], 'MTIE-001 should be NEW-MTIE'
+assert lookup['MANUAL-CMSB-001'] == ['ROLL-CMSB'], 'CMSB-001 should be ROLL-CMSB'
+assert lookup['MANUAL-LAPTF-001'] == ['ROLL-LAPTF'], 'LAPTF-001 should be ROLL-LAPTF'
+assert 'MANUAL-CFAS-001' not in lookup, 'CFAS-001 should be removed'
+assert 'MANUAL-CFAS-002' not in lookup, 'CFAS-002 should be removed'
+print(f'All {len(d)} records have native_labels. Verification passed.')
+# Show distribution
+from collections import Counter
+label_counts = Counter(tuple(r['native_labels']) for r in d)
+for labels, count in sorted(label_counts.items()):
+    print(f'  {labels}: {count}')
+"
+```
 
 Expected output:
 ```
-40 incidents with empty native_labels
-7 incidents with native_labels set
-  MANUAL-ITSCD-004: ['LLM02']
-  MANUAL-ITSCD-005: ['LLM02']
-  MANUAL-ITSCD-006: ['LLM02']
-  MANUAL-ITSCD-007: ['LLM02']
-  MANUAL-ITSCD-009: ['LLM02']
-  MANUAL-CFAS-001: ['LLM04']
-  MANUAL-CFAS-002: ['LLM04']
+All 45 records have native_labels. Verification passed.
+  ('LLM02',): 5
+  ('LLM06',): 7
+  ('NEW-ITSCD',): 4
+  ('NEW-MTIE',): 9
+  ('ROLL-CFAS',): 5
+  ('ROLL-CMSB',): 10
+  ('ROLL-LAPTF',): 5
 ```
 
 - [ ] **Step 4: Commit**
@@ -954,9 +1029,9 @@ Expected output:
 git add projects/owasp-llm/cycles/2026/calibration/manual_curated_incidents.json
 git commit -m "data(calibration): reconcile curated incident labels per curation review
 
-5 ITSCD incidents relabeled to LLM02 (general side channels, not
-speculative decoding). 2 original CFAS incidents relabeled to LLM04
-(compositional fine-tuning, not cascading agentic failures)."
+Remove CFAS-001/002 (compositional attacks, not cascading agentic failures).
+Relabel 5 ITSCD incidents to LLM02 (general side channels). Populate
+native_labels on all 45 records to bypass prefix parser entirely."
 ```
 
 ---
@@ -1006,7 +1081,7 @@ class TestCalibrateWithGold:
         )
         result = calibrate_with_gold(_empty_tally(), gold, set(), {"LLM01", "LLM06"})
 
-        key = ("LLM01", "gold-recall")
+        key = ("LLM01", "security")
         assert key in result.recall_counts
         assert result.recall_counts[key].true_positives == 1
         assert result.recall_counts[key].false_negatives == 0
@@ -1022,11 +1097,11 @@ class TestCalibrateWithGold:
         )
         result = calibrate_with_gold(_empty_tally(), gold, set(), {"LLM01", "LLM06"})
 
-        key_true = ("LLM01", "gold-recall")
+        key_true = ("LLM01", "security")
         assert result.recall_counts[key_true].true_positives == 0
         assert result.recall_counts[key_true].false_negatives == 1
 
-        key_wrong = ("LLM06", "gold-recall")
+        key_wrong = ("LLM06", "security")
         assert key_wrong in result.precision_counts
         assert result.precision_counts[key_wrong].false_positives == 1
 
@@ -1041,7 +1116,7 @@ class TestCalibrateWithGold:
         )
         result = calibrate_with_gold(_empty_tally(), gold, set(), {"LLM06"})
 
-        key = ("LLM06", "gold-precision")
+        key = ("LLM06", "security")
         assert key in result.precision_counts
         assert result.precision_counts[key].true_positives == 1
 
@@ -1056,8 +1131,21 @@ class TestCalibrateWithGold:
         )
         result = calibrate_with_gold(_empty_tally(), gold, set(), {"LLM09"})
 
-        key = ("LLM09", "gold-precision")
+        key = ("LLM09", "security")
         assert result.precision_counts[key].false_positives == 1
+
+    def test_recall_skips_when_classifier_entry_id_is_none(self) -> None:
+        gold = GoldCalibration(
+            recall_labels=[
+                GoldRecallLabel("GA-001", ["LLM01"], None, "manual-curated"),
+            ],
+            precision_labels=[],
+            provenance_hash="h", rubric_hash="r",
+            adjudicator_id="RL", session_count=1,
+        )
+        result = calibrate_with_gold(_empty_tally(), gold, set(), {"LLM01"})
+
+        assert ("LLM01", "security") not in result.recall_counts
 
     def test_deduplicates_against_base_ids(self) -> None:
         gold = GoldCalibration(
@@ -1094,7 +1182,8 @@ class TestCalibrateWithGold:
         result = calibrate_with_gold(base, gold, set(), {"LLM01"})
 
         assert ("LLM01", "security") in result.precision_counts
-        assert ("LLM01", "gold-recall") in result.recall_counts
+        assert ("LLM01", "security") in result.recall_counts
+        assert result.recall_counts[("LLM01", "security")].true_positives == 9
         assert result.total_coded == 101
 
     def test_multi_label_recall(self) -> None:
@@ -1108,8 +1197,8 @@ class TestCalibrateWithGold:
         )
         result = calibrate_with_gold(_empty_tally(), gold, set(), {"LLM01", "LLM05"})
 
-        assert result.recall_counts[("LLM01", "gold-recall")].true_positives == 1
-        assert result.recall_counts[("LLM05", "gold-recall")].false_negatives == 1
+        assert result.recall_counts[("LLM01", "security")].true_positives == 1
+        assert result.recall_counts[("LLM05", "security")].false_negatives == 1
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -1130,7 +1219,13 @@ def calibrate_with_gold(
     gold: GoldCalibration,
     base_incident_ids: set[str],
     all_entry_ids: set[str],
+    merge_stratum: str = "security",
 ) -> TallyResult:
+    """Merge gold calibration labels into an existing tally.
+
+    Gold data is keyed under ``merge_stratum`` so that
+    ``_build_observation_arrays`` picks it up when iterating corpus strata.
+    """
     precision_counts = dict(base_tally.precision_counts)
     recall_counts = dict(base_tally.recall_counts)
     rollup_counts = dict(base_tally.rollup_counts)
@@ -1148,8 +1243,11 @@ def calibrate_with_gold(
             continue
         gold_coded += 1
 
+        if label.classifier_entry_id is None:
+            continue
+
         for true_eid in label.true_entry_ids:
-            rk = (true_eid, "gold-recall")
+            rk = (true_eid, merge_stratum)
             recall_total[rk] = recall_total.get(rk, 0) + 1
 
             if label.classifier_entry_id == true_eid:
@@ -1157,16 +1255,13 @@ def calibrate_with_gold(
             else:
                 recall_fn[rk] = recall_fn.get(rk, 0) + 1
 
-        if (
-            label.classifier_entry_id is not None
-            and label.classifier_entry_id not in label.true_entry_ids
-        ):
-            pk = (label.classifier_entry_id, "gold-recall")
+        if label.classifier_entry_id not in label.true_entry_ids:
+            pk = (label.classifier_entry_id, merge_stratum)
             precision_fp[pk] = precision_fp.get(pk, 0) + 1
             precision_total[pk] = precision_total.get(pk, 0) + 1
 
     for label in gold.precision_labels:
-        pk = (label.claimed_entry_id, "gold-precision")
+        pk = (label.claimed_entry_id, merge_stratum)
         precision_total[pk] = precision_total.get(pk, 0) + 1
         if label.is_correct:
             precision_tp[pk] = precision_tp.get(pk, 0) + 1
@@ -1216,8 +1311,9 @@ git add engine/calibrate/tally.py tests/unit/test_calibrate_with_gold.py
 git commit -m "feat(calibrate): add calibrate_with_gold for two-frame gold labels
 
 Merges GoldRecallLabel and GoldPrecisionLabel into existing tally as
-gold-recall and gold-precision strata. Deduplicates against base
-incident IDs. Multi-label recall supported."
+the merge_stratum (default 'security') so gold observations land in a
+stratum NUTS already reads. Deduplicates against base incident IDs.
+Multi-label recall supported."
 ```
 
 ---
@@ -2167,6 +2263,7 @@ class MultiModelPreLabeler:
                 result = self.pre_label(incident)
                 record = {
                     "incident_id": result.incident_id,
+                    "text": incident.text,
                     "model_votes": [
                         {
                             "model_id": v.model_id,
@@ -2318,6 +2415,7 @@ Mode 2: Precision verification (Frame 2)
 """
 from __future__ import annotations
 
+import hashlib
 import json
 from datetime import UTC, datetime
 from pathlib import Path
@@ -2401,8 +2499,9 @@ def run_recall_mode(
         if iid in done_ids:
             continue
 
+        display_id = hashlib.sha256(iid.encode()).hexdigest()[:8]
         print(f"\n{'='*60}")
-        print(f"Incident: {iid} | Tier: {record['triage_tier']}")
+        print(f"Incident: {display_id} | Tier: {record['triage_tier']}")
         print(f"{'='*60}")
         print(f"\n{record.get('text', '[text not in prelabels — read from corpus]')}\n")
 
@@ -2446,7 +2545,10 @@ def run_precision_mode(
 ) -> None:
     """Interactive Mode 2: precision verification."""
     cls_data = json.loads(classifications_path.read_text(encoding="utf-8"))
-    classifications = cls_data.get("classifications", [])
+    classifications = (
+        cls_data if isinstance(cls_data, list)
+        else cls_data.get("classifications", [])
+    )
 
     done_ids: set[str] = set()
     if output_path.exists():
@@ -2461,7 +2563,8 @@ def run_precision_mode(
 
         print(f"\n--- Precision verification for {entry_id} ({len(candidates)} incidents) ---")
         for c in candidates:
-            print(f"\nIncident: {c['incident_id']}")
+            display_id = hashlib.sha256(c["incident_id"].encode()).hexdigest()[:8]
+            print(f"\nIncident: {display_id}")
             print(f"Claimed: {entry_id} (conf={c.get('confidence', '?')})")
             print(f"Rationale: {c.get('rationale', 'N/A')}")
 
