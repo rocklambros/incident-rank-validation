@@ -150,3 +150,27 @@ def compute_calibration(
     )
 
     return cal, diagnostic
+
+
+def apply_empirical_precision_prior(
+    precision: dict[tuple[str, str], BetaPosterior],
+    frame_blind_ids: set[str],
+) -> dict[tuple[str, str], BetaPosterior]:
+    measured = {
+        k: v for k, v in precision.items()
+        if k[0] not in frame_blind_ids and (v.alpha != 1.0 or v.beta != 1.0)
+    }
+    if not measured:
+        return dict(precision)
+
+    mean_alpha = sum(bp.alpha for bp in measured.values()) / len(measured)
+    mean_beta = sum(bp.beta for bp in measured.values()) / len(measured)
+
+    result = dict(precision)
+    for k, v in result.items():
+        if k[0] in frame_blind_ids:
+            continue
+        if v.alpha == 1.0 and v.beta == 1.0:
+            result[k] = BetaPosterior(alpha=mean_alpha, beta=mean_beta)
+
+    return result
