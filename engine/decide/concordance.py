@@ -101,14 +101,21 @@ def compute_concordance(
     inf_idx = {e: i for i, e in enumerate(inference_result.entry_ids)}
     vote_idx = {e: i for i, e in enumerate(vote_posterior.entries)}
 
+    # Recompute tier boundaries from common set size, not caller's full count
+    n_common = len(common)
+    if n_common <= 3:
+        tier_boundaries = tuple(range(1, n_common))
+    else:
+        third = n_common // 3
+        tier_boundaries = (third, 2 * third)
+
     # Compute kappa over bootstrap x posterior draws
-    n_samples = min(len(inference_result.lambda_samples), len(vote_posterior.rank_samples))
-    n_draws = min(n_samples, 500)  # cap for speed
+    n_draws = min(len(inference_result.lambda_samples), len(vote_posterior.rank_samples))
     kappas: list[float] = []
 
     for s in range(n_draws):
         inc_ranks = _ranks_from_lambda(inference_result.lambda_samples[s], inf_idx, common)
-        vote_draw = vote_posterior.rank_samples[s % len(vote_posterior.rank_samples)]
+        vote_draw = vote_posterior.rank_samples[s]
         vote_ranks = np.array([vote_draw[vote_idx[e]] for e in common])
 
         k = quadratic_weighted_kappa(inc_ranks, vote_ranks, tier_boundaries)
@@ -128,7 +135,7 @@ def compute_concordance(
         mismatch_count = 0
         for s in range(n_draws):
             inc_ranks = _ranks_from_lambda(inference_result.lambda_samples[s], inf_idx, common)
-            vote_draw = vote_posterior.rank_samples[s % len(vote_posterior.rank_samples)]
+            vote_draw = vote_posterior.rank_samples[s]
             vote_ranks = np.array([vote_draw[vote_idx[c]] for c in common])
 
             e_pos = common.index(e)
@@ -141,7 +148,7 @@ def compute_concordance(
         if prob > flag_threshold_tau:
             # Determine direction from median ranks
             median_inc_samples = []
-            for s in range(min(n_samples, 100)):
+            for s in range(min(n_draws, 100)):
                 r = _ranks_from_lambda(inference_result.lambda_samples[s], inf_idx, common)
                 median_inc_samples.append(r[common.index(e)])
             median_inc_rank = float(np.median(median_inc_samples))
