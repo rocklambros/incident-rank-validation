@@ -5,7 +5,13 @@ import json
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from engine.classify.multi_model import MultiModelPreLabeler, PreLabelResult
+import pytest
+
+from engine.classify.multi_model import (
+    MultiModelPreLabeler,
+    PreLabelResult,
+    _extract_json,
+)
 from engine.classify.runpod_client import RunPodResponse
 from engine.schema import IncidentRecord
 
@@ -32,6 +38,45 @@ def _make_client(entry_id: str, confidence: float = 0.9) -> MagicMock:
         execution_time_ms=100.0,
     )
     return client
+
+
+class TestExtractJson:
+    def test_plain_json(self) -> None:
+        raw = '{"entry_id": "LLM01", "confidence": 0.9, "rationale": "test"}'
+        assert _extract_json(raw)["entry_id"] == "LLM01"
+
+    def test_strips_think_tags(self) -> None:
+        raw = (
+            "<think>\nLet me analyze this incident...\n"
+            "This looks like prompt injection.\n</think>\n"
+            '{"entry_id": "LLM01", "confidence": 0.85, "rationale": "PI detected"}'
+        )
+        result = _extract_json(raw)
+        assert result["entry_id"] == "LLM01"
+        assert result["confidence"] == 0.85
+
+    def test_no_json_raises(self) -> None:
+        with pytest.raises(json.JSONDecodeError):
+            _extract_json("no json here")
+
+    def test_thinking_model_in_pipeline(self) -> None:
+        """Qwen 3 thinking output works end-to-end through pre_label."""
+        client = MagicMock()
+        client.run_sync.return_value = RunPodResponse(
+            output_text=(
+                "<think>\nAnalyzing...\n</think>\n"
+                '{"entry_id": "LLM06", "confidence": 0.7, "rationale": "EA"}'
+            ),
+            job_id="j1",
+            execution_time_ms=100.0,
+        )
+        labeler = MultiModelPreLabeler(
+            models=[(client, "qwen3-235b")],
+            rubric_json=_RUBRIC_JSON,
+            prng_seed=42,
+        )
+        result = labeler.pre_label(_make_incident())
+        assert result.model_votes[0].entry_id == "LLM06"
 
 
 class TestPreLabel:
