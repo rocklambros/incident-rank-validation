@@ -63,6 +63,11 @@ def compute_calibration(
 
     cal = Calibration(recall=recall_posteriors, precision=precision_posteriors)
 
+    updated_precision = apply_empirical_precision_prior(
+        cal.precision, frame_blind_ids,
+    )
+    cal = Calibration(recall=cal.recall, precision=updated_precision)
+
     both = 0
     recall_only = 0
     no_data = 0
