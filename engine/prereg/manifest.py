@@ -57,6 +57,11 @@ class PreregManifest:
     rollup_threshold: float = 0.01
     rollup_p_supported: float = 0.8
     rollup_p_contradicted: float = 0.2
+    lambda_min: float | None = None  # noise floor; default: prior_scale * 0.02
+
+    def __post_init__(self) -> None:
+        if self.lambda_min is None:
+            object.__setattr__(self, "lambda_min", self.prior_scale * 0.02)
 
     @property
     def non_publishable(self) -> bool:
