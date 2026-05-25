@@ -322,23 +322,57 @@ git commit -m "feat(concordance): add ci_method to serialization and deserializa
 **Files:**
 - Modify: `projects/owasp-llm/cycles/2026/results/concordance.json`
 
-The spec requires regeneration via the pipeline, not a direct patch. Since only metadata changed (no data change), we can re-run just the serialization step.
+The spec requires regeneration via the pipeline, not a direct JSON patch. We construct a `ConcordanceResult` from the existing JSON data using the updated dataclass (which now has `ci_method` with its default value), then re-serialize via the same `conc_dict` pattern used in `write_decide_artifacts`. This exercises the new serialization code path.
 
-- [ ] **Step 1: Re-serialize concordance.json**
-
-Write a small script to load the existing concordance data, add the field, and re-write. This is NOT a direct patch — it uses the new serialization code:
+- [ ] **Step 1: Re-serialize concordance.json through ConcordanceResult**
 
 ```bash
 python3 -c "
 import json
 from pathlib import Path
+from engine.decide.concordance import ConcordanceResult
+from engine.decide.robustness_multiplicity import FlagFinding, FlagDirection
 
 p = Path('projects/owasp-llm/cycles/2026/results/concordance.json')
-data = json.loads(p.read_text())
-data['ci_method'] = 'paired_draw_percentile'
-p.write_text(json.dumps(data, indent=2) + '\n')
-print('Updated concordance.json with ci_method field')
-print(json.dumps(data, indent=2))
+raw = json.loads(p.read_text())
+
+# Reconstruct typed ConcordanceResult from existing JSON
+flags = tuple(
+    FlagFinding(
+        entry_id=f['entry_id'],
+        probability=f['probability'],
+        direction=FlagDirection(f['direction']),
+    ) for f in raw.get('flags', [])
+)
+conc = ConcordanceResult(
+    weighted_kappa_median=raw.get('weighted_kappa_median'),
+    weighted_kappa_ci=tuple(raw['weighted_kappa_ci']) if raw.get('weighted_kappa_ci') else None,
+    measurable_count=raw['measurable_count'],
+    total_count=raw['total_count'],
+    coverage_ratio=raw['coverage_ratio'],
+    below_prereg_minimum=raw.get('below_prereg_minimum', False),
+    meaningful_kappa_n=5,
+    flags=flags,
+    standing_caveat='',
+    # ci_method gets its default 'paired_draw_percentile' from the dataclass
+)
+
+# Re-serialize via the same pattern as write_decide_artifacts (Task 2 Step 3)
+conc_dict = {
+    'weighted_kappa_median': conc.weighted_kappa_median,
+    'weighted_kappa_ci': list(conc.weighted_kappa_ci) if conc.weighted_kappa_ci else None,
+    'measurable_count': conc.measurable_count,
+    'total_count': conc.total_count,
+    'coverage_ratio': conc.coverage_ratio,
+    'below_prereg_minimum': conc.below_prereg_minimum,
+    'ci_method': conc.ci_method,
+    'flags': [
+        {'entry_id': f.entry_id, 'probability': f.probability, 'direction': f.direction.value}
+        for f in conc.flags
+    ],
+}
+p.write_text(json.dumps(conc_dict, indent=2) + '\n')
+print(f'Regenerated concordance.json with ci_method={conc.ci_method}')
 "
 ```
 
@@ -385,7 +419,7 @@ def test_f_aiharm_precision_content() -> None:
     threat = next(t for t in threats if t.threat_id == "F-aiharm-precision")
     assert "Beta(1,1)" in threat.description or "Uniform(0,1)" in threat.description
     assert "conservative" not in threat.mitigation.lower()
-    assert "4 of 20" in threat.residual_risk or "4" in threat.residual_risk
+    assert "3 of 20" in threat.residual_risk
 ```
 
 - [ ] **Step 2: Run tests to verify they fail**
@@ -409,8 +443,8 @@ In `engine/threats/register.py`, add after the `F-defenseindepth` threat (line 7
         "precision for ai-harm entries",
         "ai-harm rankings rely on a flat precision prior (mean 0.5); true ai-harm "
         "precision could be substantially higher or lower, shifting rankings in "
-        "either direction; only 4 of 20 ai-harm recall keys have non-trivial "
-        "posteriors (LLM09, LLM04, NEW-MA, NEW-WLA)",
+        "either direction; only 3 of 20 ai-harm recall keys have material evidence "
+        "(LLM09, LLM04, NEW-MA); NEW-WLA has only 1 observation above the pure prior",
     ),
 ```
 
@@ -446,7 +480,7 @@ Use NotebookEdit on cell `ef090aa6` to append after the existing "kappa ceiling"
 Append this paragraph:
 
 ```
-\n\n**Accepted limitation: ai-harm precision.** The 323 precision verifications were drawn entirely from the security stratum. The ai-harm stratum (92 in-scope incidents across 8 entry assignments, of which only 4 received non-trivial recall posteriors) has no direct precision measurements — ai-harm precision keys are absent from the calibration data entirely. The model falls back to a flat Beta(1,1) = Uniform(0,1) prior for ai-harm precision, meaning it assumes no prior knowledge about how precise the classifier is on ai-harm incidents (prior mean 0.5). Closing this gap would require sourcing additional ai-harm incidents beyond the existing corpus, which is outside this project's scope. The disclosure in Acts 4 and 5 describes how the model handles missing precision data.
+\n\n**Accepted limitation: ai-harm precision.** The 323 precision verifications were drawn entirely from the security stratum. The ai-harm stratum (92 in-scope incidents across 8 entry assignments, of which only 3 received recall posteriors with material evidence — LLM09, LLM04, NEW-MA; NEW-WLA has only 1 observation above the pure prior) has no direct precision measurements — ai-harm precision keys are absent from the calibration data entirely. The model falls back to a flat Beta(1,1) = Uniform(0,1) prior for ai-harm precision, meaning it assumes no prior knowledge about how precise the classifier is on ai-harm incidents (prior mean 0.5). Closing this gap would require sourcing additional ai-harm incidents beyond the existing corpus, which is outside this project's scope. The disclosure in Acts 4 and 5 describes how the model handles missing precision data.
 ```
 
 - [ ] **Step 3: Verify notebook executes**
@@ -519,7 +553,7 @@ git commit -m "feat(artifact): regenerate report.md with F-aiharm-precision thre
 
 - [ ] **Step 1: Add optional narrative dependency group**
 
-In `pyproject.toml`, after the existing `[project.optional-dependencies]` section (which has `monitoring`), add:
+In `pyproject.toml`, find the existing `[project.optional-dependencies]` section (which has `monitoring`). Add the `narrative` key to the SAME table — do NOT re-declare the `[project.optional-dependencies]` header. The result should look like:
 
 ```toml
 [project.optional-dependencies]
@@ -532,6 +566,8 @@ narrative = [
   "pandas>=2.0",
 ]
 ```
+
+**IMPORTANT:** Only add the `narrative = [...]` line. The `[project.optional-dependencies]` header and `monitoring` line already exist.
 
 Also add mypy overrides for the new dependencies. In the `[[tool.mypy.overrides]]` section, extend the existing ignore list or add a new block:
 
@@ -700,7 +736,7 @@ def load_narrative_data(cycle_dir: Path) -> dict[str, Any]:
         data["rank_comparison_md"] = f.read()
 
     report_md_path = cycle / "results" / "report.md"
-    data["non_publishable"] = False
+    data["non_publishable"] = True  # safe default: assume non-publishable if report.md is missing
     if report_md_path.exists():
         report_text = report_md_path.read_text()
         data["non_publishable"] = "NON-PUBLISHABLE" in report_text
@@ -826,7 +862,7 @@ def render_tier_donut(data: dict[str, Any], figures_dir: Path) -> None:
     tier_counts = Counter(
         p["triage_tier"]
         for p in data["prelabels"]
-        if p.get("entry_id") != "out-of-scope"
+        if p.get("consensus") != "out-of-scope"
     )
     labels = ["agree", "split", "disagree"]
     values = [tier_counts.get(t, 0) for t in labels]
@@ -851,9 +887,9 @@ def render_confusion_heatmap(data: dict[str, Any], figures_dir: Path) -> None:
     pair_counts: dict[tuple[str, str], int] = defaultdict(int)
 
     for p in data["prelabels"]:
-        if p.get("triage_tier") in ("split", "disagree") and p.get("entry_id") != "out-of-scope":
-            votes = p.get("model_votes", {})
-            unique_entries = set(votes.values()) & set(in_scope_entries)
+        if p.get("triage_tier") in ("split", "disagree") and p.get("consensus") != "out-of-scope":
+            votes = p.get("model_votes", [])
+            unique_entries = {v["entry_id"] for v in votes if isinstance(v, dict) and v.get("entry_id") in set(in_scope_entries)}
             entries_list = sorted(unique_entries)
             for i_idx in range(len(entries_list)):
                 for j_idx in range(i_idx + 1, len(entries_list)):
@@ -945,11 +981,11 @@ def render_ridge_plot(data: dict[str, Any], figures_dir: Path) -> None:
         idx = entry_ids.index(eid)
         vals = lambda_samples[:, idx]
         color = ENTRY_COLORS.get(eid, "#999999")
-        ax.fill_between(
-            np.sort(vals),
-            np.linspace(0, 1, len(vals)),
-            alpha=0.6, color=color,
-        )
+        from scipy.stats import gaussian_kde
+        kde = gaussian_kde(vals, bw_method=0.2)
+        x_grid = np.linspace(vals.min(), vals.max(), 200)
+        density = kde(x_grid)
+        ax.fill_between(x_grid, density, alpha=0.6, color=color)
         ax.set_ylabel(eid, rotation=0, ha="right", fontsize=9)
         ax.set_yticks([])
         for spine in ax.spines.values():
@@ -1140,7 +1176,7 @@ def render_theme_bars(data: dict[str, Any], figures_dir: Path, entry_id: str, fi
 
     entry_prelabels = [
         p for p in data["prelabels"]
-        if p.get("entry_id") == entry_id
+        if p.get("consensus") == entry_id
     ]
 
     theme_counts: dict[str, int] = defaultdict(int)
@@ -1179,8 +1215,8 @@ def render_confusion_matrix_3x3(data: dict[str, Any], figures_dir: Path) -> None
 
     pair_disagree: dict[tuple[str, str], int] = defaultdict(int)
     for p in data["prelabels"]:
-        votes = p.get("model_votes", {})
-        unique_votes = set(votes.values()) & set(boundary_entries)
+        votes = p.get("model_votes", [])
+        unique_votes = {v["entry_id"] for v in votes if isinstance(v, dict) and v.get("entry_id") in set(boundary_entries)}
         if len(unique_votes) >= 2:
             vote_list = sorted(unique_votes)
             for i_idx in range(len(vote_list)):
@@ -1278,7 +1314,7 @@ def render_oos_treemap(data: dict[str, Any], figures_dir: Path) -> None:
 
     oos_prelabels = [
         p for p in data["prelabels"]
-        if p.get("entry_id") == "out-of-scope"
+        if p.get("consensus") == "out-of-scope"
     ]
 
     theme_keywords = {
@@ -1336,14 +1372,18 @@ def render_sankey_confusion(data: dict[str, Any], figures_dir: Path) -> None:
 
     flows: dict[tuple[str, str], int] = defaultdict(int)
     for p in data["prelabels"]:
-        votes = p.get("model_votes", {})
-        consensus = p.get("entry_id", "")
+        votes = p.get("model_votes", [])
+        consensus = p.get("consensus", "")
         if consensus not in boundary:
             continue
-        for model in models:
-            vote = votes.get(model, "")
-            if vote in boundary:
-                flows[(f"{model}: {vote}", consensus)] += 1
+        for v in votes:
+            if not isinstance(v, dict):
+                continue
+            model_id = v.get("model_id", "")
+            model_short = model_id.split("/")[-1].split("-")[0].lower() if "/" in model_id else model_id.lower()
+            vote_entry = v.get("entry_id", "")
+            if vote_entry in boundary:
+                flows[(f"{model_short}: {vote_entry}", consensus)] += 1
 
     if not flows:
         fig = go_plotly.Figure()
@@ -1447,7 +1487,7 @@ def _render_markdown(data: dict[str, Any], figures_dir: Path) -> str:
     tier_counts = Counter(
         p.get("triage_tier", "unknown")
         for p in data["prelabels"]
-        if p.get("entry_id") != "out-of-scope"
+        if p.get("consensus") != "out-of-scope"
     )
     lines.append(
         f"Consensus tiers: {tier_counts.get('agree', 0)} agree, "
@@ -1462,10 +1502,12 @@ def _render_markdown(data: dict[str, Any], figures_dir: Path) -> str:
     prec_keys = list(data["posteriors"].get("precision", {}).keys())
     security_prec = [k for k in prec_keys if "::security" in k]
     aiharm_prec = [k for k in prec_keys if "::ai-harm" in k or "::ai_harm" in k]
+    verified_entries = {r.get("claimed_entry_id") for r in data["precision_verification"]}
     lines.append(
-        f"Precision verifications: {len(data['precision_verification'])} "
-        f"({len(security_prec)} security-stratum keys, "
-        f"{len(aiharm_prec)} ai-harm keys).\n\n"
+        f"Precision verifications: {len(data['precision_verification'])} records "
+        f"across {len(verified_entries)} verified entries. "
+        f"Posterior keys: {len(security_prec)} security-stratum, "
+        f"{len(aiharm_prec)} ai-harm.\n\n"
     )
     if not aiharm_prec:
         lines.append(
@@ -1483,11 +1525,15 @@ def _render_markdown(data: dict[str, Any], figures_dir: Path) -> str:
         f"MCMC: {lambda_samples.shape[0]} posterior draws, "
         f"{len(entry_ids)} entries.\n\n"
     )
-    diag = data["diagnostic"]
-    if "max_r_hat" in diag:
-        lines.append(f"Max R̂: {diag['max_r_hat']:.4f}. ")
-    if "min_ess" in diag:
-        lines.append(f"Min ESS: {diag['min_ess']:.0f}.\n\n")
+    inf_summary = data["inference_summary"]
+    r_hat = inf_summary.get("r_hat", {})
+    ess = inf_summary.get("ess", {})
+    if r_hat:
+        max_r_hat = max(r_hat.values()) if isinstance(r_hat, dict) else r_hat
+        lines.append(f"Max R̂: {max_r_hat:.4f}. ")
+    if ess:
+        min_ess = min(ess.values()) if isinstance(ess, dict) else ess
+        lines.append(f"Min ESS: {min_ess:.0f}.\n\n")
     lines.append(f"![Ridge plot](figures/ridge_plot.png)\n\n")
 
     # Act 6: The Incident-Derived Rankings
@@ -1512,10 +1558,15 @@ def _render_markdown(data: dict[str, Any], figures_dir: Path) -> str:
     lines.append("## Act 7: The Confrontation\n\n")
     if conc.get("weighted_kappa_median") is not None:
         ci = conc.get("weighted_kappa_ci", [])
-        ci_method = conc.get("ci_method", "unknown")
+        if "ci_method" not in conc:
+            raise ValueError(
+                "concordance.json missing ci_method field; "
+                "run Phase 1 (Tasks 1-3) before generating the narrative report"
+            )
+        ci_method = conc["ci_method"]
         lines.append(
             f"Weighted Cohen's kappa: {conc['weighted_kappa_median']:.4f} "
-            f"[{ci[0]:.4f}, {ci[1]:.4f}] (95% CI, method: {ci_method}).\n\n"
+            f"[{ci[0]:.4f}, {ci[1]:.4f}] (95% interval, method: {ci_method}).\n\n"
         )
     lines.append(
         f"Selection bias: H = {sel_bias.get('statistic_value', 0):.4f}, "
@@ -1563,8 +1614,10 @@ def _render_markdown(data: dict[str, Any], figures_dir: Path) -> str:
     lines.append(
         "**Accepted limitation: ai-harm precision.** The 323 precision verifications "
         "were drawn entirely from the security stratum. The ai-harm stratum (92 "
-        "in-scope incidents across 8 entry assignments, of which only 4 received "
-        "non-trivial recall posteriors) has no direct precision measurements — "
+        "in-scope incidents across 8 entry assignments, of which only 3 received "
+        "recall posteriors with material evidence — LLM09, LLM04, NEW-MA; NEW-WLA "
+        "has only 1 observation above the pure prior) has no direct precision "
+        "measurements — "
         "ai-harm precision keys are absent from the calibration data entirely. "
         "The model falls back to a flat Beta(1,1) = Uniform(0,1) prior for ai-harm "
         "precision, meaning it assumes no prior knowledge about how precise the "
@@ -1818,11 +1871,34 @@ class TestNarrativeIntegration:
         report_text = (output_dir / "report.md").read_text()
 
         conc_data = json.loads((CYCLE_DIR / "results" / "concordance.json").read_text())
+
+        # R12: Spot-check kappa value
         kappa_value = conc_data["weighted_kappa_median"]
         kappa_str = f"{kappa_value:.4f}"
         assert kappa_str in report_text, (
             f"Kappa {kappa_str} not found in narrative report"
         )
+
+        # R12: Spot-check CI bounds
+        ci = conc_data.get("weighted_kappa_ci", [])
+        if ci:
+            ci_lo_str = f"{ci[0]:.4f}"
+            ci_hi_str = f"{ci[1]:.4f}"
+            assert ci_lo_str in report_text, f"CI lower bound {ci_lo_str} not in report"
+            assert ci_hi_str in report_text, f"CI upper bound {ci_hi_str} not in report"
+
+        # R12: Spot-check flag count
+        flags = conc_data.get("flags", [])
+        assert f"{len(flags)} entries flagged" in report_text or len(flags) == 0
+
+    def test_bump_chart_has_real_data(self, tmp_path: Path) -> None:
+        """R10: Verify bump chart contains actual rank data, not placeholder."""
+        from engine.report.narrative import generate_narrative_report
+
+        output_dir = tmp_path / "narrative"
+        generate_narrative_report(CYCLE_DIR, output_dir)
+        report_text = (output_dir / "report.md").read_text()
+        assert "No rank data available" not in report_text
 ```
 
 - [ ] **Step 2: Run integration tests**
