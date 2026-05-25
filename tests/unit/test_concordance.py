@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from engine.decide.concordance import STANDING_CAVEAT, compute_concordance
+from engine.decide.concordance import ConcordanceResult, STANDING_CAVEAT, compute_concordance
 from engine.model.inference import InferenceResult
 from engine.vote.bootstrap import VoteRankPosterior
 
@@ -182,3 +182,54 @@ class TestComputeConcordance:
         )
 
         assert "Internal triangulation" in result.standing_caveat
+
+
+class TestCiMethodField:
+    def test_ci_method_default_value(self) -> None:
+        """ConcordanceResult should have ci_method with correct default."""
+        result = ConcordanceResult(
+            weighted_kappa_median=0.20,
+            weighted_kappa_ci=(-0.16, 0.57),
+            measurable_count=17,
+            total_count=20,
+            coverage_ratio=0.85,
+            below_prereg_minimum=False,
+            meaningful_kappa_n=5,
+            flags=(),
+            standing_caveat=STANDING_CAVEAT,
+        )
+        assert result.ci_method == "paired_draw_percentile"
+
+    def test_ci_method_in_na_result(self) -> None:
+        """N/A results should also carry the ci_method default."""
+        entries = ("A", "B")
+        inf = _make_inference(entries)
+        vote = _make_vote_posterior(entries)
+        result = compute_concordance(
+            inference_result=inf,
+            vote_posterior=vote,
+            tier_boundaries=(3,),
+            flag_threshold_tau=0.5,
+            measurable_count=2,
+            total_count=10,
+            meaningful_kappa_n=5,
+            measurability_minimum=3,
+        )
+        assert result.ci_method == "paired_draw_percentile"
+
+    def test_ci_method_in_normal_result(self) -> None:
+        """Normal results should carry the ci_method default."""
+        entries = tuple(f"E{i}" for i in range(10))
+        inf = _make_inference(entries, n_samples=200)
+        vote = _make_vote_posterior(entries, n_bootstrap=200)
+        result = compute_concordance(
+            inference_result=inf,
+            vote_posterior=vote,
+            tier_boundaries=(3, 7),
+            flag_threshold_tau=0.5,
+            measurable_count=10,
+            total_count=15,
+            meaningful_kappa_n=5,
+            measurability_minimum=5,
+        )
+        assert result.ci_method == "paired_draw_percentile"
