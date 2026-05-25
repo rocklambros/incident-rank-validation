@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import json
+
 import numpy as np
 
-from engine.decide.concordance import STANDING_CAVEAT, compute_concordance
+from engine.decide.concordance import ConcordanceResult, STANDING_CAVEAT, compute_concordance
+from engine.decide.robustness_multiplicity import FlagDirection, FlagFinding
 from engine.model.inference import InferenceResult
 from engine.vote.bootstrap import VoteRankPosterior
 
@@ -182,3 +185,141 @@ class TestComputeConcordance:
         )
 
         assert "Internal triangulation" in result.standing_caveat
+
+
+class TestCiMethodField:
+    def test_ci_method_default_value(self) -> None:
+        """ConcordanceResult should have ci_method with correct default."""
+        result = ConcordanceResult(
+            weighted_kappa_median=0.20,
+            weighted_kappa_ci=(-0.16, 0.57),
+            measurable_count=17,
+            total_count=20,
+            coverage_ratio=0.85,
+            below_prereg_minimum=False,
+            meaningful_kappa_n=5,
+            flags=(),
+            standing_caveat=STANDING_CAVEAT,
+        )
+        assert result.ci_method == "paired_draw_percentile"
+
+    def test_ci_method_in_na_result(self) -> None:
+        """N/A results should also carry the ci_method default."""
+        entries = ("A", "B")
+        inf = _make_inference(entries)
+        vote = _make_vote_posterior(entries)
+        result = compute_concordance(
+            inference_result=inf,
+            vote_posterior=vote,
+            tier_boundaries=(3,),
+            flag_threshold_tau=0.5,
+            measurable_count=2,
+            total_count=10,
+            meaningful_kappa_n=5,
+            measurability_minimum=3,
+        )
+        assert result.ci_method == "paired_draw_percentile"
+
+    def test_ci_method_in_normal_result(self) -> None:
+        """Normal results should carry the ci_method default."""
+        entries = tuple(f"E{i}" for i in range(10))
+        inf = _make_inference(entries, n_samples=200)
+        vote = _make_vote_posterior(entries, n_bootstrap=200)
+        result = compute_concordance(
+            inference_result=inf,
+            vote_posterior=vote,
+            tier_boundaries=(3, 7),
+            flag_threshold_tau=0.5,
+            measurable_count=10,
+            total_count=15,
+            meaningful_kappa_n=5,
+            measurability_minimum=5,
+        )
+        assert result.ci_method == "paired_draw_percentile"
+
+
+class TestCiMethodSerialization:
+    def test_ci_method_in_serialized_dict(self) -> None:
+        """ci_method should appear in the concordance JSON output."""
+        result = ConcordanceResult(
+            weighted_kappa_median=0.20,
+            weighted_kappa_ci=(-0.16, 0.57),
+            measurable_count=17,
+            total_count=20,
+            coverage_ratio=0.85,
+            below_prereg_minimum=False,
+            meaningful_kappa_n=5,
+            flags=(),
+            standing_caveat=STANDING_CAVEAT,
+        )
+        conc_dict = {
+            "weighted_kappa_median": result.weighted_kappa_median,
+            "weighted_kappa_ci": list(result.weighted_kappa_ci) if result.weighted_kappa_ci else None,
+            "measurable_count": result.measurable_count,
+            "total_count": result.total_count,
+            "coverage_ratio": result.coverage_ratio,
+            "below_prereg_minimum": result.below_prereg_minimum,
+            "ci_method": result.ci_method,
+            "flags": [],
+        }
+        serialized = json.dumps(conc_dict)
+        data = json.loads(serialized)
+        assert data["ci_method"] == "paired_draw_percentile"
+
+    def test_round_trip_preserves_ci_method(self) -> None:
+        """Serialize then deserialize: ci_method must survive the round trip."""
+        original = ConcordanceResult(
+            weighted_kappa_median=0.20,
+            weighted_kappa_ci=(-0.16, 0.57),
+            measurable_count=17,
+            total_count=20,
+            coverage_ratio=0.85,
+            below_prereg_minimum=False,
+            meaningful_kappa_n=5,
+            flags=(
+                FlagFinding(entry_id="LLM01", probability=0.88, direction=FlagDirection.VOTE_OVER_RANKS),
+            ),
+            standing_caveat="test caveat",
+        )
+
+        conc_dict = {
+            "weighted_kappa_median": original.weighted_kappa_median,
+            "weighted_kappa_ci": list(original.weighted_kappa_ci) if original.weighted_kappa_ci else None,
+            "measurable_count": original.measurable_count,
+            "total_count": original.total_count,
+            "coverage_ratio": original.coverage_ratio,
+            "below_prereg_minimum": original.below_prereg_minimum,
+            "ci_method": original.ci_method,
+            "flags": [
+                {"entry_id": f.entry_id, "probability": f.probability, "direction": f.direction.value}
+                for f in original.flags
+            ],
+        }
+        json_str = json.dumps(conc_dict, indent=2)
+        data = json.loads(json_str)
+
+        flags_raw = data.get("flags", [])
+        flags = tuple(
+            FlagFinding(
+                entry_id=f["entry_id"],
+                probability=f["probability"],
+                direction=FlagDirection(f["direction"]),
+            )
+            for f in flags_raw
+        )
+        reconstructed = ConcordanceResult(
+            weighted_kappa_median=data.get("weighted_kappa_median"),
+            weighted_kappa_ci=tuple(data["weighted_kappa_ci"]) if data.get("weighted_kappa_ci") else None,
+            measurable_count=data["measurable_count"],
+            total_count=data["total_count"],
+            coverage_ratio=data["coverage_ratio"],
+            below_prereg_minimum=data.get("below_prereg_minimum", False),
+            meaningful_kappa_n=5,
+            flags=flags,
+            standing_caveat=STANDING_CAVEAT,
+            ci_method=data.get("ci_method", "paired_draw_percentile"),
+        )
+
+        assert reconstructed.ci_method == original.ci_method
+        assert reconstructed.weighted_kappa_median == original.weighted_kappa_median
+        assert reconstructed.flags[0].entry_id == "LLM01"

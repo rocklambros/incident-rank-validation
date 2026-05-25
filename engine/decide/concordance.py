@@ -37,6 +37,7 @@ class ConcordanceResult:
     meaningful_kappa_n: int
     flags: tuple[FlagFinding, ...]
     standing_caveat: str
+    ci_method: str = "paired_draw_percentile"
     entry_comparisons: tuple[dict[str, object], ...] | None = None
 
 

@@ -40,3 +40,17 @@ def test_all_fields_nonempty() -> None:
         assert t.description.strip(), f"Empty description for {t.threat_id}"
         assert t.mitigation.strip(), f"Empty mitigation for {t.threat_id}"
         assert t.residual_risk.strip(), f"Empty residual_risk for {t.threat_id}"
+
+
+def test_f_aiharm_precision_present() -> None:
+    threats = get_threats_register()
+    ids = {t.threat_id for t in threats}
+    assert "F-aiharm-precision" in ids
+
+
+def test_f_aiharm_precision_content() -> None:
+    threats = get_threats_register()
+    threat = next(t for t in threats if t.threat_id == "F-aiharm-precision")
+    assert "Beta(1,1)" in threat.description or "Uniform(0,1)" in threat.description
+    assert "conservative" not in threat.mitigation.lower()
+    assert "3 of 20" in threat.residual_risk
