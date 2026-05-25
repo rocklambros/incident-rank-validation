@@ -1,74 +1,10 @@
 {
   "recall": {
-    "LLM05::ai-harm": {
-      "alpha": 1.0,
-      "beta": 101.0
-    },
-    "LLM10::ai-harm": {
-      "alpha": 1.0,
-      "beta": 101.0
-    },
-    "LLM09::ai-harm": {
-      "alpha": 4.0,
-      "beta": 98.0
-    },
-    "NEW-ITSCD::ai-harm": {
-      "alpha": 1.0,
-      "beta": 101.0
-    },
-    "ROLL-CMSB::ai-harm": {
-      "alpha": 1.0,
-      "beta": 101.0
-    },
-    "LLM06::ai-harm": {
-      "alpha": 1.0,
-      "beta": 101.0
-    },
-    "ROLL-SICG::ai-harm": {
-      "alpha": 1.0,
-      "beta": 101.0
-    },
-    "ROLL-LAPTF::ai-harm": {
-      "alpha": 1.0,
-      "beta": 101.0
-    },
-    "LLM04::ai-harm": {
-      "alpha": 4.0,
-      "beta": 98.0
-    },
-    "NEW-MTIE::ai-harm": {
-      "alpha": 1.0,
-      "beta": 101.0
-    },
-    "NEW-PMP::ai-harm": {
-      "alpha": 1.0,
-      "beta": 101.0
-    },
-    "NEW-WLA::ai-harm": {
-      "alpha": 2.0,
-      "beta": 100.0
-    },
-    "NEW-MA::ai-harm": {
-      "alpha": 12.0,
-      "beta": 90.0
-    },
-    "ROLL-CFAS::ai-harm": {
-      "alpha": 1.0,
-      "beta": 101.0
-    },
-    "LLM01::ai-harm": {
-      "alpha": 1.0,
-      "beta": 101.0
-    },
     "LLM08::ai-harm": {
       "alpha": 1.0,
       "beta": 101.0
     },
-    "LLM07::ai-harm": {
-      "alpha": 1.0,
-      "beta": 101.0
-    },
-    "LLM03::ai-harm": {
+    "ROLL-LAPTF::ai-harm": {
       "alpha": 1.0,
       "beta": 101.0
     },
@@ -80,131 +16,235 @@
       "alpha": 1.0,
       "beta": 101.0
     },
-    "LLM05::security": {
-      "alpha": 5.0,
-      "beta": 97.0
-    },
-    "LLM10::security": {
+    "LLM07::ai-harm": {
       "alpha": 1.0,
       "beta": 101.0
     },
-    "LLM09::security": {
-      "alpha": 14.0,
-      "beta": 88.0
-    },
-    "NEW-ITSCD::security": {
+    "NEW-PMP::ai-harm": {
       "alpha": 1.0,
       "beta": 101.0
     },
-    "ROLL-CMSB::security": {
+    "LLM10::ai-harm": {
+      "alpha": 1.0,
+      "beta": 101.0
+    },
+    "NEW-MTIE::ai-harm": {
+      "alpha": 1.0,
+      "beta": 101.0
+    },
+    "NEW-ITSCD::ai-harm": {
+      "alpha": 1.0,
+      "beta": 101.0
+    },
+    "LLM01::ai-harm": {
+      "alpha": 1.0,
+      "beta": 101.0
+    },
+    "LLM05::ai-harm": {
+      "alpha": 1.0,
+      "beta": 101.0
+    },
+    "ROLL-CMSB::ai-harm": {
+      "alpha": 1.0,
+      "beta": 101.0
+    },
+    "NEW-WLA::ai-harm": {
       "alpha": 2.0,
       "beta": 100.0
     },
-    "LLM06::security": {
-      "alpha": 10.0,
-      "beta": 92.0
+    "LLM03::ai-harm": {
+      "alpha": 1.0,
+      "beta": 101.0
     },
-    "ROLL-SICG::security": {
+    "LLM04::ai-harm": {
+      "alpha": 4.0,
+      "beta": 98.0
+    },
+    "ROLL-CFAS::ai-harm": {
+      "alpha": 1.0,
+      "beta": 101.0
+    },
+    "ROLL-SICG::ai-harm": {
+      "alpha": 1.0,
+      "beta": 101.0
+    },
+    "LLM09::ai-harm": {
+      "alpha": 4.0,
+      "beta": 98.0
+    },
+    "LLM06::ai-harm": {
+      "alpha": 1.0,
+      "beta": 101.0
+    },
+    "NEW-MA::ai-harm": {
+      "alpha": 12.0,
+      "beta": 90.0
+    },
+    "LLM08::security": {
       "alpha": 2.0,
-      "beta": 100.0
+      "beta": 101.0
     },
     "ROLL-LAPTF::security": {
-      "alpha": 1.0,
+      "alpha": 2.0,
       "beta": 101.0
     },
-    "LLM04::security": {
-      "alpha": 1.0,
+    "LLM02::security": {
+      "alpha": 51.0,
+      "beta": 98.0
+    },
+    "NEW-MSDA::security": {
+      "alpha": 9.0,
       "beta": 101.0
     },
-    "NEW-MTIE::security": {
-      "alpha": 1.0,
+    "LLM07::security": {
+      "alpha": 7.0,
       "beta": 101.0
     },
     "NEW-PMP::security": {
-      "alpha": 2.0,
+      "alpha": 8.0,
+      "beta": 100.0
+    },
+    "LLM10::security": {
+      "alpha": 44.0,
+      "beta": 104.0
+    },
+    "NEW-MTIE::security": {
+      "alpha": 26.0,
+      "beta": 101.0
+    },
+    "NEW-ITSCD::security": {
+      "alpha": 4.0,
+      "beta": 101.0
+    },
+    "LLM01::security": {
+      "alpha": 49.0,
+      "beta": 98.0
+    },
+    "LLM05::security": {
+      "alpha": 57.0,
+      "beta": 106.0
+    },
+    "ROLL-CMSB::security": {
+      "alpha": 21.0,
       "beta": 100.0
     },
     "NEW-WLA::security": {
-      "alpha": 25.0,
-      "beta": 77.0
+      "alpha": 77.0,
+      "beta": 80.0
     },
-    "NEW-MA::security": {
-      "alpha": 5.0,
-      "beta": 97.0
+    "LLM03::security": {
+      "alpha": 62.0,
+      "beta": 109.0
+    },
+    "LLM04::security": {
+      "alpha": 41.0,
+      "beta": 102.0
     },
     "ROLL-CFAS::security": {
       "alpha": 1.0,
       "beta": 101.0
     },
-    "LLM01::security": {
-      "alpha": 7.0,
-      "beta": 95.0
-    },
-    "LLM08::security": {
-      "alpha": 1.0,
-      "beta": 101.0
-    },
-    "LLM07::security": {
-      "alpha": 2.0,
+    "ROLL-SICG::security": {
+      "alpha": 18.0,
       "beta": 100.0
     },
-    "LLM03::security": {
-      "alpha": 4.0,
-      "beta": 98.0
+    "LLM09::security": {
+      "alpha": 62.0,
+      "beta": 97.0
     },
-    "LLM02::security": {
-      "alpha": 6.0,
+    "LLM06::security": {
+      "alpha": 60.0,
       "beta": 96.0
     },
-    "NEW-MSDA::security": {
-      "alpha": 1.0,
-      "beta": 101.0
+    "NEW-MA::security": {
+      "alpha": 43.0,
+      "beta": 98.0
     }
   },
   "precision": {
     "NEW-MSDA::security": {
-      "alpha": 2.0,
-      "beta": 1.0
+      "alpha": 18.0,
+      "beta": 4.0
     },
     "LLM03::security": {
-      "alpha": 9.0,
-      "beta": 2.0
+      "alpha": 95.0,
+      "beta": 7.0
     },
     "LLM02::security": {
-      "alpha": 15.0,
-      "beta": 11.0
+      "alpha": 60.0,
+      "beta": 27.0
     },
     "LLM09::security": {
-      "alpha": 39.0,
-      "beta": 3.0
+      "alpha": 87.0,
+      "beta": 15.0
     },
     "LLM01::security": {
-      "alpha": 40.0,
-      "beta": 2.0
+      "alpha": 82.0,
+      "beta": 6.0
     },
     "NEW-WLA::security": {
-      "alpha": 3.0,
-      "beta": 1.0
+      "alpha": 72.0,
+      "beta": 28.0
     },
     "NEW-MA::security": {
-      "alpha": 2.0,
-      "beta": 1.0
+      "alpha": 63.0,
+      "beta": 23.0
     },
     "LLM05::security": {
-      "alpha": 29.0,
-      "beta": 13.0
+      "alpha": 81.0,
+      "beta": 25.0
     },
     "NEW-PMP::security": {
-      "alpha": 5.0,
+      "alpha": 17.0,
       "beta": 1.0
     },
     "ROLL-SICG::security": {
-      "alpha": 1.0,
-      "beta": 3.0
+      "alpha": 24.0,
+      "beta": 17.0
     },
     "LLM07::security": {
+      "alpha": 12.0,
+      "beta": 27.0
+    },
+    "out-of-scope::security": {
+      "alpha": 1.0,
+      "beta": 125.0
+    },
+    "LLM06::security": {
+      "alpha": 60.0,
+      "beta": 37.0
+    },
+    "LLM04::security": {
+      "alpha": 67.0,
+      "beta": 27.0
+    },
+    "LLM08::security": {
+      "alpha": 2.0,
+      "beta": 13.0
+    },
+    "LLM10::security": {
+      "alpha": 69.0,
+      "beta": 9.0
+    },
+    "NEW-MTIE::security": {
+      "alpha": 35.0,
+      "beta": 30.0
+    },
+    "ROLL-CMSB::security": {
+      "alpha": 28.0,
+      "beta": 35.0
+    },
+    "NEW-ITSCD::security": {
+      "alpha": 6.0,
+      "beta": 2.0
+    },
+    "ROLL-LAPTF::security": {
       "alpha": 3.0,
       "beta": 1.0
+    },
+    "ROLL-CFAS::security": {
+      "alpha": 1.0,
+      "beta": 2.0
     }
   }
 }
