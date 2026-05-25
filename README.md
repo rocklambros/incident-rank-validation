@@ -101,6 +101,38 @@ graph TD
     RPT --> REPRO
     RPT --> THREATS
     RPT --> NARR
+
+    style SRC fill:#bbdefb,stroke:#1565c0,color:#0d47a1
+    style SNAP fill:#bbdefb,stroke:#1565c0,color:#0d47a1
+    style ADAPT fill:#bbdefb,stroke:#1565c0,color:#0d47a1
+    style SCHEMA fill:#bbdefb,stroke:#1565c0,color:#0d47a1
+
+    style TAX fill:#e1bee7,stroke:#7b1fa2,color:#4a148c
+    style RUB fill:#e1bee7,stroke:#7b1fa2,color:#4a148c
+    style MAN fill:#e1bee7,stroke:#7b1fa2,color:#4a148c
+
+    style S1 fill:#ffe0b2,stroke:#e65100,color:#bf360c
+    style S2 fill:#ffe0b2,stroke:#e65100,color:#bf360c
+
+    style GOLD fill:#b2dfdb,stroke:#00695c,color:#004d40
+    style BETA fill:#b2dfdb,stroke:#00695c,color:#004d40
+    style CV fill:#b2dfdb,stroke:#00695c,color:#004d40
+
+    style NUTS fill:#c5cae9,stroke:#283593,color:#1a237e
+    style NB fill:#c5cae9,stroke:#283593,color:#1a237e
+    style LAMB fill:#c5cae9,stroke:#283593,color:#1a237e
+
+    style VOTE fill:#ffccbc,stroke:#bf360c,color:#bf360c
+    style CONC fill:#ffccbc,stroke:#bf360c,color:#bf360c
+    style MEAS fill:#ffccbc,stroke:#bf360c,color:#bf360c
+    style FLAGS fill:#ffccbc,stroke:#bf360c,color:#bf360c
+    style BIAS fill:#ffccbc,stroke:#bf360c,color:#bf360c
+    style TWIN fill:#ffccbc,stroke:#bf360c,color:#bf360c
+
+    style RPT fill:#c8e6c9,stroke:#2e7d32,color:#1b5e20
+    style REPRO fill:#c8e6c9,stroke:#2e7d32,color:#1b5e20
+    style THREATS fill:#c8e6c9,stroke:#2e7d32,color:#1b5e20
+    style NARR fill:#c8e6c9,stroke:#2e7d32,color:#1b5e20
 ```
 
 ## Pipeline Flow
@@ -110,12 +142,24 @@ preconditions before running and cannot access data from later phases.
 
 ```mermaid
 sequenceDiagram
-    participant P as prereg
-    participant C as classify
-    participant Cal as calibrate
-    participant I as infer
-    participant D as decide
-    participant R as report
+    box rgb(225, 190, 231) Pre-registration
+        participant P as prereg
+    end
+    box rgb(255, 224, 178) Classification
+        participant C as classify
+    end
+    box rgb(178, 223, 219) Calibration
+        participant Cal as calibrate
+    end
+    box rgb(197, 202, 233) Inference
+        participant I as infer
+    end
+    box rgb(255, 204, 188) Decision
+        participant D as decide
+    end
+    box rgb(200, 230, 201) Output
+        participant R as report
+    end
 
     Note over P: Hash-lock taxonomy,<br/>rubric, hyperparameters,<br/>PRNG seed
 
@@ -129,9 +173,17 @@ sequenceDiagram
 
     Cal->>I: posteriors.json
 
+    rect rgb(232, 245, 233)
+        Note over P,I: Vote-blind zone
+    end
+
     Note over I: NUTS on CPU<br/>(vote data structurally<br/>inaccessible)
 
     I->>D: lambda_samples.npy
+
+    rect rgb(255, 243, 224)
+        Note over D,R: Vote-aware zone
+    end
 
     Note over D: Vote data enters HERE<br/>and only here
 
@@ -149,32 +201,44 @@ and inference are all vote-blind.
 
 ```mermaid
 graph LR
-    subgraph "Vote-Blind Zone"
+    subgraph blind ["Vote-Blind Zone"]
         PR[prereg]
         CL[classify]
         CA[calibrate]
         IN[infer]
     end
 
-    subgraph "Vote-Aware Zone"
+    subgraph aware ["Vote-Aware Zone"]
         DE[decide]
         RE[report]
     end
 
-    VOTE["Vote XLSX"] -.->|"blocked"| PR
+    VOTE["Vote XLSX"]
+
+    VOTE -.->|"blocked"| PR
     VOTE -.->|"blocked"| CL
     VOTE -.->|"blocked"| CA
     VOTE -.->|"blocked"| IN
-    VOTE -->|"enters here"| DE
+    VOTE ==>|"enters here"| DE
 
     PR --> CL --> CA --> IN --> DE --> RE
 
-    style PR fill:#e8f5e9
-    style CL fill:#e8f5e9
-    style CA fill:#e8f5e9
-    style IN fill:#e8f5e9
-    style DE fill:#fff3e0
-    style RE fill:#fff3e0
+    style blind fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style aware fill:#fff3e0,stroke:#e65100,stroke-width:2px
+
+    style PR fill:#c8e6c9,stroke:#2e7d32,color:#1b5e20
+    style CL fill:#c8e6c9,stroke:#2e7d32,color:#1b5e20
+    style CA fill:#c8e6c9,stroke:#2e7d32,color:#1b5e20
+    style IN fill:#c8e6c9,stroke:#2e7d32,color:#1b5e20
+    style DE fill:#ffe0b2,stroke:#e65100,color:#bf360c
+    style RE fill:#ffe0b2,stroke:#e65100,color:#bf360c
+    style VOTE fill:#ef9a9a,stroke:#c62828,color:#b71c1c
+
+    linkStyle 0 stroke:#c62828,stroke-dasharray:5
+    linkStyle 1 stroke:#c62828,stroke-dasharray:5
+    linkStyle 2 stroke:#c62828,stroke-dasharray:5
+    linkStyle 3 stroke:#c62828,stroke-dasharray:5
+    linkStyle 4 stroke:#2e7d32,stroke-width:3px
 ```
 
 ## Install
