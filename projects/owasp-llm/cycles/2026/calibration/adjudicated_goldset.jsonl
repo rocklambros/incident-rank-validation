@@ -1,0 +1,1200 @@
+{"incident_id":"INC-01335","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-00819","llm_consensus":"LLM05","adjudicated":"multi-label","labels":["LLM01","LLM06"],"blind_label":"LLM06","notes":"Multiple rubric mechanisms independently present."}
+{"incident_id":"INC-05578","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03056","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-03909","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05765","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-07717","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-07112","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01494","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-01746","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-04559","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM01","notes":null}
+{"incident_id":"INC-03168","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03506","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-06877","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-00346","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-03856","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02578","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-07476","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01439","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00442","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04817","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-06499","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-03507","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-02543","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-06812","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06935","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03464","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04539","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-07156","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-07369","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04188","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-00010","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-06505","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-04357","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-01448","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-05440","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02004","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03483","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-04108","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-05766","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00648","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06868","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00619","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02908","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-06346","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04157","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03718","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-06279","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-04868","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04360","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05162","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-04243","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-04112","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-00520","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06257","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05426","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05789","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-05036","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-04880","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-02898","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-04151","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM01","notes":null}
+{"incident_id":"INC-03803","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01968","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06515","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02184","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-00060","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00917","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-07380","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-00440","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04885","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04074","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-01569","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-06563","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03576","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-03403","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-01101","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-01442","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-01185","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-04837","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01119","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01038","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-04544","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-01200","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06675","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-04481","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-03926","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-05968","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-00978","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-01404","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04051","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05492","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-04606","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-04104","llm_consensus":"LLM07","adjudicated":"accept","labels":["LLM07"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02410","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-01121","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00798","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-04019","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05472","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-03064","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-04674","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-03126","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-04495","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-06443","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05923","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-00545","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01913","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-00962","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01343","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-06545","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-01400","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05117","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01539","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-05076","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-04261","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-01066","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-03573","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-00762","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01819","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"NEW-MA","notes":null}
+{"incident_id":"INC-02922","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-04373","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-00615","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-01359","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-07326","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04818","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00154","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-03763","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-02056","llm_consensus":"NEW-ITSCD","adjudicated":"accept","labels":["NEW-ITSCD"],"blind_label":"NEW-ITSCD","notes":null}
+{"incident_id":"INC-05496","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-00758","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-06840","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00671","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-05183","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-03159","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-01528","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-01455","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01271","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01053","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06741","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03940","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-03001","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"NEW-MA","notes":null}
+{"incident_id":"INC-00780","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"ROLL-CMSB","notes":null}
+{"incident_id":"INC-04583","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05821","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01110","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04899","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-03048","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-04595","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-07219","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03270","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02949","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03973","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-05190","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-01571","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-03788","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-02987","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-01553","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-02721","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04071","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04636","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02237","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02055","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-02499","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-02809","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-01440","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-02969","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-01464","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-03328","llm_consensus":"ROLL-SICG","adjudicated":"accept","labels":["ROLL-SICG"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-03575","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-03843","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-02454","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04364","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02661","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-06427","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-01187","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-02332","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-01799","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-02974","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05974","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-01130","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-03794","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM06","notes":null}
+{"incident_id":"INC-03635","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-02075","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-02610","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00903","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-01545","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04274","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-04027","llm_consensus":"NEW-PMP","adjudicated":"accept","labels":["NEW-PMP"],"blind_label":"NEW-PMP","notes":null}
+{"incident_id":"INC-01298","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03216","llm_consensus":"ROLL-SICG","adjudicated":"accept","labels":["ROLL-SICG"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-02440","llm_consensus":"LLM05","adjudicated":"multi-label","labels":["LLM01","LLM05"],"blind_label":"LLM06","notes":"Multiple rubric mechanisms independently present."}
+{"incident_id":"INC-05984","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-01503","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-00862","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02111","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-01364","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-00370","llm_consensus":"ROLL-SICG","adjudicated":"accept","labels":["ROLL-SICG"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04279","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-02738","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM06","notes":null}
+{"incident_id":"INC-04717","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-04982","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06166","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-07267","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03185","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02047","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-02822","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-04653","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00092","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00188","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01590","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM06","notes":null}
+{"incident_id":"INC-01108","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-07310","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-04904","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-07551","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00111","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05055","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-02818","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"ROLL-CFAS","notes":null}
+{"incident_id":"INC-06227","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01385","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-01916","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05119","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04803","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-04634","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-02048","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-04310","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03329","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-05592","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM06","notes":null}
+{"incident_id":"INC-03738","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-02693","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04354","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01884","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-02641","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-03381","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-00369","llm_consensus":"ROLL-SICG","adjudicated":"accept","labels":["ROLL-SICG"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04738","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00075","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"NEW-PMP","notes":null}
+{"incident_id":"INC-03335","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-04065","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01594","llm_consensus":"LLM06","adjudicated":"override","labels":["LLM02"],"blind_label":"LLM02","notes":"Rubric indicators favored LLM02 over consensus LLM06."}
+{"incident_id":"INC-02769","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-04073","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04502","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-03438","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-03736","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03310","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"ROLL-CMSB","notes":null}
+{"incident_id":"INC-01054","llm_consensus":"NEW-MSDA","adjudicated":"accept","labels":["NEW-MSDA"],"blind_label":"NEW-MA","notes":null}
+{"incident_id":"INC-02280","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01605","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM07","notes":null}
+{"incident_id":"INC-04180","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-03727","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-00573","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM06","notes":null}
+{"incident_id":"INC-01062","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM06","notes":null}
+{"incident_id":"INC-02276","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00902","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-02819","llm_consensus":"NEW-PMP","adjudicated":"accept","labels":["NEW-PMP"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-01759","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM06","notes":null}
+{"incident_id":"INC-05135","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-07345","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06261","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-04838","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"NEW-MA","notes":null}
+{"incident_id":"INC-01591","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-03884","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00241","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02649","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00073","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01466","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM06","notes":null}
+{"incident_id":"INC-03454","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03346","llm_consensus":"NEW-ITSCD","adjudicated":"accept","labels":["NEW-ITSCD"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-04901","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02348","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02782","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-05151","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00614","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00788","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-07005","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04009","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-02413","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"NEW-MA","notes":null}
+{"incident_id":"INC-02315","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-03886","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM01","notes":null}
+{"incident_id":"INC-05549","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02036","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00126","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03434","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-02863","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03447","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM06","notes":null}
+{"incident_id":"INC-02879","llm_consensus":"NEW-PMP","adjudicated":"accept","labels":["NEW-PMP"],"blind_label":"NEW-PMP","notes":null}
+{"incident_id":"INC-02500","llm_consensus":"ROLL-SICG","adjudicated":"accept","labels":["ROLL-SICG"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01673","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-05085","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03165","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01326","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM07","notes":null}
+{"incident_id":"INC-02871","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-00988","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-03822","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"NEW-MA","notes":null}
+{"incident_id":"INC-03637","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03389","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-03922","llm_consensus":"LLM07","adjudicated":"accept","labels":["LLM07"],"blind_label":"LLM07","notes":null}
+{"incident_id":"INC-01683","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02849","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-03342","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-03596","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-04312","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01941","llm_consensus":"ROLL-SICG","adjudicated":"accept","labels":["ROLL-SICG"],"blind_label":"ROLL-SICG","notes":null}
+{"incident_id":"INC-05819","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01529","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-02736","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-04516","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-03746","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-03649","llm_consensus":"NEW-PMP","adjudicated":"accept","labels":["NEW-PMP"],"blind_label":"NEW-PMP","notes":null}
+{"incident_id":"INC-04892","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04109","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00747","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"NEW-MA","notes":null}
+{"incident_id":"INC-03340","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-07396","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-04106","llm_consensus":"NEW-PMP","adjudicated":"accept","labels":["NEW-PMP"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-03910","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-02604","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03472","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03678","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-00368","llm_consensus":"ROLL-SICG","adjudicated":"accept","labels":["ROLL-SICG"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02178","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-00809","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03606","llm_consensus":"ROLL-SICG","adjudicated":"accept","labels":["ROLL-SICG"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03237","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05798","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-00829","llm_consensus":"NEW-MSDA","adjudicated":"accept","labels":["NEW-MSDA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00163","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02796","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04178","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"NEW-MA","notes":null}
+{"incident_id":"INC-04327","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01530","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-04875","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-03195","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02734","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-02169","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-03579","llm_consensus":"NEW-MSDA","adjudicated":"accept","labels":["NEW-MSDA"],"blind_label":"NEW-MSDA","notes":null}
+{"incident_id":"INC-00371","llm_consensus":"ROLL-SICG","adjudicated":"accept","labels":["ROLL-SICG"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01506","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-02470","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-02053","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-07518","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02690","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04549","llm_consensus":"ROLL-SICG","adjudicated":"accept","labels":["ROLL-SICG"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-02397","llm_consensus":"NEW-PMP","adjudicated":"accept","labels":["NEW-PMP"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-02365","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02300","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-00074","llm_consensus":"NEW-MSDA","adjudicated":"accept","labels":["NEW-MSDA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00583","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-07655","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02394","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-03371","llm_consensus":"NEW-ITSCD","adjudicated":"accept","labels":["NEW-ITSCD"],"blind_label":"NEW-ITSCD","notes":null}
+{"incident_id":"INC-00572","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-04686","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02539","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-04898","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04667","llm_consensus":"NEW-MSDA","adjudicated":"accept","labels":["NEW-MSDA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02634","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM01","notes":null}
+{"incident_id":"INC-03368","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"NEW-MTIE","notes":null}
+{"incident_id":"INC-02677","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03050","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM01","notes":null}
+{"incident_id":"INC-02208","llm_consensus":"NEW-MSDA","adjudicated":"accept","labels":["NEW-MSDA"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-02874","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"NEW-MTIE","notes":null}
+{"incident_id":"INC-03348","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-02912","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05674","llm_consensus":"LLM02","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-05404","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01735","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06106","llm_consensus":"LLM09","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-04733","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-04213","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00665","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-07056","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06673","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-05773","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-01619","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02108","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03965","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-07387","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04945","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-06579","llm_consensus":"LLM09","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-05781","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-01183","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-06672","llm_consensus":"LLM02","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-03178","llm_consensus":"NEW-WLA","adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"Blind rubric read aligned with dissent over NEW-WLA."}
+{"incident_id":"INC-03541","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-06550","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06121","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01081","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02817","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"NEW-MA","notes":null}
+{"incident_id":"INC-04285","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05685","llm_consensus":"LLM02","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-05114","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-02545","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05576","llm_consensus":"LLM06","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-03591","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-06789","llm_consensus":"LLM02","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-04247","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-03768","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-01697","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-07200","llm_consensus":"NEW-WLA","adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"Blind rubric read aligned with dissent over NEW-WLA."}
+{"incident_id":"INC-07149","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00696","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-00543","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05511","llm_consensus":"LLM02","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-00867","llm_consensus":"NEW-MA","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-06057","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-06892","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06160","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-07245","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02144","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-02054","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-03096","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-07395","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-06665","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03442","llm_consensus":"LLM02","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-06806","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-03072","llm_consensus":"NEW-WLA","adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"Blind rubric read aligned with dissent over NEW-WLA."}
+{"incident_id":"INC-06225","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-02096","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-03911","llm_consensus":"LLM03","adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"Blind rubric read aligned with dissent over LLM03."}
+{"incident_id":"INC-04190","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-04944","llm_consensus":"LLM06","adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"Blind rubric read aligned with dissent over LLM06."}
+{"incident_id":"INC-05363","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05651","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-06537","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-02562","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-04387","llm_consensus":"LLM09","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-04942","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05716","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05660","llm_consensus":"out-of-scope","adjudicated":"override","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":"Rubric indicators show in-scope LLM/AI security mechanism despite out-of-scope consensus."}
+{"incident_id":"INC-04319","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-07363","llm_consensus":"LLM06","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-05264","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-00237","llm_consensus":"NEW-WLA","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-02968","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05312","llm_consensus":"out-of-scope","adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"Rubric indicators show in-scope LLM/AI security mechanism despite out-of-scope consensus."}
+{"incident_id":"INC-06988","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05532","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00775","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06163","llm_consensus":"LLM02","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-01073","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-00794","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05448","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05879","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-06513","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-05063","llm_consensus":"LLM09","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-06477","llm_consensus":"out-of-scope","adjudicated":"override","labels":["LLM06"],"blind_label":"LLM06","notes":"Rubric indicators show in-scope LLM/AI security mechanism despite out-of-scope consensus."}
+{"incident_id":"INC-02444","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM06","notes":null}
+{"incident_id":"INC-00977","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-04181","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-02292","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03449","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-02000","llm_consensus":"NEW-WLA","adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"Blind rubric read aligned with dissent over NEW-WLA."}
+{"incident_id":"INC-07391","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03761","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-01593","llm_consensus":"LLM06","adjudicated":"override","labels":["LLM02"],"blind_label":"LLM02","notes":"Blind rubric read aligned with dissent over LLM06."}
+{"incident_id":"INC-01405","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01246","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01114","llm_consensus":"LLM09","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-02628","llm_consensus":"LLM05","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-01629","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-06157","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06335","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05313","llm_consensus":"out-of-scope","adjudicated":"override","labels":["LLM10"],"blind_label":"LLM10","notes":"Rubric indicators show in-scope LLM/AI security mechanism despite out-of-scope consensus."}
+{"incident_id":"INC-07321","llm_consensus":"NEW-MA","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-03242","llm_consensus":"LLM03","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-05554","llm_consensus":"out-of-scope","adjudicated":"override","labels":["LLM04"],"blind_label":"LLM04","notes":"Rubric indicators show in-scope LLM/AI security mechanism despite out-of-scope consensus."}
+{"incident_id":"INC-05505","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-01927","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00016","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-01163","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01731","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM07","notes":null}
+{"incident_id":"INC-03344","llm_consensus":"LLM08","adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"Blind rubric read aligned with dissent over LLM08."}
+{"incident_id":"INC-03232","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-07508","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02235","llm_consensus":"LLM10","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-05944","llm_consensus":"out-of-scope","adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"Rubric indicators show in-scope LLM/AI security mechanism despite out-of-scope consensus."}
+{"incident_id":"INC-04463","llm_consensus":"NEW-WLA","adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"Blind rubric read aligned with dissent over NEW-WLA."}
+{"incident_id":"INC-02713","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-07683","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01410","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02938","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-05555","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-02335","llm_consensus":"out-of-scope","adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"Rubric indicators show in-scope LLM/AI security mechanism despite out-of-scope consensus."}
+{"incident_id":"INC-05442","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"LLM07","notes":null}
+{"incident_id":"INC-01642","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-03466","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-03039","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-04167","llm_consensus":"NEW-WLA","adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"Blind rubric read aligned with dissent over NEW-WLA."}
+{"incident_id":"INC-02967","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-07703","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-02672","llm_consensus":"LLM09","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-07020","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-02313","llm_consensus":"out-of-scope","adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"Rubric indicators show in-scope LLM/AI security mechanism despite out-of-scope consensus."}
+{"incident_id":"INC-02142","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03704","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-03580","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01903","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06393","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04284","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03398","llm_consensus":"LLM06","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-06588","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02724","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-05090","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-07157","llm_consensus":"LLM02","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-02498","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05290","llm_consensus":"out-of-scope","adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"Rubric indicators show in-scope LLM/AI security mechanism despite out-of-scope consensus."}
+{"incident_id":"INC-02976","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-05246","llm_consensus":"out-of-scope","adjudicated":"override","labels":["LLM10"],"blind_label":"LLM10","notes":"Rubric indicators show in-scope LLM/AI security mechanism despite out-of-scope consensus."}
+{"incident_id":"INC-07666","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04270","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06688","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03016","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06274","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01186","llm_consensus":"LLM02","adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"Blind rubric read aligned with dissent over LLM02."}
+{"incident_id":"INC-04924","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-05760","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-06946","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-02767","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-01265","llm_consensus":"LLM09","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-04119","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-02101","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-04439","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06690","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01651","llm_consensus":"NEW-MA","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-06676","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03390","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-00160","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-00633","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-01951","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05294","llm_consensus":"out-of-scope","adjudicated":"override","labels":["LLM10"],"blind_label":"LLM10","notes":"Rubric indicators show in-scope LLM/AI security mechanism despite out-of-scope consensus."}
+{"incident_id":"INC-04919","llm_consensus":"out-of-scope","adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"Rubric indicators show in-scope LLM/AI security mechanism despite out-of-scope consensus."}
+{"incident_id":"INC-04123","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-05985","llm_consensus":"out-of-scope","adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"Rubric indicators show in-scope LLM/AI security mechanism despite out-of-scope consensus."}
+{"incident_id":"INC-04871","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06704","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03380","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-00202","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03804","llm_consensus":"LLM02","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-03211","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-02375","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-06972","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03959","llm_consensus":"LLM09","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-04443","llm_consensus":"LLM09","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-06236","llm_consensus":"LLM09","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-05538","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05406","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-04724","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06671","llm_consensus":"LLM02","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-01898","llm_consensus":"ROLL-SICG","adjudicated":"accept","labels":["ROLL-SICG"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-00363","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02156","llm_consensus":"out-of-scope","adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"Rubric indicators show in-scope LLM/AI security mechanism despite out-of-scope consensus."}
+{"incident_id":"INC-01716","llm_consensus":"out-of-scope","adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"Rubric indicators show in-scope LLM/AI security mechanism despite out-of-scope consensus."}
+{"incident_id":"INC-02385","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06571","llm_consensus":"out-of-scope","adjudicated":"accept","labels":[],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01307","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-06984","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-06869","llm_consensus":"LLM09","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-00380","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-04943","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-03980","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-07594","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-00939","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06587","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-05105","llm_consensus":"LLM09","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-03332","llm_consensus":"NEW-WLA","adjudicated":"accept","labels":["NEW-WLA"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-00469","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-02027","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-03071","llm_consensus":"NEW-WLA","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-04759","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05979","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-07158","llm_consensus":"NEW-MA","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-07218","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04926","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-02110","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-00094","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02399","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-07497","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-03150","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-04598","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-06368","llm_consensus":"LLM02","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-00750","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02920","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04172","llm_consensus":"LLM09","adjudicated":"accept","labels":["LLM09"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-00112","llm_consensus":"NEW-MA","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-07106","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-05054","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03951","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-01666","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03585","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03741","llm_consensus":"NEW-MA","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-00067","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"NEW-MA","notes":null}
+{"incident_id":"INC-02532","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02717","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-02973","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-04722","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"ROLL-CFAS","notes":null}
+{"incident_id":"INC-07313","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-04489","llm_consensus":"LLM06","adjudicated":"override","labels":["LLM07"],"blind_label":"LLM07","notes":"Blind rubric read aligned with dissent over LLM06."}
+{"incident_id":"INC-05335","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04494","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00604","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03208","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-02211","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-00582","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-05619","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02170","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-00639","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM06","notes":null}
+{"incident_id":"INC-00199","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-03664","llm_consensus":"NEW-MA","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-01027","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-05273","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-05972","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-05084","llm_consensus":"LLM04","adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"Blind rubric read aligned with dissent over LLM04."}
+{"incident_id":"INC-02446","llm_consensus":"LLM05","adjudicated":"override","labels":["LLM06"],"blind_label":"LLM06","notes":"Blind rubric read aligned with dissent over LLM05."}
+{"incident_id":"INC-01430","llm_consensus":"LLM02","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-03764","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-06050","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-01507","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-02568","llm_consensus":"LLM05","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-04460","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02656","llm_consensus":"NEW-MA","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-02607","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-00845","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-04835","llm_consensus":"LLM02","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-06947","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-02519","llm_consensus":"LLM02","adjudicated":"accept","labels":["LLM02"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-05309","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-02630","llm_consensus":"LLM05","adjudicated":"override","labels":["LLM06"],"blind_label":"LLM06","notes":"Blind rubric read aligned with dissent over LLM05."}
+{"incident_id":"INC-00637","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-05521","llm_consensus":"LLM02","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-05497","llm_consensus":"LLM06","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-02972","llm_consensus":"LLM05","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-01912","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05965","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-03952","llm_consensus":"LLM03","adjudicated":"accept","labels":["LLM03"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-03291","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01883","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-01491","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-03976","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"NEW-MA","notes":null}
+{"incident_id":"INC-07670","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04829","llm_consensus":"NEW-MA","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-00187","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-01892","llm_consensus":"ROLL-SICG","adjudicated":"accept","labels":["ROLL-SICG"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-02304","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-00259","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02998","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00115","llm_consensus":"NEW-MA","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-01536","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01768","llm_consensus":"LLM05","adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"Blind rubric read aligned with dissent over LLM05."}
+{"incident_id":"INC-01613","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02312","llm_consensus":"LLM05","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-06650","llm_consensus":"NEW-MA","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-03274","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-06996","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-02412","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-07296","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05767","llm_consensus":"NEW-MA","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-02906","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04142","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM08","notes":null}
+{"incident_id":"INC-01049","llm_consensus":"NEW-MA","adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"Blind rubric read aligned with dissent over NEW-MA."}
+{"incident_id":"INC-05679","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-02406","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"NEW-MA","notes":null}
+{"incident_id":"INC-01377","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-05007","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-02405","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01303","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01597","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-00923","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-06631","llm_consensus":"LLM04","adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"Blind rubric read aligned with dissent over LLM04."}
+{"incident_id":"INC-00987","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04784","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04092","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03301","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-00103","llm_consensus":"NEW-MA","adjudicated":"accept","labels":["NEW-MA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02479","llm_consensus":"NEW-MTIE","adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"Blind rubric read aligned with dissent over NEW-MTIE."}
+{"incident_id":"INC-02008","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM07","notes":null}
+{"incident_id":"INC-06841","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-03386","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05386","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-00114","llm_consensus":"NEW-MA","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-07699","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-00616","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-04277","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06373","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM04","notes":null}
+{"incident_id":"INC-03889","llm_consensus":"LLM06","adjudicated":"accept","labels":["LLM06"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00605","llm_consensus":"NEW-MSDA","adjudicated":"accept","labels":["NEW-MSDA"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01492","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-01993","llm_consensus":"LLM06","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-01376","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-06876","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02403","llm_consensus":"LLM06","adjudicated":"override","labels":["NEW-MA"],"blind_label":"NEW-MA","notes":"Blind rubric read aligned with dissent over LLM06."}
+{"incident_id":"INC-03569","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01148","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06959","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-07402","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-03939","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-07359","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-03933","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-06643","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-07598","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-00826","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04562","llm_consensus":"LLM04","adjudicated":"accept","labels":["LLM04"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-01122","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-00998","llm_consensus":"LLM05","adjudicated":"accept","labels":["LLM05"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-05177","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-00928","llm_consensus":"LLM07","adjudicated":"accept","labels":["LLM07"],"blind_label":"LLM07","notes":null}
+{"incident_id":"INC-04435","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-07384","llm_consensus":"LLM04","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-03303","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"NEW-MTIE","notes":null}
+{"incident_id":"INC-02159","llm_consensus":"LLM10","adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"Blind rubric read aligned with dissent over LLM10."}
+{"incident_id":"INC-01718","llm_consensus":"LLM08","adjudicated":"accept","labels":["LLM08"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-03753","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-02362","llm_consensus":"ROLL-SICG","adjudicated":"accept","labels":["ROLL-SICG"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03131","llm_consensus":"ROLL-CMSB","adjudicated":"override","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":"Blind rubric read aligned with dissent over ROLL-CMSB."}
+{"incident_id":"INC-02856","llm_consensus":"ROLL-CMSB","adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"Blind rubric read aligned with dissent over ROLL-CMSB."}
+{"incident_id":"INC-01277","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM05","notes":null}
+{"incident_id":"INC-07227","llm_consensus":"ROLL-CMSB","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-02801","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-04746","llm_consensus":"ROLL-CMSB","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-01068","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"NEW-WLA","notes":null}
+{"incident_id":"INC-02102","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-03737","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-03491","llm_consensus":"ROLL-CMSB","adjudicated":"override","labels":["LLM01"],"blind_label":"LLM01","notes":"Blind rubric read aligned with dissent over ROLL-CMSB."}
+{"incident_id":"INC-04747","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06371","llm_consensus":"LLM01","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-03577","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-01895","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-03734","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02052","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-04110","llm_consensus":"LLM07","adjudicated":"accept","labels":["LLM07"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-06797","llm_consensus":"LLM01","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-06902","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"ROLL-CMSB","notes":null}
+{"incident_id":"INC-02361","llm_consensus":"ROLL-SICG","adjudicated":"accept","labels":["ROLL-SICG"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03751","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00491","llm_consensus":"ROLL-SICG","adjudicated":"accept","labels":["ROLL-SICG"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-03347","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-07273","llm_consensus":"ROLL-CMSB","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-07525","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02804","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-02319","llm_consensus":"NEW-MSDA","adjudicated":"accept","labels":["NEW-MSDA"],"blind_label":"LLM06","notes":null}
+{"incident_id":"INC-01888","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-03349","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-00635","llm_consensus":"NEW-MTIE","adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"Blind rubric read aligned with dissent over NEW-MTIE."}
+{"incident_id":"INC-07347","llm_consensus":"LLM01","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-03042","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-04914","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-05697","llm_consensus":"LLM01","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-01461","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-07454","llm_consensus":"ROLL-CMSB","adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No concrete LLM vulnerability mechanism in incident text."}
+{"incident_id":"INC-03341","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-07362","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03035","llm_consensus":"NEW-MTIE","adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"Blind rubric read aligned with dissent over NEW-MTIE."}
+{"incident_id":"INC-04971","llm_consensus":"ROLL-CMSB","adjudicated":"override","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":"Blind rubric read aligned with dissent over ROLL-CMSB."}
+{"incident_id":"INC-02820","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM02","notes":null}
+{"incident_id":"INC-02529","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-02873","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-07501","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02847","llm_consensus":"ROLL-LAPTF","adjudicated":"accept","labels":["ROLL-LAPTF"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-00617","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM10","notes":null}
+{"incident_id":"INC-07287","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-03306","llm_consensus":"LLM01","adjudicated":"accept","labels":["LLM01"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-02419","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-00260","llm_consensus":"ROLL-SICG","adjudicated":"accept","labels":["ROLL-SICG"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-04891","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-00526","llm_consensus":"ROLL-CMSB","adjudicated":"accept","labels":["ROLL-CMSB"],"blind_label":"ROLL-CMSB","notes":null}
+{"incident_id":"INC-01437","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-01611","llm_consensus":"NEW-MTIE","adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"Blind rubric read aligned with dissent over NEW-MTIE."}
+{"incident_id":"INC-02256","llm_consensus":"NEW-MTIE","adjudicated":"accept","labels":["NEW-MTIE"],"blind_label":"LLM03","notes":null}
+{"incident_id":"INC-01463","llm_consensus":"LLM10","adjudicated":"accept","labels":["LLM10"],"blind_label":"LLM09","notes":null}
+{"incident_id":"INC-02353","llm_consensus":"LLM07","adjudicated":"accept","labels":["LLM07"],"blind_label":"out-of-scope","notes":null}
+{"incident_id":"INC-05539","llm_consensus":null,"adjudicated":"override","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-03013","llm_consensus":null,"adjudicated":"override","labels":["NEW-MA"],"blind_label":"NEW-MA","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01843","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02707","llm_consensus":null,"adjudicated":"override","labels":["LLM10"],"blind_label":"LLM10","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-07000","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-05075","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06140","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07325","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02892","llm_consensus":null,"adjudicated":"override","labels":["NEW-WLA"],"blind_label":"out-of-scope","notes":"No LLM consensus; vote candidate matched rubric indicators."}
+{"incident_id":"INC-01842","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04431","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"out-of-scope","notes":"No LLM consensus; vote candidate matched rubric indicators."}
+{"incident_id":"INC-06867","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00638","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00966","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05875","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04160","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02667","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02891","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05106","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03950","llm_consensus":null,"adjudicated":"override","labels":["ROLL-CMSB"],"blind_label":"ROLL-CMSB","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00611","llm_consensus":null,"adjudicated":"override","labels":["LLM06"],"blind_label":"LLM06","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-07164","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01002","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-03554","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05908","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-07064","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05567","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-07131","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00967","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07323","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00953","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06217","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00954","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03214","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06262","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04133","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06407","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"out-of-scope","notes":"No LLM consensus; vote candidate matched rubric indicators."}
+{"incident_id":"INC-07439","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06617","llm_consensus":null,"adjudicated":"override","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04236","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03947","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04613","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02396","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01495","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-05707","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04814","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00597","llm_consensus":null,"adjudicated":"override","labels":["LLM02"],"blind_label":"LLM02","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04362","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01415","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03017","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01005","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00549","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04872","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02706","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06898","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00048","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04850","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04044","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01907","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM03","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07013","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05051","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06497","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-05506","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04060","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-07574","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05589","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06991","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01504","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-07259","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04986","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03220","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01090","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"out-of-scope","notes":"No LLM consensus; vote candidate matched rubric indicators."}
+{"incident_id":"INC-04807","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-03339","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06142","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03730","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00731","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00943","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03433","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04647","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00830","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01846","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00584","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00097","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06853","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00396","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00069","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM02","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04617","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-05364","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM09","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07268","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04378","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01014","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04159","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01811","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01146","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06721","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02021","llm_consensus":null,"adjudicated":"override","labels":["NEW-MA"],"blind_label":"NEW-MA","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04403","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03052","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04754","llm_consensus":null,"adjudicated":"override","labels":["NEW-MA"],"blind_label":"NEW-MA","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04546","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03402","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04953","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM02","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02506","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM09","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00786","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"out-of-scope","notes":"No LLM consensus; vote candidate matched rubric indicators."}
+{"incident_id":"INC-06916","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01827","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04749","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM03","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04340","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01350","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04783","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03286","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04114","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01501","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02103","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07018","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03124","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01581","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05733","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03132","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04269","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04426","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07572","llm_consensus":null,"adjudicated":"override","labels":["LLM02"],"blind_label":"LLM02","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01648","llm_consensus":null,"adjudicated":"override","labels":["LLM06"],"blind_label":"LLM06","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02595","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM02","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05147","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02285","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02113","llm_consensus":null,"adjudicated":"override","labels":["LLM02"],"blind_label":"LLM02","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01551","llm_consensus":null,"adjudicated":"override","labels":["LLM02"],"blind_label":"LLM02","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00595","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04896","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01042","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06874","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01051","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07132","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00880","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00846","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04115","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-07472","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01469","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03626","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00608","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01367","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03365","llm_consensus":null,"adjudicated":"override","labels":["NEW-MA"],"blind_label":"NEW-MA","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04328","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02691","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03305","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02911","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02084","llm_consensus":null,"adjudicated":"override","labels":["LLM02"],"blind_label":"LLM02","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02401","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03823","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02129","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04515","llm_consensus":null,"adjudicated":"override","labels":["LLM06"],"blind_label":"LLM06","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01643","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"out-of-scope","notes":"No LLM consensus; vote candidate matched rubric indicators."}
+{"incident_id":"INC-02462","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01914","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04676","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03482","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07685","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06771","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02179","llm_consensus":null,"adjudicated":"override","labels":["LLM10"],"blind_label":"LLM10","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-03027","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07139","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05109","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04258","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-05738","llm_consensus":null,"adjudicated":"override","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00749","llm_consensus":null,"adjudicated":"override","labels":["LLM04"],"blind_label":"LLM04","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01015","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00381","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04126","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01339","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02534","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02870","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM03","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03505","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05862","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01769","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"out-of-scope","notes":"No LLM consensus; vote candidate matched rubric indicators."}
+{"incident_id":"INC-03870","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07091","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02655","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07684","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01219","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03018","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04316","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03879","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04888","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01505","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04671","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-07535","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05588","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00606","llm_consensus":null,"adjudicated":"override","labels":["LLM02"],"blind_label":"LLM02","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-03905","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04130","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01971","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00760","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04773","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02140","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-03948","llm_consensus":null,"adjudicated":"override","labels":["ROLL-CMSB"],"blind_label":"ROLL-CMSB","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-07563","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02439","llm_consensus":null,"adjudicated":"override","labels":["LLM06"],"blind_label":"LLM06","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06184","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01421","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03672","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07436","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00217","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00564","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04833","llm_consensus":null,"adjudicated":"override","labels":["NEW-MA"],"blind_label":"NEW-MA","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04571","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07548","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-05187","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05628","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01120","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02388","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02339","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04300","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01256","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM03","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07617","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07512","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM09","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04425","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02956","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00093","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02106","llm_consensus":null,"adjudicated":"override","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00663","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04553","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06083","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02904","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-05192","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06107","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07371","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02546","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-07412","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04026","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06080","llm_consensus":null,"adjudicated":"override","labels":["LLM10"],"blind_label":"LLM10","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00433","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06557","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06687","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01999","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05624","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-05150","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03095","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04085","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM09","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01189","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-03252","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03666","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06829","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04698","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06109","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM09","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06954","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM09","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04832","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01478","llm_consensus":null,"adjudicated":"override","labels":["LLM02"],"blind_label":"LLM02","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01707","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03750","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00765","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07435","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03739","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07627","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00437","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04808","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM03","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02773","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00570","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM03","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03080","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-03782","llm_consensus":null,"adjudicated":"override","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-05468","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"out-of-scope","notes":"No LLM consensus; vote candidate matched rubric indicators."}
+{"incident_id":"INC-07507","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01342","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01802","llm_consensus":null,"adjudicated":"override","labels":["LLM08"],"blind_label":"LLM08","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06995","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01904","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02781","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05052","llm_consensus":null,"adjudicated":"override","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-03205","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM03","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02448","llm_consensus":null,"adjudicated":"override","labels":["LLM06"],"blind_label":"LLM06","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04673","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04205","llm_consensus":null,"adjudicated":"override","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02165","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02886","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04168","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04946","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01452","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM03","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04707","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04910","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07495","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06137","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03313","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05519","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01451","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02761","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04322","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07210","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03974","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02143","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"out-of-scope","notes":"No LLM consensus; vote candidate matched rubric indicators."}
+{"incident_id":"INC-03177","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05670","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01372","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07294","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00475","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04905","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04789","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02483","llm_consensus":null,"adjudicated":"override","labels":["LLM04"],"blind_label":"LLM04","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04742","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00531","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01669","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06218","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04755","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02255","llm_consensus":null,"adjudicated":"override","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02452","llm_consensus":null,"adjudicated":"override","labels":["LLM02"],"blind_label":"LLM02","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01574","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01334","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04777","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04729","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01144","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01328","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM02","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04404","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02171","llm_consensus":null,"adjudicated":"override","labels":["LLM10"],"blind_label":"LLM10","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-03078","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04612","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02671","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03316","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02927","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM03","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02391","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04049","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04336","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03871","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00428","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00077","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02582","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02875","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06661","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03673","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04206","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00132","llm_consensus":null,"adjudicated":"override","labels":["LLM02"],"blind_label":"LLM02","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04862","llm_consensus":null,"adjudicated":"override","labels":["LLM02"],"blind_label":"LLM02","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-05066","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03261","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"out-of-scope","notes":"No LLM consensus; vote candidate matched rubric indicators."}
+{"incident_id":"INC-02097","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02503","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00090","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00777","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-05180","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02866","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-03116","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04436","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03679","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03610","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02336","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM02","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04882","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02459","llm_consensus":null,"adjudicated":"override","labels":["LLM06"],"blind_label":"LLM06","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02666","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07634","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01164","llm_consensus":null,"adjudicated":"override","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-05396","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07427","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05873","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03465","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-07467","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01001","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01924","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-05202","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01567","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-05158","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03500","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01035","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00567","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05153","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03462","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03759","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM09","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02092","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-00914","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01706","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-07173","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02685","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03223","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM03","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03653","llm_consensus":null,"adjudicated":"override","labels":["NEW-MA"],"blind_label":"NEW-MA","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06196","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05680","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04041","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05191","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04055","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03065","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM03","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01273","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03163","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-02896","llm_consensus":null,"adjudicated":"override","labels":["ROLL-SICG"],"blind_label":"ROLL-SICG","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-03631","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03135","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01308","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06474","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM09","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05833","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01754","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02227","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM02","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00598","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02333","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"LLM05","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04869","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-07385","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02929","llm_consensus":null,"adjudicated":"override","labels":["ROLL-CFAS"],"blind_label":"ROLL-CFAS","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06870","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06138","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00756","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03086","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06824","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00236","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03960","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02644","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"out-of-scope","notes":"No LLM consensus; vote candidate matched rubric indicators."}
+{"incident_id":"INC-04477","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06785","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM09","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05869","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05756","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04732","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01418","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"LLM03","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02060","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-03129","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01929","llm_consensus":null,"adjudicated":"override","labels":["LLM06"],"blind_label":"LLM06","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-01420","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-05154","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02768","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01305","llm_consensus":null,"adjudicated":"override","labels":["LLM02"],"blind_label":"out-of-scope","notes":"No LLM consensus; vote candidate matched rubric indicators."}
+{"incident_id":"INC-06120","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03060","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02139","llm_consensus":null,"adjudicated":"override","labels":["LLM05"],"blind_label":"out-of-scope","notes":"No LLM consensus; vote candidate matched rubric indicators."}
+{"incident_id":"INC-01368","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-05110","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-06989","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01387","llm_consensus":null,"adjudicated":"override","labels":["LLM03"],"blind_label":"LLM03","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04165","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00650","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-06415","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-02622","llm_consensus":null,"adjudicated":"override","labels":["NEW-WLA"],"blind_label":"NEW-WLA","notes":"No LLM consensus; rubric indicator review selected closest entry."}
+{"incident_id":"INC-04572","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04469","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-01598","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-00245","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-04429","llm_consensus":null,"adjudicated":"override","labels":[],"blind_label":"out-of-scope","notes":"No entry fit after rubric indicator review."}
+{"incident_id":"INC-03117","llm_consensus":null,"adjudicated":"override","labels":["LLM09"],"blind_label":"LLM09","notes":"No LLM consensus; rubric indicator review selected closest entry."}

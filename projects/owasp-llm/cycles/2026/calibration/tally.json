@@ -1,150 +1,120 @@
 {
-  "total_coded": 365,
+  "total_coded": 1610,
   "amendments_applied": 0,
   "precision_counts": {
     "NEW-MSDA::security": {
-      "true_positives": 1,
-      "false_positives": 0,
-      "total": 1
+      "true_positives": 17,
+      "false_positives": 3,
+      "total": 20
     },
     "LLM03::security": {
-      "true_positives": 8,
-      "false_positives": 1,
-      "total": 9
+      "true_positives": 94,
+      "false_positives": 6,
+      "total": 100
     },
     "LLM02::security": {
-      "true_positives": 14,
-      "false_positives": 10,
-      "total": 24
+      "true_positives": 59,
+      "false_positives": 26,
+      "total": 85
     },
     "LLM09::security": {
-      "true_positives": 38,
-      "false_positives": 2,
-      "total": 40
+      "true_positives": 86,
+      "false_positives": 14,
+      "total": 100
     },
     "LLM01::security": {
-      "true_positives": 39,
-      "false_positives": 1,
-      "total": 40
+      "true_positives": 81,
+      "false_positives": 5,
+      "total": 86
     },
     "NEW-WLA::security": {
-      "true_positives": 2,
-      "false_positives": 0,
-      "total": 2
+      "true_positives": 71,
+      "false_positives": 27,
+      "total": 98
     },
     "NEW-MA::security": {
-      "true_positives": 1,
-      "false_positives": 0,
-      "total": 1
+      "true_positives": 62,
+      "false_positives": 22,
+      "total": 84
     },
     "LLM05::security": {
-      "true_positives": 28,
-      "false_positives": 12,
-      "total": 40
+      "true_positives": 80,
+      "false_positives": 24,
+      "total": 104
     },
     "NEW-PMP::security": {
-      "true_positives": 4,
+      "true_positives": 16,
       "false_positives": 0,
-      "total": 4
+      "total": 16
     },
     "ROLL-SICG::security": {
-      "true_positives": 0,
-      "false_positives": 2,
-      "total": 2
+      "true_positives": 23,
+      "false_positives": 16,
+      "total": 39
     },
     "LLM07::security": {
+      "true_positives": 11,
+      "false_positives": 26,
+      "total": 37
+    },
+    "out-of-scope::security": {
+      "true_positives": 0,
+      "false_positives": 124,
+      "total": 124
+    },
+    "LLM06::security": {
+      "true_positives": 59,
+      "false_positives": 36,
+      "total": 95
+    },
+    "LLM04::security": {
+      "true_positives": 66,
+      "false_positives": 26,
+      "total": 92
+    },
+    "LLM08::security": {
+      "true_positives": 1,
+      "false_positives": 12,
+      "total": 13
+    },
+    "LLM10::security": {
+      "true_positives": 68,
+      "false_positives": 8,
+      "total": 76
+    },
+    "NEW-MTIE::security": {
+      "true_positives": 34,
+      "false_positives": 29,
+      "total": 63
+    },
+    "ROLL-CMSB::security": {
+      "true_positives": 27,
+      "false_positives": 34,
+      "total": 61
+    },
+    "NEW-ITSCD::security": {
+      "true_positives": 5,
+      "false_positives": 1,
+      "total": 6
+    },
+    "ROLL-LAPTF::security": {
       "true_positives": 2,
       "false_positives": 0,
       "total": 2
+    },
+    "ROLL-CFAS::security": {
+      "true_positives": 0,
+      "false_positives": 1,
+      "total": 1
     }
   },
   "recall_counts": {
-    "LLM05::ai-harm": {
-      "true_positives": 0,
-      "false_negatives": 100,
-      "total_in_sample": 100
-    },
-    "LLM10::ai-harm": {
-      "true_positives": 0,
-      "false_negatives": 100,
-      "total_in_sample": 100
-    },
-    "LLM09::ai-harm": {
-      "true_positives": 3,
-      "false_negatives": 97,
-      "total_in_sample": 100
-    },
-    "NEW-ITSCD::ai-harm": {
-      "true_positives": 0,
-      "false_negatives": 100,
-      "total_in_sample": 100
-    },
-    "ROLL-CMSB::ai-harm": {
-      "true_positives": 0,
-      "false_negatives": 100,
-      "total_in_sample": 100
-    },
-    "LLM06::ai-harm": {
-      "true_positives": 0,
-      "false_negatives": 100,
-      "total_in_sample": 100
-    },
-    "ROLL-SICG::ai-harm": {
-      "true_positives": 0,
-      "false_negatives": 100,
-      "total_in_sample": 100
-    },
-    "ROLL-LAPTF::ai-harm": {
-      "true_positives": 0,
-      "false_negatives": 100,
-      "total_in_sample": 100
-    },
-    "LLM04::ai-harm": {
-      "true_positives": 3,
-      "false_negatives": 97,
-      "total_in_sample": 100
-    },
-    "NEW-MTIE::ai-harm": {
-      "true_positives": 0,
-      "false_negatives": 100,
-      "total_in_sample": 100
-    },
-    "NEW-PMP::ai-harm": {
-      "true_positives": 0,
-      "false_negatives": 100,
-      "total_in_sample": 100
-    },
-    "NEW-WLA::ai-harm": {
-      "true_positives": 1,
-      "false_negatives": 99,
-      "total_in_sample": 100
-    },
-    "NEW-MA::ai-harm": {
-      "true_positives": 11,
-      "false_negatives": 89,
-      "total_in_sample": 100
-    },
-    "ROLL-CFAS::ai-harm": {
-      "true_positives": 0,
-      "false_negatives": 100,
-      "total_in_sample": 100
-    },
-    "LLM01::ai-harm": {
-      "true_positives": 0,
-      "false_negatives": 100,
-      "total_in_sample": 100
-    },
     "LLM08::ai-harm": {
       "true_positives": 0,
       "false_negatives": 100,
       "total_in_sample": 100
     },
-    "LLM07::ai-harm": {
-      "true_positives": 0,
-      "false_negatives": 100,
-      "total_in_sample": 100
-    },
-    "LLM03::ai-harm": {
+    "ROLL-LAPTF::ai-harm": {
       "true_positives": 0,
       "false_negatives": 100,
       "total_in_sample": 100
@@ -159,105 +129,185 @@
       "false_negatives": 100,
       "total_in_sample": 100
     },
-    "LLM05::security": {
-      "true_positives": 4,
-      "false_negatives": 96,
-      "total_in_sample": 100
-    },
-    "LLM10::security": {
+    "LLM07::ai-harm": {
       "true_positives": 0,
       "false_negatives": 100,
       "total_in_sample": 100
     },
-    "LLM09::security": {
-      "true_positives": 13,
-      "false_negatives": 87,
-      "total_in_sample": 100
-    },
-    "NEW-ITSCD::security": {
+    "NEW-PMP::ai-harm": {
       "true_positives": 0,
       "false_negatives": 100,
       "total_in_sample": 100
     },
-    "ROLL-CMSB::security": {
+    "LLM10::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "NEW-MTIE::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "NEW-ITSCD::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM01::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM05::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "ROLL-CMSB::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "NEW-WLA::ai-harm": {
       "true_positives": 1,
       "false_negatives": 99,
       "total_in_sample": 100
     },
-    "LLM06::security": {
-      "true_positives": 9,
-      "false_negatives": 91,
+    "LLM03::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
       "total_in_sample": 100
     },
-    "ROLL-SICG::security": {
-      "true_positives": 1,
-      "false_negatives": 99,
+    "LLM04::ai-harm": {
+      "true_positives": 3,
+      "false_negatives": 97,
       "total_in_sample": 100
+    },
+    "ROLL-CFAS::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "ROLL-SICG::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "LLM09::ai-harm": {
+      "true_positives": 3,
+      "false_negatives": 97,
+      "total_in_sample": 100
+    },
+    "LLM06::ai-harm": {
+      "true_positives": 0,
+      "false_negatives": 100,
+      "total_in_sample": 100
+    },
+    "NEW-MA::ai-harm": {
+      "true_positives": 11,
+      "false_negatives": 89,
+      "total_in_sample": 100
+    },
+    "LLM08::security": {
+      "true_positives": 1,
+      "false_negatives": 100,
+      "total_in_sample": 101
     },
     "ROLL-LAPTF::security": {
-      "true_positives": 0,
+      "true_positives": 1,
       "false_negatives": 100,
-      "total_in_sample": 100
+      "total_in_sample": 101
     },
-    "LLM04::security": {
-      "true_positives": 0,
-      "false_negatives": 100,
-      "total_in_sample": 100
+    "LLM02::security": {
+      "true_positives": 50,
+      "false_negatives": 97,
+      "total_in_sample": 147
     },
-    "NEW-MTIE::security": {
-      "true_positives": 0,
+    "NEW-MSDA::security": {
+      "true_positives": 8,
       "false_negatives": 100,
-      "total_in_sample": 100
+      "total_in_sample": 108
+    },
+    "LLM07::security": {
+      "true_positives": 6,
+      "false_negatives": 100,
+      "total_in_sample": 106
     },
     "NEW-PMP::security": {
-      "true_positives": 1,
+      "true_positives": 7,
       "false_negatives": 99,
-      "total_in_sample": 100
+      "total_in_sample": 106
+    },
+    "LLM10::security": {
+      "true_positives": 43,
+      "false_negatives": 103,
+      "total_in_sample": 146
+    },
+    "NEW-MTIE::security": {
+      "true_positives": 25,
+      "false_negatives": 100,
+      "total_in_sample": 125
+    },
+    "NEW-ITSCD::security": {
+      "true_positives": 3,
+      "false_negatives": 100,
+      "total_in_sample": 103
+    },
+    "LLM01::security": {
+      "true_positives": 48,
+      "false_negatives": 97,
+      "total_in_sample": 145
+    },
+    "LLM05::security": {
+      "true_positives": 56,
+      "false_negatives": 105,
+      "total_in_sample": 161
+    },
+    "ROLL-CMSB::security": {
+      "true_positives": 20,
+      "false_negatives": 99,
+      "total_in_sample": 119
     },
     "NEW-WLA::security": {
-      "true_positives": 24,
-      "false_negatives": 76,
-      "total_in_sample": 100
+      "true_positives": 76,
+      "false_negatives": 79,
+      "total_in_sample": 155
     },
-    "NEW-MA::security": {
-      "true_positives": 4,
-      "false_negatives": 96,
-      "total_in_sample": 100
+    "LLM03::security": {
+      "true_positives": 61,
+      "false_negatives": 108,
+      "total_in_sample": 169
+    },
+    "LLM04::security": {
+      "true_positives": 40,
+      "false_negatives": 101,
+      "total_in_sample": 141
     },
     "ROLL-CFAS::security": {
       "true_positives": 0,
       "false_negatives": 100,
       "total_in_sample": 100
     },
-    "LLM01::security": {
-      "true_positives": 6,
-      "false_negatives": 94,
-      "total_in_sample": 100
-    },
-    "LLM08::security": {
-      "true_positives": 0,
-      "false_negatives": 100,
-      "total_in_sample": 100
-    },
-    "LLM07::security": {
-      "true_positives": 1,
+    "ROLL-SICG::security": {
+      "true_positives": 17,
       "false_negatives": 99,
-      "total_in_sample": 100
+      "total_in_sample": 116
     },
-    "LLM03::security": {
-      "true_positives": 3,
-      "false_negatives": 97,
-      "total_in_sample": 100
+    "LLM09::security": {
+      "true_positives": 61,
+      "false_negatives": 96,
+      "total_in_sample": 157
     },
-    "LLM02::security": {
-      "true_positives": 5,
+    "LLM06::security": {
+      "true_positives": 59,
       "false_negatives": 95,
-      "total_in_sample": 100
+      "total_in_sample": 154
     },
-    "NEW-MSDA::security": {
-      "true_positives": 0,
-      "false_negatives": 100,
-      "total_in_sample": 100
+    "NEW-MA::security": {
+      "true_positives": 42,
+      "false_negatives": 97,
+      "total_in_sample": 139
     }
   },
   "rollup_counts": {}

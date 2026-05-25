@@ -1,8 +1,8 @@
 {
-  "weighted_kappa_median": 0.2753623188405798,
+  "weighted_kappa_median": 0.2028985507246377,
   "weighted_kappa_ci": [
-    -0.01449275362318847,
-    0.5652173913043479
+    -0.1594202898550725,
+    0.5652173913043478
   ],
   "measurable_count": 17,
   "total_count": 20,
@@ -11,23 +11,28 @@
   "flags": [
     {
       "entry_id": "LLM01",
-      "probability": 0.8738,
+      "probability": 0.8748,
       "direction": "vote_over_ranks"
-    },
-    {
-      "entry_id": "LLM05",
-      "probability": 0.8296,
-      "direction": "vote_under_ranks"
     },
     {
       "entry_id": "LLM09",
-      "probability": 0.9928,
+      "probability": 0.991,
       "direction": "vote_under_ranks"
     },
     {
-      "entry_id": "NEW-PMP",
-      "probability": 0.9752,
+      "entry_id": "NEW-MTIE",
+      "probability": 0.835,
       "direction": "vote_over_ranks"
+    },
+    {
+      "entry_id": "NEW-PMP",
+      "probability": 0.9232,
+      "direction": "vote_over_ranks"
+    },
+    {
+      "entry_id": "NEW-WLA",
+      "probability": 0.839,
+      "direction": "vote_under_ranks"
     }
   ]
 }
