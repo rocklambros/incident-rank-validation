@@ -921,3 +921,24 @@ def corroborate(cycle: Path, corpus_b_dir: Path, execute: bool) -> None:
 
     except Exception as e:
         raise click.ClickException(f"Corroboration failed: {e}") from e
+
+
+@click.command(name="report-narrative")
+@click.option(
+    "--cycle-dir",
+    type=click.Path(exists=True, path_type=Path, resolve_path=True),
+    required=True,
+)
+@click.option(
+    "--output-dir",
+    type=click.Path(path_type=Path, resolve_path=True),
+    default=None,
+)
+def report_narrative_cmd(cycle_dir: Path, output_dir: Path | None) -> None:
+    """Generate standalone narrative report with figures."""
+    from engine.report.narrative import generate_narrative_report
+
+    if output_dir is None:
+        output_dir = cycle_dir / "results" / "narrative"
+    result_path = generate_narrative_report(cycle_dir, output_dir)
+    click.echo(f"Narrative report written to {result_path}")
