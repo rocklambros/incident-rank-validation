@@ -939,6 +939,6 @@ def report_narrative_cmd(cycle_dir: Path, output_dir: Path | None) -> None:
     from engine.report.narrative import generate_narrative_report
 
     if output_dir is None:
-        output_dir = cycle_dir / "results" / "narrative"
+        output_dir = Path("notebooks") / "narrative"
     result_path = generate_narrative_report(cycle_dir, output_dir)
     click.echo(f"Narrative report written to {result_path}")
