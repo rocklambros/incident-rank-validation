@@ -17,38 +17,51 @@ narrative report for redistribution to non-Jupyter audiences.
 ### Problem
 
 `concordance.json` documents the kappa point estimate and CI bounds but not *how* the
-CI was computed. The CI is posterior-propagated: for each of 16,000 draws, kappa is
-evaluated on the paired (lambda sample, vote bootstrap sample), and the 2.5th/97.5th
+CI was computed. The CI is a paired-draw percentile interval: for each of 5,000 paired
+draws (min of 16,000 lambda posterior samples and 5,000 vote bootstrap samples), kappa
+is evaluated on the paired (lambda sample, vote bootstrap sample), and the 2.5th/97.5th
 percentiles of those kappa draws form the CI. This is not an analytical normal
-approximation. Without the `ci_method` field, a reader might assume it is.
+approximation, nor a proper Bayesian posterior credible interval — it is an empirical
+percentile of a composite variability measure mixing MCMC uncertainty with bootstrap
+sampling uncertainty. Without the `ci_method` field, a reader might assume it is one of
+these.
 
 ### Changes
 
 **`engine/decide/concordance.py`:**
 - Add field to `ConcordanceResult` dataclass:
   ```python
-  ci_method: str = "posterior_propagated_percentile"
+  ci_method: str = "paired_draw_percentile"
   ```
+  Place `ci_method` after `standing_caveat` and before `entry_comparisons` (both have
+  defaults, so field ordering is valid). The `_na_result()` and `compute_concordance()`
+  callers use keyword args with defaults — no changes to call sites needed.
 - No changes to `compute_concordance()` — the field is metadata about the existing
   computation, not a new computation.
 
 **`engine/cli/pipeline_executor.py`:**
 - Add `"ci_method": concordance.ci_method` to the `conc_dict` serialization block
   (around line 349-367).
+- Update the deserialization block in `pipeline.py:519-532` to read `ci_method` from
+  JSON with fallback to the default value, ensuring round-trip fidelity.
 
 **`projects/owasp-llm/cycles/2026/results/concordance.json`:**
-- Regenerate by re-running `decide-real` or by patching the JSON directly. The latter
-  is simpler since no data has changed — only metadata is added.
-- Direct patch approach: read the existing JSON, add the field, write it back.
+- Regenerate by re-running the serialization path (code change + pipeline run). Do NOT
+  use a direct JSON patch — hand-patched artifacts diverge silently from the pipeline
+  and are overwritten on the next `decide-real` run without warning.
 
 **Tests:**
-- Unit test: `ConcordanceResult` includes `ci_method` with correct default.
+- Unit test: `ConcordanceResult` includes `ci_method` with correct default
+  (`"paired_draw_percentile"`).
 - Serialization test: verify the field appears in the output dict.
+- Round-trip test: serialize `ConcordanceResult` → JSON → deserialize back; assert all
+  fields match including `ci_method`.
 
 ### Acceptance
 
-`concordance.json` contains `"ci_method": "posterior_propagated_percentile"` and the
-notebook reads it without error.
+`concordance.json` contains `"ci_method": "paired_draw_percentile"` and the
+notebook reads it without error. The round-trip test (serialize → deserialize → compare)
+passes.
 
 ---
 
@@ -57,15 +70,28 @@ notebook reads it without error.
 ### Problem
 
 All 323 precision verifications are from the security stratum. The ai-harm stratum has
-zero direct precision measurements. The Bayesian model handles this correctly via
-`apply_empirical_precision_prior()` — entries without measured precision get the average
-alpha/beta from measured entries. But the report's Threats to Validity section does not
-disclose this, and the notebook's Act 10 does not mention why the gap is accepted.
+zero direct precision measurements — no `::ai-harm` precision keys exist in
+`posteriors.json` at all. The Bayesian model's actual fallback for these missing keys
+is `Beta(1,1)` = Uniform(0,1) in `inference.py:69-70` (precision_alpha/beta initialized
+to `np.ones(...)`). `apply_empirical_precision_prior()` in `calibrate.py:160-181` only
+updates keys that **exist** with uninformative priors (alpha==1 and beta==1); since
+ai-harm precision keys are entirely absent from the dict, the function never reaches
+them. The report's Threats to Validity section does not disclose this, and the
+notebook's Act 10 does not mention why the gap is accepted.
+
+**Note:** The `apply_empirical_precision_prior()` empirical mean is also contaminated by
+`out-of-scope::security` (alpha=1, beta=125, precision ~0.008), which depresses the
+mean by ~7.8pp (0.6439 with out-of-scope vs 0.7216 without). This affects
+security-stratum entries that DO receive the borrowed prior but not ai-harm entries
+(which don't receive it at all). This contamination is disclosed but not fixed by this
+spec — fixing requires a model change outside scope.
 
 ### Accepted limitation rationale
 
-The ai-harm stratum has only 92 in-scope incidents across 8 entries (LLM09: 34,
-LLM04: 30, NEW-MA: 17, then single digits). Finding additional ai-harm incidents to
+The ai-harm stratum has 92 in-scope incidents across 8 entry assignments (LLM09: 34,
+LLM04: 30, NEW-MA: 17, then single digits). Of these 8, only 4 entries (LLM09, LLM04,
+NEW-MA, NEW-WLA) received non-trivial recall posteriors; the remaining 16 ai-harm
+recall keys carry the pure prior Beta(1,101). Finding additional ai-harm incidents to
 close the precision gap would require sourcing new data outside the existing corpus,
 which is outside this project's scope.
 
@@ -76,13 +102,17 @@ which is outside this project's scope.
   ```python
   Threat(
       "F-aiharm-precision",
-      "ai-harm stratum has no direct precision measurements; precision posteriors "
-      "for ai-harm entries borrow the empirical mean from security-stratum "
-      "verifications via apply_empirical_precision_prior()",
-      "disclosed in notebook Acts 4 and 5; empirical prior is conservative "
-      "(averages across all measured entries rather than assuming high precision)",
-      "ai-harm error correction relies on borrowed estimates; true ai-harm "
-      "precision could differ from security-stratum precision in either direction",
+      "ai-harm stratum has no direct precision measurements; ai-harm precision "
+      "keys are absent from posteriors.json entirely, so the model falls back to "
+      "Beta(1,1) = Uniform(0,1) via the default initialization in inference.py "
+      "(apply_empirical_precision_prior cannot reach keys that do not exist)",
+      "disclosed in notebook Acts 4, 5, and 10; the uniform prior is maximally "
+      "uninformative rather than borrowed — it does not assume high or low "
+      "precision for ai-harm entries",
+      "ai-harm rankings rely on a flat precision prior (mean 0.5); true ai-harm "
+      "precision could be substantially higher or lower, shifting rankings in "
+      "either direction; only 4 of 20 ai-harm recall keys have non-trivial "
+      "posteriors (LLM09, LLM04, NEW-MA, NEW-WLA)",
   )
   ```
 
@@ -91,11 +121,15 @@ which is outside this project's scope.
   ```
   **Accepted limitation: ai-harm precision.** The 323 precision verifications were
   drawn entirely from the security stratum. The ai-harm stratum (92 in-scope
-  incidents across 8 entries) has no direct precision measurements — the model
-  borrows estimates from the security stratum average. Closing this gap would
-  require sourcing additional ai-harm incidents beyond the existing corpus, which
-  is outside this project's scope. The disclosure in Acts 4 and 5 describes how
-  the model handles this.
+  incidents across 8 entry assignments, of which only 4 received non-trivial
+  recall posteriors) has no direct precision measurements — ai-harm precision
+  keys are absent from the calibration data entirely. The model falls back to
+  a flat Beta(1,1) = Uniform(0,1) prior for ai-harm precision, meaning it
+  assumes no prior knowledge about how precise the classifier is on ai-harm
+  incidents (prior mean 0.5). Closing this gap would require sourcing additional
+  ai-harm incidents beyond the existing corpus, which is outside this project's
+  scope. The disclosure in Acts 4 and 5 describes how the model handles missing
+  precision data.
   ```
 
 **Regenerate `report.md`:**
@@ -168,6 +202,11 @@ def generate_narrative_report(cycle_dir: Path, output_dir: Path) -> Path:
 - `_render_markdown(data, figures_dir)` — generates the narrative markdown with
   `![caption](figures/filename.png)` image references.
 
+**Status header:**
+- If the cycle is non-publishable (check via `report.md` banner or `ReportInputs`),
+  emit `**STATUS: NON-PUBLISHABLE** (single-author rubric, uncontrolled)` as the first
+  line of the narrative report, before any act content. This mirrors `render.py:37-40`.
+
 **Narrative structure** — mirrors the notebook's 10 acts:
 1. The Question — 20-entry table, context paragraph
 2. The Corpus — stratum breakdown, F-circ callout, example incidents
@@ -175,13 +214,16 @@ def generate_narrative_report(cycle_dir: Path, output_dir: Path) -> Path:
 4. How Good Is the Classifier? — precision bars, calibration posteriors, gold-set
    description, security-only precision disclosure
 5. From Counts to Rankings — ridge plot, MCMC diagnostics, model description
-6. The Incident-Derived Rankings — dumbbell chart, rankings table with CIs
+6. The Incident-Derived Rankings — dumbbell chart, rankings table with CIs, Corpus B
+   (GenAI agentic) corroboration
 7. The Confrontation — bump chart, CI overlap, kappa interpretation, selection bias
 8. Where Experts and Incidents Disagree — paired dots, theme bars, flagged entry
    explanations
 9. What the Data Cannot See — OOS treemap, confusion boundary Sankey + matrix,
    boundary examples
-10. What This Means — conclusions, accepted limitations, kappa ceiling
+10. What This Means — conclusions, accepted limitations, kappa ceiling, Threats to
+    Validity (rendered programmatically from `get_threats_register()` in
+    `engine/threats/register.py`, same as `render.py:181-183`)
 
 **Key differences from notebook:**
 - All plotly charts rendered as static PNG via kaleido (no interactivity)
@@ -189,6 +231,9 @@ def generate_narrative_report(cycle_dir: Path, output_dir: Path) -> Path:
 - No code cells shown — pure narrative + images
 - Includes `ci_method` disclosure and `F-aiharm-precision` disclosure from Phases 1-2
 - Entry table includes both expert and incident ranks (not the "fill in later" pattern)
+- Includes NON-PUBLISHABLE status header (matching `render.py` behavior)
+- Threats to Validity section reads from `get_threats_register()` programmatically
+- Set `MPLBACKEND=Agg` in `_generate_figures()` for headless environments
 
 ### CLI command
 
@@ -197,14 +242,26 @@ New click command in `engine/cli/pipeline_executor.py` alongside the existing
 
 ```python
 @click.command("report-narrative")
-@click.option("--cycle-dir", type=click.Path(exists=True, path_type=Path), required=True)
-@click.option("--output-dir", type=click.Path(path_type=Path), default=None)
+@click.option("--cycle-dir", type=click.Path(exists=True, path_type=Path, resolve_path=True), required=True)
+@click.option("--output-dir", type=click.Path(path_type=Path, resolve_path=True), default=None)
 def report_narrative_cmd(cycle_dir: Path, output_dir: Path | None) -> None:
     if output_dir is None:
         output_dir = cycle_dir / "results" / "narrative"
     result_path = generate_narrative_report(cycle_dir, output_dir)
     click.echo(f"Narrative report written to {result_path}")
 ```
+
+Register this command in the existing click group using the same pattern as the
+`report` command (e.g., `cli.add_command(report_narrative_cmd)` or the decorator
+pattern used in the codebase). Use a lazy import of `generate_narrative_report`
+inside the function body to avoid breaking the CLI if narrative dependencies are not
+installed.
+
+**Dependencies (`pyproject.toml`):**
+- Add optional dependency group: `[project.optional-dependencies] narrative =
+  ["matplotlib>=3.8", "seaborn>=0.13", "plotly>=5.15", "kaleido>=0.2.1"]`
+- Pin kaleido ≥ 0.2.1 (fixes headless Chromium subprocess issue on Linux).
+- Usage: `pip install -e ".[narrative]"` to install narrative dependencies.
 
 ### Chart generation approach
 
@@ -228,19 +285,29 @@ def _render_oos_treemap(data: dict, figures_dir: Path) -> None:
 
 ### Tests
 
-- Integration test: call `generate_narrative_report()` with the real cycle data,
-  verify it produces `report.md` + all 16 PNG files.
+- Integration test: call `generate_narrative_report()` with the 2026 cycle data at
+  the known path; mark with `pytest.mark.skipif` if the cycle data path is absent
+  (allows CI to skip gracefully on fresh clones). Verify it produces `report.md` +
+  all 16 PNG files. Verify all PNG files are > 1 KB (catches silent kaleido failures
+  that produce empty or 1x1 error images).
 - Verify `report.md` contains all 10 act headings.
 - Verify no banned AI slop patterns in the generated markdown.
 - Verify all `![...](figures/...)` references point to files that exist.
+- Numerical congruence spot-check: parse `report.md` for the kappa value and compare
+  against `concordance.json`; verify they match within formatting tolerance.
+- Verify NON-PUBLISHABLE banner is present (for the 2026 cycle, which is
+  non-publishable).
 
 ### Acceptance
 
 - `results/narrative/report.md` exists and is readable as standalone markdown.
-- All 16 figure PNGs are present and non-empty.
+- All 16 figure PNGs are present, non-empty, and > 1 KB.
 - The narrative is congruent with the notebook — same numbers, same disclosures,
-  same conclusions.
+  same conclusions. Kappa value spot-checked against `concordance.json`.
 - The report includes both Risk 1 and Risk 2 disclosures.
+- NON-PUBLISHABLE status header is present (for non-publishable cycles).
+- Threats to Validity section is rendered from `get_threats_register()` and includes
+  `F-aiharm-precision`.
 
 ---
 
