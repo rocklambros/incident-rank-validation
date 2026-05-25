@@ -611,6 +611,10 @@ def render_sankey_confusion(data: dict[str, Any], figures_dir: Path) -> None:
 
 def generate_all_plotly_charts(data: dict[str, Any], figures_dir: Path) -> None:
     """Generate all plotly-based charts (rendered as static PNG via kaleido)."""
-    render_plotly_rankings(data, figures_dir)
-    render_oos_treemap(data, figures_dir)
-    render_sankey_confusion(data, figures_dir)
+    import warnings
+
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message="setDaemon", category=DeprecationWarning)
+        render_plotly_rankings(data, figures_dir)
+        render_oos_treemap(data, figures_dir)
+        render_sankey_confusion(data, figures_dir)
