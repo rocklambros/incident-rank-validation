@@ -76,6 +76,20 @@ THREATS: tuple[Threat, ...] = (
         "cognitive trap; mitigated by explicit warning + open-source code review "
         "when public",
     ),
+    Threat(
+        "F-aiharm-precision",
+        "ai-harm stratum has no direct precision measurements; ai-harm precision "
+        "keys are absent from posteriors.json entirely, so the model falls back to "
+        "Beta(1,1) = Uniform(0,1) via the default initialization in inference.py "
+        "(apply_empirical_precision_prior cannot reach keys that do not exist)",
+        "disclosed in notebook Acts 4, 5, and 10; the uniform prior is maximally "
+        "uninformative rather than borrowed — it does not assume high or low "
+        "precision for ai-harm entries",
+        "ai-harm rankings rely on a flat precision prior (mean 0.5); true ai-harm "
+        "precision could be substantially higher or lower, shifting rankings in "
+        "either direction; only 3 of 20 ai-harm recall keys have material evidence "
+        "(LLM09, LLM04, NEW-MA); NEW-WLA has only 1 observation above the pure prior",
+    ),
 )
 
 
