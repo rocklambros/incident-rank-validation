@@ -357,6 +357,7 @@ def write_decide_artifacts(
         "total_count": concordance.total_count,
         "coverage_ratio": concordance.coverage_ratio,
         "below_prereg_minimum": concordance.below_prereg_minimum,
+        "ci_method": concordance.ci_method,
         "flags": [
             {"entry_id": f.entry_id, "probability": f.probability, "direction": f.direction.value}
             for f in concordance.flags
