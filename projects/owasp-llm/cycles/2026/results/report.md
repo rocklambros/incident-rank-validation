@@ -48,6 +48,7 @@ Note: 3 entries are frame-blind (LLM04, LLM08, LLM10). Agreement on incidents cl
 - **F-circ**: taxonomy-frame circularity: measuring a taxonomy against incidents classified by that taxonomy
 - **F-adversarial-ingestion**: public CVE/GHSA/OSV are open submission surfaces; descriptions are attacker-controlled; infer_attack_vector is pure regex
 - **F-defenseindepth**: the engine has many integrity controls; this can create false confidence that all bugs are upstream of the engine when debugging unexpected results
+- **F-aiharm-precision**: ai-harm stratum has no direct precision measurements; ai-harm precision keys are absent from posteriors.json entirely, so the model falls back to Beta(1,1) = Uniform(0,1) via the default initialization in inference.py (apply_empirical_precision_prior cannot reach keys that do not exist)
 
 ---
 Before publishing externally, verify against `docs/REVIEWERS.md` PRE-PUBLISH CHECKLIST. This report is internal-only unless the checklist passes.
