@@ -75,6 +75,49 @@ def _load_recall_from_curation(
     return labels
 
 
+def _load_recall_from_adjudicated(
+    path: Path,
+    valid_entry_ids: set[str],
+) -> tuple[list[GoldRecallLabel], list[GoldPrecisionLabel]]:
+    recall: list[GoldRecallLabel] = []
+    precision: list[GoldPrecisionLabel] = []
+
+    for line in path.read_text(encoding="utf-8").strip().splitlines():
+        if not line.strip():
+            continue
+        record = json.loads(line)
+        labels = record.get("labels", [])
+        consensus = record.get("llm_consensus")
+        adjudicated = record.get("adjudicated", "")
+
+        if adjudicated == "uncertain":
+            continue
+
+        for eid in labels:
+            if eid not in valid_entry_ids:
+                raise ValueError(
+                    f"Entry ID '{eid}' from adjudicated incident "
+                    f"'{record['incident_id']}' not in rubric."
+                )
+
+        recall.append(GoldRecallLabel(
+            incident_id=record["incident_id"],
+            true_entry_ids=labels if labels else [],
+            classifier_entry_id=consensus,
+            source="llm-adjudicated",
+        ))
+
+        if consensus and labels:
+            precision.append(GoldPrecisionLabel(
+                incident_id=record["incident_id"],
+                claimed_entry_id=consensus,
+                is_correct=(consensus in labels),
+                source="llm-adjudicated",
+            ))
+
+    return recall, precision
+
+
 def _load_precision_from_jsonl(path: Path) -> list[GoldPrecisionLabel]:
     labels: list[GoldPrecisionLabel] = []
     for line in path.read_text(encoding="utf-8").strip().splitlines():
@@ -104,6 +147,8 @@ def load_gold_calibration(
     recall_labels: list[GoldRecallLabel] = []
     precision_labels: list[GoldPrecisionLabel] = []
 
+    adjudicated_path: Path | None = None
+
     if gold_dir is not None:
         curation_candidate = gold_dir / "manual_curated_incidents.json"
         if curation_candidate.exists():
@@ -112,20 +157,29 @@ def load_gold_calibration(
         if precision_candidate.exists():
             precision_path = precision_candidate
         adjudicated_candidate = gold_dir / "adjudicated_goldset.jsonl"
-        if adjudicated_candidate.exists() and precision_path is None:
-            precision_path = adjudicated_candidate
+        if adjudicated_candidate.exists():
+            adjudicated_path = adjudicated_candidate
 
     if curation_path is not None:
         recall_labels = _load_recall_from_curation(
             curation_path, valid_entry_ids, base_incident_ids,
         )
 
+    if adjudicated_path is not None:
+        adj_recall, adj_precision = _load_recall_from_adjudicated(
+            adjudicated_path, valid_entry_ids,
+        )
+        recall_labels.extend(adj_recall)
+        precision_labels.extend(adj_precision)
+
     if precision_path is not None:
-        precision_labels = _load_precision_from_jsonl(precision_path)
+        precision_labels.extend(_load_precision_from_jsonl(precision_path))
 
     hash_inputs: list[str] = []
     if curation_path is not None:
         hash_inputs.append(curation_path.read_text(encoding="utf-8"))
+    if adjudicated_path is not None:
+        hash_inputs.append(adjudicated_path.read_text(encoding="utf-8"))
     if precision_path is not None:
         hash_inputs.append(precision_path.read_text(encoding="utf-8"))
     provenance_hash = hashlib.sha256("".join(hash_inputs).encode()).hexdigest()
