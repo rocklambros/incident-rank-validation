@@ -529,6 +529,7 @@ def report_cmd(cycle: Path) -> None:
             meaningful_kappa_n=manifest.meaningful_kappa_n,
             flags=flags,
             standing_caveat="",
+            ci_method=conc_data.get("ci_method", "paired_draw_percentile"),
         )
 
         sel_bias_path = results_dir / "selection_bias.json"
