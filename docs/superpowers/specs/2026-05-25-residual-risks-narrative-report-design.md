@@ -89,8 +89,9 @@ spec — fixing requires a model change outside scope.
 ### Accepted limitation rationale
 
 The ai-harm stratum has 92 in-scope incidents across 8 entry assignments (LLM09: 34,
-LLM04: 30, NEW-MA: 17, then single digits). Of these 8, only 4 entries (LLM09, LLM04,
-NEW-MA, NEW-WLA) received non-trivial recall posteriors; the remaining 16 ai-harm
+LLM04: 30, NEW-MA: 17, then single digits). Of these 8, only 3 entries (LLM09, LLM04,
+NEW-MA) received recall posteriors with material evidence; NEW-WLA has only 1
+observation above the pure prior (alpha=2 vs prior alpha=1). The remaining 16 ai-harm
 recall keys carry the pure prior Beta(1,101). Finding additional ai-harm incidents to
 close the precision gap would require sourcing new data outside the existing corpus,
 which is outside this project's scope.
@@ -111,8 +112,8 @@ which is outside this project's scope.
       "precision for ai-harm entries",
       "ai-harm rankings rely on a flat precision prior (mean 0.5); true ai-harm "
       "precision could be substantially higher or lower, shifting rankings in "
-      "either direction; only 4 of 20 ai-harm recall keys have non-trivial "
-      "posteriors (LLM09, LLM04, NEW-MA, NEW-WLA)",
+      "either direction; only 3 of 20 ai-harm recall keys have material evidence "
+      "(LLM09, LLM04, NEW-MA); NEW-WLA has only 1 observation above the pure prior",
   )
   ```
 
