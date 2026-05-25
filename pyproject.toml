@@ -36,6 +36,13 @@ dev = [
 
 [project.optional-dependencies]
 monitoring = ["wandb>=0.19,<1.0"]
+narrative = [
+  "matplotlib>=3.8",
+  "seaborn>=0.13",
+  "plotly>=5.15",
+  "kaleido>=0.2.1",
+  "pandas>=2.0",
+]
 
 [tool.uv]
 package = true
@@ -63,6 +70,10 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = ["wandb.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["matplotlib.*", "seaborn.*", "plotly.*", "kaleido.*", "pandas.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
