@@ -18,6 +18,7 @@ from engine.cli.pipeline import (
     decide_real,
     infer_real,
     report_cmd,
+    report_narrative_cmd,
     repro_bundle_cmd,
 )
 from engine.cli.reclassify import reclassify
@@ -45,6 +46,7 @@ cli.add_command(classify_real)
 cli.add_command(infer_real)
 cli.add_command(decide_real)
 cli.add_command(report_cmd)
+cli.add_command(report_narrative_cmd)
 cli.add_command(repro_bundle_cmd)
 cli.add_command(corroborate)
 cli.add_command(reclassify)
