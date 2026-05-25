@@ -8,6 +8,7 @@
   "total_count": 20,
   "coverage_ratio": 0.85,
   "below_prereg_minimum": false,
+  "ci_method": "paired_draw_percentile",
   "flags": [
     {
       "entry_id": "LLM01",
