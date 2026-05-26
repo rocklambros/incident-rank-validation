@@ -34,6 +34,8 @@ class TestNarrativeDataLoading:
         assert "ci_method" in data["concordance"]
 
 
+REPORT_STEM = "2026_top_10_llm_update_what_the_data_says"
+
 EXPECTED_FIGURES = [
     "stratum_bar.png",
     "tier_donut.png",
@@ -80,7 +82,21 @@ class TestNarrativeIntegration:
         return output_dir
 
     def test_report_exists(self, narrative_output: Path) -> None:
-        assert (narrative_output / "report.md").exists()
+        assert (narrative_output / f"{REPORT_STEM}.md").exists()
+
+    def test_pdf_exists(self, narrative_output: Path) -> None:
+        import shutil
+        if shutil.which("pandoc") is None:
+            pytest.skip("pandoc not installed; PDF compile skipped")
+        pdf_path = narrative_output / f"{REPORT_STEM}.pdf"
+        assert pdf_path.exists(), "PDF was not produced"
+        assert pdf_path.stat().st_size > 10 * 1024, "PDF suspiciously small (<10KB)"
+
+    def test_has_abstract_and_toc(self, narrative_output: Path) -> None:
+        text = (narrative_output / f"{REPORT_STEM}.md").read_text()
+        assert "abstract:" in text, "Pandoc YAML abstract missing"
+        assert "Table of Contents" in text, "Manual TOC heading missing"
+        assert "toc: true" in text, "Pandoc TOC flag missing in frontmatter"
 
     def test_all_figures_present(self, narrative_output: Path) -> None:
         figures_dir = narrative_output / "figures"
@@ -90,33 +106,33 @@ class TestNarrativeIntegration:
             assert fig_path.stat().st_size > 1024, f"Figure too small (<1KB): {fig_name}"
 
     def test_all_act_headings_present(self, narrative_output: Path) -> None:
-        report_text = (narrative_output / "report.md").read_text()
+        report_text = (narrative_output / f"{REPORT_STEM}.md").read_text()
         for heading in ACT_HEADINGS:
             assert heading in report_text, f"Missing heading: {heading}"
 
     def test_no_ai_slop(self, narrative_output: Path) -> None:
-        report_text = (narrative_output / "report.md").read_text()
+        report_text = (narrative_output / f"{REPORT_STEM}.md").read_text()
         for pattern in AI_SLOP_PATTERNS:
             matches = re.findall(pattern, report_text, re.IGNORECASE)
             assert not matches, f"AI slop detected: {pattern} -> {matches}"
 
     def test_figure_references_valid(self, narrative_output: Path) -> None:
-        report_text = (narrative_output / "report.md").read_text()
+        report_text = (narrative_output / f"{REPORT_STEM}.md").read_text()
         refs = re.findall(r"!\[.*?\]\((figures/[^)]+)\)", report_text)
         for ref in refs:
             fig_path = narrative_output / ref
             assert fig_path.exists(), f"Broken image ref: {ref}"
 
     def test_non_publishable_banner(self, narrative_output: Path) -> None:
-        report_text = (narrative_output / "report.md").read_text()
+        report_text = (narrative_output / f"{REPORT_STEM}.md").read_text()
         assert "NON-PUBLISHABLE" in report_text
 
     def test_threats_section_has_f_aiharm_precision(self, narrative_output: Path) -> None:
-        report_text = (narrative_output / "report.md").read_text()
+        report_text = (narrative_output / f"{REPORT_STEM}.md").read_text()
         assert "F-aiharm-precision" in report_text
 
     def test_kappa_congruence_with_concordance_json(self, narrative_output: Path) -> None:
-        report_text = (narrative_output / "report.md").read_text()
+        report_text = (narrative_output / f"{REPORT_STEM}.md").read_text()
         conc_data = json.loads((CYCLE_DIR / "results" / "concordance.json").read_text())
         kappa_str = f"{conc_data['weighted_kappa_median']:.4f}"
         assert kappa_str in report_text, f"Kappa {kappa_str} not found in narrative report"
@@ -128,5 +144,5 @@ class TestNarrativeIntegration:
         assert f"{len(flags)} entries flagged" in report_text or len(flags) == 0
 
     def test_bump_chart_has_real_data(self, narrative_output: Path) -> None:
-        report_text = (narrative_output / "report.md").read_text()
+        report_text = (narrative_output / f"{REPORT_STEM}.md").read_text()
         assert "No rank data available" not in report_text
