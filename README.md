@@ -338,7 +338,8 @@ tests/
   proofs/         Mathematical property tests (never-falsely-low, frame-blind gate)
   security/       Prompt injection and delimiter tests for Stage-2
 notebooks/
-  what_the_data_says_2026.ipynb   Interactive analysis notebook
+  2026_top_10_llm_update_what_the_data_says.ipynb   Interactive analysis notebook
+  2026_top_10_llm_update_what_the_data_says.pdf    PDF render of the notebook
   narrative/                      Standalone narrative report with 16 figures
 docs/
   HANDOFF.md          Methodology spec (source of truth)
