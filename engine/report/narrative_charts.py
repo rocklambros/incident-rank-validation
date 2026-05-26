@@ -7,6 +7,7 @@ All matplotlib charts use the Agg backend for headless rendering.
 from __future__ import annotations
 
 import os
+import warnings
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
@@ -14,6 +15,25 @@ from typing import Any
 import numpy as np
 
 os.environ.setdefault("MPLBACKEND", "Agg")
+
+
+def _plotly_write_image(fig: Any, path: str, **kw: Any) -> None:
+    """Wrapper around fig.write_image that scopes a narrow warning filter.
+
+    Plotly 6.x emits an internal DeprecationWarning whenever write_image() is
+    called — the message tells callers to upgrade past Sep-2025, but the
+    warning originates inside plotly's own code path (not ours) and we are
+    already on kaleido 1.x which is the post-deprecation API. We suppress only
+    that specific DeprecationWarning by category + message, scoped to the call.
+    """
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            # (?s) = DOTALL — plotly's message starts with '\n', so '.' must match newlines
+            message=r"(?s).*Support for the 'engine' argument is deprecated.*",
+            category=DeprecationWarning,
+        )
+        fig.write_image(path, **kw)
 
 import matplotlib.pyplot as plt  # noqa: E402
 import matplotlib.patches as mpatches  # noqa: E402
@@ -503,7 +523,7 @@ def render_plotly_rankings(data: dict[str, Any], figures_dir: Path) -> None:
         labels={"median": "λ (posterior median)", "entry_id": "Entry"},
     )
     fig.update_layout(height=600, width=1000, yaxis={"categoryorder": "total ascending"})
-    fig.write_image(str(figures_dir / "plotly_rankings.png"), width=1000, height=600)
+    _plotly_write_image(fig, str(figures_dir / "plotly_rankings.png"), width=1000, height=600)
 
 
 def render_oos_treemap(data: dict[str, Any], figures_dir: Path) -> None:
@@ -548,7 +568,7 @@ def render_oos_treemap(data: dict[str, Any], figures_dir: Path) -> None:
             names=["No OOS data"], parents=[""], values=[1],
             title="Out-of-Scope Incidents (no data)",
         )
-        fig.write_image(str(figures_dir / "oos_treemap.png"), width=1000, height=600)
+        _plotly_write_image(fig, str(figures_dir / "oos_treemap.png"), width=1000, height=600)
         return
 
     import pandas as pd
@@ -562,7 +582,7 @@ def render_oos_treemap(data: dict[str, Any], figures_dir: Path) -> None:
         title=f"Out-of-Scope Incidents by Theme ({sum(cluster_counts.values())} total)",
     )
     fig.update_layout(width=1000, height=600)
-    fig.write_image(str(figures_dir / "oos_treemap.png"), width=1000, height=600)
+    _plotly_write_image(fig, str(figures_dir / "oos_treemap.png"), width=1000, height=600)
 
 
 def render_sankey_confusion(data: dict[str, Any], figures_dir: Path) -> None:
@@ -589,7 +609,7 @@ def render_sankey_confusion(data: dict[str, Any], figures_dir: Path) -> None:
     if not flows:
         fig = go_plotly.Figure()
         fig.add_annotation(text="No confusion boundary data", x=0.5, y=0.5, showarrow=False)
-        fig.write_image(str(figures_dir / "sankey_confusion.png"), width=1000, height=600)
+        _plotly_write_image(fig, str(figures_dir / "sankey_confusion.png"), width=1000, height=600)
         return
 
     all_labels = sorted(set(
@@ -606,7 +626,7 @@ def render_sankey_confusion(data: dict[str, Any], figures_dir: Path) -> None:
         link=dict(source=source, target=target, value=value),
     )])
     fig.update_layout(title="Model Votes → Consensus (Confusion Boundary)", width=1000, height=600)
-    fig.write_image(str(figures_dir / "sankey_confusion.png"), width=1000, height=600)
+    _plotly_write_image(fig, str(figures_dir / "sankey_confusion.png"), width=1000, height=600)
 
 
 def generate_all_plotly_charts(data: dict[str, Any], figures_dir: Path) -> None:
