@@ -109,6 +109,31 @@ Total: 6,639 incidents.
 
 ![Stratum breakdown](figures/stratum_bar.png)
 
+## Data sources
+
+Corpus A is vendored from a public aggregator and pinned to a specific commit so the analysis is reproducible. The aggregator itself draws from established public incident databases.
+
+**Corpus A (primary, feeds the Bayesian model):**
+
+- Repository: <https://github.com/emmanuelgjr/genai_agentic_incidents>
+- Pinned commit: `e474ce7d0a8b2510e487a6d76d2c70bfe8b05d90` ([snapshot tree](https://github.com/emmanuelgjr/genai_agentic_incidents/tree/e474ce7d0a8b2510e487a6d76d2c70bfe8b05d90))
+- Pull date: 2026-05-20
+
+**Corpus B (independent, corroboration only — never enters the likelihood):**
+
+- Repository: <https://github.com/OWASP/www-project-top-10-for-large-language-model-applications>
+- File: `initiatives/agent_security_initiative/ASI Agentic Exploits & Incidents/ASI_Agentic_Exploits_Incidents.md`
+- Pull date: 2026-05-23
+
+**Upstream public databases feeding Corpus A:**
+
+- **CVE** — Common Vulnerabilities and Exposures, accessed via the National Vulnerability Database: <https://nvd.nist.gov>
+- **GHSA** — GitHub Security Advisories: <https://github.com/advisories>
+- **OSV** — Open Source Vulnerabilities database (records reach Corpus A via the upstream aggregator)
+- **AIAAIC** — AI, Algorithmic, and Automation Incidents and Controversies repository: <https://www.aiaaic.org/aiaaic-repository>
+
+Per-incident reference URLs are preserved in the snapshot at `projects/owasp-llm/cycles/2026/corpora/genai_agentic/24806f1a4f0917f85f7509d6cb2a34b12e56eb902714b37bc2b03a2cf1a246bb/incidents.json`.
+
 # Act 3: Classification — How We Labeled 6,600 Incidents
 
 Each incident was classified by three different large language models: Qwen 235B, Llama 405B, and DeepSeek V3. Each model independently read the incident text and assigned it to one of the 20 taxonomy entries — or marked it "out of scope" if none fit.
@@ -191,6 +216,36 @@ These rankings reflect what the incident data suggests after correcting for clas
 
 For each entry, the Bayesian model gives us a posterior distribution over its true incident rate. We rank entries by their median rate and report a 90% credible interval on the rank. Some entries have tight intervals (the data is informative) and others are wide (less certain). The width tells you how much to trust the rank position.
 
+## The incident-derived ranking
+
+Rows are sorted by the incident-derived median rank, ascending. This is the literal output of the Bayesian model: the order the corpus implies after correcting for measured classifier precision. The expert rank is shown next to it for direct comparison.
+
+| # | Entry | Name | Incident rank (90% CI) | Expert rank (90% CI) | Direction |
+|---|-------|------|------------------------|----------------------|-----------|
+| 1 | LLM02 | Sensitive Information Disclosure | 2 (1–6) | 2 (2–5) | agree |
+| 2 | LLM09 | Misinformation | 2 (1–5) | 13 (9–16) | incidents > vote |
+| 3 | LLM04 ★ | Data and Model Poisoning | 4 (1–9) | 6 (3–8) | incidents > vote |
+| 4 | LLM07 | Hidden Context Exposure | 6 (2–13) | 11.5 (8–15) | incidents > vote |
+| 5 | LLM06 | Excessive Agency | 7 (2–14) | 4 (2–6) | vote > incidents |
+| 6 | NEW-WLA | Weaponized LLM Abuse | 8 (3–15) | 17 (13–20) | incidents > vote |
+| 7 | LLM03 | Supply Chain Vulnerabilities | 9 (3–16) | 5 (2–7) | vote > incidents |
+| 8 | ROLL-CMSB | Cross-Modal Safety Bypass | 9 (3–16) | 10 (7–14) | incidents > vote |
+| 9 | NEW-MA | Model Misalignment | 10 (3–16) | 11 (8–15) | incidents > vote |
+| 10 | LLM05 | Improper Output Handling | 10 (3–16) | 13 (10–16) | incidents > vote |
+| 11 | LLM01 | Prompt Injection | 12 (4–18) | 1 (1–2) | vote > incidents |
+| 12 | LLM08 ★ | Vector and Embedding Weaknesses | 12 (4–19) | 11 (8–15) | vote > incidents |
+| 13 | ROLL-CFAS | Compositional Fine-tuning Alignment Subversion | 14 (4–20) | 18 (15–20) | incidents > vote |
+| 14 | LLM10 ★ | Unbounded Consumption | 15 (5–19) | 8 (5–10) | vote > incidents |
+| 15 | NEW-PMP | Persistent Memory Poisoning | 16 (6–20) | 4 (2–7) | vote > incidents |
+| 16 | NEW-MTIE | MCP Tool Interface Exploitation | 16 (6–20) | 7 (5–9) | vote > incidents |
+| 17 | ROLL-LAPTF | LLM Artifact Promotion Trust Failure | 16 (6–20) | 15 (12–19) | vote > incidents |
+| 18 | ROLL-SICG | Systemic Insecure Code Generation | 16 (6–20) | 16 (13–19) | agree |
+| 19 | NEW-MSDA | Model Scheming and Deceptive Alignment | 16 (6–20) | 19 (16–20) | incidents > vote |
+| 20 | NEW-ITSCD | Inference-Time Side-Channel Disclosure | 17 (6–20) | 19 (17–20) | incidents > vote |
+
+★ marks frame-blind entries (LLM04, LLM08, LLM10) whose incident counts come from a single stratum, so their rank positions carry structural uncertainty beyond the CI.
+
+
 ## How to read the chart
 
 Each row is one taxonomy entry. The diamond marks the **median rank** — the rank position at the center of the posterior distribution. The horizontal bar spans the **90% credible interval** — the range of ranks that the model considers plausible given the data and its uncertainty about precision, recall, and the true incident rate.
@@ -207,7 +262,7 @@ Each row is one taxonomy entry. The diamond marks the **median rank** — the ra
 
 ## Corpus B corroboration
 
-Corpus B is an independent GenAI-agentic incident dataset of 46 records, of which 46 are shared with corpus A. Label agreement on the shared subset is 12/46 (26%). The agreement rate is modest, which is expected given the different sampling frames and labeling rubrics. We treat Corpus B as a cross-check on corpus A rather than as ground truth.
+Corpus B is the OWASP **Agent Security Initiative (ASI) Agentic Exploits & Incidents** tracker — a human-curated list of 46 records maintained inside the OWASP Top 10 for LLM Applications project repository (<https://github.com/OWASP/www-project-top-10-for-large-language-model-applications>). Of those, 46 records are shared with corpus A; label agreement on the shared subset is 12/46 (26%). The agreement rate is modest, which is expected given the different sampling frames and labeling rubrics. We treat Corpus B as a cross-check on corpus A rather than as ground truth.
 
 # Act 7: The Confrontation — Do Experts and Incidents Agree?
 
