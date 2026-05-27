@@ -8,6 +8,7 @@ prose depth, including every deep dive.
 
 from __future__ import annotations
 
+import re
 import shutil
 import subprocess
 from collections import Counter
@@ -15,6 +16,90 @@ from pathlib import Path
 from typing import Any
 
 from engine.threats.register import get_threats_register
+
+
+_FRAME_BLIND = {"LLM04", "LLM08", "LLM10"}
+
+
+def _tidy_rank_cell(text: str) -> str:
+    """Strip trailing `.0` from rank values, keep half-ranks like 11.5 intact.
+
+    Input examples: '12.0 (4.0–18.0)', '11.5 (8.0–15.0)'.
+    """
+
+    def _sub(m: re.Match[str]) -> str:
+        return m.group(1)
+
+    return re.sub(r"(\d+)\.0(?!\d)", _sub, text)
+
+
+def _parse_rank_comparison_rows(md: str) -> list[dict[str, Any]]:
+    """Parse the rank_comparison_report.md table into structured rows.
+
+    Returns a list sorted by lambda (incident-derived) median rank ascending.
+    Each row carries the entry id, both rank+CI strings, and the median ranks
+    as floats for sorting.
+    """
+    rows: list[dict[str, Any]] = []
+    cell_re = re.compile(r"^\s*\|\s*(LLM\d+|NEW-[A-Z]+|ROLL-[A-Z]+)\s*\|")
+    for line in md.splitlines():
+        if not cell_re.match(line):
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) < 6:
+            continue
+        entry_id, lam, vote, tier, direction, _action = cells[:6]
+        lam_med = float(lam.split()[0])
+        vote_med = float(vote.split()[0])
+        rows.append(
+            {
+                "entry_id": entry_id,
+                "lambda": lam,
+                "vote": vote,
+                "tier": tier,
+                "direction": direction,
+                "lambda_med": lam_med,
+                "vote_med": vote_med,
+            }
+        )
+    rows.sort(key=lambda r: (r["lambda_med"], r["vote_med"], r["entry_id"]))
+    return rows
+
+
+def _render_act6_ranking_table(data: dict[str, Any]) -> str:
+    """Render the Act 6 ranking table, sorted by incident-derived rank.
+
+    The table is the climax of the report — the literal answer to "what does
+    the incident data say the Top 10 looks like." Sorted ascending by lambda
+    median so the eye reads the new ordering top-to-bottom.
+    """
+    md = data.get("rank_comparison_md", "")
+    rows = _parse_rank_comparison_rows(md)
+    if not rows:
+        return ""
+    names = data.get("entry_names", {})
+    lines = [
+        "| # | Entry | Name | Incident rank (90% CI) | Expert rank (90% CI) | Direction |",
+        "|---|-------|------|------------------------|----------------------|-----------|",
+    ]
+    for i, r in enumerate(rows, start=1):
+        eid = r["entry_id"]
+        name = names.get(eid, "")
+        marker = " ★" if eid in _FRAME_BLIND else ""
+        direction = r["direction"].replace("votes-over-lambda", "vote > incidents")
+        direction = direction.replace("lambda-over-votes", "incidents > vote")
+        direction = direction.replace("concordant", "agree")
+        lines.append(
+            f"| {i} | {eid}{marker} | {name} | {_tidy_rank_cell(r['lambda'])} | "
+            f"{_tidy_rank_cell(r['vote'])} | {direction} |"
+        )
+    lines.append("")
+    lines.append(
+        "★ marks frame-blind entries (LLM04, LLM08, LLM10) whose incident counts "
+        "come from a single stratum, so their rank positions carry structural "
+        "uncertainty beyond the CI.\n"
+    )
+    return "\n".join(lines) + "\n"
 
 REPORT_STEM = "2026_top_10_llm_update_what_the_data_says"
 
@@ -250,6 +335,42 @@ def _render_markdown(data: dict[str, Any]) -> str:  # noqa: PLR0915 — single-p
         lines.append(f"- **{stratum}**: {count:,} incidents\n")
     lines.append(f"\nTotal: {total_incidents:,} incidents.\n\n")
     lines.append("![Stratum breakdown](figures/stratum_bar.png)\n\n")
+
+    lines.append("## Data sources\n\n")
+    lines.append(
+        "Corpus A is vendored from a public aggregator and pinned to a specific "
+        "commit so the analysis is reproducible. The aggregator itself draws from "
+        "established public incident databases.\n\n"
+    )
+    lines.append(
+        "**Corpus A (primary, feeds the Bayesian model):**\n\n"
+        "- Repository: <https://github.com/emmanuelgjr/genai_agentic_incidents>\n"
+        "- Pinned commit: `e474ce7d0a8b2510e487a6d76d2c70bfe8b05d90` "
+        "([snapshot tree](https://github.com/emmanuelgjr/genai_agentic_incidents/tree/e474ce7d0a8b2510e487a6d76d2c70bfe8b05d90))\n"
+        "- Pull date: 2026-05-20\n\n"
+    )
+    lines.append(
+        "**Corpus B (independent, corroboration only — never enters the likelihood):**\n\n"
+        "- Repository: <https://github.com/OWASP/www-project-top-10-for-large-language-model-applications>\n"
+        "- File: `initiatives/agent_security_initiative/ASI Agentic Exploits & Incidents/ASI_Agentic_Exploits_Incidents.md`\n"
+        "- Pull date: 2026-05-23\n\n"
+    )
+    lines.append(
+        "**Upstream public databases feeding Corpus A:**\n\n"
+        "- **CVE** — Common Vulnerabilities and Exposures, accessed via the "
+        "National Vulnerability Database: <https://nvd.nist.gov>\n"
+        "- **GHSA** — GitHub Security Advisories: <https://github.com/advisories>\n"
+        "- **OSV** — Open Source Vulnerabilities database (records reach Corpus A "
+        "via the upstream aggregator)\n"
+        "- **AIAAIC** — AI, Algorithmic, and Automation Incidents and Controversies "
+        "repository: <https://www.aiaaic.org/aiaaic-repository>\n\n"
+    )
+    lines.append(
+        "Per-incident reference URLs are preserved in the snapshot at "
+        "`projects/owasp-llm/cycles/2026/corpora/genai_agentic/"
+        "24806f1a4f0917f85f7509d6cb2a34b12e56eb902714b37bc2b03a2cf1a246bb/"
+        "incidents.json`.\n\n"
+    )
 
     # ─── Act 3 ───
     lines.append("# Act 3: Classification — How We Labeled 6,600 Incidents\n\n")
@@ -496,6 +617,18 @@ def _render_markdown(data: dict[str, Any]) -> str:  # noqa: PLR0915 — single-p
         "much to trust the rank position.\n\n"
     )
 
+    lines.append("## The incident-derived ranking\n\n")
+    lines.append(
+        "Rows are sorted by the incident-derived median rank, ascending. This is "
+        "the literal output of the Bayesian model: the order the corpus implies "
+        "after correcting for measured classifier precision. The expert rank is "
+        "shown next to it for direct comparison.\n\n"
+    )
+    table_md = _render_act6_ranking_table(data)
+    if table_md:
+        lines.append(table_md)
+        lines.append("\n")
+
     lines.append("## How to read the chart\n\n")
     lines.append(
         "Each row is one taxonomy entry. The diamond marks the **median rank** — the "
@@ -532,8 +665,12 @@ def _render_markdown(data: dict[str, Any]) -> str:  # noqa: PLR0915 — single-p
         cb_total = cb.get("corpus_b_incident_count", 0)
         lines.append("## Corpus B corroboration\n\n")
         lines.append(
-            f"Corpus B is an independent GenAI-agentic incident dataset of {cb_total} "
-            f"records, of which {overlap} are shared with corpus A. Label agreement "
+            f"Corpus B is the OWASP **Agent Security Initiative (ASI) Agentic "
+            f"Exploits & Incidents** tracker — a human-curated list of {cb_total} "
+            f"records maintained inside the OWASP Top 10 for LLM Applications "
+            "project repository "
+            "(<https://github.com/OWASP/www-project-top-10-for-large-language-model-applications>). "
+            f"Of those, {overlap} records are shared with corpus A; label agreement "
             f"on the shared subset is {agree}/{overlap} ({rate:.0%}). The agreement "
             "rate is modest, which is expected given the different sampling frames "
             "and labeling rubrics. We treat Corpus B as a cross-check on corpus A "
