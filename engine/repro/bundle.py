@@ -12,6 +12,7 @@ class ReproductionBundle:
     snapshot_hash: str
     manifest_hash: str
     lockfile_hash: str
+    goldset_hash: str
     provenance: dict[str, str]
 
     def to_json(self) -> str:
@@ -23,6 +24,7 @@ class ReproductionBundle:
                     "snapshot_hash": self.snapshot_hash,
                     "manifest_hash": self.manifest_hash,
                     "lockfile_hash": self.lockfile_hash,
+                    "goldset_hash": self.goldset_hash,
                     "provenance": self.provenance,
                 },
                 sort_keys=True,

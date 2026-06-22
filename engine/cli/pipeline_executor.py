@@ -411,6 +411,7 @@ def write_reproduction_bundle(
         snapshot_hash=snapshot_hash,
         manifest_hash=manifest_hash,
         lockfile_hash=lockfile_hash,
+        goldset_hash="none",
         provenance={
             "stage2_manifest_hash": stage2_manifest_hash,
             "calibration_hash": calibration_hash,

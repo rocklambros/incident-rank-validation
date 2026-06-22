@@ -15,6 +15,7 @@ def _make_bundle() -> ReproductionBundle:
         snapshot_hash="sha256:abc123",
         manifest_hash="sha256:def456",
         lockfile_hash="sha256:ghi789",
+        goldset_hash="none",
         provenance={"adapter": "synthetic", "timestamp": "2026-01-01T00:00:00Z"},
     )
 
@@ -66,6 +67,7 @@ class TestReproductionBundle:
             snapshot_hash="snap123",
             manifest_hash="man456",
             lockfile_hash="lock789",
+            goldset_hash="none",
             provenance={
                 "stage2_manifest_hash": "s2hash",
                 "calibration_hash": "calhash",

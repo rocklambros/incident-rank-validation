@@ -554,10 +554,16 @@ def cal_calibrate(cycle: Path, rubric: Path) -> None:
     }
     (cal_dir / "diagnostic.json").write_text(json.dumps(diag_data, indent=2) + "\n")
 
+    input_hashes: dict[str, str] = {"tally": tally_prov.output_hash}
+    labeled_path = cycle / "classify" / "labeled_incidents.json"
+    if labeled_path.exists():
+        labeled = json.loads(labeled_path.read_text())
+        input_hashes["classifier_labels"] = hash_json(labeled)
+
     prov = StageProvenance(
         stage_name="calibrate",
         manifest_lock_hash=tally_prov.manifest_lock_hash,
-        input_hashes={"tally": tally_prov.output_hash},
+        input_hashes=input_hashes,
         output_hash=hash_json(posteriors_data),
         timestamp=datetime.now(UTC).isoformat(),
         engine_version=__version__,

@@ -657,6 +657,7 @@ def repro_bundle_cmd(cycle: Path, output: Path) -> None:
 
     manifest_data = json.loads((prereg / "manifest.json").read_text())
     cycle_id = manifest_data.get("cycle_id", cycle.name)
+    goldset_hash = manifest_data.get("goldset_hash", "none")
 
     bundle = ReproductionBundle(
         cycle_id=cycle_id,
@@ -664,6 +665,7 @@ def repro_bundle_cmd(cycle: Path, output: Path) -> None:
         snapshot_hash=snap_hash,
         manifest_hash=manifest_hash,
         lockfile_hash=lockfile_hash,
+        goldset_hash=goldset_hash,
         provenance=provenance,
     )
 
