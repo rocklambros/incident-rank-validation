@@ -267,6 +267,15 @@ def execute_synthetic_pipeline(
 
         total_entries = len(entries)
 
+        # Build entry_strata from observed_counts keys (entry, stratum) pairs
+        from collections import defaultdict as _defaultdict
+        _entry_strata_sets: dict[str, set[str]] = _defaultdict(set)
+        for (eid, s) in observed_counts:
+            _entry_strata_sets[eid].add(s)
+        entry_strata: dict[str, tuple[str, ...]] = {
+            e: tuple(sorted(ss)) for e, ss in _entry_strata_sets.items()
+        }
+
         # 17. Compute concordance
         concordance_result = compute_concordance(
             inference_result,
@@ -277,6 +286,8 @@ def execute_synthetic_pipeline(
             total_entries,
             meaningful_kappa_n,
             measurability_minimum,
+            entry_strata=entry_strata,
+            stratum_sizes=stratum_sizes_int,
         )
 
         # 18. Compute selection bias

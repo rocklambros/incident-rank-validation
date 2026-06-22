@@ -425,7 +425,22 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
         ]
         measurable_count = len(measurable_ids)
 
-        # Compute concordance with correct 8-parameter signature
+        # Build entry_strata and stratum_sizes from labeled incidents
+        from engine.cli.pipeline_executor import _build_counts_from_labeled
+        classify_dir = cycle / "classify"
+        labeled_incidents_path = classify_dir / "labeled_incidents.json"
+        labeled_incidents = json.loads(labeled_incidents_path.read_text())
+        _obs_counts, stratum_sizes, _, _ = _build_counts_from_labeled(labeled_incidents)
+        # Build entry_strata: each entry maps to the tuple of strata it appears in
+        from collections import defaultdict as _defaultdict
+        _entry_strata_sets: dict[str, set[str]] = _defaultdict(set)
+        for (eid, s) in _obs_counts:
+            _entry_strata_sets[eid].add(s)
+        entry_strata: dict[str, tuple[str, ...]] = {
+            e: tuple(sorted(ss)) for e, ss in _entry_strata_sets.items()
+        }
+
+        # Compute concordance
         concordance = compute_concordance(
             inference_result=inference_result,
             vote_posterior=vote_posterior,
@@ -435,6 +450,8 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
             total_count=len(entry_ids),
             meaningful_kappa_n=manifest.meaningful_kappa_n,
             measurability_minimum=manifest.measurability_minimum,
+            entry_strata=entry_strata,
+            stratum_sizes=stratum_sizes,
         )
 
         wandb_logger.log_concordance(

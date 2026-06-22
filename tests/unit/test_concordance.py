@@ -16,6 +16,15 @@ from engine.vote.bootstrap import VoteRankPosterior
 # ---------------------------------------------------------------------------
 
 
+def _make_entry_strata(
+    entries: tuple[str, ...],
+) -> tuple[dict[str, tuple[str, ...]], dict[str, int]]:
+    """Build minimal single-stratum entry_strata and stratum_sizes for tests."""
+    entry_strata = {e: ("default",) for e in entries}
+    stratum_sizes = {"default": max(len(entries) * 10, 1)}
+    return entry_strata, stratum_sizes
+
+
 def _make_inference(
     entry_ids: tuple[str, ...],
     n_samples: int = 100,
@@ -73,6 +82,7 @@ class TestComputeConcordance:
         entries = ("A", "B")
         inf = _make_inference(entries)
         vote = _make_vote_posterior(entries)
+        entry_strata, stratum_sizes = _make_entry_strata(entries)
 
         result = compute_concordance(
             inference_result=inf,
@@ -83,6 +93,8 @@ class TestComputeConcordance:
             total_count=10,
             meaningful_kappa_n=5,  # 2 < 5
             measurability_minimum=3,
+            entry_strata=entry_strata,
+            stratum_sizes=stratum_sizes,
         )
 
         assert result.weighted_kappa_median is None
@@ -94,6 +106,7 @@ class TestComputeConcordance:
         entries = tuple(f"E{i}" for i in range(10))
         inf = _make_inference(entries, n_samples=200)
         vote = _make_vote_posterior(entries, n_bootstrap=200)
+        entry_strata, stratum_sizes = _make_entry_strata(entries)
 
         result = compute_concordance(
             inference_result=inf,
@@ -104,6 +117,8 @@ class TestComputeConcordance:
             total_count=15,
             meaningful_kappa_n=5,
             measurability_minimum=5,
+            entry_strata=entry_strata,
+            stratum_sizes=stratum_sizes,
         )
 
         assert result.weighted_kappa_median is not None
@@ -116,6 +131,7 @@ class TestComputeConcordance:
         entries = ("A", "B", "C", "D", "E")
         inf = _make_inference(entries, n_samples=50)
         vote = _make_vote_posterior(entries, n_bootstrap=50)
+        entry_strata, stratum_sizes = _make_entry_strata(entries)
 
         result = compute_concordance(
             inference_result=inf,
@@ -126,6 +142,8 @@ class TestComputeConcordance:
             total_count=20,
             meaningful_kappa_n=3,
             measurability_minimum=3,
+            entry_strata=entry_strata,
+            stratum_sizes=stratum_sizes,
         )
 
         assert abs(result.coverage_ratio - 0.25) < 1e-9
@@ -135,6 +153,7 @@ class TestComputeConcordance:
         entries = ("A", "B", "C", "D", "E")
         inf = _make_inference(entries, n_samples=50)
         vote = _make_vote_posterior(entries, n_bootstrap=50)
+        entry_strata, stratum_sizes = _make_entry_strata(entries)
 
         result = compute_concordance(
             inference_result=inf,
@@ -145,14 +164,18 @@ class TestComputeConcordance:
             total_count=20,
             meaningful_kappa_n=3,
             measurability_minimum=10,  # 5 < 10
+            entry_strata=entry_strata,
+            stratum_sizes=stratum_sizes,
         )
 
         assert result.below_prereg_minimum is True
 
     def test_no_common_entries_returns_none(self) -> None:
         """When inference and vote have no common entries, kappa is None."""
-        inf = _make_inference(("A", "B", "C", "D", "E"), n_samples=50)
+        inf_entries = ("A", "B", "C", "D", "E")
+        inf = _make_inference(inf_entries, n_samples=50)
         vote = _make_vote_posterior(("X", "Y", "Z", "W", "V"), n_bootstrap=50)
+        entry_strata, stratum_sizes = _make_entry_strata(inf_entries)
 
         result = compute_concordance(
             inference_result=inf,
@@ -163,6 +186,8 @@ class TestComputeConcordance:
             total_count=10,
             meaningful_kappa_n=3,
             measurability_minimum=3,
+            entry_strata=entry_strata,
+            stratum_sizes=stratum_sizes,
         )
 
         assert result.weighted_kappa_median is None
@@ -172,6 +197,7 @@ class TestComputeConcordance:
         entries = tuple(f"E{i}" for i in range(6))
         inf = _make_inference(entries, n_samples=50)
         vote = _make_vote_posterior(entries, n_bootstrap=50)
+        entry_strata, stratum_sizes = _make_entry_strata(entries)
 
         result = compute_concordance(
             inference_result=inf,
@@ -182,6 +208,8 @@ class TestComputeConcordance:
             total_count=6,
             meaningful_kappa_n=3,
             measurability_minimum=3,
+            entry_strata=entry_strata,
+            stratum_sizes=stratum_sizes,
         )
 
         assert "Internal triangulation" in result.standing_caveat
@@ -208,6 +236,7 @@ class TestCiMethodField:
         entries = ("A", "B")
         inf = _make_inference(entries)
         vote = _make_vote_posterior(entries)
+        entry_strata, stratum_sizes = _make_entry_strata(entries)
         result = compute_concordance(
             inference_result=inf,
             vote_posterior=vote,
@@ -217,6 +246,8 @@ class TestCiMethodField:
             total_count=10,
             meaningful_kappa_n=5,
             measurability_minimum=3,
+            entry_strata=entry_strata,
+            stratum_sizes=stratum_sizes,
         )
         assert result.ci_method == "paired_draw_percentile"
 
@@ -225,6 +256,7 @@ class TestCiMethodField:
         entries = tuple(f"E{i}" for i in range(10))
         inf = _make_inference(entries, n_samples=200)
         vote = _make_vote_posterior(entries, n_bootstrap=200)
+        entry_strata, stratum_sizes = _make_entry_strata(entries)
         result = compute_concordance(
             inference_result=inf,
             vote_posterior=vote,
@@ -234,6 +266,8 @@ class TestCiMethodField:
             total_count=15,
             meaningful_kappa_n=5,
             measurability_minimum=5,
+            entry_strata=entry_strata,
+            stratum_sizes=stratum_sizes,
         )
         assert result.ci_method == "paired_draw_percentile"
 
