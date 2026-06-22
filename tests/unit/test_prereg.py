@@ -254,6 +254,11 @@ class TestLock:
             "rollup_p_supported": 0.5,
             "rollup_p_contradicted": 0.5,
             "lambda_min": 0.99,
+            # schema_version=2 triggers v2 canonical form → different hash
+            "schema_version": 2,
+            # goldset_hash is intentionally excluded from the v1 canonical form;
+            # it is listed here only so the coverage assert stays exhaustive.
+            "goldset_hash": "intentionally_non_breaking_under_v1",
         }
 
         manifest_fields = {f.name for f in fields(m)}
@@ -261,10 +266,16 @@ class TestLock:
             f"mutation table is missing fields: {manifest_fields - set(mutations.keys())}"
         )
 
+        # goldset_hash is intentionally excluded from the v1 lock hash (Plan 8a Task 2).
+        lock_invariant_fields = {"goldset_hash"}
         for field_name, alt_value in mutations.items():
             mutated = replace(m, **{field_name: alt_value})
-            with pytest.raises(ValueError, match="lock hash mismatch"):
-                verify_lock(mutated, lock_path)
+            if field_name in lock_invariant_fields:
+                # These fields do NOT invalidate a v1 lock — that's by design.
+                verify_lock(mutated, lock_path)  # must not raise
+            else:
+                with pytest.raises(ValueError, match="lock hash mismatch"):
+                    verify_lock(mutated, lock_path)
 
 
 # ---------------------------------------------------------------------------

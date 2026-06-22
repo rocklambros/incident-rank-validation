@@ -58,6 +58,8 @@ class PreregManifest:
     rollup_p_supported: float = 0.8
     rollup_p_contradicted: float = 0.2
     lambda_min: float | None = None  # noise floor; default: prior_scale * 0.02
+    schema_version: int = 1  # 1 = original field set; 2 = adds goldset_hash
+    goldset_hash: str | None = None  # bound only when schema_version >= 2
 
     def __post_init__(self) -> None:
         if self.lambda_min is None:
@@ -73,16 +75,18 @@ class PreregManifest:
         return self.statistical_reviewer.viewed_results_before_signoff
 
     def to_dict(self) -> dict[str, object]:
-        """Convert to a dict suitable for JSON serialization and hashing.
+        """Canonical dict for JSON serialization and hashing.
 
-        Recursively converts nested dataclasses and tuples.  Use
-        ``json.dumps(manifest.to_dict(), sort_keys=True, separators=(",", ":"))``
-        for canonical hashing.
+        When schema_version == 1 the canonical form is the ORIGINAL field set
+        (no schema_version, no goldset_hash) so pre-existing v1 locks stay
+        byte-stable. v2+ includes the new fields. (Plan 8a, SD3/RM13.)
         """
         result: dict[str, object] = {}
         for field in dataclasses.fields(self):
-            value = getattr(self, field.name)
-            result[field.name] = _dc_to_dict(value)
+            result[field.name] = _dc_to_dict(getattr(self, field.name))
+        if self.schema_version == 1:
+            result.pop("schema_version", None)
+            result.pop("goldset_hash", None)
         return result
 
     def to_json(self) -> str:
