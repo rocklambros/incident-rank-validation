@@ -59,6 +59,14 @@ target-version = "py312"
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM"]
 
+# Notebooks are hand-maintained narrative artifacts, not importable library code.
+# E402 (imports-not-at-top) is inherent to setup cells that call
+# warnings.filterwarnings() before importing noisy libraries; E501 (line length)
+# is relaxed for inline HTML/URL strings in the narrative. Engine, tools, and
+# tests stay under the full ruleset.
+[tool.ruff.lint.per-file-ignores]
+"*.ipynb" = ["E402", "E501"]
+
 [tool.mypy]
 strict = true
 python_version = "3.12"

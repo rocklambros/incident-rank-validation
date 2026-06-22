@@ -30,7 +30,7 @@ class MockRunPodClient(RunPodClient):
         self._responses = list(responses)
         self._call_count = 0
 
-    def run_sync(self, prompt: str, seed: int) -> RunPodResponse:
+    def run_sync(self, prompt: str | list[dict[str, str]], seed: int) -> RunPodResponse:
         if not self._responses:
             raise RunPodError("No more mock responses")
         resp = self._responses.pop(0)

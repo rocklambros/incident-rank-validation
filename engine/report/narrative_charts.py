@@ -35,8 +35,8 @@ def _plotly_write_image(fig: Any, path: str, **kw: Any) -> None:
         )
         fig.write_image(path, **kw)
 
-import matplotlib.pyplot as plt  # noqa: E402
 import matplotlib.patches as mpatches  # noqa: E402
+import matplotlib.pyplot as plt  # noqa: E402
 import seaborn as sns  # noqa: E402
 
 ENTRY_IDS = [
@@ -111,7 +111,7 @@ def render_tier_donut(data: dict[str, Any], figures_dir: Path) -> None:
         values, labels=labels, autopct="%1.0f%%", startangle=90,
         colors=colors_list, pctdistance=0.75,
     )
-    centre_circle = plt.Circle((0, 0), 0.50, fc="white")
+    centre_circle = mpatches.Circle((0, 0), 0.50, fc="white")
     ax.add_patch(centre_circle)
     ax.set_title("Consensus Tier Distribution")
     fig.tight_layout()
@@ -127,7 +127,11 @@ def render_confusion_heatmap(data: dict[str, Any], figures_dir: Path) -> None:
     for p in data["prelabels"]:
         if p.get("triage_tier") in ("split", "disagree") and p.get("consensus") != "out-of-scope":
             votes = p.get("model_votes", [])
-            unique_entries = {v["entry_id"] for v in votes if isinstance(v, dict) and v.get("entry_id") in set(in_scope_entries)}
+            unique_entries = {
+                v["entry_id"]
+                for v in votes
+                if isinstance(v, dict) and v.get("entry_id") in set(in_scope_entries)
+            }
             entries_list = sorted(unique_entries)
             for i_idx in range(len(entries_list)):
                 for j_idx in range(i_idx + 1, len(entries_list)):
@@ -188,7 +192,7 @@ def render_precision_posteriors(data: dict[str, Any], figures_dir: Path) -> None
     x = np.linspace(0, 1, 200)
 
     fig, axes = plt.subplots(2, 2, figsize=(10, 8))
-    for ax, eid in zip(axes.flat, key_entries):
+    for ax, eid in zip(axes.flat, key_entries, strict=False):
         key = f"{eid}::security"
         if key in precision:
             alpha = precision[key]["alpha"]
@@ -215,7 +219,7 @@ def render_ridge_plot(data: dict[str, Any], figures_dir: Path) -> None:
     sorted_entries = sorted(entry_ids, key=lambda e: medians[e], reverse=True)
 
     fig, axes = plt.subplots(len(sorted_entries), 1, figsize=(10, 16), sharex=True)
-    for ax, eid in zip(axes, sorted_entries):
+    for ax, eid in zip(axes, sorted_entries, strict=False):
         idx = entry_ids.index(eid)
         vals = lambda_samples[:, idx]
         color = ENTRY_COLORS.get(eid, "#999999")
@@ -257,13 +261,15 @@ def render_dumbbell_chart(data: dict[str, Any], figures_dir: Path) -> None:
 
     fig, ax = plt.subplots(figsize=(10, 12))
     y_pos = range(len(sorted_entries))
-    for y, eid in zip(y_pos, sorted_entries):
+    for y, eid in zip(y_pos, sorted_entries, strict=False):
         ci = rank_cis[eid]
         color = ENTRY_COLORS.get(eid, "#999999")
         ax.plot([ci[0], ci[1]], [y, y], color=color, linewidth=2, alpha=0.6)
         ax.scatter([rank_medians[eid]], [y], color=color, s=80, zorder=5)
     ax.set_yticks(y_pos)
-    ax.set_yticklabels([f"{e} ({data['entry_names'].get(e, e)})" for e in sorted_entries], fontsize=9)
+    ax.set_yticklabels(
+        [f"{e} ({data['entry_names'].get(e, e)})" for e in sorted_entries], fontsize=9
+    )
     ax.set_xlabel("Rank (90% CI)")
     ax.set_title("Incident-Derived Rankings with Uncertainty")
     ax.invert_xaxis()
@@ -274,7 +280,6 @@ def render_dumbbell_chart(data: dict[str, Any], figures_dir: Path) -> None:
 
 def render_bump_chart(data: dict[str, Any], figures_dir: Path) -> None:
     """Act 7: Bump chart comparing expert and incident ranks."""
-    conc = data["concordance"]
     rank_md = data["rank_comparison_md"]
 
     vote_ranks: dict[str, float] = {}
@@ -336,10 +341,14 @@ def render_ci_overlap(data: dict[str, Any], figures_dir: Path) -> None:
                     vote_part = parts[2]
                     lam_med = float(lam_part.split("(")[0].strip())
                     lam_ci_str = lam_part.split("(")[1].rstrip(")")
-                    lam_lo, lam_hi = [float(x) for x in lam_ci_str.replace("–", "-").split("-") if x]
+                    lam_lo, lam_hi = [
+                        float(x) for x in lam_ci_str.replace("–", "-").split("-") if x
+                    ]
                     vote_med = float(vote_part.split("(")[0].strip())
                     vote_ci_str = vote_part.split("(")[1].rstrip(")")
-                    vote_lo, vote_hi = [float(x) for x in vote_ci_str.replace("–", "-").split("-") if x]
+                    vote_lo, vote_hi = [
+                        float(x) for x in vote_ci_str.replace("–", "-").split("-") if x
+                    ]
                     entries_data.append({
                         "entry_id": eid, "lam_med": lam_med, "lam_lo": lam_lo, "lam_hi": lam_hi,
                         "vote_med": vote_med, "vote_lo": vote_lo, "vote_hi": vote_hi,
@@ -357,8 +366,17 @@ def render_ci_overlap(data: dict[str, Any], figures_dir: Path) -> None:
     fig, ax = plt.subplots(figsize=(12, 10))
     for i, ed in enumerate(entries_data):
         color = ENTRY_COLORS.get(ed["entry_id"], "#999999")
-        ax.plot([ed["lam_lo"], ed["lam_hi"]], [i - 0.1, i - 0.1], color=color, linewidth=3, alpha=0.7)
-        ax.plot([ed["vote_lo"], ed["vote_hi"]], [i + 0.1, i + 0.1], color=color, linewidth=3, alpha=0.4, linestyle="--")
+        ax.plot(
+            [ed["lam_lo"], ed["lam_hi"]], [i - 0.1, i - 0.1], color=color, linewidth=3, alpha=0.7
+        )
+        ax.plot(
+            [ed["vote_lo"], ed["vote_hi"]],
+            [i + 0.1, i + 0.1],
+            color=color,
+            linewidth=3,
+            alpha=0.4,
+            linestyle="--",
+        )
         ax.scatter([ed["lam_med"]], [i - 0.1], color=color, s=60, zorder=5)
         ax.scatter([ed["vote_med"]], [i + 0.1], color=color, s=60, zorder=5, marker="^")
     ax.set_yticks(range(len(entries_data)))
@@ -399,7 +417,9 @@ def render_paired_dots(data: dict[str, Any], figures_dir: Path) -> None:
     plt.close(fig)
 
 
-def render_theme_bars(data: dict[str, Any], figures_dir: Path, entry_id: str, filename: str) -> None:
+def render_theme_bars(
+    data: dict[str, Any], figures_dir: Path, entry_id: str, filename: str
+) -> None:
     """Act 8: Theme keyword bars for a specific entry."""
     theme_keywords = {
         "deepfake": ["deepfake", "synthetic media", "face swap"],
@@ -432,7 +452,7 @@ def render_theme_bars(data: dict[str, Any], figures_dir: Path, entry_id: str, fi
         return
 
     sorted_themes = sorted(theme_counts.items(), key=lambda x: x[1], reverse=True)
-    themes, counts = zip(*sorted_themes)
+    themes, counts = zip(*sorted_themes, strict=False)
 
     fig, ax = plt.subplots(figsize=(8, 4))
     color = ENTRY_COLORS.get(entry_id, "#999999")
@@ -453,7 +473,11 @@ def render_confusion_matrix_3x3(data: dict[str, Any], figures_dir: Path) -> None
     pair_disagree: dict[tuple[str, str], int] = defaultdict(int)
     for p in data["prelabels"]:
         votes = p.get("model_votes", [])
-        unique_votes = {v["entry_id"] for v in votes if isinstance(v, dict) and v.get("entry_id") in set(boundary_entries)}
+        unique_votes = {
+            v["entry_id"]
+            for v in votes
+            if isinstance(v, dict) and v.get("entry_id") in set(boundary_entries)
+        }
         if len(unique_votes) >= 2:
             vote_list = sorted(unique_votes)
             for i_idx in range(len(vote_list)):
@@ -510,7 +534,9 @@ def render_plotly_rankings(data: dict[str, Any], figures_dir: Path) -> None:
         med = float(np.median(lambda_samples[:, i]))
         lo = float(np.percentile(lambda_samples[:, i], 5))
         hi = float(np.percentile(lambda_samples[:, i], 95))
-        rows.append({"entry_id": eid, "name": entry_names.get(eid, eid), "median": med, "lo": lo, "hi": hi})
+        rows.append(
+            {"entry_id": eid, "name": entry_names.get(eid, eid), "median": med, "lo": lo, "hi": hi}
+        )
 
     import pandas as pd
     df = pd.DataFrame(rows).sort_values("median", ascending=False)
@@ -536,15 +562,35 @@ def render_oos_treemap(data: dict[str, Any], figures_dir: Path) -> None:
     ]
 
     theme_keywords = {
-        "Surveillance / Facial Recognition": ["surveillance", "facial recognition", "biometric", "monitoring"],
-        "Algorithmic Discrimination": ["discrimination", "bias", "discriminat", "racial", "gender bias", "hiring"],
-        "Deepfake / Synthetic Media": ["deepfake", "deep fake", "synthetic media", "face swap", "generated image"],
+        "Surveillance / Facial Recognition": [
+            "surveillance",
+            "facial recognition",
+            "biometric",
+            "monitoring",
+        ],
+        "Algorithmic Discrimination": [
+            "discrimination",
+            "bias",
+            "discriminat",
+            "racial",
+            "gender bias",
+            "hiring",
+        ],
+        "Deepfake / Synthetic Media": [
+            "deepfake",
+            "deep fake",
+            "synthetic media",
+            "face swap",
+            "generated image",
+        ],
         "Autonomous Vehicles": ["self-driving", "autonomous vehicle", "autopilot", "tesla"],
         "AI Labor & Employment": ["worker", "labor", "employment", "automation", "job loss"],
         "Copyright & IP": ["copyright", "intellectual property", "plagiarism", "training data"],
         "CSAM / NCII": ["csam", "child sexual", "ncii", "non-consensual intimate"],
         "Healthcare AI": ["healthcare", "medical", "diagnosis", "patient", "clinical"],
-        "Military / Weapons": ["military", "weapon", "drone strike", "lethal autonomous", "warfare"],
+        "Military / Weapons": [
+            "military", "weapon", "drone strike", "lethal autonomous", "warfare",
+        ],
         "Other": [],
     }
 
@@ -601,7 +647,11 @@ def render_sankey_confusion(data: dict[str, Any], figures_dir: Path) -> None:
             if not isinstance(v, dict):
                 continue
             model_id = v.get("model_id", "")
-            model_short = model_id.split("/")[-1].split("-")[0].lower() if "/" in model_id else model_id.lower()
+            model_short = (
+                model_id.split("/")[-1].split("-")[0].lower()
+                if "/" in model_id
+                else model_id.lower()
+            )
             vote_entry = v.get("entry_id", "")
             if vote_entry in boundary:
                 flows[(f"{model_short}: {vote_entry}", consensus)] += 1

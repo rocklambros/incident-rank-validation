@@ -6,7 +6,7 @@ import logging
 
 from engine.classify.cost_tracker import CostTracker
 from engine.classify.runpod_client import RunPodClient, RunPodError
-from engine.classify.stage2_prompt import build_messages, build_prompt, compute_prompt_hash
+from engine.classify.stage2_prompt import build_messages, compute_prompt_hash
 from engine.classify.stage2_protocol import Stage2Classification
 from engine.schema import IncidentRecord
 

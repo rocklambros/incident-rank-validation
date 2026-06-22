@@ -11,6 +11,7 @@ import json
 import logging
 import threading
 from pathlib import Path
+from typing import Any
 
 import click
 
@@ -29,7 +30,6 @@ logger = logging.getLogger(__name__)
               help="Use direct pod URLs instead of serverless endpoints")
 def reclassify(cycle: Path, execute: bool, max_concurrent: int, pod_mode: bool) -> None:
     """Re-classify Stage-2 incidents using multi-model consensus."""
-    import os
 
     from engine.cli.secrets import load_secret
 
@@ -85,12 +85,18 @@ def reclassify(cycle: Path, execute: bool, max_concurrent: int, pod_mode: bool) 
             "  RUNPOD_MODEL_3_ENDPOINT=<endpoint_id>  RUNPOD_MODEL_3_NAME=<model_name>"
         )
 
-    click.echo(f"Models configured: {len(model_configs)} ({'pod' if pod_mode else 'serverless'} mode)")
+    click.echo(
+        f"Models configured: {len(model_configs)} "
+        f"({'pod' if pod_mode else 'serverless'} mode)"
+    )
     for name, target in model_configs:
         click.echo(f"  {name} → {target}")
 
     total_calls = len(s2_incidents) * len(model_configs)
-    click.echo(f"\nPlan: {len(s2_incidents)} incidents × {len(model_configs)} models = {total_calls} API calls")
+    click.echo(
+        f"\nPlan: {len(s2_incidents)} incidents × {len(model_configs)} models "
+        f"= {total_calls} API calls"
+    )
 
     if not execute:
         click.echo("Run with --execute to start reclassification.")
@@ -144,7 +150,7 @@ def reclassify(cycle: Path, execute: bool, max_concurrent: int, pod_mode: bool) 
 
     # Write results as we go for checkpoint/resume
     with checkpoint_path.open("a", encoding="utf-8") as f:
-        def _classify_one(incident: IncidentRecord) -> dict:
+        def _classify_one(incident: IncidentRecord) -> dict[str, Any]:
             result = labeler.pre_label(incident)
             return {
                 "incident_id": result.incident_id,
@@ -214,9 +220,9 @@ def _load_model_configs(pod_mode: bool = False) -> list[tuple[str, str]]:
 
 def _convert_to_labeled(
     checkpoint_path: Path,
-    stage1_by_id: dict[str, dict],
+    stage1_by_id: dict[str, dict[str, Any]],
     s2_incidents: list[IncidentRecord],
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     incident_strata = {inc.id: inc.corpus_stratum for inc in s2_incidents}
 
     # Start with all Stage-1 results
@@ -252,15 +258,15 @@ def _convert_to_labeled(
 
 
 def _print_diff_report(
-    old_s2: dict[str, dict],
-    new_classifications: list[dict],
+    old_s2: dict[str, dict[str, Any]],
+    new_classifications: list[dict[str, Any]],
     classify_dir: Path,
 ) -> None:
     new_s2 = {c["incident_id"]: c for c in new_classifications if c.get("stage") == 2}
     common = set(old_s2) & set(new_s2)
 
     changed = 0
-    changes_detail: list[dict] = []
+    changes_detail: list[dict[str, Any]] = []
     for iid in sorted(common):
         old_entry = old_s2[iid]["entry_id"]
         new_entry = new_s2[iid]["entry_id"]
@@ -276,7 +282,11 @@ def _print_diff_report(
     click.echo("CLASSIFICATION DIFF REPORT")
     click.echo(f"{'='*60}")
     click.echo(f"Common incidents: {len(common)}")
-    click.echo(f"Changed: {changed} ({100*changed/len(common):.1f}%)" if common else "No common incidents")
+    click.echo(
+        f"Changed: {changed} ({100*changed/len(common):.1f}%)"
+        if common
+        else "No common incidents"
+    )
     click.echo(f"Unchanged: {len(common) - changed}")
 
     if changes_detail:
@@ -285,7 +295,7 @@ def _print_diff_report(
         transitions = Counter(
             (c["old_entry"], c["new_entry"]) for c in changes_detail
         )
-        click.echo(f"\nTop transitions (old → new):")
+        click.echo("\nTop transitions (old → new):")
         for (old, new), count in transitions.most_common(20):
             click.echo(f"  {old} → {new}: {count}")
 

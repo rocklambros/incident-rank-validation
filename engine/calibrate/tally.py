@@ -246,10 +246,10 @@ def calibrate_with_gold(
             precision_fp[pk] = precision_fp.get(pk, 0) + 1
             precision_total[pk] = precision_total.get(pk, 0) + 1
 
-    for label in gold.precision_labels:
-        pk = (label.claimed_entry_id, merge_stratum)
+    for plabel in gold.precision_labels:
+        pk = (plabel.claimed_entry_id, merge_stratum)
         precision_total[pk] = precision_total.get(pk, 0) + 1
-        if label.is_correct:
+        if plabel.is_correct:
             precision_tp[pk] = precision_tp.get(pk, 0) + 1
         else:
             precision_fp[pk] = precision_fp.get(pk, 0) + 1
@@ -270,12 +270,12 @@ def calibrate_with_gold(
             )
 
     for k in precision_total:
-        existing = precision_counts.get(k)
-        if existing:
+        existing_p = precision_counts.get(k)
+        if existing_p:
             precision_counts[k] = PrecisionTally(
-                true_positives=existing.true_positives + precision_tp.get(k, 0),
-                false_positives=existing.false_positives + precision_fp.get(k, 0),
-                total=existing.total + precision_total[k],
+                true_positives=existing_p.true_positives + precision_tp.get(k, 0),
+                false_positives=existing_p.false_positives + precision_fp.get(k, 0),
+                total=existing_p.total + precision_total[k],
             )
         else:
             precision_counts[k] = PrecisionTally(

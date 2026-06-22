@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 import click
 
@@ -381,7 +382,7 @@ def cal_tally(cycle: Path, manifest: Path, rubric: Path, gold_calibration: Path 
         from engine.calibrate.gold_loader import load_gold_calibration
 
         gold_path = Path(gold_calibration)
-        gold_kwargs: dict[str, Path | None] = {}
+        gold_kwargs: dict[str, Any] = {}
         if gold_path.is_dir():
             gold_kwargs["gold_dir"] = gold_path
         elif gold_path.suffix == ".jsonl":

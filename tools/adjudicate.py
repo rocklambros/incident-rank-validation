@@ -9,11 +9,12 @@ import hashlib
 import json
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 _TIER_ORDER = {"agree": 0, "split": 1, "disagree": 2}
 
 
-def load_prelabels(path: Path) -> list[dict]:
+def load_prelabels(path: Path) -> list[dict[str, Any]]:
     results = []
     for line in path.read_text(encoding="utf-8").strip().splitlines():
         if line.strip():
@@ -110,7 +111,7 @@ def run_recall_mode(
             labels = [record["consensus"]] if record["consensus"] else []
             adj = "accept"
         else:
-            labels = [l.strip() for l in final.split(",")]
+            labels = [label.strip() for label in final.split(",")]
             adj = "override"
 
         notes = input("Notes (or Enter to skip): ").strip() or None
@@ -182,12 +183,18 @@ if __name__ == "__main__":
     mode = sys.argv[1]
     if mode == "recall":
         if len(sys.argv) < 5:
-            print("Usage: python -m tools.adjudicate recall <prelabels.jsonl> <output.jsonl> <rubric.json>")
+            print(
+                "Usage: python -m tools.adjudicate recall "
+                "<prelabels.jsonl> <output.jsonl> <rubric.json>"
+            )
             sys.exit(1)
         run_recall_mode(Path(sys.argv[2]), Path(sys.argv[3]), Path(sys.argv[4]))
     elif mode == "precision":
         if len(sys.argv) < 5:
-            print("Usage: python -m tools.adjudicate precision <classifications.json> <output.jsonl> <entry1,entry2,...>")
+            print(
+                "Usage: python -m tools.adjudicate precision "
+                "<classifications.json> <output.jsonl> <entry1,entry2,...>"
+            )
             sys.exit(1)
         entries = sys.argv[4].split(",")
         run_precision_mode(

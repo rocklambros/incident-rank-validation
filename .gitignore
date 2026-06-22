@@ -31,6 +31,9 @@ env/
 .idea/
 .vscode/
 
+# Course export helper — local-only, not part of the engine
+export_for_course.py
+
 # Local env / secrets — never commit
 .env
 .env.local

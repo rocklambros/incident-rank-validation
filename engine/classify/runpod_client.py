@@ -51,7 +51,7 @@ class HttpRunPodClient:
             self._chat_path = "/v1/chat/completions"
             self._api_key = api_key or ""
         else:
-            self._api_key = api_key or os.environ.get("RUNPOD_API_KEY", "")
+            self._api_key = api_key or os.environ.get("RUNPOD_API_KEY") or ""
             self._endpoint_id = endpoint_id or os.environ.get("RUNPOD_ENDPOINT_ID", "")
             if not self._api_key:
                 raise RunPodError("RUNPOD_API_KEY not set")
@@ -82,10 +82,7 @@ class HttpRunPodClient:
 
         client = self._get_client()
         messages: list[dict[str, str]]
-        if isinstance(prompt, str):
-            messages = [{"role": "user", "content": prompt}]
-        else:
-            messages = prompt
+        messages = [{"role": "user", "content": prompt}] if isinstance(prompt, str) else prompt
         payload = {
             "model": self._model_name,
             "messages": messages,

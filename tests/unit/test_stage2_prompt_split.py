@@ -4,7 +4,10 @@ from __future__ import annotations
 from engine.classify.stage2_prompt import build_messages
 from engine.schema import IncidentRecord
 
-_RUBRIC_JSON = '{"entries": [{"entry_id": "LLM01", "canonical_name": "Prompt Injection", "in_scope": "test"}]}'
+_RUBRIC_JSON = (
+    '{"entries": [{"entry_id": "LLM01", "canonical_name": "Prompt Injection", '
+    '"in_scope": "test"}]}'
+)
 
 
 def _make_incident(text: str = "Test incident") -> IncidentRecord:

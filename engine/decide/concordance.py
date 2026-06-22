@@ -6,6 +6,7 @@ Concordance ties together kappa, per-entry flags, and the measurability gate.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import cast
 
 import numpy as np
 import numpy.typing as npt
@@ -208,11 +209,11 @@ def compute_concordance(
         tier_agree = _tier_agreement_label(lambda_tier, vote_tier)
 
         if abs(lambda_med - vote_med) < 0.5:
-            direction = "concordant"
+            comp_direction = "concordant"
         elif vote_med < lambda_med:
-            direction = "votes-over-lambda"
+            comp_direction = "votes-over-lambda"
         else:
-            direction = "lambda-over-votes"
+            comp_direction = "lambda-over-votes"
 
         if tier_agree == "same":
             action = "confirmed"
@@ -230,7 +231,7 @@ def compute_concordance(
             "lambda_tier": lambda_tier,
             "vote_tier": vote_tier,
             "tier_agreement": tier_agree,
-            "direction": direction,
+            "direction": comp_direction,
             "action": action,
         })
 
@@ -250,7 +251,11 @@ def compute_concordance(
 
 def format_rank_comparison_report(result: ConcordanceResult) -> str:
     """Format a markdown rank comparison report from a ConcordanceResult."""
-    if result.entry_comparisons is None:
+    if (
+        result.entry_comparisons is None
+        or result.weighted_kappa_median is None
+        or result.weighted_kappa_ci is None
+    ):
         return "No rank comparison data available (insufficient entries for kappa).\n"
 
     lines = ["# Rank Comparison Report\n"]
@@ -259,15 +264,16 @@ def format_rank_comparison_report(result: ConcordanceResult) -> str:
         f"[{result.weighted_kappa_ci[0]:.3f}, {result.weighted_kappa_ci[1]:.3f}]\n"
     )
     lines.append(
-        "| Entry | Lambda Rank (90% CI) | Vote Rank (90% CI) | Tier Agreement | Direction | Action |"
+        "| Entry | Lambda Rank (90% CI) | Vote Rank (90% CI) | "
+        "Tier Agreement | Direction | Action |"
     )
     lines.append(
         "|-------|---------------------|-------------------|----------------|-----------|--------|"
     )
 
     for comp in result.entry_comparisons:
-        lci = comp["lambda_rank_ci"]
-        vci = comp["vote_rank_ci"]
+        lci = cast("tuple[float, float]", comp["lambda_rank_ci"])
+        vci = cast("tuple[float, float]", comp["vote_rank_ci"])
         lines.append(
             f"| {comp['entry_id']} "
             f"| {comp['lambda_rank_median']:.1f} ({lci[0]:.1f}–{lci[1]:.1f}) "

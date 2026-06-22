@@ -12,9 +12,9 @@ from engine.schema import IncidentRecord
 class _MockClient:
     def __init__(self, responses: list[str]) -> None:
         self._responses = list(responses)
-        self.calls: list[str] = []
+        self.calls: list[str | list[dict[str, str]]] = []
 
-    def run_sync(self, prompt: str, seed: int) -> RunPodResponse:
+    def run_sync(self, prompt: str | list[dict[str, str]], seed: int) -> RunPodResponse:
         self.calls.append(prompt)
         if not self._responses:
             raise RunPodError("No responses left")

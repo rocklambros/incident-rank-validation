@@ -3,8 +3,6 @@ from __future__ import annotations
 
 import pytest
 
-from engine.model.inference import DiagnosticsFailure
-
 
 def test_ess_gate_denominator_uses_total_draws() -> None:
     num_samples = 2000
