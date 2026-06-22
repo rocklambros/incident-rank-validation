@@ -348,6 +348,10 @@ def execute_synthetic_pipeline(
         "cycle_id": cycle_id,
         "engine_version": __version__,
         "corpus_mode": corpus_mode,
+        # Plan 8a Task 6: record the EXECUTED primary spec so the two-cycle
+        # parity proof can assert model identity (a silent fallback to a
+        # different model would fail the proof).
+        "primary_spec": manifest.primary_spec,
         "nuts_succeeded": not nuts_failed,
         "measurable_count": len(censoring.measurable),
         "frame_blind_count": len(censoring.frame_blind),

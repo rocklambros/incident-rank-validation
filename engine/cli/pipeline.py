@@ -7,14 +7,96 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import click
 import numpy as np
 
 if TYPE_CHECKING:
     from engine.classify.stage2_protocol import Stage2Classification
+    from engine.decide.robustness_multiplicity import RobustnessSpread, SpecResult
     from engine.schema import IncidentRecord
+
+
+def assert_robustness_complete(manifest: object, spread: "RobustnessSpread") -> None:
+    """Refuse a report whose declared robustness specs were not all run (Plan 8a, SD4).
+
+    The pipeline declares the robustness specs it intends to run in the manifest.
+    A report that silently dropped a declared spec (NUTS crash, persistence gap)
+    would understate the cherry-pick risk, so we fail hard if any are missing.
+    """
+    declared = set(getattr(manifest, "robustness_specs", ()))
+    present = {s.spec_name for s in spread.robustness}
+    missing = declared - present
+    if missing:
+        raise ValueError(
+            f"declared robustness specs not run: {sorted(missing)}"
+        )
+
+
+def build_robustness_spread(
+    primary_spec_result: "SpecResult",
+    robustness_results: "tuple[SpecResult, ...]",
+) -> "RobustnessSpread":
+    """Assemble the primary + robustness SpecResults into a RobustnessSpread.
+
+    Kept as a thin, importable seam so Plans 8b/8c can populate sigma_u /
+    extra_rankings on the SpecResults they construct without re-implementing
+    assembly. The completeness gate is applied separately by the caller via
+    assert_robustness_complete().
+    """
+    from engine.decide.robustness_multiplicity import RobustnessSpread
+
+    return RobustnessSpread(
+        primary=primary_spec_result,
+        robustness=robustness_results,
+    )
+
+
+def _load_robustness_spread(path: Path) -> "RobustnessSpread | None":
+    """Reload a persisted RobustnessSpread (Plan 8a Task 6).
+
+    Returns None if no spread was persisted (e.g. a decide run from before this
+    artifact existed), so older cycles still render. Cycles that ran decide on
+    this engine always persist a spread, even when robustness_specs=().
+    """
+    if not path.exists():
+        return None
+    from engine.decide.robustness_multiplicity import (
+        FlagDirection,
+        FlagFinding,
+        RobustnessSpread,
+        SpecResult,
+    )
+
+    data: dict[str, Any] = json.loads(path.read_text())
+
+    def _to_spec(d: dict[str, Any]) -> SpecResult:
+        ci = d.get("weighted_kappa_ci")
+        rankings = d.get("extra_rankings")
+        return SpecResult(
+            spec_name=str(d["spec_name"]),
+            weighted_kappa_median=d.get("weighted_kappa_median"),
+            weighted_kappa_ci=tuple(ci) if ci else None,
+            flags=tuple(
+                FlagFinding(
+                    entry_id=f["entry_id"],
+                    probability=f["probability"],
+                    direction=FlagDirection(f["direction"]),
+                )
+                for f in d.get("flags", [])
+            ),
+            sigma_u=d.get("sigma_u"),
+            extra_rankings=(
+                {k: tuple(v) for k, v in rankings.items()}
+                if rankings else None
+            ),
+        )
+
+    return RobustnessSpread(
+        primary=_to_spec(data["primary"]),
+        robustness=tuple(_to_spec(s) for s in data.get("robustness", [])),
+    )
 
 
 def _load_measurability_verdicts(
@@ -461,6 +543,57 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
             total_count=concordance.total_count,
         )
 
+        # Plan 8a Task 6: assemble the robustness spread from the per-spec
+        # NUTS outputs the infer phase persisted, compute per-spec concordance
+        # (reusing the SAME entry_strata/stratum_sizes as the primary), and
+        # refuse the cycle if a declared spec was not run. Synthetic/parity
+        # cycles declare robustness_specs=() so this is inert there.
+        from engine.decide.robustness_multiplicity import SpecResult
+        primary_spec_result = SpecResult(
+            spec_name=manifest.primary_spec,
+            weighted_kappa_median=concordance.weighted_kappa_median,
+            weighted_kappa_ci=concordance.weighted_kappa_ci,
+            flags=concordance.flags,
+        )
+        robustness_results: list[SpecResult] = []
+        for spec_name in manifest.robustness_specs:
+            r_lambda_path = infer_dir / f"robustness_{spec_name}_lambda.npy"
+            r_summary_path = infer_dir / f"robustness_{spec_name}_summary.json"
+            if not r_lambda_path.exists() or not r_summary_path.exists():
+                continue  # gate below raises with the missing-spec list
+            r_summary = json.loads(r_summary_path.read_text())
+            r_inference = InferenceResult(
+                lambda_samples=np.load(r_lambda_path),
+                entry_ids=tuple(r_summary.get("entry_ids", [])),
+                r_hat=r_summary.get("r_hat", {}),
+                ess=r_summary.get("ess", {}),
+                divergences=r_summary.get("divergences", 0),
+                num_warmup=r_summary.get("num_warmup", 1000),
+                num_samples=r_summary.get("num_samples", 2000),
+            )
+            r_concordance = compute_concordance(
+                inference_result=r_inference,
+                vote_posterior=vote_posterior,
+                tier_boundaries=_default_tier_boundaries(len(entry_ids)),
+                flag_threshold_tau=manifest.flag_threshold_tau,
+                measurable_count=measurable_count,
+                total_count=len(entry_ids),
+                meaningful_kappa_n=manifest.meaningful_kappa_n,
+                measurability_minimum=manifest.measurability_minimum,
+                entry_strata=entry_strata,
+                stratum_sizes=stratum_sizes,
+            )
+            robustness_results.append(SpecResult(
+                spec_name=spec_name,
+                weighted_kappa_median=r_concordance.weighted_kappa_median,
+                weighted_kappa_ci=r_concordance.weighted_kappa_ci,
+                flags=r_concordance.flags,
+            ))
+        spread = build_robustness_spread(
+            primary_spec_result, tuple(robustness_results),
+        )
+        assert_robustness_complete(manifest, spread)
+
         # Compute selection bias
         selection_bias = compute_selection_bias(
             measurability_verdicts=measurability_verdicts,
@@ -473,6 +606,7 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
             concordance,
             out_dir,
             selection_bias=selection_bias,
+            robustness=spread,
         )
 
         # Write rank comparison report
@@ -594,14 +728,30 @@ def report_cmd(cycle: Path) -> None:
             below_prereg_minimum=concordance.below_prereg_minimum,
         )
 
+        # Plan 8a Task 6: compare the DECLARED primary spec against the spec the
+        # infer phase actually executed (recorded in inference_summary.json), so
+        # the drift-diff is honest rather than comparing the declared literal to
+        # itself. The primary is unchanged this cycle, so they coincide — but a
+        # silent fallback to a different model would now surface as a deviation.
+        actual_primary_spec = summary.get("primary_spec", manifest.primary_spec)
         prereg_diff = compute_prereg_diff(
             prereg_primary_spec=manifest.primary_spec,
-            actual_primary_spec=manifest.primary_spec,
+            actual_primary_spec=actual_primary_spec,
             prereg_flag_tau=manifest.flag_threshold_tau,
             actual_flag_tau=manifest.flag_threshold_tau,
             prereg_measurability_min=manifest.measurability_minimum,
             actual_measurability_min=manifest.measurability_minimum,
         )
+
+        # Plan 8a Task 6: load the robustness spread the decide phase persisted
+        # and refuse the report if a declared spec is missing. Cycles with
+        # robustness_specs=() persist a spread with no robustness members, which
+        # passes the gate trivially.
+        robustness_spread = _load_robustness_spread(
+            results_dir / "robustness_spread.json",
+        )
+        if robustness_spread is not None:
+            assert_robustness_complete(manifest, robustness_spread)
 
         s2_manifest_path = prereg / "stage2_manifest.json"
         runpod_cost = None
@@ -622,7 +772,7 @@ def report_cmd(cycle: Path) -> None:
             measurability_map=meas_map,
             concordance=concordance,
             selection_bias=selection_bias,
-            robustness=None,
+            robustness=robustness_spread,
             twin_agreement=None,
             non_publishable=True,
             prereg_diff=prereg_diff,

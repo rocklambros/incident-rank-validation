@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -317,7 +317,30 @@ def execute_infer_phase(
                 wall_seconds=wall_seconds,
             )
 
-        write_infer_artifacts(result, out_dir)
+        write_infer_artifacts(result, out_dir, primary_spec=manifest.primary_spec)
+
+        # Plan 8a Task 6: run each declared robustness spec next to the primary,
+        # where all inference inputs are in scope, and persist its lambda samples
+        # + summary for the decide phase to reload and assemble into the spread.
+        # Synthetic/parity cycles declare robustness_specs=() so this loop is inert.
+        if manifest.robustness_specs:
+            from engine.model.robustness import run_robustness_inference
+
+            for spec_name in manifest.robustness_specs:
+                r_result = run_robustness_inference(
+                    manifest=manifest,
+                    spec_name=spec_name,
+                    measurable_entries=measurable_entries,
+                    strata=strata,
+                    observed_counts=observed_counts,
+                    stratum_sizes=stratum_sizes,
+                    calibration=calibration,
+                    overlap=overlap,
+                    num_warmup=num_warmup,
+                    num_samples=num_samples,
+                    num_chains=num_chains,
+                )
+                write_robustness_artifacts(r_result, out_dir, spec_name)
     except DiagnosticsFailure as e:
         write_nuts_failure(out_dir, str(e), None)
         raise
@@ -326,12 +349,17 @@ def execute_infer_phase(
 def write_infer_artifacts(
     result: InferenceResult,
     out_dir: Path,
+    primary_spec: str = "negative_binomial_per_stratum",
 ) -> None:
     from engine.model.inference import InferenceResult  # noqa: F401
 
     out_dir.mkdir(parents=True, exist_ok=True)
     np.save(out_dir / "lambda_samples.npy", result.lambda_samples)
     summary = {
+        # Plan 8a Task 6: record the EXECUTED primary spec so the report's
+        # prereg drift-diff compares declared-vs-actual honestly instead of
+        # comparing the declared literal to itself.
+        "primary_spec": primary_spec,
         "entry_ids": list(result.entry_ids),
         "r_hat": result.r_hat,
         "ess": result.ess,
@@ -341,6 +369,33 @@ def write_infer_artifacts(
         "num_chains": 4,
     }
     (out_dir / "inference_summary.json").write_text(
+        json.dumps(summary, indent=2) + "\n"
+    )
+
+
+def write_robustness_artifacts(
+    result: InferenceResult,
+    out_dir: Path,
+    spec_name: str,
+) -> None:
+    """Persist one robustness spec's NUTS output (Plan 8a Task 6).
+
+    The decide phase reloads these (robustness_<spec>_lambda.npy +
+    robustness_<spec>_summary.json) to compute per-spec concordance and
+    assemble the RobustnessSpread.
+    """
+    out_dir.mkdir(parents=True, exist_ok=True)
+    np.save(out_dir / f"robustness_{spec_name}_lambda.npy", result.lambda_samples)
+    summary = {
+        "spec_name": spec_name,
+        "entry_ids": list(result.entry_ids),
+        "r_hat": result.r_hat,
+        "ess": result.ess,
+        "divergences": result.divergences,
+        "num_warmup": result.num_warmup,
+        "num_samples": result.num_samples,
+    }
+    (out_dir / f"robustness_{spec_name}_summary.json").write_text(
         json.dumps(summary, indent=2) + "\n"
     )
 
@@ -416,6 +471,44 @@ def write_decide_artifacts(
                 "p_value": selection_bias.p_value,
                 "severity": selection_bias.severity,
             }, indent=2) + "\n"
+        )
+
+    if robustness is not None:
+        from engine.decide.robustness_multiplicity import RobustnessSpread, SpecResult
+
+        spread = cast(RobustnessSpread, robustness)
+
+        def _spec_to_dict(s: SpecResult) -> dict[str, object]:
+            return {
+                "spec_name": s.spec_name,
+                "weighted_kappa_median": s.weighted_kappa_median,
+                "weighted_kappa_ci": (
+                    list(s.weighted_kappa_ci) if s.weighted_kappa_ci else None
+                ),
+                "flags": [
+                    {
+                        "entry_id": f.entry_id,
+                        "probability": f.probability,
+                        "direction": f.direction.value,
+                    }
+                    for f in s.flags
+                ],
+                "sigma_u": s.sigma_u,
+                "extra_rankings": (
+                    {k: list(v) for k, v in s.extra_rankings.items()}
+                    if s.extra_rankings else None
+                ),
+            }
+
+        (out_dir / "robustness_spread.json").write_text(
+            json.dumps(
+                {
+                    "primary": _spec_to_dict(spread.primary),
+                    "robustness": [_spec_to_dict(s) for s in spread.robustness],
+                },
+                indent=2,
+            )
+            + "\n"
         )
 
 

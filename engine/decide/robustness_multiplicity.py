@@ -25,12 +25,14 @@ class FlagFinding:
 
 @dataclass(frozen=True, slots=True)
 class SpecResult:
-    """Concordance result for one robustness spec."""
+    """Concordance result for one spec (primary or robustness)."""
 
     spec_name: str
     weighted_kappa_median: float | None
     weighted_kappa_ci: tuple[float, float] | None
     flags: tuple[FlagFinding, ...]
+    sigma_u: float | None = None  # populated by hierarchical spec (Plan 8b)
+    extra_rankings: dict[str, tuple[str, ...]] | None = None  # e.g. PL worth, incidence (Plan 8c)
 
 
 @dataclass(frozen=True, slots=True)
