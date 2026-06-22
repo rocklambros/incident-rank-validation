@@ -3,7 +3,7 @@
 - **Status:** DRAFT · **Revision 2** (post adversarial-premortem-of-the-spec; supersedes R1 commit `f1cbc45`)
 - **Date:** 2026-06-22
 - **Branch:** `plan7/engine-upgrade-recall-pl`
-- **Provisional phase label:** *Plan 8 — Recall-Aware Robustness Re-analysis* (PRD already assigns "Plan 7" to the frame-coverage audit; final number is a project-owner decision — §11)
+- **Phase label:** *Plan 8 — Recall-Aware Robustness Re-analysis* (confirmed; PRD reserves "Plan 7" for the frame-coverage audit, so a new Plan 8 phase-map entry is added)
 - **Source prompt:** `claudedocs/engine-upgrade-runpod.md`
 - **Lineage:** Revised by two adversarial premortems — one on the original recommendations (14 remediations RM1-RM14), one on Revision 1 of this spec (17 spec-deltas SD1-SD17). Both traced in §13.
 
@@ -89,7 +89,7 @@ All training and heavy inference run on RunPod; the local Jetson is never used f
 
 ### 5.2 Track A — classifier bake-off `[NEW: engine/classify/bakeoff.py + engine/cli/bakeoff.py]` (RM3, SD12)
 RunPod-GPU re-classification, selected by a **pre-registered** procedure (locked before any run — §6):
-- **Config grid + size N** committed to the locked manifest: model set, consensus rule, OOS-calibrated prompt variant, thresholds.
+- **Full config grid + size N** committed to the locked manifest: model set **including a candidate 4th labeling model** (alongside Qwen3-235B / Llama-3.1-405B / DeepSeek-V3), consensus rule, OOS-calibrated prompt variant, and thresholds — the full grid is swept on RunPod GPU (completeness over cost). The 4th model's weights are pinned by revision SHA and re-run against the injection gate (§10) before inclusion.
 - **Selection metric: balanced accuracy that INCLUDES the out-of-scope class** (not in-scope macro-F1 only) — 37% of the goldset is OOS, so a metric that ignores OOS rewards over-assignment. Evaluated on a **held-back lockbox split touched once**; declare the per-entry minimum lockbox cell size.
 - **Multiple-comparisons control:** Benjamini-Hochberg across grid × entry; keep a config only if it beats the floor after correction.
 - **Sparse-entry rule (SD2):** entries with truth cell **n<5** are excluded from the **selection metric only** (you may not pick a classifier on a 1-3-sample cell). They are **NOT dropped** from calibration or the concordance ranking — they are carried with honest wide posteriors (§5.1, §5.3). Recompute the n<5 list from the goldset at lock time (note: NEW-PMP truth cell = 6, i.e. measurable).
@@ -106,7 +106,7 @@ A **declared, mechanically-reported** robustness spec:
 ### 5.4 Track C — measurement-error correction reporting `[CHANGE: engine/report; pipeline_executor.py]` (RM12, SD8)
 - **Rank the primary by incidence `λ·size`** (summed over strata) — §2.1. Thread `sizes` into `compute_concordance` (currently receives none).
 - **Report raw-count ranking beside recall-corrected ranking** so the correction's size is explicit.
-- **FP/precision term:** populate the overlap matrix `W` from the measured cross-entry confusion so the precision posteriors are live, **or** explicitly document precision-correction as unused this cycle (decision — §12).
+- **FP/precision term:** **populate the overlap matrix `W` from the measured cross-entry confusion** — `W[i,j]` is the off-diagonal of the goldset confusion matrix (predicted entry *i* given true entry *j*, normalized), so the precision/FP posteriors are **live** this cycle (the production executor currently zeroes `W`). Recompute `W` per chosen classifier; record it in calibration provenance.
 
 ### 5.5 Robustness reporting mechanism `[NEW: heterogeneous robustness spread]` (SD4 — the load-bearing fix for §2)
 The existing `RobustnessSpread` is kappa-only; making §2's anti-gaming claim real requires a **new mechanical report contract** that holds heterogeneous robustness outputs together:
@@ -203,17 +203,18 @@ Still required, in order, before the first number: (1) resolve the phase-name co
 
 ## 11. Naming & accountability
 
-"Plan 7" is taken (frame-coverage audit). Use a distinct slot — proposed **"Plan 8 — Recall-Aware Robustness Re-analysis"** — with its own PRD phase-map entry. Final number is a project-owner decision (§12).
+"Plan 7" is taken (frame-coverage audit). This work is **Plan 8 — Recall-Aware Robustness Re-analysis** (confirmed), with its own PRD phase-map entry and acceptance criteria. The branch `plan7/engine-upgrade-recall-pl` may be renamed `plan8/...` for clarity.
 
 ---
 
-## 12. Open decisions (project owner)
+## 12. Resolved owner decisions
 
-1. **Phase number** — adopt "Plan 8"? (§11)
-2. **Precision/FP term (§5.4)** — populate `W` from measured confusion this cycle, or document precision-correction as unused and defer?
-3. **Bake-off breadth** — minimum (re-bless multimodel with clean provenance + fixed calibration) vs. a full grid with a candidate 4th model. Both honor RunPod-always.
+All open decisions are resolved:
+1. **Phase number** → **Plan 8** (§11).
+2. **Precision/FP term** → **populate `W` from measured confusion this cycle** (§5.4) — precision/FP correction is live.
+3. **Bake-off breadth** → **full RunPod grid with a candidate 4th labeling model** (§5.2).
 
-*(Governance level, sparse-entry handling, and ranking quantity are resolved — §9, §5.2, §2.1.)*
+Earlier decisions: governance right-sized to internal-tool (§9); sparse entries carried with wide posteriors (§5.2); primary ranks by λ·size with symmetric baseline recompute (§2.1).
 
 ---
 
