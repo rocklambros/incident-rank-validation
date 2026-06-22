@@ -1,259 +1,252 @@
 # Design Spec — Recall-Aware Robustness Re-analysis (RARR)
 
-- **Status:** DRAFT (pre-implementation; pending user review + adversarial premortem of this spec)
+- **Status:** DRAFT · **Revision 2** (post adversarial-premortem-of-the-spec; supersedes R1 commit `f1cbc45`)
 - **Date:** 2026-06-22
 - **Branch:** `plan7/engine-upgrade-recall-pl`
-- **Provisional phase label:** *Plan 8 — Recall-Aware Robustness Re-analysis* (the PRD already assigns "Plan 7" to the frame-coverage audit; the final number is a project-owner decision — see §11)
+- **Provisional phase label:** *Plan 8 — Recall-Aware Robustness Re-analysis* (PRD already assigns "Plan 7" to the frame-coverage audit; final number is a project-owner decision — §11)
 - **Source prompt:** `claudedocs/engine-upgrade-runpod.md`
-- **Supersedes the informal recommendations** revised by the two-round adversarial premortem of 2026-06-22 (14 remediations RM1–RM14, traced in §13).
+- **Lineage:** Revised by two adversarial premortems — one on the original recommendations (14 remediations RM1-RM14), one on Revision 1 of this spec (17 spec-deltas SD1-SD17). Both traced in §13.
+
+### Revision 2 changes (what the spec-premortem caught in R1)
+The premortem of Revision 1 found that several remediations were unbuildable or self-defeating. R2 fixes them: the recall fix now targets the correct code path (the adjudicated goldset, not the recall-frame batches); `goldset_hash` no longer mutates the frozen manifest (it would have broken the immutable cycle's lock); the robustness-reporting and Merkle-gate machinery are scoped as **net-new work** rather than assumed to exist; the σ_u oracle is re-scoped to a buildable surrogate; the lock-before-numbers ordering is fixed; governance is right-sized to an internal tool; and three user decisions are encoded (carry sparse entries, λ·size primary ranking, internal-tool governance).
 
 ---
 
 ## 1. Context
 
-`incident-rank-validation` validates the OWASP LLM Top-10 community vote against a corpus of ~7,700 real incidents. The frozen 2026 cycle reported a quadratic-weighted Cohen's kappa of **0.20 (CI [-0.16, 0.57], 17 of 20 entries measurable)** — inconclusive. A COMP-4442 re-analysis concluded: (1) the engine's core call was sound — "inconclusive by kappa" is the correct hedge; **do not overturn it, explain it better**; (2) a single kappa hides structure and independent per-category rates wobble for sparse categories; (3) classifier recall is low and uneven, so the observed counts are a biased undercount.
+`incident-rank-validation` validates the OWASP LLM Top-10 community vote against ~7,700 real incidents. The frozen 2026 cycle reported quadratic-weighted Cohen's kappa **0.20 (CI [-0.16, 0.57], 17/20 measurable)** — inconclusive. A COMP-4442 re-analysis concluded: the core call was sound ("inconclusive by kappa" is the correct hedge) — **explain it better, do not overturn**; a single kappa hides structure and sparse-category rates wobble; classifier recall is low and uneven, so counts are a biased undercount.
 
-This spec implements the upgrade **as a correctness-and-robustness exercise that preserves the original conclusion's primacy**, not a headline swap. It is the product of a two-round, six-perspective adversarial premortem that found the naive version of this work would have rested on a broken calibration foundation, locked a pre-registration manifest that misdescribes the model actually run, swapped the project's research question, and opened a wide researcher-degrees-of-freedom surface. Every design choice below is shaped by closing those gaps.
+This is a **correctness-and-robustness re-analysis that keeps the original conclusion's primacy**, not a headline swap. Every choice is shaped by two rounds of adversarial premortem.
 
 ### 1.1 What the engine already is (verified against code)
-- **Bayesian stack:** NumPyro on JAX, **CPU-hard-asserted** for reproducibility (`engine/model/inference.py:121`; `pyproject.toml` `JAX_PLATFORM_NAME=cpu`).
-- **Measurement-error likelihood already exists** (`inference.py:172-192`): `true_rate = λ·size`; `tp = true_rate·recall`; false positives via overlap leakage `W·true_rate·(1-precision)`; `NegativeBinomial2` likelihood. The latent `λ` is recall-corrected incidence; `concordance.py:53-63` ranks the vote against `λ`.
-- **Classifier:** Stage-1 deterministic indicator match (667 incidents) → Stage-2 LLM adjudication for the rest (5,972), runnable as a 3-model RunPod consensus (`engine/cli/reclassify.py`).
-- **Prereg discipline:** frozen `PreregManifest`, SHA-256 lock (`engine/prereg/{manifest.py,lock.py}`); Merkle-chained `post_hoc_register` and external-reviewer attestations are *defined* in HANDOFF §6 but **not instantiated** for the 2026 cycle (`statistical_reviewer:null`, `post_hoc_register_path:null`).
+- **Bayesian stack:** NumPyro/JAX, **CPU-hard-asserted** (`inference.py:121`; `pyproject.toml` `JAX_PLATFORM_NAME=cpu`). The cross-platform CI gate checks only *categorical* sets, not Bayesian numerics (`ci.yml:60-62`); two-cycle parity uses a 0.15 kappa tolerance on one machine (`test_two_cycle_parity.py:74`) — so reproducibility is **within-MCSE**, not bit-exact.
+- **Measurement-error likelihood already exists** (`inference.py:172-192`): `true_rate=λ·size`; `tp=true_rate·recall`; FP leakage `W·true_rate·(1-precision)`; `NegativeBinomial2`. **But the production executor passes `OverlapWeights(weights={})`** (`pipeline_executor.py:253`) → `W=0` → the precision/FP term is inert. `concordance.py:53-63` ranks the vote against **bare λ**, not incidence λ·size.
+- **Recall calibration:** the correct truth-vs-prediction estimator is `calibrate_with_gold` (`tally.py:227-242`) over the **adjudicated goldset** (`adjudicated_goldset.jsonl`, which carries both `classifier_entry_id` and `true_entry_ids`). The separate `tally_batches` recall path (`tally.py:94-116`) operates on recall-frame batches that **store only truth labels, no classifier prediction**, and inflates denominators to frame size.
+- **Classifier:** Stage-1 indicator match (667) → Stage-2 LLM for the rest (5,972), runnable as a 3-model RunPod consensus (`reclassify.py`).
+- **Robustness machinery is unwired:** `RobustnessSpread` (`robustness_multiplicity.py:31-56`) is **kappa-only**; `run_robustness_inference` (`robustness.py:26`) has **no CLI caller**; both report callers pass `robustness=None`. Adding hierarchical/PL/corrected-ranking robustness specs is **net-new wiring**, not a config flip.
+- **Prereg/governance primitives exist but are partly unwired:** `PreregManifest` + SHA-256 lock (`prereg/{manifest.py,lock.py}`); Merkle `post_hoc_register` (`erratum/{merkle.py,post_hoc.py}`) whose verifier `read_and_verify_register` has **no callers** and whose `PostHocAnalysis` has **no signer / no git-timestamp** field; git-derived `signed_at` exists only for `ReviewerSignoff` (`prereg/git_timestamp.py`). For single-author work the repo's posture is **discipline-over-mechanism** (`REVIEWERS.md:56`).
 
-### 1.2 Premortem findings that reshaped this spec
-The naive recommendations failed adversarial review on four root causes, all of which this spec must fix **before** producing any new number:
-1. **Broken calibration foundation** — the recall tally uses a frame-size denominator and counts classifier emissions rather than recovered truth, manufacturing falsely-precise near-zero recall (`Beta(1,101)`) for the sparse entries the upgrade targets (`tally.py:99-116`).
-2. **A manifest that would lie** — `primary_spec` dispatches no model (`pipeline.py:581-582` compares it to itself); locking `primary_spec=hierarchical` would assert a model the engine never runs.
-3. **Question substitution + outcome-switching** — Plackett-Luce summarizes the *vote*; making it the headline abandons the vote-vs-*data* concordance question and switches the headline statistic after the kappa result is known.
-4. **Illusory verification + open gaming surface** — a same-author oracle with no agreement tolerance, plus unregistered σ_u prior / tie rule / bootstrap seed / OOS definition / bake-off best-of-N, which jointly could manufacture the prompt's pre-stated conclusion.
+### 1.2 Premortem root causes this spec must fix
+1. **Calibration foundation** — recall must be computed truth-vs-prediction per incident over the goldset (not frame-size denominators), or sparse-entry posteriors are falsely-precise near-zero.
+2. **A manifest that would lie** — `primary_spec` dispatches no model; robustness dispatch is unwired; the prereg must not assert a model the engine never runs.
+3. **Question substitution / outcome-switching** — Plackett-Luce summarizes the *vote*; it stays a robustness lens, not the concordance headline.
+4. **Illusory verification + open gaming surface** — the oracle and the pre-registration must close (not relocate) researcher degrees of freedom, with buildable mechanisms.
 
 ---
 
 ## 2. Research question (unchanged) and framing decision
 
-**The research question stays exactly what it was:** *Does the OWASP LLM Top-10 community vote ranking concord with the incident-derived prevalence ranking?* The headline statistic stays the **quadratic-weighted Cohen's kappa over the measurable subset** (the engine's `primary_spec`).
+**The research question and headline statistic are unchanged:** *Does the community vote ranking concord with incident-derived prevalence?*, measured by the **quadratic-weighted Cohen's kappa over the measurable subset**.
 
-**Framing decision (RM1, the load-bearing structural choice):** Hierarchical partial pooling, the recall-corrected ranking, and Plackett-Luce enter as **declared robustness specifications under the unchanged kappa primary** — per the engine's own HANDOFF §6 control 4 ("one pre-registered primary specification; everything else is a declared robustness spec"). The report presents them as a **spread around the primary**, never as a replacement headline. This single decision:
-- keeps the COMP-4442 verdict intact ("explain it better," not "overturn");
-- removes outcome-switching (the headline statistic does not change);
-- collapses the "single move" gaming chain (you cannot manufacture a new headline if the headline does not move).
+**Framing decision (RM1):** hierarchical partial pooling and Plackett-Luce enter as **declared robustness specifications under the unchanged kappa primary** (HANDOFF §6 control 4). The recall-corrected incidence ranking is the **primary's ranking input** (see §2.1). This keeps the COMP-4442 verdict intact, avoids statistic-switching, and collapses the "single-move" gaming chain — **provided the robustness spread is mechanically reported** (§5.5), which is net-new work, not an inherited property.
 
-Plackett-Luce is retained because it is a genuinely better *vote-side* summary and a better input to the vote-vs-data comparison — but it answers the vote question, not the concordance question, and is labeled as such.
+### 2.1 Ranking quantity — primary ranks by incidence λ·size (user decision, SD8)
+The primary kappa's ranking input moves from bare latent λ to **incidence `λ·size`** (summed over strata), the decision-relevant quantity. This is a **correctness fix to the ranking input, not a change of statistic or question**, and it is applied **symmetrically**: the byte-immutable 2026 cycle is untouched, but RARR derives a **λ·size baseline kappa from the original labels** and reports it **beside** the as-published bare-λ 0.20 (for continuity) and the new corrected result. Disclosed in the changelog. *Residual risk: this does move the headline number; the symmetric recomputation + disclosure is the mitigation (§16).*
 
 ---
 
 ## 3. Goals & non-goals
 
 **Goals**
-- G1. **Fix the recall calibration** so per-entry recall/precision posteriors are honest (wide where data is sparse), then rebuild the chain on a single, reproducible classifier.
-- G2. **Improve and re-measure recall** via a pre-registered RunPod classifier bake-off, because recall is the only lever that raises `measurable_count` and can tighten the concordance CI (RM3).
-- G3. Add **hierarchical partial pooling**, the **raw-vs-recall-corrected ranking**, and a **tie-aware Plackett-Luce** vote model as **robustness specs**, each with mandatory sensitivity analysis.
-- G4. Provide an **independent Python consistency-check** (no R) gated by a tamper-evident, non-author-signed mechanism.
-- G5. Do all of it under a **locked-before-numbers pre-registration** that leaves the original 2026 cycle byte-immutable and discloses the post-hoc nature.
+- G1. Fix recall calibration (truth-vs-prediction over the goldset) so per-entry posteriors are honest — **wide where data is sparse** — then rebuild the chain on a single reproducible classifier.
+- G2. Improve/re-measure recall via a pre-registered RunPod bake-off (the only lever that raises `measurable_count`).
+- G3. Add hierarchical pooling + tie-aware Plackett-Luce as **mechanically-reported robustness specs**; make the FP/precision term live and rank by incidence.
+- G4. Provide an independent Python **consistency check** (no R) with a buildable, honestly-scoped gate.
+- G5. Lock a pre-registration **before any new number** (incl. calibration), leaving the original cycle byte-immutable.
 
 **Non-goals**
-- N1. Changing the headline statistic or the research question (explicitly forbidden — §2).
-- N2. Overturning the kappa=0.20 conclusion. The corrected analysis may confirm, refine, or widen it; it is reported, not engineered.
-- N3. Running any Bayesian fit on GPU (forbidden by `inference.py:121` / HANDOFF §7.5).
-- N4. Adding heavy new dependencies (PyMC) unless §10's supply-chain gate is satisfied; prefer the already-pinned `scipy`/`numpy`.
+- N1. Changing the headline statistic or the question (§2).
+- N2. Overturning the kappa conclusion (report it; do not engineer it).
+- N3. Any Bayesian fit on GPU (forbidden by `inference.py:121`).
+- N4. Heavy new deps (PyMC) unless §10's supply-chain gate is met; prefer pinned `scipy`/`numpy`.
+- N5. **External-publication ceremony as a blocking gate** — this is an internal tool (§9, user decision SD11).
 
 ---
 
 ## 4. Compute policy — RunPod always for heavy work
 
-**Standing directive: all training and heavy inference run on RunPod; the local Jetson is never used for heavy compute.** Reconciled with the CPU-determinism invariant by treating **RunPod as the *location* and CPU as the *backend*** where determinism requires it:
+All training and heavy inference run on RunPod; the local Jetson is never used for heavy compute. **RunPod is the *location*; CPU is the *backend* where determinism requires it.**
 
-| Workload | RunPod pod | Backend | Why |
-|---|---|---|---|
-| Track A classifier bake-off (LLM labeling, ~7,700 × models × configs) | **GPU** (H200, vLLM) | GPU | LLM inference; pinned image + **pinned HF model revisions** |
-| Track B/C hierarchical NUTS + measurement-error correction + σ_u sensitivity sweeps | **CPU** (high-vCPU) | **CPU** (JAX, X64, seeded) | Heavy (specs × priors) but must be CPU for bit-reproducibility (`inference.py:121`) |
-| Track D tie-aware Plackett-Luce + ≥1000 respondent bootstrap | **CPU** (high-vCPU) | CPU | Embarrassingly parallel; determinism preserved |
-| Independent verification oracle | **separate CPU pod** | CPU | Isolated, independently-pinned environment |
+| Workload | RunPod pod | Backend |
+|---|---|---|
+| Track A classifier bake-off (LLM labeling) | **GPU** (H200, vLLM, pinned image **+ pinned HF model revisions**) | GPU |
+| Track B/C hierarchical NUTS + measurement-error + σ_u sweeps | **CPU** (high-vCPU) | CPU (JAX X64, seeded) |
+| Track D tie-aware PL + ≥1000 respondent bootstrap | **CPU** | CPU |
+| Verification consistency-check oracle | **separate CPU pod** | CPU |
 
-Linux x86_64 RunPod CPU pods match the CI `ubuntu-latest` determinism reference, so the cross-platform parity gate continues to hold. **Provenance:** record pod type, image digest, HF model revisions, engine commit, seeds, and run logs for every pod; tear pods down on completion (RM4, RM13).
+**Determinism is within declared MCSE, not bit-exact** (SD10): pin `OMP_NUM_THREADS` and `XLA_FLAGS` in the pod provenance; the two-cycle parity tolerance and the oracle σ_u tolerance are sized to **cross-pod** MCSE. Record pod type, image digest, **resolved HF model commit SHAs**, engine commit, seeds, and logs per pod; tear pods down on completion.
 
 ---
 
 ## 5. Architecture & components
 
-The work is a sequence of engine modules, each with one purpose and a versioned artifact contract. New/changed modules are marked.
+### 5.1 Foundation — recall calibration fix `[CHANGE: route recall through engine/calibrate (calibrate_with_gold path)]` (RM2, SD1)
+**Compute recall truth-vs-prediction per incident over the adjudicated goldset**, not the recall-frame batches:
+- Use the `calibrate_with_gold` estimator (`tally.py:227-242`), which compares `classifier_entry_id` to `true_entry_ids` per incident.
+- `recall_X = TP_X / (TP_X + FN_X)` with **per-entry truth-cell denominator** (incidents truly X), → `Beta(1+TP, 1+FN)`. Sparse entries become **wide**, not falsely precise.
+- Route the cycle's recall calibration through this path; deprecate the frame-size-denominator `tally_batches` recall branch for production use. Add a proof/unit test (currently none exercises this).
+- **Do not** target `tally.py:99-116` (the recall-frame branch has no classifier prediction to compare).
 
-### 5.1 Foundation — recall calibration fix `[CHANGE: engine/calibrate/tally.py]` (RM2)
-**Problem:** the recall branch increments `recall_hits` on classifier emissions (no adjudication) and sets every entry's denominator to the full recall-frame size, so a 1-true-positive entry becomes `Beta(1,101)` — confident ≈1% recall.
-**Design:** recompute recall per entry against **adjudicated truth in the recall frame**:
-- `recall_X = (# recall-frame incidents truly X that the classifier labeled X) / (# recall-frame incidents truly X)`.
-- Denominator is the **truth cell** for X, not the frame size. Numerator requires comparing the classifier label to the adjudicated `labels[]`.
-- Beta posterior `Beta(1 + TP, 1 + FN)` with the corrected counts → sparse entries become **wide**, not falsely precise.
-- Add a proof/unit test exercising `tally_batches` recall path (currently untested).
-**Contract:** `posteriors.json` schema unchanged; values corrected. Calibration provenance now hashes the classifier label file (§5.7).
+### 5.2 Track A — classifier bake-off `[NEW: engine/classify/bakeoff.py + engine/cli/bakeoff.py]` (RM3, SD12)
+RunPod-GPU re-classification, selected by a **pre-registered** procedure (locked before any run — §6):
+- **Config grid + size N** committed to the locked manifest: model set, consensus rule, OOS-calibrated prompt variant, thresholds.
+- **Selection metric: balanced accuracy that INCLUDES the out-of-scope class** (not in-scope macro-F1 only) — 37% of the goldset is OOS, so a metric that ignores OOS rewards over-assignment. Evaluated on a **held-back lockbox split touched once**; declare the per-entry minimum lockbox cell size.
+- **Multiple-comparisons control:** Benjamini-Hochberg across grid × entry; keep a config only if it beats the floor after correction.
+- **Sparse-entry rule (SD2):** entries with truth cell **n<5** are excluded from the **selection metric only** (you may not pick a classifier on a 1-3-sample cell). They are **NOT dropped** from calibration or the concordance ranking — they are carried with honest wide posteriors (§5.1, §5.3). Recompute the n<5 list from the goldset at lock time (note: NEW-PMP truth cell = 6, i.e. measurable).
+- **Reproducible floor** recomputed from a clean checkout with a documented truth field, so "beats the floor" is auditable.
+**Output:** chosen-config labels + `classify_provenance.json` hashing the label file and recording **resolved HF model commit SHAs**.
 
-### 5.2 Track A — classifier bake-off `[NEW: engine/classify/bakeoff.py + engine/cli/bakeoff.py]` (RM3, RM4)
-RunPod-GPU re-classification to raise and even out recall, selected by a **pre-registered** procedure:
-- **Config grid** (committed to the manifest before any RunPod run): model set (e.g. {Qwen3-235B, Llama-3.1-405B, DeepSeek-V3, + one candidate 4th}), consensus rule, prompt variant (OOS-calibrated), and Stage-1/Stage-2 thresholds. The grid and its size *N* are frozen up front.
-- **Selection metric:** a single pre-declared primary metric (macro-F1 over in-scope entries with truth cell ≥ 5), evaluated on a **held-back lockbox split touched once** — not the reused `random.Random(0)` fold.
-- **Multiple-comparisons control:** Benjamini-Hochberg across grid × entry; a config is kept only if it beats the floor after correction.
-- **Sparse-entry rule:** entries with adjudicated truth cell **n < 5** (ROLL-CFAS, ROLL-LAPTF, LLM08, NEW-ITSCD, NEW-PMP, …) are declared **recall-unmeasurable**; they are never the basis of a "win" and are flagged unmeasurable downstream.
-- **Reproducible floor:** the multimodel/active label provenance is currently an unscripted hybrid; the bake-off code recomputes the F1 floor from a clean checkout with a documented truth field, so "beats the floor" is auditable.
-**Output:** `classify/labeled_incidents.json` for the chosen config + `classify_provenance.json` hashing the label file and recording HF model revisions.
+### 5.3 Track B — hierarchical pooling robustness spec `[NEW: engine/model/hierarchical.py + robustness dispatch + CLI wiring]` (RM6, RM9, RM10, SD13)
+A **declared, mechanically-reported** robustness spec:
+- `log λ_i = β0 + u_i`, `u_i ~ Normal(0, σ_u)`, **non-centered**, ~20 entries, same NegBin2 likelihood; `λ` recorded as a deterministic site so the `lambda_samples` contract and downstream consumers survive; **σ_u persisted** in the inference summary JSON (new field).
+- **σ_u prior pre-registered** (new manifest hyperparameter); the R reference's `sd≈2.19` is **not** imported as a prior. Sweep ≥3 pre-declared priors. **Pre-committed decision rule (SD13):** feature the most-conservative-pooling prior's result; **if σ_u's posterior is dominated by its prior** (declared prior/posterior-overlap criterion), **abandon pooling** and report independent per-entry rates with wide intervals instead (pooling may be the wrong tool at ~16-20 groups).
+- **ESS/R-hat gate fix (RM10):** parameterize `_AUX_PARAMS` (don't hardcode `{"concentration"}`); the gate must cover `λ` and `σ_u`. Expect the hierarchical scale to mix harder than the primary — that is information, not a bug.
+- **Dispatch + wiring (SD4):** extend `run_robustness_inference` to dispatch `"hierarchical_pooling"` **and wire it into the CLI** (`run_robustness_inference` currently has no caller). Record the *executed* spec name in provenance.
 
-### 5.3 Track B — hierarchical pooling robustness spec `[NEW: engine/model/hierarchical.py; CHANGE: robustness dispatch]` (RM6, RM9, RM10)
-A **declared robustness spec**, not the primary:
-- Model: `log λ_i = β0 + u_i`, `u_i ~ Normal(0, σ_u)`, **non-centered parameterization** to avoid funnel pathologies, over the ~20 entries; same NegBin2 measurement-error likelihood as the primary.
-- **σ_u is pre-registered:** new manifest field `sigma_u_hyperprior`; the R reference's `sd≈2.19` is **not** imported as a prior (different link/family/response). Mandatory **sensitivity sweep across ≥3 pre-declared priors**; if any disagreement flag flips across the band, the robustness report is labeled "prior-sensitive."
-- `λ` is recorded as a real site (`numpyro.deterministic("lambda", exp(β0+u))`) so the downstream shape contract (`lambda_samples`, `concordance._ranks_from_lambda`) is preserved; σ_u is **persisted** in the inference summary JSON.
-- **ESS/R-hat gate fix (RM10):** `_AUX_PARAMS` is parameterized rather than hardcoded to `{"concentration"}`, so adding `σ_u`/`u` does not silently mis-target the gate; the gate must explicitly cover `λ` and the new scale.
-- **Dispatch fix:** the robustness runner selects model by spec name; `primary_spec`/robustness-spec identity is recorded as the *executed* value (§5.6).
+### 5.4 Track C — measurement-error correction reporting `[CHANGE: engine/report; pipeline_executor.py]` (RM12, SD8)
+- **Rank the primary by incidence `λ·size`** (summed over strata) — §2.1. Thread `sizes` into `compute_concordance` (currently receives none).
+- **Report raw-count ranking beside recall-corrected ranking** so the correction's size is explicit.
+- **FP/precision term:** populate the overlap matrix `W` from the measured cross-entry confusion so the precision posteriors are live, **or** explicitly document precision-correction as unused this cycle (decision — §12).
 
-### 5.4 Track C — measurement-error correction reporting `[CHANGE: engine/report; engine/cli/pipeline_executor.py]` (RM12)
-The correction already exists in the likelihood; this track makes it honest and visible:
-- **Report raw-count ranking beside recall-corrected (λ) ranking** so the size of the correction is explicit.
-- **Rank by incidence `λ·size`, not bare `λ`**, matching "rank by corrected incidence."
-- **False-positive term:** the production executor currently passes `OverlapWeights(weights={})` (W=0 → precision inert). Either populate W from the measured cross-entry confusion, or **explicitly document precision-correction as unused** for this cycle. Decision required (§12).
+### 5.5 Robustness reporting mechanism `[NEW: heterogeneous robustness spread]` (SD4 — the load-bearing fix for §2)
+The existing `RobustnessSpread` is kappa-only; making §2's anti-gaming claim real requires a **new mechanical report contract** that holds heterogeneous robustness outputs together:
+- A typed structure carrying, per robustness spec: the kappa under that spec (where applicable), σ_u + sensitivity band, the PL worth ranking, and the corrected-incidence ranking — rendered as a single **spread/comparison block** the report cannot omit (a `decide`-time check refuses a report missing declared robustness outputs).
+- Without this, "declared robustness spec" is an author-discretion label and the gaming surface merely moved to the narrative (premortem S-D/S-L).
 
-### 5.5 Track D — tie-aware Plackett-Luce robustness spec `[NEW: engine/vote/plackett_luce.py]` (RM8, RM11)
-A **vote-side robustness spec** feeding the vote-vs-data comparison; kappa stays primary:
-- **Tie-aware model (Davidson or Rao-Kupper)** — *not* "drop ties." ~32% of ballot pairs tie, concentrated in the top tier; dropping them biases exactly the ranked tier. The strict-drop variant is reported only as a sensitivity comparison.
-- **Uncertainty from respondent-level bootstrap ≥1000** over the ~29 voters, seed bound in `manifest.prng_seed` (not a function default). Report top-tier stability across a **seed × tie-rule grid**, plus per-item worth SEs; frame "top-five in 100% of resamples" as a **dominance check at n=29**, not a precision claim.
-- **Separation handling:** when a category is ranked top by (nearly) all voters, the PL worth MLE diverges; use a regularized/penalized fit so bootstrap resamples that drop the rare dissenters remain defined.
-- **Implementation:** engine uses `scipy`/`numpy` (no new heavy dep). The oracle (§5.6) uses an *independent* implementation.
+### 5.6 Track D — tie-aware Plackett-Luce robustness spec `[NEW: engine/vote/plackett_luce.py]` (RM8)
+- **Tie-aware model (Davidson/Rao-Kupper)**, not "drop ties" (~32% of pairs tie, concentrated in the top tier). Strict-drop is reported only as sensitivity.
+- **Respondent bootstrap ≥1000** over ~29 voters; **seed bound in `manifest.prng_seed`**; report top-tier stability across a **seed × tie-rule grid** + per-item worth SEs; frame "top-five 100%" as a **dominance check at n=29**, not precision.
+- **Separation handling:** penalized/regularized fit so resamples that drop rare dissenters stay defined.
+- **Implementation:** engine on pinned `scipy`/`numpy`.
 
-### 5.6 Verification — independent Python consistency-check + enforceable gate `[NEW: engine/verify/oracle.py]` (RM7, RM11) — **no R, ever**
-- The oracle re-derives σ_u, PL worths/ranks, and the corrected ranking from a **frozen spec, without reading engine code**, using a **different implementation** (different algorithm/library; if a new lib is used it must pass §10's supply-chain gate, else hand-rolled on pinned `scipy`).
-- **Per-deliverable agreement tolerances, pre-declared in the manifest** (a single "agrees" flag is incoherent):
-  - Ranks (PL, corrected): **Kendall-τ ≥ τ₀** and exact agreement on the headline tier;
-  - σ_u (continuous): **|Δσ_u| ≤ 2 × combined MCSE** of both chains;
-  - Corrected incidence: **credible-interval overlap** per entry.
-- **Enforceable gate:** the oracle decision is an **append-only entry in the Merkle-chained `post_hoc_register`** with `signed_at` derived from `git log` (backdating-detectable) and a **non-author signer**. `decide` refuses a publishable report unless the chain verifies. Because the oracle shares author + conceptual source, it is labeled a **consistency check**, not independent verification (RM7).
+### 5.7 Verification — independent Python consistency check + gate `[NEW: engine/verify/oracle.py + post_hoc gate wiring]` (RM7, RM11, SD5, SD6) — **no R, ever**
+- The oracle re-derives the deliverables from a frozen spec, **without reading engine code**, using a **different optimizer family** (e.g. MM/fixed-point for PL, not `scipy.optimize`):
+  - PL worths/ranks and corrected ranking: independent implementation on pinned numpy.
+  - **σ_u: an analytic/optimization surrogate** (REML / Laplace marginal-likelihood point estimate + interval) — **not** a matched MCMC posterior (scipy has no NUTS; matching two NUTS chains within MCSE is infeasible). Tolerance is declared against the surrogate.
+- **Per-deliverable tolerances, pre-declared, sized to cross-pod MCSE:** Kendall-τ ≥ τ₀ + exact headline-tier agreement (ranks); |Δσ_u| ≤ band (surrogate); CI-overlap (corrected incidence).
+- **Gate is net-new build (SD6):** add a **signer** and **git-`log`-derived `signed_at`** to `PostHocAnalysis`; **wire `read_and_verify_register` into `decide`** with a **signer≠author** check; `decide` refuses a publishable report unless the chain verifies. Labeled a **consistency check, not independent verification** (shared author/conceptual source), and **discipline-based for single-author work** (the author can self-sign; disclosed, not oversold as tamper-proof — Merkle detects edits, not full-chain fabrication).
+- **Oracle environment (SD5):** committed as a distinct `oracle.uv.lock` (or hand-rolled on the pinned stack); its lockfile hash recorded in the register so "independent env" is reproducible.
 
-### 5.7 Provenance & reproducibility `[CHANGE: engine/repro, engine/snapshot, engine/prereg/manifest.py]` (RM5, RM13)
-- Add `goldset_hash` to `PreregManifest` and verify it at `infer`/`decide` (the goldset parameterizes every prior and is currently unbound).
-- Calibration provenance hashes the **classifier label file**; the reproduction bundle records a real `snapshot_hash` (currently `"none"`), HF model revisions, seeds, and pod metadata.
-- Commit the currently-untracked judgment artifacts (`curation_review.md`, backups) or move them out of the cycle dir; no asymmetric durability.
+### 5.8 Robustness wiring + drift integrity `[CHANGE: pipeline.py, robustness.py, tests/proofs]` (RM5, SD4)
+The real gap is not the harmless `primary_spec` self-comparison (inert while the primary is unchanged) but that **robustness dispatch is unwired**. Wire `run_robustness_inference` into the CLI; record the executed spec; add a parity-proof assertion that the executed model matches the declared spec. Fix the `compute_prereg_diff` self-comparison opportunistically.
 
-### 5.8 `primary_spec` dispatch + drift integrity `[CHANGE: engine/cli/pipeline.py, engine/report/diff.py, tests/proofs]` (RM5)
-- Fix the tautology: `compute_prereg_diff` receives the **executed** spec as `actual_primary_spec`, not `manifest.primary_spec` on both sides.
-- An unknown/unrunnable spec **raises**; no silent fallback to HalfNormal.
-- `test_two_cycle_parity` asserts **which model ran**, not just output parity.
+### 5.9 Provenance & reproducibility `[CHANGE: engine/repro, engine/snapshot; schema-versioned manifest]` (RM13, SD3, SD9, SD16)
+- **Do NOT mutate the frozen `PreregManifest` dataclass.** Adding a field rehashes every prior manifest and breaks the 2026 lock (`lock.py` hashes all `dataclasses.fields`). Carry `goldset_hash` via a **manifest schema-version** (old locks verify under v1 rules) or a **sidecar provenance file**.
+- Calibration provenance hashes the **classifier label file**; the reproduction bundle records a real `snapshot_hash` (currently `"none"`), resolved HF model SHAs, seeds, pod metadata.
+- **Pin HF model revisions** end-to-end (`--revision` in `vllm serve`; capture resolved SHA into `runpod_pods.json` + provenance + bundle) — net-new (SD16).
+- **Reconcile the pre-existing 2026 provenance rot** (engine_version 0.3.0/1.1.0/1.2.0 across files; `manifest_hash ≠ lock`) before anchoring RARR to it.
+- **Curation artifacts (SD9):** the currently-untracked judgment artifacts go to a **separate `projects/owasp-llm/curation/2026/` dir**, NOT committed under the byte-immutable `cycles/2026/`. Run gitleaks before committing any artifact.
 
 ---
 
-## 6. Foundation-first execution sequence
+## 6. Foundation-first execution sequence (lock-before-numbers fixed — SD7)
 
-Strict ordering — each gate blocks the next (⛔ = no downstream number may be computed until done):
+⛔ = blocks downstream numbers. **Calibration is a pre-registered number** (HANDOFF §11a), so the lock precedes it.
 
-1. ⛔ **Fix recall calibration** (§5.1) + tests → recompute `posteriors.json`; confirm sparse-entry posteriors widen.
-2. ⛔ **Reproducible classifier provenance + F1 floor** (§5.2) from a clean checkout.
-3. ⛔ **Lock the pre-registration** (§9): manifest (kappa primary unchanged; robustness specs + grid + σ_u prior + seeds + tolerances + `goldset_hash` declared), Merkle `post_hoc_register` opened, reviewers lined up.
-4. **Track A bake-off** on RunPod GPU → chosen classifier; recalibrate (§5.1 estimator).
-5. **Primary re-run** (kappa concordance, negbin) on the new labels → the headline number.
-6. **Robustness specs** (Track B hierarchical, Track C corrected ranking, Track D tie-aware PL) on RunPod CPU → spread.
-7. **Oracle consistency check** (§5.6) → Merkle gate.
-8. **Report** (raw vs corrected; primary + robustness spread; PL vote ranking + vote-vs-data gap; original kappa preserved; power statement) → `decide`.
+1. ⛔ **Land the estimator + provenance code changes** (recall path §5.1, schema-versioned `goldset_hash` §5.9, robustness wiring §5.8) — code, not numbers.
+2. ⛔ **Lock the pre-registration** (§9): kappa primary unchanged; λ·size ranking declared; robustness specs + bake-off grid/metric/lockbox + σ_u prior + seeds + oracle tolerances + `goldset_hash` all committed; Merkle register opened. Lock timestamp (git-derived) precedes every number below.
+3. ⛔ **Recompute recall calibration** via §5.1 → write to `posteriors.precheck.json`; confirm sparse-entry posteriors widen.
+4. **Track A bake-off** on RunPod GPU → chosen classifier; **recalibrate** → canonical `posteriors.json` (record `output_hash`).
+5. **Primary re-run** (kappa concordance, negbin, **λ·size ranking**) on new labels → headline; also compute the **λ·size baseline from original labels** (§2.1).
+6. **Robustness specs** (Track B hierarchical, Track C raw-vs-corrected, Track D tie-aware PL) on RunPod CPU → mechanical spread (§5.5).
+7. **Oracle consistency check** (§5.7) → Merkle gate at `decide`.
+8. **Report** (original 0.20 + λ·size baseline + new primary + robustness spread + PL vote ranking + vote-vs-data gap + prospective power statement) → `decide`.
 
 ---
 
 ## 7. Pre-registration & anti-gaming controls
 
-Every researcher degree of freedom the premortem found is closed by a **pre-committed** value in the locked manifest, before any new number:
+Every degree of freedom is a **pre-committed, git-timestamped** value in the locked manifest, before any number:
 
 | Degree of freedom | Pre-commitment |
 |---|---|
-| Classifier config | Frozen grid + size *N*, single primary metric, lockbox split, BH correction (RM3) |
-| Sparse-entry recall | n<5 → unmeasurable; never a selection basis (RM3) |
-| σ_u prior | `sigma_u_hyperprior` field + ≥3-prior sensitivity band; flip ⇒ "prior-sensitive" (RM6) |
-| PL tie rule | Tie-aware (Davidson/Rao-Kupper) registered; strict-drop only as sensitivity (RM8) |
-| Bootstrap seed | Bound in `manifest.prng_seed`; report over seed grid (RM8) |
-| OOS / measurable set | Frozen measurable entry set; any drop is a logged amendment (RM3) |
-| Oracle "agreement" | Per-deliverable numeric tolerances declared up front (RM7) |
+| Classifier config | Frozen grid + N, OOS-inclusive balanced-accuracy metric, once-touched lockbox, BH correction |
+| Sparse-entry recall | n<5 excluded from **selection metric only**; carried in ranking with wide posteriors |
+| σ_u prior | Pre-registered prior + ≥3-prior sweep + **pre-committed decision rule** (conservative prior / abandon-pooling criterion) |
+| PL tie rule | Tie-aware (Davidson/Rao-Kupper) registered; strict-drop only as sensitivity |
+| Bootstrap seed | Bound in `manifest.prng_seed`; reported over a seed grid |
+| Ranking quantity | λ·size, declared; baseline recomputed symmetrically |
+| OOS / measurable set | Frozen; any drop is a logged amendment |
+| Oracle tolerances | Per-deliverable, declared, cross-pod-MCSE-sized |
 | Disagreement claim | Direction + threshold pre-registered before any fit |
+
+*Honest limit (S-L):* for single-author work these are **discipline-based** — the lock and signer can be self-applied. Disclosed, not oversold.
 
 ---
 
 ## 8. Cycle structure & the original result
 
-- **New cycle directory** (e.g. `projects/owasp-llm/cycles/2026-rarr/`) binding the **same `snapshot_hash`, `taxonomy_hash`, and `goldset_hash`** as the 2026 cycle — auditably the same data, new classifier + robustness lenses.
-- **`primary_spec` and `statistic` unchanged** from the original (kappa concordance over negbin) — this is a re-analysis, not a new headline.
-- **Original `cycles/2026/` left byte-immutable.** Before freezing the comparison, reconcile the original report's internal kappa inconsistency (0.20 in `report.md:12` vs 0.275 in `report.md:37`) so the baseline anchors a single number (RM14).
-- Old-vs-new presented via an explicit, documented bridge in the report (not the engine's auto cross-cycle comparison, which is deliberately refused).
+- **New cycle directory** (e.g. `cycles/2026-rarr/`) binding the same snapshot/taxonomy hashes (and `goldset_hash` via schema-version) as 2026.
+- **`primary_spec`/`statistic` unchanged** (kappa concordance over negbin); λ·size is a ranking-input change, declared.
+- **Original `cycles/2026/` byte-immutable.** RARR derives the λ·size baseline from the original labels *in the RARR cycle* (not by editing 2026). Reconcile the original report's internal kappa inconsistency (0.20 vs 0.275) in the RARR write-up, not by mutating the original.
+- **Old-vs-new bridge (SD15):** report **old-labels kappa under the new λ·size estimator** alongside the new-labels result, to separate *data change* (new classifier) from *method change* (estimator) — disclose the instrument confound.
 
 ---
 
-## 9. Governance package (ordered; tiers gate publishability) (RM11)
+## 9. Governance — right-sized to an internal tool (user decision SD11)
 
-**Before the first new number:**
-1. Resolve the "Plan 7" name collision — assign a distinct phase label (§11).
-2. Lock the new manifest (all §7 pre-commitments) — lock timestamp must precede the first new number.
-3. Open and populate the Merkle `post_hoc_register.json`, tagging the re-analysis **EXPLORATORY**.
-4. Identify external **rubric** and **statistical** reviewers (≠ ranking author), attestations signed before `infer`.
+**Keep all MECHANICAL methodology-integrity controls** (they are cheap and they are the point): recall-calibration fix, leakage firewall (lock-before-numbers), pre-registered grid/priors/seeds/tolerances, mechanical robustness spread, oracle consistency gate, provenance/seed hygiene.
 
-**Before external sharing:**
-5. `METHODOLOGY-CHANGELOG.md` entry with a **major** semver bump (inference-model-family change), stating what changed, why, and its relation to the pre-registered original.
-6. Two-cycle parity + the reviewer audit window.
+**Make external-publication ceremony OPTIONAL and non-blocking:** external rubric/statistical reviewers, the audit window, and publication-grade SBOM are **not** blocking gates for this internal deliverable. The honest deliverable state is **"EXPLORATORY, internally rigorous."** `non_publishable=True` is acceptable and expected for single-author internal work; it is disclosed, not a defect to engineer around.
 
-Until 1–4 hold, output is `non_publishable=True` / EXPLORATORY by the repo's own rules — that is the honest state for single-author work, not a flipped flag.
+Still required, in order, before the first number: (1) resolve the phase-name collision (§11); (2) lock the manifest (§6 step 2); (3) open the Merkle register. Changelog: a methodology-changelog entry with an appropriate semver bump.
 
 ---
 
-## 10. Supply-chain & security (RM13)
+## 10. Supply-chain & security (RM13, SD16)
 
-- Prefer implementing PL + oracle on already-pinned `scipy`/`numpy`. Any new dependency (e.g. `choix`) must be **pinned + added to the SBOM + CVE-scanned** before use; the repo already carries two deferred HIGH transitive CVEs, so PyMC's large closure is avoided unless justified.
-- **Pin RunPod model revisions** (not floating HF names); record the image digest.
-- Remove or explicitly justify `--trust-remote-code` on token-bearing pods; do not expose public SSH on a pod holding `HF_TOKEN`.
-- **Escape the Stage-2 injection delimiters** against corpus text that contains them; re-run the injection fixture against any new bake-off model before it is kept.
+- Prefer PL + oracle on pinned `scipy`/`numpy`; any new dep (e.g. `choix`) must be pinned + SBOM'd + CVE-scanned (repo already carries 2 deferred HIGH CVEs).
+- **Pin RunPod model revisions** (commit SHA, not tag); record image digest. `--trust-remote-code` permitted **only with a pinned revision recorded in provenance**; **no public SSH on token-bearing pods**; scope `HF_TOKEN` read-only.
+- **Escape the Stage-2 injection delimiters** (currently un-escaped — `stage2_prompt.py:79-83`); build a **live/recorded-response injection gate** against any new bake-off model (today's fixture is mock-only, `xfail`).
 
 ---
 
 ## 11. Naming & accountability
 
-The PRD assigns "Plan 7" to the frame-coverage audit. This work needs a distinct phase slot — proposed **"Plan 8 — Recall-Aware Robustness Re-analysis"** — with its own PRD phase-map entry and acceptance criteria. The branch `plan7/engine-upgrade-recall-pl` may be renamed for clarity. *Final phase number is a project-owner decision (§12).*
+"Plan 7" is taken (frame-coverage audit). Use a distinct slot — proposed **"Plan 8 — Recall-Aware Robustness Re-analysis"** — with its own PRD phase-map entry. Final number is a project-owner decision (§12).
 
 ---
 
-## 12. Open decisions (need the user / project owner)
+## 12. Open decisions (project owner)
 
-1. **Phase number** — adopt "Plan 8," or another slot? (§11)
-2. **Precision/false-positive term (§5.4)** — populate the overlap matrix `W` from measured confusion this cycle, or explicitly document precision-correction as unused and defer? (Populating it is more correct but adds modeling + a confusion-estimation step.)
-3. **External statistical reviewer** — who, and by when? Without one, the cycle is structurally `non_publishable` (§9). For an internal tool this may be acceptable as a logged EXPLORATORY state.
-4. **Bake-off breadth** — minimum (re-bless the existing multimodel with clean provenance + fixed calibration) vs. a full grid with a candidate 4th model. Both honor RunPod-always; the full grid costs more GPU for the evidence that we're at the recall frontier.
+1. **Phase number** — adopt "Plan 8"? (§11)
+2. **Precision/FP term (§5.4)** — populate `W` from measured confusion this cycle, or document precision-correction as unused and defer?
+3. **Bake-off breadth** — minimum (re-bless multimodel with clean provenance + fixed calibration) vs. a full grid with a candidate 4th model. Both honor RunPod-always.
+
+*(Governance level, sparse-entry handling, and ranking quantity are resolved — §9, §5.2, §2.1.)*
 
 ---
 
-## 13. Remediation traceability (premortem → spec)
+## 13. Traceability
 
-| RM | Premortem finding | Closed by |
-|---|---|---|
-| RM1 | Outcome-switching / PL-as-headline / "single move" | §2 framing; §5.5 (PL = robustness) |
-| RM2 | Recall denominator bug (Beta(1,101)) | §5.1 |
-| RM3 | Unreproducible floor / bake-off gaming / tiny cells | §5.2; §7 |
-| RM4 | RunPod provenance & teardown | §4; §5.2; §5.7 |
-| RM5 | `primary_spec` no-op / drift tautology / parity | §5.8 |
-| RM6 | σ_u prior-dominated / 2.19 not transferable | §5.3; §7 |
-| RM7 | Oracle non-independent / no tolerance | §5.6 |
-| RM8 | Drop-ties bias / seed lottery / n=29 stability | §5.5; §7 |
-| RM9 | Hierarchical breaks downstream shape | §5.3 |
-| RM10 | ESS gate site-name fragility / σ_u not persisted | §5.3 |
-| RM11 | Governance package absent/out of order | §9 |
-| RM12 | Track C FP term inert / ranks bare λ | §5.4 |
-| RM13 | Supply chain + pod security | §10 |
-| RM14 | Ambiguous baseline kappa; untracked artifacts | §8; §5.7 |
+**Premortem #1 → spec:** RM1 §2; RM2 §5.1; RM3 §5.2/§7; RM4 §4/§5.9; RM5 §5.8; RM6 §5.3/§7; RM7 §5.7; RM8 §5.6; RM9 §5.3; RM10 §5.3; RM11 §9/§5.7; RM12 §5.4; RM13 §10; RM14 §8/§5.9.
+
+**Premortem #2 (of spec R1) → R2:** SD1 §5.1; SD2 §5.2 (carry, user); SD3 §5.9; SD4 §5.5/§5.8; SD5 §5.7; SD6 §5.7; SD7 §6; SD8 §2.1/§5.4 (λ·size, user); SD9 §5.9; SD10 §4; SD11 §9 (internal-tool, user); SD12 §5.2; SD13 §5.3; SD14 §15; SD15 §8; SD16 §5.9/§10; SD17 §6.
 
 ---
 
 ## 14. Acceptance criteria
 
-- Recall posteriors for n<5 entries are **wide**, not `Beta(1,101)`; the recall-tally proof test passes.
-- The F1 floor regenerates byte-stable from a clean checkout; classifier provenance hashes the label file + records model revisions.
-- The locked manifest's `primary_spec`/`statistic` equal the original; robustness specs, grid, σ_u prior, seeds, tolerances, and `goldset_hash` are all present; lock timestamp precedes the first new number.
-- Bayesian diagnostics: R-hat < 1.01, adequate ESS (gate covers `λ` and `σ_u`), zero divergences or a documented reason, posterior predictive checks.
-- σ_u sensitivity table across ≥3 priors is reported; prior-sensitivity is disclosed if flags flip.
-- PL is tie-aware; the report shows the seed × tie-rule stability grid and per-item worth SEs.
-- The oracle consistency check passes its **pre-declared** per-deliverable tolerances; the Merkle `post_hoc_register` chain verifies at `decide` with a non-author signer.
-- Report shows: original kappa (preserved), the re-run primary kappa, the robustness spread (raw vs corrected, hierarchical, PL vote ranking + vote-vs-data gap), and a **power statement** on what n would be needed to exclude zero.
-- CI green: ruff, mypy, pytest, semgrep, gitleaks; SBOM clean; cross-platform parity holds.
+- Recall posteriors for sparse entries are **wide** (not `Beta(1,101)`); recall computed via the goldset truth-vs-prediction path; the new proof test passes.
+- F1/balanced-accuracy floor regenerates from a clean checkout; classifier provenance hashes the label file + records resolved HF SHAs.
+- Locked manifest: `primary_spec`/`statistic` equal the original; λ·size ranking, robustness specs, grid, OOS-inclusive metric, σ_u prior + decision rule, seeds, oracle tolerances, `goldset_hash` (schema-versioned) all present; **git-derived lock timestamp precedes every number**; the 2026 lock still verifies.
+- Robustness spread is **mechanically rendered** (decide-time check); `run_robustness_inference` is wired and the executed spec is recorded.
+- Bayesian diagnostics within MCSE: R-hat < 1.01, ESS gate covers λ and σ_u, divergences 0 or documented, PPCs; determinism reproduces **within declared cross-pod MCSE** (threads/XLA pinned).
+- σ_u sensitivity table + pre-committed decision applied; PL tie-aware with seed×tie-rule stability grid + worth SEs.
+- Oracle passes pre-declared per-deliverable tolerances; Merkle register verifies at `decide` with a recorded signer; consistency-check framing disclosed.
+- Report shows: original 0.20 (bare-λ), λ·size baseline from original labels, new primary (λ·size), robustness spread, PL vote ranking + vote-vs-data gap, old-labels-under-new-estimator bridge, and a **prospective** power statement.
+- CI green (ruff/mypy/pytest/semgrep/gitleaks); SBOM clean; categorical cross-platform parity holds; curation artifacts under `curation/2026/`, not `cycles/2026/`.
 
 ---
 
-## 15. Strategic note
+## 15. Strategic note & power (SD14)
 
-The conclusion rests on a concordance over **n_common = 17 with a CI crossing zero** — an *n problem*. The single highest-value outcome of this work is **Track A recall raising `measurable_count`**, which is the only lever that can tighten that CI. Tracks B/C/D are robustness lenses that explain the result better; they do not, by themselves, move the headline. The report leads with that honestly (§14 power statement) rather than dressing an unchanged conclusion in a confident new statistic.
+The conclusion rests on a concordance over **n_common = 17 with a CI crossing zero** — an *n problem*. The highest-value outcome is **Track A recall raising `measurable_count`**, the only lever that tightens the CI. Report a **prospective** power statement: for a pre-specified, decision-relevant kappa (declared at lock, *not* the observed 0.20), the n required to exclude zero — labeled design-stage. Do **not** report retrospective/observed power on the realized estimate (it is a monotone restatement of the CI).
+
+## 16. Residual risk
+
+- **λ·size moves the headline (§2.1).** Mitigation: same statistic + symmetric baseline recomputation + disclosure. Accept that the number changes; that is a correctness improvement, reported transparently.
+- **Discipline-over-mechanism for single-author work** (`REVIEWERS.md:56`): lock/signer can be self-applied; the gate reduces but cannot eliminate this without an external party — acceptable for an internal tool, disclosed.
+- **σ_u may be unidentifiable at ~16-20 groups** — §5.3's decision rule makes "abandon pooling" an explicit, pre-committed branch.
+- **Pre-existing 2026 provenance rot** is inherited; reconcile before anchoring (§5.9).
+- **The conclusion may stay inconclusive** even done perfectly — reported as the finding (transparency-first), not papered over.
