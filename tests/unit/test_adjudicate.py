@@ -6,8 +6,8 @@ from pathlib import Path
 
 from tools.adjudicate import (
     load_prelabels,
-    write_recall_adjudication,
     write_precision_verification,
+    write_recall_adjudication,
 )
 
 

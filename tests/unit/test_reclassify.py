@@ -32,8 +32,18 @@ class TestConvertToLabeled:
             json.dumps({
                 "incident_id": "INC-001",
                 "model_votes": [
-                    {"model_id": "m1", "entry_id": "NEW-MTIE", "confidence": 0.9, "rationale": "r1"},
-                    {"model_id": "m2", "entry_id": "NEW-MTIE", "confidence": 0.85, "rationale": "r2"},
+                    {
+                        "model_id": "m1",
+                        "entry_id": "NEW-MTIE",
+                        "confidence": 0.9,
+                        "rationale": "r1",
+                    },
+                    {
+                        "model_id": "m2",
+                        "entry_id": "NEW-MTIE",
+                        "confidence": 0.85,
+                        "rationale": "r2",
+                    },
                 ],
                 "consensus": "NEW-MTIE",
                 "agreement": "agree",
@@ -81,7 +91,12 @@ class TestConvertToLabeled:
             json.dumps({
                 "incident_id": "INC-003",
                 "model_votes": [
-                    {"model_id": "m1", "entry_id": "ROLL-CFAS", "confidence": 0.7, "rationale": "r"},
+                    {
+                        "model_id": "m1",
+                        "entry_id": "ROLL-CFAS",
+                        "confidence": 0.7,
+                        "rationale": "r",
+                    },
                 ],
                 "consensus": "ROLL-CFAS",
                 "agreement": "single",

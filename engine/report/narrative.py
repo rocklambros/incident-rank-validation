@@ -19,7 +19,9 @@ from engine.threats.register import get_threats_register
 REPORT_STEM = "2026_top_10_llm_update_what_the_data_says"
 
 
-def _precision_median(posteriors: dict[str, Any], entry_id: str, stratum: str = "security") -> float | None:
+def _precision_median(
+    posteriors: dict[str, Any], entry_id: str, stratum: str = "security"
+) -> float | None:
     """Median of Beta(alpha, beta) posterior for an entry's precision in a stratum.
 
     Beta median is approximated by alpha / (alpha + beta) (posterior mean); the
@@ -117,7 +119,8 @@ def _render_markdown(data: dict[str, Any]) -> str:  # noqa: PLR0915 — single-p
     lines.append("---\n")
     lines.append('title: "What the Data Says About the 2026 Top 10"\n')
     lines.append(
-        'subtitle: "An Incident-Derived Validation of the OWASP Top 10 for LLM Applications (2026)"\n'
+        'subtitle: "An Incident-Derived Validation of the OWASP Top 10 '
+        'for LLM Applications (2026)"\n'
     )
     lines.append("author:\n")
     lines.append("  - OWASP Top 10 for LLM Applications — Incident Validation Working Group\n")
@@ -685,7 +688,10 @@ def _render_markdown(data: dict[str, Any]) -> str:  # noqa: PLR0915 — single-p
     lines.append("The data shows a clear confusion boundary between three entries:\n\n")
     lines.append("- **LLM09 (Misinformation)**: the output is false or misleading\n")
     lines.append("- **NEW-WLA (Weaponized LLM Abuse)**: an adversary uses AI as a weapon\n")
-    lines.append("- **ROLL-CMSB (Cross-Modal Safety Bypass)**: the attack uses image/video/audio modalities\n\n")
+    lines.append(
+        "- **ROLL-CMSB (Cross-Modal Safety Bypass)**: the attack uses "
+        "image/video/audio modalities\n\n"
+    )
     lines.append(
         "Consider a deepfake video that spreads political disinformation. Which entry "
         "does it belong to? It is misleading content (LLM09). It was created using AI "
@@ -839,7 +845,7 @@ def _render_markdown(data: dict[str, Any]) -> str:  # noqa: PLR0915 — single-p
         "added section numbering and an abstract for arXiv-style distribution.\n\n"
     )
     lines.append(
-        f"**Data provenance.** Cycle artifacts are content-hashed at "
+        "**Data provenance.** Cycle artifacts are content-hashed at "
         "`projects/owasp-llm/cycles/2026/snapshot/`. Hyperparameters and seeds are "
         "hash-locked in `prereg/manifest.json`. The MCMC sampler is pinned to CPU "
         "for cross-platform determinism (NumPyro + JAX). Posterior draws are stored "
@@ -870,7 +876,8 @@ def _compile_pdf(md_path: Path, pdf_path: Path) -> bool:
         "-V", "urlcolor=blue",
         "--from=markdown+yaml_metadata_block",
     ]
-    result = subprocess.run(  # noqa: S603 — args are constructed locally, not from user input
+    # pandoc PDF compile: fixed argv, no shell, no user input, shutil.which-guarded
+    result = subprocess.run(  # noqa: S603  # nosemgrep: no-shell-invocation
         cmd,
         capture_output=True,
         text=True,

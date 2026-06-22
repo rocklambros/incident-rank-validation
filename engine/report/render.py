@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from typing import Any, cast
 
 from engine.decide.concordance import STANDING_CAVEAT, ConcordanceResult
 from engine.decide.measurability import MeasurabilityMap
@@ -137,7 +138,7 @@ def render_report(inputs: ReportInputs) -> str:
             "Declared qualitative artifact — NOT a posterior input "
             "(HANDOFF §4, §5.4).\n\n"
         )
-        overlap = cb.get("overlap_count", 0)
+        overlap = cast(int, cb.get("overlap_count", 0))
         agree = cb.get("agreement_count", 0)
         disagree = cb.get("disagreement_count", 0)
         rate = cb.get("agreement_rate", 0.0)
@@ -168,7 +169,7 @@ def render_report(inputs: ReportInputs) -> str:
             "but has no bearing on posterior estimates.\n"
         )
 
-        divergences = cb.get("systematic_divergences", [])
+        divergences = cast("list[Any]", cb.get("systematic_divergences", []))
         if divergences:
             lines.append("\nSystematic divergences (published finding):\n")
             for d in divergences:

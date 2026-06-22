@@ -7,7 +7,6 @@ shell command parsing works correctly with RunPod's container runtime.
 import json
 import os
 import subprocess
-import sys
 
 import httpx
 

@@ -5,8 +5,10 @@ import json
 import logging
 import re
 from collections import Counter
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from engine.classify.runpod_client import RunPodClient, RunPodError
 from engine.classify.stage2_prompt import build_messages
@@ -17,7 +19,7 @@ logger = logging.getLogger(__name__)
 _THINK_RE = re.compile(r"<think>.*?</think>\s*", re.DOTALL)
 
 
-def _extract_json(text: str) -> dict:
+def _extract_json(text: str) -> dict[str, Any]:
     """Extract JSON object from model output, stripping thinking tags."""
     cleaned = _THINK_RE.sub("", text).strip()
     start = cleaned.find("{")
@@ -32,7 +34,8 @@ def _extract_json(text: str) -> dict:
             if depth == 0:
                 end = i + 1
                 break
-    return json.loads(cleaned[start:end])
+    result: dict[str, Any] = json.loads(cleaned[start:end])
+    return result
 
 
 @dataclass(frozen=True, slots=True)
@@ -55,11 +58,11 @@ class PreLabelResult:
 class MultiModelPreLabeler:
     def __init__(
         self,
-        models: list[tuple[RunPodClient, str]],
+        models: Sequence[tuple[RunPodClient, str]],
         rubric_json: str,
         prng_seed: int,
     ) -> None:
-        self._models = models
+        self._models = list(models)
         self._rubric_json = rubric_json
         self._seed = prng_seed
 

@@ -5,7 +5,8 @@ import sys
 
 import httpx
 
-PODS = json.loads(open("tools/runpod_pods.json").read())
+with open("tools/runpod_pods.json") as _f:
+    PODS = json.loads(_f.read())
 
 
 def check_pod(pod: dict) -> dict:

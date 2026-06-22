@@ -1,8 +1,10 @@
 """Tests for engine.report.narrative — standalone narrative report generator."""
 from __future__ import annotations
+
 import json
 import re
 from pathlib import Path
+
 import pytest
 
 CYCLE_DIR = Path("projects/owasp-llm/cycles/2026")
@@ -19,7 +21,20 @@ class TestNarrativeDataLoading:
     def test_load_data_has_required_keys(self) -> None:
         from engine.report.narrative_data import load_narrative_data
         data = load_narrative_data(CYCLE_DIR)
-        required = {"rubric", "incidents", "prelabels", "goldset", "precision_verification", "posteriors", "diagnostic", "inference_summary", "lambda_samples", "concordance", "selection_bias", "rank_comparison_md"}
+        required = {
+            "rubric",
+            "incidents",
+            "prelabels",
+            "goldset",
+            "precision_verification",
+            "posteriors",
+            "diagnostic",
+            "inference_summary",
+            "lambda_samples",
+            "concordance",
+            "selection_bias",
+            "rank_comparison_md",
+        }
         missing = required - set(data.keys())
         assert not missing, f"Missing keys: {missing}"
 
@@ -138,8 +153,8 @@ class TestNarrativeIntegration:
         assert kappa_str in report_text, f"Kappa {kappa_str} not found in narrative report"
         ci = conc_data.get("weighted_kappa_ci", [])
         if ci:
-            assert f"{ci[0]:.4f}" in report_text, f"CI lower bound not in report"
-            assert f"{ci[1]:.4f}" in report_text, f"CI upper bound not in report"
+            assert f"{ci[0]:.4f}" in report_text, "CI lower bound not in report"
+            assert f"{ci[1]:.4f}" in report_text, "CI upper bound not in report"
         flags = conc_data.get("flags", [])
         assert f"{len(flags)} entries flagged" in report_text or len(flags) == 0
 

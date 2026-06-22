@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from engine.decide.concordance import compute_concordance, _tier_agreement_label
+from engine.decide.concordance import _tier_agreement_label, compute_concordance
 from engine.model.inference import InferenceResult
 from engine.vote.bootstrap import VoteRankPosterior
 
@@ -51,7 +51,7 @@ def _make_vote_posterior(
     )
 
 
-def test_concordance_includes_per_entry_comparison():
+def test_concordance_includes_per_entry_comparison() -> None:
     entries = tuple(f"E{i}" for i in range(10))
     inf = _make_inference(entries, n_samples=200)
     vote = _make_vote_posterior(entries, n_bootstrap=200)
@@ -77,14 +77,14 @@ def test_concordance_includes_per_entry_comparison():
     assert "action" in first
 
 
-def test_tier_agreement_labels():
+def test_tier_agreement_labels() -> None:
     assert _tier_agreement_label(0, 0) == "same"
     assert _tier_agreement_label(0, 1) == "±1"
     assert _tier_agreement_label(0, 2) == "±2+"
     assert _tier_agreement_label(2, 0) == "±2+"
 
 
-def test_na_result_has_none_comparisons():
+def test_na_result_has_none_comparisons() -> None:
     entries = ("A", "B")
     inf = _make_inference(entries)
     vote = _make_vote_posterior(entries)

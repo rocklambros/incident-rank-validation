@@ -1,11 +1,13 @@
 """Test lambda_min field on PreregManifest."""
 from __future__ import annotations
 
+from typing import Any
+
 from engine.prereg.manifest import PreregManifest
 
 
-def _make_manifest(**overrides) -> PreregManifest:
-    defaults = {
+def _make_manifest(**overrides: Any) -> PreregManifest:
+    defaults: dict[str, Any] = {
         "engine_version": "1.1.0",
         "engine_version_range_min": "1.0.0",
         "engine_version_range_max": "1.99.0",

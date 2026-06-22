@@ -6,7 +6,7 @@ import json
 
 import numpy as np
 
-from engine.decide.concordance import ConcordanceResult, STANDING_CAVEAT, compute_concordance
+from engine.decide.concordance import STANDING_CAVEAT, ConcordanceResult, compute_concordance
 from engine.decide.robustness_multiplicity import FlagDirection, FlagFinding
 from engine.model.inference import InferenceResult
 from engine.vote.bootstrap import VoteRankPosterior
@@ -254,7 +254,9 @@ class TestCiMethodSerialization:
         )
         conc_dict = {
             "weighted_kappa_median": result.weighted_kappa_median,
-            "weighted_kappa_ci": list(result.weighted_kappa_ci) if result.weighted_kappa_ci else None,
+            "weighted_kappa_ci": (
+                list(result.weighted_kappa_ci) if result.weighted_kappa_ci else None
+            ),
             "measurable_count": result.measurable_count,
             "total_count": result.total_count,
             "coverage_ratio": result.coverage_ratio,
@@ -277,21 +279,31 @@ class TestCiMethodSerialization:
             below_prereg_minimum=False,
             meaningful_kappa_n=5,
             flags=(
-                FlagFinding(entry_id="LLM01", probability=0.88, direction=FlagDirection.VOTE_OVER_RANKS),
+                FlagFinding(
+                    entry_id="LLM01",
+                    probability=0.88,
+                    direction=FlagDirection.VOTE_OVER_RANKS,
+                ),
             ),
             standing_caveat="test caveat",
         )
 
         conc_dict = {
             "weighted_kappa_median": original.weighted_kappa_median,
-            "weighted_kappa_ci": list(original.weighted_kappa_ci) if original.weighted_kappa_ci else None,
+            "weighted_kappa_ci": (
+                list(original.weighted_kappa_ci) if original.weighted_kappa_ci else None
+            ),
             "measurable_count": original.measurable_count,
             "total_count": original.total_count,
             "coverage_ratio": original.coverage_ratio,
             "below_prereg_minimum": original.below_prereg_minimum,
             "ci_method": original.ci_method,
             "flags": [
-                {"entry_id": f.entry_id, "probability": f.probability, "direction": f.direction.value}
+                {
+                    "entry_id": f.entry_id,
+                    "probability": f.probability,
+                    "direction": f.direction.value,
+                }
                 for f in original.flags
             ],
         }
@@ -309,7 +321,9 @@ class TestCiMethodSerialization:
         )
         reconstructed = ConcordanceResult(
             weighted_kappa_median=data.get("weighted_kappa_median"),
-            weighted_kappa_ci=tuple(data["weighted_kappa_ci"]) if data.get("weighted_kappa_ci") else None,
+            weighted_kappa_ci=(
+                tuple(data["weighted_kappa_ci"]) if data.get("weighted_kappa_ci") else None
+            ),
             measurable_count=data["measurable_count"],
             total_count=data["total_count"],
             coverage_ratio=data["coverage_ratio"],

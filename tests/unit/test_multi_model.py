@@ -9,13 +9,15 @@ import pytest
 
 from engine.classify.multi_model import (
     MultiModelPreLabeler,
-    PreLabelResult,
     _extract_json,
 )
 from engine.classify.runpod_client import RunPodResponse
 from engine.schema import IncidentRecord
 
-_RUBRIC_JSON = '{"entries": [{"entry_id": "LLM01", "canonical_name": "PI", "in_scope": "test"}, {"entry_id": "LLM06", "canonical_name": "EA", "in_scope": "test"}]}'
+_RUBRIC_JSON = (
+    '{"entries": [{"entry_id": "LLM01", "canonical_name": "PI", "in_scope": "test"}, '
+    '{"entry_id": "LLM06", "canonical_name": "EA", "in_scope": "test"}]}'
+)
 
 
 def _make_incident(incident_id: str = "GA-001") -> IncidentRecord:

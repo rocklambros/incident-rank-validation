@@ -100,7 +100,7 @@ class _MockRunPodClient:
     """Mock client that returns attacker-controlled JSON."""
     _response_json: str
 
-    def run_sync(self, prompt: str, seed: int) -> _RunPodResponse:
+    def run_sync(self, prompt: str | list[dict[str, str]], seed: int) -> _RunPodResponse:
         return _RunPodResponse(
             output_text=self._response_json,
             job_id="mock-job-001",

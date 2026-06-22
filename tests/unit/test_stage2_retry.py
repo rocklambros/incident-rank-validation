@@ -10,7 +10,10 @@ from engine.classify.runpod_client import RunPodError, RunPodResponse
 from engine.classify.stage2 import FallbackRateExceeded, Stage2Classifier
 from engine.schema import IncidentRecord
 
-_RUBRIC_JSON = '{"entries": [{"entry_id": "LLM01", "canonical_name": "Prompt Injection", "in_scope": "test"}]}'
+_RUBRIC_JSON = (
+    '{"entries": [{"entry_id": "LLM01", "canonical_name": "Prompt Injection", '
+    '"in_scope": "test"}]}'
+)
 
 
 def _make_incident(incident_id: str = "TEST-001") -> IncidentRecord:
