@@ -273,10 +273,11 @@ def execute_infer_phase(
                 adjudicator_id="executor",
             )
             overlap = build_overlap_from_confusion(_gold, measurable_entries)
-        except Exception:
-            # If gold cannot be loaded (e.g. entry-ID mismatches after a rubric change),
-            # fall back to empty W rather than aborting the infer phase.
-            overlap = OverlapWeights(weights={})
+        except (ValueError, OSError, json.JSONDecodeError) as exc:
+            raise RuntimeError(
+                f"gold calibration present but failed to load: "
+                f"{type(exc).__name__}: {exc}"
+            ) from exc
 
     # Run NUTS inference
     import time
