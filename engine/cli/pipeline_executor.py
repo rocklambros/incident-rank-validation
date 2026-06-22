@@ -250,7 +250,33 @@ def execute_infer_phase(
         labeled
     )
 
+    # Build FP-leakage overlap matrix W from the goldset confusion (Plan 8a Task 5).
+    # The calibration dir holds manual_curated_incidents.json / adjudicated_goldset.jsonl /
+    # precision_verification.jsonl for real cycles.  Synthetic cycles and any cycle whose
+    # calibration dir has no goldset files fall back to an empty W (precision term inert).
     overlap = OverlapWeights(weights={})
+    _gold_dir = cycle / "calibration"
+    _has_gold_files = (
+        (_gold_dir / "manual_curated_incidents.json").exists()
+        or (_gold_dir / "adjudicated_goldset.jsonl").exists()
+    )
+    if _has_gold_files:
+        from engine.calibrate.confusion import build_overlap_from_confusion
+        from engine.calibrate.gold_loader import load_gold_calibration
+
+        _rubric_hash = manifest.rubric_hash or ""
+        try:
+            _gold = load_gold_calibration(
+                gold_dir=_gold_dir,
+                valid_entry_ids=set(measurable_entries),
+                rubric_hash=_rubric_hash,
+                adjudicator_id="executor",
+            )
+            overlap = build_overlap_from_confusion(_gold, measurable_entries)
+        except Exception:
+            # If gold cannot be loaded (e.g. entry-ID mismatches after a rubric change),
+            # fall back to empty W rather than aborting the infer phase.
+            overlap = OverlapWeights(weights={})
 
     # Run NUTS inference
     import time
