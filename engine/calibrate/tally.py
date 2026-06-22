@@ -213,7 +213,11 @@ def calibrate_with_gold(
     ``_build_observation_arrays`` picks it up when iterating corpus strata.
     """
     precision_counts = dict(base_tally.precision_counts)
-    recall_counts = dict(base_tally.recall_counts)
+    # Recall posteriors derive SOLELY from gold truth-vs-prediction (per-entry
+    # truth-cell denominators). The recall-frame tally has no classifier
+    # prediction, so its frame-size-padded recall counts are not real recall and
+    # are intentionally dropped here. (Plan 8a, SD1/RM2.)
+    recall_counts: dict[tuple[str, str], RecallTally] = {}
     rollup_counts = dict(base_tally.rollup_counts)
     gold_coded = 0
 
@@ -255,19 +259,11 @@ def calibrate_with_gold(
             precision_fp[pk] = precision_fp.get(pk, 0) + 1
 
     for k in recall_total:
-        existing = recall_counts.get(k)
-        if existing:
-            recall_counts[k] = RecallTally(
-                true_positives=existing.true_positives + recall_tp.get(k, 0),
-                false_negatives=existing.false_negatives + recall_fn.get(k, 0),
-                total_in_sample=existing.total_in_sample + recall_total[k],
-            )
-        else:
-            recall_counts[k] = RecallTally(
-                true_positives=recall_tp.get(k, 0),
-                false_negatives=recall_fn.get(k, 0),
-                total_in_sample=recall_total[k],
-            )
+        recall_counts[k] = RecallTally(
+            true_positives=recall_tp.get(k, 0),
+            false_negatives=recall_fn.get(k, 0),
+            total_in_sample=recall_total[k],
+        )
 
     for k in precision_total:
         existing_p = precision_counts.get(k)
