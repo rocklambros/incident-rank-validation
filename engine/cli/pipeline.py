@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from engine.schema import IncidentRecord
 
 
-def assert_robustness_complete(manifest: object, spread: "RobustnessSpread") -> None:
+def assert_robustness_complete(manifest: object, spread: RobustnessSpread) -> None:
     """Refuse a report whose declared robustness specs were not all run (Plan 8a, SD4).
 
     The pipeline declares the robustness specs it intends to run in the manifest.
@@ -35,9 +35,9 @@ def assert_robustness_complete(manifest: object, spread: "RobustnessSpread") -> 
 
 
 def build_robustness_spread(
-    primary_spec_result: "SpecResult",
-    robustness_results: "tuple[SpecResult, ...]",
-) -> "RobustnessSpread":
+    primary_spec_result: SpecResult,
+    robustness_results: tuple[SpecResult, ...],
+) -> RobustnessSpread:
     """Assemble the primary + robustness SpecResults into a RobustnessSpread.
 
     Kept as a thin, importable seam so Plans 8b/8c can populate sigma_u /
@@ -53,7 +53,7 @@ def build_robustness_spread(
     )
 
 
-def _load_robustness_spread(path: Path) -> "RobustnessSpread | None":
+def _load_robustness_spread(path: Path) -> RobustnessSpread | None:
     """Reload a persisted RobustnessSpread (Plan 8a Task 6).
 
     Returns None if no spread was persisted (e.g. a decide run from before this

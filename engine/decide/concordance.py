@@ -144,6 +144,31 @@ def compute_concordance(
     below_min = measurable_count < measurability_minimum
     coverage = measurable_count / total_count if total_count > 0 else 0.0
 
+    # Precondition: every measurable entry must appear in entry_strata (Plan 8e
+    # must build entry_strata to cover ALL measurable entries).
+    vote_set_pre = set(vote_posterior.entries)
+    common_pre = [e for e in inference_result.entry_ids if e in vote_set_pre]
+    missing_entries = sorted(e for e in common_pre if e not in entry_strata)
+    if missing_entries:
+        raise ValueError(
+            f"compute_concordance: measurable entries missing from entry_strata: "
+            f"{missing_entries}; entry_strata must cover all measurable entries "
+            f"(see Plan 8e)"
+        )
+    # Precondition: every stratum referenced by common entries must be in stratum_sizes.
+    missing_strata = sorted(
+        s
+        for e in common_pre
+        for s in entry_strata[e]
+        if s not in stratum_sizes
+    )
+    if missing_strata:
+        raise ValueError(
+            f"compute_concordance: strata referenced by entries but absent from "
+            f"stratum_sizes: {missing_strata}; stratum_sizes must cover all strata "
+            f"referenced by entry_strata (see Plan 8e)"
+        )
+
     # If below meaningful kappa N, report N/A
     if measurable_count < meaningful_kappa_n:
         return _na_result(measurable_count, total_count, coverage, below_min, meaningful_kappa_n)

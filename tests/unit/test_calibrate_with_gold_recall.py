@@ -1,7 +1,7 @@
 from engine.calibrate.beta import BetaPosterior
 from engine.calibrate.calibrate import compute_calibration
 from engine.calibrate.gold_schema import GoldCalibration, GoldRecallLabel
-from engine.calibrate.tally import PrecisionTally, RecallTally, TallyResult, calibrate_with_gold
+from engine.calibrate.tally import RecallTally, TallyResult, calibrate_with_gold
 
 
 def _base_tally_with_frame_padding() -> TallyResult:
