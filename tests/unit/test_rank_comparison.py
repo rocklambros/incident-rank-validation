@@ -13,7 +13,7 @@ def _make_entry_strata(
     entries: tuple[str, ...],
 ) -> tuple[dict[str, tuple[str, ...]], dict[str, int]]:
     """Build minimal single-stratum entry_strata and stratum_sizes for tests."""
-    entry_strata = {e: ("default",) for e in entries}
+    entry_strata: dict[str, tuple[str, ...]] = {e: ("default",) for e in entries}
     stratum_sizes = {"default": max(len(entries) * 10, 1)}
     return entry_strata, stratum_sizes
 

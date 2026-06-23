@@ -3,7 +3,7 @@ from pathlib import Path
 from engine.repro.bundle import ReproductionBundle
 
 
-def test_bundle_records_goldset_hash(tmp_path: Path):
+def test_bundle_records_goldset_hash(tmp_path: Path) -> None:
     b = ReproductionBundle(
         cycle_id="2026-rarr", engine_version="1.3.0",
         snapshot_hash="snap", manifest_hash="man", lockfile_hash="lf",

@@ -9,12 +9,12 @@ import pytest
 from engine.decide.robustness_multiplicity import RobustnessSpread, SpecResult
 
 
-def _spec(name, k=0.2):
+def _spec(name: str, k: float = 0.2) -> SpecResult:
     return SpecResult(spec_name=name, weighted_kappa_median=k,
                       weighted_kappa_ci=(0.0, 0.4), flags=())
 
 
-def test_assert_robustness_complete_raises_when_declared_spec_missing():
+def test_assert_robustness_complete_raises_when_declared_spec_missing() -> None:
     from engine.cli.pipeline import assert_robustness_complete
 
     class M:
@@ -26,7 +26,7 @@ def test_assert_robustness_complete_raises_when_declared_spec_missing():
         assert_robustness_complete(M(), spread)
 
 
-def test_assert_robustness_complete_passes_when_all_declared_present():
+def test_assert_robustness_complete_passes_when_all_declared_present() -> None:
     from engine.cli.pipeline import assert_robustness_complete
 
     class M:
@@ -37,15 +37,16 @@ def test_assert_robustness_complete_passes_when_all_declared_present():
     assert_robustness_complete(M(), spread)  # no raise
 
 
-def test_specresult_carries_optional_heterogeneous_fields():
+def test_specresult_carries_optional_heterogeneous_fields() -> None:
     s = SpecResult(spec_name="hierarchical_pooling", weighted_kappa_median=0.2,
                    weighted_kappa_ci=(0.0, 0.4), flags=(), sigma_u=2.1,
                    extra_rankings={"incidence": ("LLM09", "LLM02")})
     assert s.sigma_u == 2.1
+    assert s.extra_rankings is not None
     assert s.extra_rankings["incidence"] == ("LLM09", "LLM02")
 
 
-def test_specresult_optional_fields_default_to_none():
+def test_specresult_optional_fields_default_to_none() -> None:
     s = _spec("poisson_flat")
     assert s.sigma_u is None
     assert s.extra_rankings is None

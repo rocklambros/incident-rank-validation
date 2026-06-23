@@ -16,7 +16,7 @@ def _base_tally_with_frame_padding() -> TallyResult:
     )
 
 
-def test_recall_derives_solely_from_gold_not_frame_padding():
+def test_recall_derives_solely_from_gold_not_frame_padding() -> None:
     base = _base_tally_with_frame_padding()
     gold = GoldCalibration(
         recall_labels=[
