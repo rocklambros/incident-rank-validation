@@ -236,6 +236,18 @@ def calibrate_with_gold(
         if label.classifier_entry_id is None:
             continue
 
+        # Single-label recall semantics (INTENTIONAL — Plan 8ab-remediation F4).
+        # The classifier emits ONE entry_id per incident, but truth may be
+        # multi-label. Recall here is the *detection rate* the measurement-error
+        # model consumes (true_count ~= observed_count / recall): for entry X it
+        # is "of incidents truly X, what fraction did the classifier label X?".
+        # An incident truly {A, B} that the classifier labels A is in A's observed
+        # count, NOT B's, so it is a genuine detection MISS for B (recall FN for
+        # B), even though A is a true label. Crediting B as a hit here would
+        # inflate B's recall and under-correct B's incidence for incidents absent
+        # from B's observed count. Co-occurring entries therefore get inherently
+        # lower recall — a real single-label-classifier limitation, honestly
+        # reflected, not a bug. (Pinned by tests/unit/test_recall_single_label_semantics.py.)
         for true_eid in label.true_entry_ids:
             rk = (true_eid, merge_stratum)
             recall_total[rk] = recall_total.get(rk, 0) + 1
