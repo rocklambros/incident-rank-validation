@@ -291,7 +291,9 @@ def execute_infer_phase(
                 adjudicator_id="executor",
             )
             _verify_goldset_hash(manifest, _gold)
-            overlap = build_overlap_from_confusion(_gold, measurable_entries)
+            overlap = build_overlap_from_confusion(
+                _gold, measurable_entries, min_fp_count=manifest.overlap_min_fp,
+            )
         except (ValueError, OSError, json.JSONDecodeError) as exc:
             raise RuntimeError(
                 f"gold calibration present but failed to load: "

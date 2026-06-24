@@ -8,6 +8,7 @@ from engine.model.overlap import OverlapWeights
 def build_overlap_from_confusion(
     gold: GoldCalibration,
     measurable_entries: tuple[str, ...],
+    min_fp_count: int = 1,
 ) -> OverlapWeights:
     entries = set(measurable_entries)
     # fp_counts[source][target] = # incidents predicted `source` but truly `target`
@@ -25,8 +26,8 @@ def build_overlap_from_confusion(
     weights: dict[str, dict[str, float]] = {}
     for source, targets in fp_counts.items():
         total = sum(targets.values())
-        if total == 0:
-            continue
+        if total < min_fp_count:
+            continue  # insufficient evidence of leakage from this source (premortem F5)
         for target, n in targets.items():
             weights.setdefault(target, {})[source] = n / total
     return OverlapWeights(weights=weights)

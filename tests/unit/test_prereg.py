@@ -262,6 +262,8 @@ class TestLock:
             # sigma_u_hyperprior_scale is v2-only: excluded from the v1 canonical form
             # exactly like goldset_hash, so mutating it alone does not invalidate a v1 lock.
             "sigma_u_hyperprior_scale": 3.0,
+            # overlap_min_fp is v2-only: excluded from the v1 canonical form like the above.
+            "overlap_min_fp": 5,
         }
 
         manifest_fields = {f.name for f in fields(m)}
@@ -269,9 +271,9 @@ class TestLock:
             f"mutation table is missing fields: {manifest_fields - set(mutations.keys())}"
         )
 
-        # goldset_hash and sigma_u_hyperprior_scale are both v2-only fields excluded from the
-        # v1 canonical form; mutating them does NOT invalidate a v1 lock — that's by design.
-        lock_invariant_fields = {"goldset_hash", "sigma_u_hyperprior_scale"}
+        # goldset_hash, sigma_u_hyperprior_scale, and overlap_min_fp are all v2-only fields
+        # excluded from the v1 canonical form; mutating them does NOT invalidate a v1 lock.
+        lock_invariant_fields = {"goldset_hash", "sigma_u_hyperprior_scale", "overlap_min_fp"}
         for field_name, alt_value in mutations.items():
             mutated = replace(m, **{field_name: alt_value})
             if field_name in lock_invariant_fields:

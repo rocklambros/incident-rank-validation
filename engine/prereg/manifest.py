@@ -61,6 +61,7 @@ class PreregManifest:
     schema_version: int = 1  # 1 = original field set; 2 = adds goldset_hash
     goldset_hash: str | None = None  # bound only when schema_version >= 2
     sigma_u_hyperprior_scale: float | None = None  # HalfNormal scale for σ_u prior (schema >= 2)
+    overlap_min_fp: int = 1  # min false-positive count to form a W leakage column (schema >= 2)
 
     def __post_init__(self) -> None:
         if self.lambda_min is None:
@@ -89,6 +90,7 @@ class PreregManifest:
             result.pop("schema_version", None)
             result.pop("goldset_hash", None)
             result.pop("sigma_u_hyperprior_scale", None)
+            result.pop("overlap_min_fp", None)
         return result
 
     def to_json(self) -> str:
