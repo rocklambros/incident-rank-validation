@@ -345,43 +345,49 @@ def execute_infer_phase(
                 wall_seconds=wall_seconds,
             )
 
-        write_infer_artifacts(result, out_dir, primary_spec=manifest.primary_spec)
-
-        # Plan 8a Task 6: run each declared robustness spec next to the primary,
-        # where all inference inputs are in scope, and persist its lambda samples
-        # + summary for the decide phase to reload and assemble into the spread.
-        # Synthetic/parity cycles declare robustness_specs=() so this loop is inert.
-        if manifest.robustness_specs:
-            from engine.model.robustness import run_robustness_inference
-
-            for spec_name in manifest.robustness_specs:
-                try:
-                    r_result = run_robustness_inference(
-                        manifest=manifest,
-                        spec_name=spec_name,
-                        measurable_entries=measurable_entries,
-                        strata=strata,
-                        observed_counts=observed_counts,
-                        stratum_sizes=stratum_sizes,
-                        calibration=calibration,
-                        overlap=overlap,
-                        num_warmup=num_warmup,
-                        num_samples=num_samples,
-                        num_chains=num_chains,
-                    )
-                    write_robustness_artifacts(r_result, out_dir, spec_name)
-                except Exception as e:
-                    write_robustness_failure(out_dir, spec_name, f"{type(e).__name__}: {e}")
-                    raise
+        write_infer_artifacts(
+            result, out_dir, primary_spec=manifest.primary_spec, num_chains=num_chains
+        )
     except DiagnosticsFailure as e:
         write_nuts_failure(out_dir, str(e), None)
         raise
+
+    # Plan 8a Task 6: run each declared robustness spec next to the primary,
+    # where all inference inputs are in scope, and persist its lambda samples
+    # + summary for the decide phase to reload and assemble into the spread.
+    # Synthetic/parity cycles declare robustness_specs=() so this loop is inert.
+    # Robustness loop is OUTSIDE the primary try/except so a robustness
+    # DiagnosticsFailure writes ONLY robustness_<spec>_failure.txt, never
+    # diagnostics_failure.txt (which would falsely imply the primary run failed).
+    if manifest.robustness_specs:
+        from engine.model.robustness import run_robustness_inference
+
+        for spec_name in manifest.robustness_specs:
+            try:
+                r_result = run_robustness_inference(
+                    manifest=manifest,
+                    spec_name=spec_name,
+                    measurable_entries=measurable_entries,
+                    strata=strata,
+                    observed_counts=observed_counts,
+                    stratum_sizes=stratum_sizes,
+                    calibration=calibration,
+                    overlap=overlap,
+                    num_warmup=num_warmup,
+                    num_samples=num_samples,
+                    num_chains=num_chains,
+                )
+                write_robustness_artifacts(r_result, out_dir, spec_name)
+            except Exception as e:
+                write_robustness_failure(out_dir, spec_name, f"{type(e).__name__}: {e}")
+                raise
 
 
 def write_infer_artifacts(
     result: InferenceResult,
     out_dir: Path,
     primary_spec: str = "negative_binomial_per_stratum",
+    num_chains: int = 4,
 ) -> None:
     from engine.model.inference import InferenceResult  # noqa: F401
 
@@ -398,7 +404,7 @@ def write_infer_artifacts(
         "divergences": result.divergences,
         "num_warmup": result.num_warmup,
         "num_samples": result.num_samples,
-        "num_chains": 4,
+        "num_chains": num_chains,
     }
     (out_dir / "inference_summary.json").write_text(
         json.dumps(summary, indent=2) + "\n"
@@ -437,6 +443,8 @@ def write_robustness_artifacts(
 
 def write_robustness_failure(out_dir: Path, spec_name: str, message: str) -> None:
     """Record which robustness spec failed and why (premortem F9)."""
+    if Path(spec_name).name != spec_name or not spec_name:
+        raise ValueError(f"unsafe spec_name for artifact path: {spec_name!r}")
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / f"robustness_{spec_name}_failure.txt").write_text(
         f"Robustness spec '{spec_name}' failed:\n{message}\n"
