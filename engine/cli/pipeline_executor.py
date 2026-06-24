@@ -388,6 +388,7 @@ def write_robustness_artifacts(
     np.save(out_dir / f"robustness_{spec_name}_lambda.npy", result.lambda_samples)
     summary = {
         "spec_name": spec_name,
+        "sigma_u": result.sigma_u,
         "entry_ids": list(result.entry_ids),
         "r_hat": result.r_hat,
         "ess": result.ess,

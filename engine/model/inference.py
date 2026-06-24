@@ -40,6 +40,7 @@ class InferenceResult:
     divergences: int
     num_warmup: int
     num_samples: int
+    sigma_u: float | None = None  # hierarchical pooling scale posterior median (Plan 8b)
 
 
 def _build_observation_arrays(

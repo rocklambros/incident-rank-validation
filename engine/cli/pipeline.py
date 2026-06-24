@@ -570,6 +570,7 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
                 divergences=r_summary.get("divergences", 0),
                 num_warmup=r_summary.get("num_warmup", 1000),
                 num_samples=r_summary.get("num_samples", 2000),
+                sigma_u=r_summary.get("sigma_u"),
             )
             r_concordance = compute_concordance(
                 inference_result=r_inference,
@@ -588,6 +589,7 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
                 weighted_kappa_median=r_concordance.weighted_kappa_median,
                 weighted_kappa_ci=r_concordance.weighted_kappa_ci,
                 flags=r_concordance.flags,
+                sigma_u=r_inference.sigma_u,
             ))
         spread = build_robustness_spread(
             primary_spec_result, tuple(robustness_results),
