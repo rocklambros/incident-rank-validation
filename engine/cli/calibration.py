@@ -45,7 +45,12 @@ def cal_classify(
     rb = read_rubric(rubric)
     rules = build_rules_from_rubric(rb, confidence_threshold)
 
-    mreg = PreregManifest(**manifest_data)
+    import dataclasses as _dc
+    _known = {f.name for f in _dc.fields(PreregManifest)}
+    _filtered = {k: v for k, v in manifest_data.items() if k in _known}
+    if "robustness_specs" in _filtered and isinstance(_filtered["robustness_specs"], list):
+        _filtered["robustness_specs"] = tuple(_filtered["robustness_specs"])
+    mreg = PreregManifest(**_filtered)
     require_classifier_rule_hash_match(mreg, rules.rule_hash)
 
     from engine.adapters.genai_agentic import GenAIAgenticAdapter

@@ -61,11 +61,13 @@ class PreregManifest:
     schema_version: int = 1  # 1 = original field set; 2 = adds goldset_hash
     goldset_hash: str | None = None  # bound only when schema_version >= 2
     sigma_u_hyperprior_scale: float | None = None  # HalfNormal scale for σ_u prior (schema >= 2)
-    overlap_min_fp: int = 1  # min false-positive count to form a W leakage column (schema >= 2)
+    overlap_min_fp: int = 2  # min false-positive count to form a W leakage column (schema >= 2)
 
     def __post_init__(self) -> None:
         if self.lambda_min is None:
             object.__setattr__(self, "lambda_min", self.prior_scale * 0.02)
+        if self.overlap_min_fp < 1:
+            raise ValueError(f"overlap_min_fp must be >= 1, got {self.overlap_min_fp}")
 
     @property
     def non_publishable(self) -> bool:

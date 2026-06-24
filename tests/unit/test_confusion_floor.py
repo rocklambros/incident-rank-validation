@@ -18,7 +18,7 @@ def test_floor_drops_single_fp_column() -> None:
     # LLM01 has exactly 1 FP (truly LLM02) -> with floor 2, no leakage column.
     gold = _gold(("LLM02", "LLM01"))
     W = build_overlap_from_confusion(gold, ("LLM01", "LLM02"), min_fp_count=2)
-    assert "LLM02" not in W.weights or "LLM01" not in W.weights.get("LLM02", {})
+    assert W.weights == {}
 
 
 def test_floor_keeps_sufficient_column() -> None:

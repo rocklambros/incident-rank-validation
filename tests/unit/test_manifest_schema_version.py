@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from engine.prereg.lock import compute_lock_hash
+from pathlib import Path
+
+import pytest
+
+from engine.prereg.lock import compute_lock_hash, verify_lock, write_lock
 from engine.prereg.manifest import PreregManifest
 
 
@@ -45,6 +49,7 @@ def test_v1_manifest_excludes_new_fields_from_hash() -> None:
     d = m.to_dict()
     assert "schema_version" not in d
     assert "goldset_hash" not in d
+    assert "overlap_min_fp" not in d
 
 
 def test_adding_goldset_hash_under_v1_does_not_change_hash() -> None:
@@ -62,3 +67,16 @@ def test_v2_manifest_includes_new_fields_and_changes_hash() -> None:
     assert d2["schema_version"] == 2
     assert d2["goldset_hash"] == "abc123"
     assert compute_lock_hash(m1) != compute_lock_hash(m2)
+
+
+def test_v2_overlap_min_fp_mutation_invalidates_lock(tmp_path: Path) -> None:
+    """overlap_min_fp IS hash-locked at schema_version=2; mutating it must raise."""
+    m = _base_manifest(schema_version=2, goldset_hash="abc123")
+    lock_path = tmp_path / "prereg.lock"
+    write_lock(m, lock_path)
+
+    from dataclasses import replace
+
+    mutated = replace(m, overlap_min_fp=5)
+    with pytest.raises(ValueError, match="lock hash mismatch"):
+        verify_lock(mutated, lock_path)
