@@ -29,6 +29,7 @@ from dataclasses import dataclass
 import numpy as np
 import numpy.typing as npt
 from scipy.optimize import minimize
+from scipy.stats import kendalltau
 
 DEFAULT_RIDGE: float = 1e-3
 # gamma = log(nu) is bounded so that all-strict ballots (which drive nu -> 0)
@@ -158,4 +159,82 @@ def fit_davidson(
         tie_param=tie_param,
         ranking=ranking,
         converged=bool(result.success),
+    )
+
+
+N_BOOTSTRAP_DEFAULT: int = 2000
+
+
+@dataclass(frozen=True, slots=True)
+class DavidsonPosterior:
+    """Respondent-bootstrap stability of the Davidson worth ranking."""
+
+    entries: tuple[str, ...]
+    point_ranking: tuple[str, ...]
+    median_ranks: dict[str, float]
+    top5_frequency: dict[str, float]
+    mean_kendall_tau_vs_point: float
+    n_respondents: int
+    n_bootstrap: int
+
+
+def _ranking_to_rank_vector(
+    ranking: tuple[str, ...],
+    entry_ids: tuple[str, ...],
+) -> npt.NDArray[np.float64]:
+    """Map a best->worst ranking to a 1-based rank vector aligned to entry_ids."""
+    pos = {entry: i + 1 for i, entry in enumerate(ranking)}
+    return np.array([pos[entry] for entry in entry_ids], dtype=np.float64)
+
+
+def bootstrap_davidson(
+    rankings: npt.NDArray[np.float64],
+    entry_ids: tuple[str, ...],
+    n_bootstrap: int = N_BOOTSTRAP_DEFAULT,
+    seed: int = 42,
+    ridge: float = DEFAULT_RIDGE,
+) -> DavidsonPosterior:
+    """Bootstrap the Davidson worth ranking by resampling respondents.
+
+    Each replicate draws n_respondents with replacement, refits the model, and
+    records the worth ranking.  Stability is summarized by per-entry median
+    bootstrap rank, top-5 membership frequency, and the mean Kendall tau between
+    each replicate ranking and the full-sample (point) ranking.
+    """
+    n_resp = rankings.shape[0]
+    point = fit_davidson(rankings, entry_ids, ridge=ridge, include_ties=True)
+    point_vec = _ranking_to_rank_vector(point.ranking, entry_ids)
+
+    rng = np.random.default_rng(seed)
+    positions: dict[str, list[int]] = {entry: [] for entry in entry_ids}
+    top5_count: dict[str, int] = {entry: 0 for entry in entry_ids}
+    taus: list[float] = []
+
+    for _ in range(n_bootstrap):
+        idx = rng.integers(0, n_resp, size=n_resp)
+        sample = rankings[idx]
+        fit = fit_davidson(sample, entry_ids, ridge=ridge, include_ties=True)
+        for rank_pos, entry in enumerate(fit.ranking, start=1):
+            positions[entry].append(rank_pos)
+        for entry in fit.ranking[:5]:
+            top5_count[entry] += 1
+        tau = kendalltau(point_vec, _ranking_to_rank_vector(fit.ranking, entry_ids))[0]
+        taus.append(float(tau))
+
+    median_ranks = {
+        entry: float(np.median(positions[entry])) for entry in entry_ids
+    }
+    top5_frequency = {
+        entry: top5_count[entry] / n_bootstrap for entry in entry_ids
+    }
+    mean_tau = float(np.mean(taus)) if taus else 0.0
+
+    return DavidsonPosterior(
+        entries=entry_ids,
+        point_ranking=point.ranking,
+        median_ranks=median_ranks,
+        top5_frequency=top5_frequency,
+        mean_kendall_tau_vs_point=mean_tau,
+        n_respondents=n_resp,
+        n_bootstrap=n_bootstrap,
     )

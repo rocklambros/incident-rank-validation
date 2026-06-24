@@ -100,3 +100,51 @@ def test_fit_returns_dataclass_with_aligned_entries() -> None:
     assert fit.entries == ("X", "Y")
     assert set(fit.worths.keys()) == {"X", "Y"}
     assert set(fit.ranking) == {"X", "Y"}
+
+
+from engine.vote.plackett_luce import (  # noqa: E402  (appended import block)
+    N_BOOTSTRAP_DEFAULT,
+    DavidsonPosterior,
+    _ranking_to_rank_vector,
+    bootstrap_davidson,
+)
+
+
+def test_ranking_to_rank_vector() -> None:
+    # ranking best->worst is (B, A, C); rank vector is aligned to entry_ids order.
+    vec = _ranking_to_rank_vector(("B", "A", "C"), ("A", "B", "C"))
+    # A is 2nd, B is 1st, C is 3rd
+    assert list(vec) == [2.0, 1.0, 3.0]
+
+
+def test_bootstrap_is_deterministic_for_a_seed() -> None:
+    rankings = np.tile(np.array([1.0, 2.0, 3.0]), (8, 1))
+    p1 = bootstrap_davidson(rankings, ("A", "B", "C"), n_bootstrap=30, seed=42)
+    p2 = bootstrap_davidson(rankings, ("A", "B", "C"), n_bootstrap=30, seed=42)
+    assert p1.median_ranks == p2.median_ranks
+    assert p1.top5_frequency == p2.top5_frequency
+    assert p1.mean_kendall_tau_vs_point == p2.mean_kendall_tau_vs_point
+
+
+def test_bootstrap_strong_signal_is_stable() -> None:
+    # Everyone strictly ranks A>B>C: A is top in every resample.
+    rankings = np.tile(np.array([1.0, 2.0, 3.0]), (12, 1))
+    post = bootstrap_davidson(rankings, ("A", "B", "C"), n_bootstrap=50, seed=7)
+    assert post.point_ranking == ("A", "B", "C")
+    assert post.top5_frequency["A"] == 1.0
+    assert post.median_ranks["A"] == 1.0
+    # Kendall tau vs the point ranking is in [-1, 1] and high for clean data.
+    assert -1.0 <= post.mean_kendall_tau_vs_point <= 1.0
+    assert post.mean_kendall_tau_vs_point > 0.8
+
+
+def test_bootstrap_reports_counts() -> None:
+    rankings = np.tile(np.array([1.0, 2.0]), (6, 1))
+    post = bootstrap_davidson(rankings, ("A", "B"), n_bootstrap=20, seed=1)
+    assert isinstance(post, DavidsonPosterior)
+    assert post.n_respondents == 6
+    assert post.n_bootstrap == 20
+
+
+def test_default_bootstrap_count() -> None:
+    assert N_BOOTSTRAP_DEFAULT == 2000
