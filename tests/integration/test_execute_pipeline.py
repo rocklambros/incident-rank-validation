@@ -185,5 +185,5 @@ def test_full_classify_infer_pipeline(tmp_path: Path) -> None:
     else:
         lambda_path = cycle / "infer" / "lambda_samples.npy"
         assert lambda_path.exists(), "lambda_samples.npy not created"
-        samples = np.load(lambda_path)
+        samples = np.load(lambda_path, allow_pickle=False)
         assert samples.ndim == 2

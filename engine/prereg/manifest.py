@@ -9,6 +9,7 @@ from __future__ import annotations
 import dataclasses
 import json
 from dataclasses import dataclass
+from pathlib import Path
 
 from engine.prereg.rubric_attestation import RubricDraftingAttestation
 from engine.prereg.signoff import ReviewerSignoff
@@ -68,6 +69,9 @@ class PreregManifest:
             object.__setattr__(self, "lambda_min", self.prior_scale * 0.02)
         if self.overlap_min_fp < 1:
             raise ValueError(f"overlap_min_fp must be >= 1, got {self.overlap_min_fp}")
+        for _spec in self.robustness_specs:
+            if not _spec or Path(_spec).name != _spec:
+                raise ValueError(f"unsafe robustness spec name: {_spec!r}")
         if (
             "hierarchical_pooling" in self.robustness_specs
             and self.sigma_u_hyperprior_scale is None

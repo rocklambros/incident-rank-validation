@@ -35,3 +35,20 @@ def test_write_robustness_rejects_path_traversal(tmp_path: Path) -> None:
     )
     with pytest.raises(ValueError, match="spec_name"):
         write_robustness_artifacts(r, tmp_path, "../evil")
+
+
+def test_manifest_rejects_empty_robustness_spec() -> None:
+    """An empty-string robustness_specs entry must raise ValueError at manifest construction."""
+    with pytest.raises(ValueError, match="unsafe robustness spec name"):
+        _make_manifest(robustness_specs=("",))
+
+
+def test_write_robustness_rejects_empty_spec_name(tmp_path: Path) -> None:
+    """write_robustness_artifacts must also reject an empty spec_name (defense-in-depth)."""
+    from engine.cli.pipeline_executor import write_robustness_artifacts
+    r = InferenceResult(
+        lambda_samples=np.zeros((2, 2)), entry_ids=("A", "B"),
+        r_hat={}, ess={}, divergences=0, num_warmup=1, num_samples=2,
+    )
+    with pytest.raises(ValueError, match="spec_name"):
+        write_robustness_artifacts(r, tmp_path, "")
