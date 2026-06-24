@@ -11,6 +11,15 @@ from typing import TYPE_CHECKING, Any
 
 import click
 import numpy as np
+import numpy.typing as npt
+from scipy.stats import kendalltau
+
+from engine.vote.plackett_luce import (
+    DEFAULT_RIDGE,
+    N_BOOTSTRAP_DEFAULT,
+    bootstrap_davidson,
+    fit_davidson,
+)
 
 if TYPE_CHECKING:
     from engine.classify.stage2_protocol import Stage2Classification
@@ -51,6 +60,56 @@ def build_robustness_spread(
         primary=primary_spec_result,
         robustness=robustness_results,
     )
+
+
+def build_vote_pl_summary(
+    rankings: npt.NDArray[np.float64],
+    entry_ids: tuple[str, ...],
+    mean_rank_ranking: tuple[str, ...],
+    seed: int,
+    n_bootstrap: int = N_BOOTSTRAP_DEFAULT,
+    ridge: float = DEFAULT_RIDGE,
+) -> dict[str, object]:
+    """Fit the Davidson tie-aware vote model and assemble JSON diagnostics.
+
+    Computes the worth ranking (with ties), the drop-ties Bradley-Terry
+    sensitivity, and the respondent bootstrap, plus Kendall-tau concordance
+    against the bootstrap mean-rank vote ranking (the primary vote ranking) and
+    against the drop-ties ranking.  The returned dict is the auditable
+    ``vote_plackett_luce.json`` payload; its ``"ranking"`` is also attached to
+    ``SpecResult.extra_rankings["plackett_luce"]`` by the caller.
+    """
+    from engine.vote.plackett_luce import _ranking_to_rank_vector
+
+    fit = fit_davidson(rankings, entry_ids, ridge=ridge, include_ties=True)
+    fit_drop = fit_davidson(rankings, entry_ids, ridge=ridge, include_ties=False)
+    post = bootstrap_davidson(
+        rankings, entry_ids, n_bootstrap=n_bootstrap, seed=seed, ridge=ridge
+    )
+
+    pl_vec = _ranking_to_rank_vector(fit.ranking, entry_ids)
+    mean_vec = _ranking_to_rank_vector(mean_rank_ranking, entry_ids)
+    drop_vec = _ranking_to_rank_vector(fit_drop.ranking, entry_ids)
+    tau_meanrank = float(kendalltau(pl_vec, mean_vec)[0])
+    tau_dropties = float(kendalltau(pl_vec, drop_vec)[0])
+
+    return {
+        "model": "davidson_tie_aware",
+        "ridge": ridge,
+        "n_bootstrap": n_bootstrap,
+        "seed": seed,
+        "n_respondents": int(rankings.shape[0]),
+        "entries": list(entry_ids),
+        "worths": fit.worths,
+        "tie_param": fit.tie_param,
+        "ranking": list(fit.ranking),
+        "ranking_drop_ties": list(fit_drop.ranking),
+        "bootstrap_median_ranks": post.median_ranks,
+        "bootstrap_top5_frequency": post.top5_frequency,
+        "mean_kendall_tau_vs_point": post.mean_kendall_tau_vs_point,
+        "kendall_tau_vs_meanrank": tau_meanrank,
+        "kendall_tau_withties_vs_dropties": tau_dropties,
+    }
 
 
 def _load_robustness_spread(path: Path) -> RobustnessSpread | None:
@@ -549,11 +608,30 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
         # refuse the cycle if a declared spec was not run. Synthetic/parity
         # cycles declare robustness_specs=() so this is inert there.
         from engine.decide.robustness_multiplicity import SpecResult
+
+        # Plan 8c: Davidson tie-aware vote model as a vote-side robustness lens.
+        # The bootstrap mean-rank ordering (ascending median rank, 1 = best) is
+        # the primary vote ranking we compare the worth ranking against.
+        mean_rank_ranking = tuple(
+            sorted(
+                vote_posterior.entries,
+                key=lambda e: (vote_posterior.median_ranks[e], e),
+            )
+        )
+        vote_pl_summary = build_vote_pl_summary(
+            vote_data.rankings,
+            vote_data.entry_ids,
+            mean_rank_ranking=mean_rank_ranking,
+            seed=manifest.prng_seed,
+        )
+        pl_ranking = tuple(str(e) for e in vote_pl_summary["ranking"])  # type: ignore[attr-defined]
+
         primary_spec_result = SpecResult(
             spec_name=manifest.primary_spec,
             weighted_kappa_median=concordance.weighted_kappa_median,
             weighted_kappa_ci=concordance.weighted_kappa_ci,
             flags=concordance.flags,
+            extra_rankings={"plackett_luce": pl_ranking},
         )
         robustness_results: list[SpecResult] = []
         for spec_name in manifest.robustness_specs:
@@ -609,6 +687,9 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
             out_dir,
             selection_bias=selection_bias,
             robustness=spread,
+        )
+        (out_dir / "vote_plackett_luce.json").write_text(
+            json.dumps(vote_pl_summary, indent=2, sort_keys=True)
         )
 
         # Write rank comparison report
