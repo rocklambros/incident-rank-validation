@@ -43,6 +43,12 @@ def run_robustness_inference(
             stratum_sizes, calibration, overlap, num_warmup, num_samples,
             num_chains,
         )
+    if spec_name == "hierarchical_pooling":
+        return _run_hierarchical(
+            manifest, measurable_entries, strata, observed_counts,
+            stratum_sizes, calibration, overlap, num_warmup, num_samples,
+            num_chains,
+        )
     raise ValueError(f"Unknown robustness spec: {spec_name}")
 
 
@@ -136,4 +142,109 @@ def _run_poisson_flat(
         divergences=divergences,
         num_warmup=num_warmup,
         num_samples=num_samples,
+    )
+
+
+def _run_hierarchical(
+    manifest: PreregManifest,
+    measurable_entries: tuple[str, ...],
+    strata: tuple[str, ...],
+    observed_counts: dict[tuple[str, str], int],
+    stratum_sizes: dict[str, int],
+    calibration: Calibration,
+    overlap: OverlapWeights,
+    num_warmup: int,
+    num_samples: int,
+    num_chains: int,
+) -> InferenceResult:
+    assert jax.default_backend() == "cpu"
+
+    n_entries = len(measurable_entries)
+    obs, sizes, recall_a, recall_b, prec_a, prec_b = _build_observation_arrays(
+        measurable_entries, strata, observed_counts, stratum_sizes, calibration,
+    )
+    W = _build_overlap_matrix(measurable_entries, overlap)
+
+    beta0_loc = float(np.log(manifest.prior_scale))
+    sigma_u_scale = float(manifest.sigma_u_hyperprior_scale or 1.0)
+    conc_shape = manifest.concentration_shape
+    conc_rate = manifest.concentration_rate
+
+    def model(
+        obs_data: npt.NDArray[np.float64],
+        sizes_data: npt.NDArray[np.float64],
+        recall_alpha: npt.NDArray[np.float64],
+        recall_beta: npt.NDArray[np.float64],
+        precision_alpha: npt.NDArray[np.float64],
+        precision_beta: npt.NDArray[np.float64],
+        W_data: npt.NDArray[np.float64],
+    ) -> None:
+        # Non-centered hierarchical: log lambda_i = beta0 + sigma_u * u_raw_i
+        beta0 = numpyro.sample("beta0", dist.Normal(beta0_loc, 1.0))
+        sigma_u = numpyro.sample("sigma_u", dist.HalfNormal(sigma_u_scale))
+        u_raw = numpyro.sample(
+            "u_raw", dist.Normal(0.0, 1.0).expand([n_entries]).to_event(1),
+        )
+        lam = numpyro.deterministic("lambda", jnp.exp(beta0 + sigma_u * u_raw))
+
+        recall = numpyro.sample(
+            "recall", dist.Beta(jnp.array(recall_alpha), jnp.array(recall_beta)),
+        )
+        precision = numpyro.sample(
+            "precision", dist.Beta(jnp.array(precision_alpha), jnp.array(precision_beta)),
+        )
+        concentration = numpyro.sample("concentration", dist.Gamma(conc_shape, conc_rate))
+
+        true_rate = lam[:, None] * sizes_data[None, :]
+        tp = true_rate * recall
+        fp_rate = jnp.einsum("ij,js->is", jnp.array(W_data), true_rate * (1.0 - precision))
+        expected = jnp.clip(tp + fp_rate, 1e-6, None)
+        numpyro.sample(
+            "obs", dist.NegativeBinomial2(mean=expected, concentration=concentration),
+            obs=jnp.array(obs_data),
+        )
+
+    kernel = NUTS(model)
+    mcmc = MCMC(
+        kernel, num_warmup=num_warmup, num_samples=num_samples,
+        num_chains=num_chains, progress_bar=False,
+    )
+    mcmc.run(
+        jax.random.PRNGKey(manifest.prng_seed + 2000),
+        obs, sizes, recall_a, recall_b, prec_a, prec_b, W,
+    )
+
+    samples = mcmc.get_samples()
+    lambda_samples = np.asarray(samples["lambda"], dtype=np.float64)
+    sigma_u_median = float(np.median(np.asarray(samples["sigma_u"], dtype=np.float64)))
+
+    chain_samples = mcmc.get_samples(group_by_chain=True)
+    summary: dict[str, Any] = numpyro.diagnostics.summary(chain_samples)
+    r_hat_dict: dict[str, float] = {}
+    ess_dict: dict[str, float] = {}
+    for param_name, stats in summary.items():
+        if "r_hat" in stats:
+            vals = np.atleast_1d(stats["r_hat"])
+            for idx, val in enumerate(vals.flat):
+                key = f"{param_name}[{idx}]" if vals.size > 1 else param_name
+                r_hat_dict[key] = float(val)
+        if "n_eff" in stats:
+            vals = np.atleast_1d(stats["n_eff"])
+            for idx, val in enumerate(vals.flat):
+                key = f"{param_name}[{idx}]" if vals.size > 1 else param_name
+                ess_dict[key] = float(val)
+
+    extra = mcmc.get_extra_fields()
+    diverging = extra.get("diverging", np.array([]))
+    divergences = int(np.asarray(diverging).sum())
+
+    return InferenceResult(
+        lambda_samples=lambda_samples,
+        entry_ids=measurable_entries,
+        r_hat=r_hat_dict,
+        ess=ess_dict,
+        divergences=divergences,
+        num_warmup=num_warmup,
+        num_samples=num_samples,
+        sigma_u=sigma_u_median,
     )
