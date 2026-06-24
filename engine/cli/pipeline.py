@@ -472,7 +472,7 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
             raise FileNotFoundError(
                 "Inference artifacts not found. Run infer --execute first."
             )
-        lambda_samples = np.load(lambda_samples_path)
+        lambda_samples = np.load(lambda_samples_path, allow_pickle=False)
         summary = json.loads(summary_path.read_text())
         entry_ids = tuple(summary.get("entry_ids", []))
 
@@ -563,7 +563,7 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
                 continue  # gate below raises with the missing-spec list
             r_summary = json.loads(r_summary_path.read_text())
             r_inference = InferenceResult(
-                lambda_samples=np.load(r_lambda_path),
+                lambda_samples=np.load(r_lambda_path, allow_pickle=False),
                 entry_ids=tuple(r_summary.get("entry_ids", [])),
                 r_hat=r_summary.get("r_hat", {}),
                 ess=r_summary.get("ess", {}),

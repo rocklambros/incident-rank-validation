@@ -405,6 +405,8 @@ def write_robustness_artifacts(
     robustness_<spec>_summary.json) to compute per-spec concordance and
     assemble the RobustnessSpread.
     """
+    if Path(spec_name).name != spec_name or not spec_name:
+        raise ValueError(f"unsafe spec_name for artifact path: {spec_name!r}")
     out_dir.mkdir(parents=True, exist_ok=True)
     np.save(out_dir / f"robustness_{spec_name}_lambda.npy", result.lambda_samples)
     summary = {
