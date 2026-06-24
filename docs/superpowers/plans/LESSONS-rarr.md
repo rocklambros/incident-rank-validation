@@ -58,3 +58,7 @@ All 6 tasks complete + reviewed clean (Task 5 needed 1 Important fix; rest clean
 
 ## Plan 8b — SUMMARY
 All 5 tasks complete + reviewed clean (no fix loops needed — implementers ran the exact CI commands `mypy engine tests`/`ruff check .` per the 8a lesson). Range 2aa609f..fc47cac. Hierarchical pooling robustness spec: manifest sigma_u_hyperprior_scale (v2) → _run_hierarchical (non-centered) → sigma_u captured/persisted/reloaded/rendered; sensitivity sweep + prior-dominance rule. Carry to 8c (PL): same SpecResult.extra_rankings channel, same CI discipline, divergences-fix ticket pending.
+
+### Remediation — CI-gate process lesson (apply to 8c-8f)
+- **A `-k` test SUBSET is NOT a CI proxy.** The remediation local pre-check used `uv run pytest -k "...robustness..."` which did NOT match `test_run_hierarchical.py` ("hierarchical" ≠ "robustness"), so a real failure (the F2 diagnostics gate tripping the hierarchical test's tiny-fit R-hat=1.0218>1.01) slipped to CI. → **Before pushing, run the FULL `uv run pytest -q` (no `-k`), not a keyword subset** — changes to shared code (manifest `__post_init__`, the diagnostics gate) have repo-wide reach.
+- **Gating robustness specs at the strict primary R-hat (1.01) requires test fits to actually converge** — tiny NUTS fits (200 samples) flirt with the threshold. Strengthen test fits (≥1000 warmup/samples) rather than loosening the gate; a real hierarchical fit that can't hit 1.01 should fail loud (it's the "pooling unreliable" signal).
