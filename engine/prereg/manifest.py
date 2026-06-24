@@ -60,6 +60,7 @@ class PreregManifest:
     lambda_min: float | None = None  # noise floor; default: prior_scale * 0.02
     schema_version: int = 1  # 1 = original field set; 2 = adds goldset_hash
     goldset_hash: str | None = None  # bound only when schema_version >= 2
+    sigma_u_hyperprior_scale: float | None = None  # HalfNormal scale for σ_u prior (schema >= 2)
 
     def __post_init__(self) -> None:
         if self.lambda_min is None:
@@ -87,6 +88,7 @@ class PreregManifest:
         if self.schema_version == 1:
             result.pop("schema_version", None)
             result.pop("goldset_hash", None)
+            result.pop("sigma_u_hyperprior_scale", None)
         return result
 
     def to_json(self) -> str:
