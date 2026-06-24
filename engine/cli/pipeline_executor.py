@@ -18,12 +18,30 @@ from engine.classify.stub import Classification, ClassificationResult
 
 if TYPE_CHECKING:
     from engine.calibrate.beta import Calibration
+    from engine.calibrate.gold_schema import GoldCalibration
     from engine.decide.concordance import ConcordanceResult
     from engine.decide.rollup import RollupResult
     from engine.decide.selection_bias import SelectionBiasDisclosure
     from engine.model.inference import InferenceResult
     from engine.monitoring.wandb_logger import WandBLogger
     from engine.prereg.manifest import PreregManifest
+
+
+def _verify_goldset_hash(manifest: PreregManifest, gold: GoldCalibration) -> None:
+    """Fail loud if a pre-registered goldset_hash doesn't match the loaded goldset.
+
+    No-op when goldset_hash is unbound (schema_version 1 / None). When bound, the
+    goldset drives BOTH recall posteriors AND the overlap matrix W, so a silent
+    mismatch corrupts the result (premortem F1)."""
+    expected = manifest.goldset_hash
+    if expected is None or expected == "none":
+        return
+    if gold.provenance_hash != expected:
+        raise RuntimeError(
+            f"goldset hash mismatch: manifest pre-registered {expected!r} but the "
+            f"loaded goldset hashes to {gold.provenance_hash!r}. The goldset changed "
+            f"after pre-registration; refusing to run inference on unverified inputs."
+        )
 
 
 def route_to_stage2(
@@ -272,6 +290,7 @@ def execute_infer_phase(
                 rubric_hash=_rubric_hash,
                 adjudicator_id="executor",
             )
+            _verify_goldset_hash(manifest, _gold)
             overlap = build_overlap_from_confusion(_gold, measurable_entries)
         except (ValueError, OSError, json.JSONDecodeError) as exc:
             raise RuntimeError(
@@ -523,6 +542,7 @@ def write_reproduction_bundle(
     stage2_manifest_hash: str = "",
     calibration_hash: str = "",
     vote_data_hash: str = "",
+    goldset_hash: str = "none",
 ) -> None:
     from engine.repro.bundle import ReproductionBundle
 
@@ -532,7 +552,7 @@ def write_reproduction_bundle(
         snapshot_hash=snapshot_hash,
         manifest_hash=manifest_hash,
         lockfile_hash=lockfile_hash,
-        goldset_hash="none",
+        goldset_hash=goldset_hash,
         provenance={
             "stage2_manifest_hash": stage2_manifest_hash,
             "calibration_hash": calibration_hash,
