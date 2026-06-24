@@ -176,6 +176,7 @@ class DavidsonPosterior:
     mean_kendall_tau_vs_point: float
     n_respondents: int
     n_bootstrap: int
+    n_nonconverged: int
 
 
 def _ranking_to_rank_vector(
@@ -210,10 +211,13 @@ def bootstrap_davidson(
     top5_count: dict[str, int] = {entry: 0 for entry in entry_ids}
     taus: list[float] = []
 
+    n_nonconverged = 0
     for _ in range(n_bootstrap):
         idx = rng.integers(0, n_resp, size=n_resp)
         sample = rankings[idx]
         fit = fit_davidson(sample, entry_ids, ridge=ridge, include_ties=True)
+        if not fit.converged:
+            n_nonconverged += 1
         for rank_pos, entry in enumerate(fit.ranking, start=1):
             positions[entry].append(rank_pos)
         for entry in fit.ranking[:5]:
@@ -237,4 +241,5 @@ def bootstrap_davidson(
         mean_kendall_tau_vs_point=mean_tau,
         n_respondents=n_resp,
         n_bootstrap=n_bootstrap,
+        n_nonconverged=n_nonconverged,
     )

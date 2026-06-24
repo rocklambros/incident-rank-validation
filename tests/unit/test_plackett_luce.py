@@ -148,3 +148,10 @@ def test_bootstrap_reports_counts() -> None:
 
 def test_default_bootstrap_count() -> None:
     assert N_BOOTSTRAP_DEFAULT == 2000
+
+
+def test_bootstrap_reports_nonconverged_count() -> None:
+    rankings = np.tile(np.array([1.0, 2.0, 3.0]), (8, 1))
+    post = bootstrap_davidson(rankings, ("A", "B", "C"), n_bootstrap=15, seed=3)
+    assert isinstance(post.n_nonconverged, int)
+    assert 0 <= post.n_nonconverged <= 15

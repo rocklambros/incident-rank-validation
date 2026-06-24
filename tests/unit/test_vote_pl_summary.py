@@ -59,3 +59,17 @@ def test_summary_is_json_serializable() -> None:
     # Must round-trip through JSON without error.
     restored = json.loads(json.dumps(summary))
     assert restored["entries"] == ["A", "B"]
+
+
+def test_summary_surfaces_convergence() -> None:
+    rankings = np.tile(np.array([1.0, 2.0, 3.0]), (6, 1))
+    summary = build_vote_pl_summary(
+        rankings,
+        ("A", "B", "C"),
+        mean_rank_ranking=("A", "B", "C"),
+        seed=42,
+        n_bootstrap=10,
+    )
+    assert summary["converged"] is True
+    assert "n_nonconverged_bootstrap" in summary
+    assert isinstance(summary["n_nonconverged_bootstrap"], int)

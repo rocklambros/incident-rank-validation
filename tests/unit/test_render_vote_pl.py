@@ -44,3 +44,26 @@ def test_render_vote_pl_lines_shows_diagnostics() -> None:
 
 def test_render_vote_pl_lines_none_is_empty() -> None:
     assert _render_vote_pl_lines(None) == []
+
+
+def test_render_vote_pl_lines_warns_on_nonconvergence() -> None:
+    vote_pl: dict[str, object] = {
+        "ranking": ["A", "B"],
+        "tie_param": 1.0,
+        "converged": False,
+        "n_nonconverged_bootstrap": 3,
+    }
+    text = "".join(_render_vote_pl_lines(vote_pl))
+    assert "WARNING" in text
+    assert "did not converge" in text
+    assert "3 bootstrap" in text
+
+
+def test_render_vote_pl_lines_skips_none_tau() -> None:
+    vote_pl: dict[str, object] = {
+        "ranking": ["A"],
+        "tie_param": 0.0,
+        "kendall_tau_vs_meanrank": None,
+    }
+    text = "".join(_render_vote_pl_lines(vote_pl))
+    assert "Kendall tau vs mean-rank" not in text

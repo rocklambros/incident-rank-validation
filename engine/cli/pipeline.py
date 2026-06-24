@@ -6,6 +6,7 @@ for the 2026 LLM Top 10 cycle.
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -74,7 +75,7 @@ def build_vote_pl_summary(
 
     Computes the worth ranking (with ties), the drop-ties Bradley-Terry
     sensitivity, and the respondent bootstrap, plus Kendall-tau concordance
-    against the bootstrap mean-rank vote ranking (the primary vote ranking) and
+    against the vote's median-rank point summary (the mean-rank vote ranking) and
     against the drop-ties ranking.  The returned dict is the auditable
     ``vote_plackett_luce.json`` payload; its ``"ranking"`` is also attached to
     ``SpecResult.extra_rankings["plackett_luce"]`` by the caller.
@@ -90,8 +91,12 @@ def build_vote_pl_summary(
     pl_vec = _ranking_to_rank_vector(fit.ranking, entry_ids)
     mean_vec = _ranking_to_rank_vector(mean_rank_ranking, entry_ids)
     drop_vec = _ranking_to_rank_vector(fit_drop.ranking, entry_ids)
-    tau_meanrank = float(kendalltau(pl_vec, mean_vec)[0])
-    tau_dropties = float(kendalltau(pl_vec, drop_vec)[0])
+    def _finite(value: float) -> float | None:
+        return value if math.isfinite(value) else None
+
+    tau_meanrank = _finite(float(kendalltau(pl_vec, mean_vec)[0]))
+    tau_dropties = _finite(float(kendalltau(pl_vec, drop_vec)[0]))
+    boot_stability = _finite(post.mean_kendall_tau_vs_point)
 
     return {
         "model": "davidson_tie_aware",
@@ -106,9 +111,12 @@ def build_vote_pl_summary(
         "ranking_drop_ties": list(fit_drop.ranking),
         "bootstrap_median_ranks": post.median_ranks,
         "bootstrap_top5_frequency": post.top5_frequency,
-        "mean_kendall_tau_vs_point": post.mean_kendall_tau_vs_point,
+        "mean_kendall_tau_vs_point": boot_stability,
         "kendall_tau_vs_meanrank": tau_meanrank,
         "kendall_tau_withties_vs_dropties": tau_dropties,
+        "converged": fit.converged,
+        "converged_drop_ties": fit_drop.converged,
+        "n_nonconverged_bootstrap": post.n_nonconverged,
     }
 
 

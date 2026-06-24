@@ -69,6 +69,16 @@ def _render_vote_pl_lines(vote_pl: dict[str, object] | None) -> list[str]:
         top = " > ".join(str(e) for e in ranking[:5])
         suffix = " > ..." if len(ranking) > 5 else ""
         lines.append(f"- Worth ranking: {top}{suffix}\n")
+    if vote_pl.get("converged") is False:
+        lines.append(
+            "- **WARNING: Davidson point fit did not converge; "
+            "interpret the worth ranking with caution.**\n"
+        )
+    n_nonconv = vote_pl.get("n_nonconverged_bootstrap")
+    if isinstance(n_nonconv, int) and not isinstance(n_nonconv, bool) and n_nonconv > 0:
+        lines.append(
+            f"- Note: {n_nonconv} bootstrap replicate(s) did not converge.\n"
+        )
     tie_param = vote_pl.get("tie_param")
     if isinstance(tie_param, int | float):
         lines.append(f"- Tie parameter (nu): {tie_param:.2f}\n")
