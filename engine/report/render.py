@@ -31,6 +31,28 @@ class ReportInputs:
     corpus_b_corroboration: dict[str, object] | None = None
 
 
+def _render_robustness_lines(spread: RobustnessSpread) -> list[str]:
+    lines: list[str] = ["\n## Robustness\n"]
+    all_specs = [spread.primary, *spread.robustness]
+    for sr in all_specs:
+        if sr.weighted_kappa_median is not None and sr.weighted_kappa_ci is not None:
+            line = (
+                f"- {sr.spec_name}: kappa = {sr.weighted_kappa_median:.2f} "
+                f"[{sr.weighted_kappa_ci[0]:.2f}, {sr.weighted_kappa_ci[1]:.2f}]"
+            )
+        else:
+            line = f"- {sr.spec_name}: kappa = N/A"
+        if sr.sigma_u is not None:
+            line += f"  (σ_u = {sr.sigma_u:.2f})"
+        lines.append(line + "\n")
+    spread_val = spread.spread
+    if spread_val is not None:
+        lines.append(f"Spread: {spread_val:.3f}\n")
+    if not spread.is_consistent_in_direction():
+        lines.append("**WARNING: Specs disagree on flag direction.**\n")
+    return lines
+
+
 def render_report(inputs: ReportInputs) -> str:
     lines: list[str] = []
     lines.append(f"# Cycle Report: {inputs.cycle_id}\n")
@@ -92,21 +114,7 @@ def render_report(inputs: ReportInputs) -> str:
 
     # Robustness spread (R2: HANDOFF §6 control 11(g))
     if inputs.robustness is not None:
-        lines.append("\n## Robustness\n")
-        all_specs = [inputs.robustness.primary, *inputs.robustness.robustness]
-        for sr in all_specs:
-            if sr.weighted_kappa_median is not None and sr.weighted_kappa_ci is not None:
-                lines.append(
-                    f"- {sr.spec_name}: kappa = {sr.weighted_kappa_median:.2f} "
-                    f"[{sr.weighted_kappa_ci[0]:.2f}, {sr.weighted_kappa_ci[1]:.2f}]\n"
-                )
-            else:
-                lines.append(f"- {sr.spec_name}: kappa = N/A\n")
-        spread_val = inputs.robustness.spread
-        if spread_val is not None:
-            lines.append(f"Spread: {spread_val:.3f}\n")
-        if not inputs.robustness.is_consistent_in_direction():
-            lines.append("**WARNING: Specs disagree on flag direction.**\n")
+        lines.extend(_render_robustness_lines(inputs.robustness))
 
     # Rollup sub-test
     if inputs.rollup_results:
