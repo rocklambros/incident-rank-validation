@@ -849,6 +849,11 @@ def report_cmd(cycle: Path) -> None:
         if cb_path.exists():
             corpus_b_corr = json.loads(cb_path.read_text())
 
+        vote_pl_path = results_dir / "vote_plackett_luce.json"
+        vote_pl_summary: dict[str, object] | None = None
+        if vote_pl_path.exists():
+            vote_pl_summary = json.loads(vote_pl_path.read_text())
+
         inputs = ReportInputs(
             cycle_id=manifest.cycle_id,
             engine_version=__version__,
@@ -862,6 +867,7 @@ def report_cmd(cycle: Path) -> None:
             runpod_cost_usd=runpod_cost,
             cost_ceiling_usd=cost_ceiling,
             corpus_b_corroboration=corpus_b_corr,
+            vote_plackett_luce=vote_pl_summary,
         )
         report_text = render_report(inputs)
         report_path = results_dir / "report.md"
