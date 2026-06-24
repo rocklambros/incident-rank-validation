@@ -16,6 +16,8 @@ def _tiny_calibration(entries: tuple[str, ...], stratum: str) -> Calibration:
 def test_hierarchical_returns_sigma_u_and_lambda_shape() -> None:
     entries = ("LLM01", "LLM02", "LLM03", "LLM04")
     stratum = "security"
+    # ess_fraction=0.1: small test fixture; sigma_u ESS ~0.33 at this scale.
+    # Production manifests use 0.4.
     manifest = _make_manifest(schema_version=2, sigma_u_hyperprior_scale=1.0, ess_fraction=0.1)
     observed = {(e, stratum): n for e, n in zip(entries, [50, 30, 10, 1], strict=True)}
     result = run_robustness_inference(
@@ -24,7 +26,7 @@ def test_hierarchical_returns_sigma_u_and_lambda_shape() -> None:
         observed_counts=observed, stratum_sizes={stratum: 1000},
         calibration=_tiny_calibration(entries, stratum),
         overlap=OverlapWeights(weights={}),
-        num_warmup=200, num_samples=200, num_chains=2,
+        num_warmup=1000, num_samples=1000, num_chains=2,
     )
     # lambda contract preserved: (num_samples*num_chains, n_entries)
     assert result.lambda_samples.shape[1] == len(entries)
