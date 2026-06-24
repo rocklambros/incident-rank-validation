@@ -31,6 +31,35 @@ class DiagnosticsFailure(RuntimeError):
     """NUTS diagnostics failed — report not emitted."""
 
 
+_AUX_PARAMS = {"concentration"}
+
+
+def _check_diagnostics(
+    r_hat: dict[str, float],
+    ess: dict[str, float],
+    divergences: int,
+    ess_fraction: float,
+    total_draws: int,
+) -> None:
+    """Raise DiagnosticsFailure if NUTS diagnostics are out of bounds.
+
+    Shared by the primary and robustness specs so a divergent / poorly-mixed
+    robustness fit cannot silently feed the spread (premortem F2). The ESS gate
+    covers all sampled sites except `concentration` (so it covers lambda AND
+    sigma_u for the hierarchical spec)."""
+    max_rhat = max(r_hat.values()) if r_hat else 1.0
+    if max_rhat > 1.01:
+        raise DiagnosticsFailure(f"R-hat exceeded threshold: max R-hat = {max_rhat:.4f} > 1.01")
+    if divergences > 0:
+        raise DiagnosticsFailure(f"Post-warmup divergences detected: {divergences}")
+    gated_ess = {k: v for k, v in ess.items() if k.split("[")[0] not in _AUX_PARAMS}
+    min_ess_fraction = min((v / total_draws for v in gated_ess.values()), default=1.0)
+    if min_ess_fraction < ess_fraction:
+        raise DiagnosticsFailure(
+            f"ESS below threshold: min ESS fraction = {min_ess_fraction:.4f} < {ess_fraction}"
+        )
+
+
 @dataclass(frozen=True, slots=True)
 class InferenceResult:
     lambda_samples: npt.NDArray[np.float64]  # shape (num_samples, num_entries)
@@ -218,6 +247,7 @@ def run_inference(
         mcmc.run(
             jax.random.PRNGKey(manifest.prng_seed),
             obs, sizes, recall_a, recall_b, prec_a, prec_b, W,
+            extra_fields=("diverging",),
         )
     finally:
         if timeout_seconds is not None:
@@ -257,34 +287,7 @@ def run_inference(
     # ------------------------------------------------------------------
     # Diagnostic gates (HANDOFF §5.4)
     # ------------------------------------------------------------------
-    # R-hat <= 1.01
-    max_rhat = max(r_hat_dict.values()) if r_hat_dict else 1.0
-    if max_rhat > 1.01:
-        raise DiagnosticsFailure(
-            f"R-hat exceeded threshold: max R-hat = {max_rhat:.4f} > 1.01"
-        )
-
-    # Zero post-warmup divergences
-    if divergences > 0:
-        raise DiagnosticsFailure(
-            f"Post-warmup divergences detected: {divergences}"
-        )
-
-    # Sufficient ESS — gate on lambda parameters only; auxiliary parameters
-    # (concentration) are shared scalars with inherently lower ESS.
-    _AUX_PARAMS = {"concentration"}
-    total_draws = num_samples * num_chains
-    lambda_ess = {
-        k: v for k, v in ess_dict.items() if k.split("[")[0] not in _AUX_PARAMS
-    }
-    min_ess_fraction = (
-        min(v / total_draws for v in lambda_ess.values()) if lambda_ess else 1.0
-    )
-    if min_ess_fraction < ess_fraction:
-        raise DiagnosticsFailure(
-            f"ESS below threshold: min ESS fraction = {min_ess_fraction:.4f} "
-            f"< {ess_fraction}"
-        )
+    _check_diagnostics(r_hat_dict, ess_dict, divergences, ess_fraction, num_samples * num_chains)
 
     return InferenceResult(
         lambda_samples=lambda_samples,

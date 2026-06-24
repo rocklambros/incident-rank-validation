@@ -18,7 +18,12 @@ import numpyro.distributions as dist
 from numpyro.infer import MCMC, NUTS
 
 from engine.calibrate.beta import Calibration
-from engine.model.inference import InferenceResult, _build_observation_arrays, _build_overlap_matrix
+from engine.model.inference import (
+    InferenceResult,
+    _build_observation_arrays,
+    _build_overlap_matrix,
+    _check_diagnostics,
+)
 from engine.model.overlap import OverlapWeights
 from engine.prereg.manifest import PreregManifest
 
@@ -107,6 +112,7 @@ def _run_poisson_flat(
     mcmc.run(
         jax.random.PRNGKey(manifest.prng_seed + 1000),
         obs, sizes, recall_a, recall_b, prec_a, prec_b, W,
+        extra_fields=("diverging",),
     )
 
     samples = mcmc.get_samples()
@@ -133,6 +139,10 @@ def _run_poisson_flat(
     extra = mcmc.get_extra_fields()
     diverging = extra.get("diverging", np.array([]))
     divergences = int(np.asarray(diverging).sum())
+
+    _check_diagnostics(
+        r_hat_dict, ess_dict, divergences, manifest.ess_fraction, num_samples * num_chains
+    )
 
     return InferenceResult(
         lambda_samples=lambda_samples,
@@ -212,6 +222,7 @@ def _run_hierarchical(
     mcmc.run(
         jax.random.PRNGKey(manifest.prng_seed + 2000),
         obs, sizes, recall_a, recall_b, prec_a, prec_b, W,
+        extra_fields=("diverging",),
     )
 
     samples = mcmc.get_samples()
@@ -237,6 +248,10 @@ def _run_hierarchical(
     extra = mcmc.get_extra_fields()
     diverging = extra.get("diverging", np.array([]))
     divergences = int(np.asarray(diverging).sum())
+
+    _check_diagnostics(
+        r_hat_dict, ess_dict, divergences, manifest.ess_fraction, num_samples * num_chains
+    )
 
     return InferenceResult(
         lambda_samples=lambda_samples,

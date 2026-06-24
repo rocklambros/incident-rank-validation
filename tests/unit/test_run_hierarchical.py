@@ -16,7 +16,7 @@ def _tiny_calibration(entries: tuple[str, ...], stratum: str) -> Calibration:
 def test_hierarchical_returns_sigma_u_and_lambda_shape() -> None:
     entries = ("LLM01", "LLM02", "LLM03", "LLM04")
     stratum = "security"
-    manifest = _make_manifest(schema_version=2, sigma_u_hyperprior_scale=1.0)
+    manifest = _make_manifest(schema_version=2, sigma_u_hyperprior_scale=1.0, ess_fraction=0.1)
     observed = {(e, stratum): n for e, n in zip(entries, [50, 30, 10, 1], strict=True)}
     result = run_robustness_inference(
         manifest=manifest, spec_name="hierarchical_pooling",
