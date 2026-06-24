@@ -229,6 +229,13 @@ def execute_infer_phase(
     os.environ.setdefault("JAX_PLATFORM_NAME", "cpu")
     os.environ.setdefault("JAX_ENABLE_X64", "true")
 
+    import jax
+    if jax.default_backend() != "cpu":
+        raise RuntimeError(
+            f"JAX backend is {jax.default_backend()!r}, expected 'cpu'. "
+            "Set JAX_PLATFORM_NAME=cpu before launch (reproducibility)."
+        )
+
     cal_path = cycle / "calibration" / "posteriors.json"
     if not cal_path.exists():
         raise FileNotFoundError(
@@ -348,20 +355,24 @@ def execute_infer_phase(
             from engine.model.robustness import run_robustness_inference
 
             for spec_name in manifest.robustness_specs:
-                r_result = run_robustness_inference(
-                    manifest=manifest,
-                    spec_name=spec_name,
-                    measurable_entries=measurable_entries,
-                    strata=strata,
-                    observed_counts=observed_counts,
-                    stratum_sizes=stratum_sizes,
-                    calibration=calibration,
-                    overlap=overlap,
-                    num_warmup=num_warmup,
-                    num_samples=num_samples,
-                    num_chains=num_chains,
-                )
-                write_robustness_artifacts(r_result, out_dir, spec_name)
+                try:
+                    r_result = run_robustness_inference(
+                        manifest=manifest,
+                        spec_name=spec_name,
+                        measurable_entries=measurable_entries,
+                        strata=strata,
+                        observed_counts=observed_counts,
+                        stratum_sizes=stratum_sizes,
+                        calibration=calibration,
+                        overlap=overlap,
+                        num_warmup=num_warmup,
+                        num_samples=num_samples,
+                        num_chains=num_chains,
+                    )
+                    write_robustness_artifacts(r_result, out_dir, spec_name)
+                except Exception as e:
+                    write_robustness_failure(out_dir, spec_name, f"{type(e).__name__}: {e}")
+                    raise
     except DiagnosticsFailure as e:
         write_nuts_failure(out_dir, str(e), None)
         raise
@@ -421,6 +432,14 @@ def write_robustness_artifacts(
     }
     (out_dir / f"robustness_{spec_name}_summary.json").write_text(
         json.dumps(summary, indent=2) + "\n"
+    )
+
+
+def write_robustness_failure(out_dir: Path, spec_name: str, message: str) -> None:
+    """Record which robustness spec failed and why (premortem F9)."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / f"robustness_{spec_name}_failure.txt").write_text(
+        f"Robustness spec '{spec_name}' failed:\n{message}\n"
     )
 
 
