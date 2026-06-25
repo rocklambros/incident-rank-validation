@@ -757,6 +757,17 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
             json.dumps(list(vote_data.entry_ids), indent=2)
         )
 
+        # Plan 8d: run the independent oracle and persist its verdict.
+        from engine.verify.check import run_oracle
+        oracle_verdict_obj = run_oracle(cycle)
+        if oracle_verdict_obj.provisional:
+            click.echo(
+                "Oracle consistency check: PROVISIONAL (one or more deliverables "
+                "disagree)"
+            )
+        else:
+            click.echo("Oracle consistency check: PASS")
+
         # Write rank comparison report
         from engine.decide.concordance import format_rank_comparison_report
         report_text = format_rank_comparison_report(concordance)
@@ -919,6 +930,11 @@ def report_cmd(cycle: Path) -> None:
         if vote_pl_path.exists():
             vote_pl_summary = json.loads(vote_pl_path.read_text())
 
+        oracle_path = results_dir / "oracle_report.json"
+        oracle_verdict: dict[str, object] | None = None
+        if oracle_path.exists():
+            oracle_verdict = json.loads(oracle_path.read_text())
+
         inputs = ReportInputs(
             cycle_id=manifest.cycle_id,
             engine_version=__version__,
@@ -933,6 +949,7 @@ def report_cmd(cycle: Path) -> None:
             cost_ceiling_usd=cost_ceiling,
             corpus_b_corroboration=corpus_b_corr,
             vote_plackett_luce=vote_pl_summary,
+            oracle_verdict=oracle_verdict,
         )
         report_text = render_report(inputs)
         report_path = results_dir / "report.md"

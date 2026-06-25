@@ -30,6 +30,7 @@ class ReportInputs:
     cost_ceiling_usd: float | None = None
     corpus_b_corroboration: dict[str, object] | None = None
     vote_plackett_luce: dict[str, object] | None = None
+    oracle_verdict: dict[str, object] | None = None
 
 
 def _render_robustness_lines(spread: RobustnessSpread) -> list[str]:
@@ -91,6 +92,27 @@ def _render_vote_pl_lines(vote_pl: dict[str, object] | None) -> list[str]:
     boot = vote_pl.get("mean_kendall_tau_vs_point")
     if isinstance(boot, int | float):
         lines.append(f"- Bootstrap stability (mean Kendall tau vs point): {boot:.2f}\n")
+    return lines
+
+
+def _render_oracle_lines(oracle: dict[str, object] | None) -> list[str]:
+    """Render the independent oracle consistency check + provisional banner."""
+    if oracle is None:
+        return []
+    lines: list[str] = ["\n## Oracle Consistency Check\n"]
+    if oracle.get("provisional") is True:
+        lines.append(
+            "**PROVISIONAL: the independent oracle disagrees with the engine on "
+            "one or more deliverables (see FAIL rows). Treat results as "
+            "un-cross-checked.**\n"
+        )
+    deliverables = oracle.get("deliverables", [])
+    if isinstance(deliverables, list):
+        for d in deliverables:
+            if isinstance(d, dict):
+                lines.append(
+                    f"- [{d.get('status')}] {d.get('name')}: {d.get('metric')}\n"
+                )
     return lines
 
 
@@ -157,6 +179,7 @@ def render_report(inputs: ReportInputs) -> str:
     if inputs.robustness is not None:
         lines.extend(_render_robustness_lines(inputs.robustness))
     lines.extend(_render_vote_pl_lines(inputs.vote_plackett_luce))
+    lines.extend(_render_oracle_lines(inputs.oracle_verdict))
 
     # Rollup sub-test
     if inputs.rollup_results:
