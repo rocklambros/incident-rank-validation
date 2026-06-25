@@ -112,3 +112,5 @@ def test_run_oracle_skips_when_no_nonnull_sigma_u(tmp_path: Path) -> None:
     verdict = run_oracle(cycle)
     names = {d.name: d.status for d in verdict.deliverables}
     assert names["sigma_u"] == "SKIP"
+    detail = next(d.detail for d in verdict.deliverables if d.name == "sigma_u")
+    assert "hierarchical" in detail

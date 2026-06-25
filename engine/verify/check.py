@@ -132,9 +132,21 @@ def run_oracle(cycle: Path) -> OracleVerdict:
         deliverables.append(
             compare_sigma_u(engine_sigma, oracle_sigma, ORACLE_SIGMA_U_BAND)
         )
+    elif engine_sigma is None:
+        deliverables.append(
+            OracleDeliverable(
+                "sigma_u",
+                "SKIP",
+                "n/a",
+                "no hierarchical sigma_u in robustness_spread "
+                "(hierarchical_pooling spec not run this cycle)",
+            )
+        )
     else:
         deliverables.append(
-            OracleDeliverable("sigma_u", "SKIP", "n/a", "missing inputs")
+            OracleDeliverable(
+                "sigma_u", "SKIP", "n/a", "missing poisson_flat lambda samples"
+            )
         )
 
     verdict = OracleVerdict(deliverables=tuple(deliverables))

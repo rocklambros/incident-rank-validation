@@ -110,9 +110,11 @@ def _render_oracle_lines(oracle: dict[str, object] | None) -> list[str]:
     if isinstance(deliverables, list):
         for d in deliverables:
             if isinstance(d, dict):
-                lines.append(
-                    f"- [{d.get('status')}] {d.get('name')}: {d.get('metric')}\n"
-                )
+                line = f"- [{d.get('status')}] {d.get('name')}: {d.get('metric')}"
+                detail = d.get("detail")
+                if d.get("status") != "PASS" and detail:
+                    line += f" — {detail}"
+                lines.append(line + "\n")
     return lines
 
 

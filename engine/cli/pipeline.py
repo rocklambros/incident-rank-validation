@@ -757,16 +757,32 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
             json.dumps(list(vote_data.entry_ids), indent=2)
         )
 
-        # Plan 8d: run the independent oracle and persist its verdict.
+        # Plan 8d: run the independent oracle and persist its verdict. A
+        # verification crash must NOT invalidate a completed decide (artifacts
+        # are already written); report it and let decide succeed.
         from engine.verify.check import run_oracle
-        oracle_verdict_obj = run_oracle(cycle)
-        if oracle_verdict_obj.provisional:
+        try:
+            oracle_verdict_obj = run_oracle(cycle)
+        except Exception as oracle_err:  # noqa: BLE001
             click.echo(
-                "Oracle consistency check: PROVISIONAL (one or more deliverables "
-                "disagree)"
+                f"Oracle consistency check could not run ({oracle_err}); decide "
+                f"artifacts are intact. Run `verify-oracle --cycle {cycle}` to retry."
             )
         else:
-            click.echo("Oracle consistency check: PASS")
+            n_skip = sum(
+                1 for d in oracle_verdict_obj.deliverables if d.status == "SKIP"
+            )
+            n_checked = len(oracle_verdict_obj.deliverables) - n_skip
+            if oracle_verdict_obj.provisional:
+                click.echo(
+                    f"Oracle consistency check: PROVISIONAL ({n_checked} checked, "
+                    f"{n_skip} skipped; one or more deliverables disagree)"
+                )
+            else:
+                click.echo(
+                    f"Oracle consistency check: PASS ({n_checked} checked, "
+                    f"{n_skip} skipped)"
+                )
 
         # Write rank comparison report
         from engine.decide.concordance import format_rank_comparison_report

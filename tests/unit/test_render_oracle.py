@@ -35,3 +35,20 @@ def test_render_oracle_fail_shows_provisional_banner() -> None:
     assert "PROVISIONAL" in text
     assert "incidence" in text
     assert "FAIL" in text
+
+
+def test_render_oracle_skip_shows_detail() -> None:
+    oracle: dict[str, object] = {
+        "provisional": False,
+        "deliverables": [
+            {
+                "name": "sigma_u",
+                "status": "SKIP",
+                "metric": "n/a",
+                "detail": "no hierarchical sigma_u in robustness_spread",
+            },
+        ],
+    }
+    text = "".join(_render_oracle_lines(oracle))
+    assert "SKIP" in text
+    assert "hierarchical" in text
