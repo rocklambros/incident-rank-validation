@@ -88,3 +88,27 @@ def test_run_oracle_skips_missing_sigma_u(tmp_path: Path) -> None:
     verdict = run_oracle(cycle)
     names = {d.name: d.status for d in verdict.deliverables}
     assert names["sigma_u"] == "SKIP"
+
+
+def test_run_oracle_entry_set_mismatch_is_fail_not_crash(tmp_path: Path) -> None:
+    cycle = _write_cycle(tmp_path)
+    # Engine incidence ranking references an entry absent from inference -> the
+    # oracle reconstructs a different entry set; this must FAIL, not raise.
+    (cycle / "results" / "incidence_ranking.json").write_text(
+        json.dumps({"ranking": ["A", "B", "C", "D", "Z"]})
+    )
+    verdict = run_oracle(cycle)
+    names = {d.name: d.status for d in verdict.deliverables}
+    assert names["incidence"] == "FAIL"
+    assert verdict.provisional is True
+
+
+def test_run_oracle_skips_when_no_nonnull_sigma_u(tmp_path: Path) -> None:
+    cycle = _write_cycle(tmp_path)
+    # robustness_spread present but no spec carries a non-null sigma_u -> SKIP.
+    (cycle / "results" / "robustness_spread.json").write_text(
+        json.dumps({"primary": {"spec_name": "kappa", "sigma_u": None}, "robustness": []})
+    )
+    verdict = run_oracle(cycle)
+    names = {d.name: d.status for d in verdict.deliverables}
+    assert names["sigma_u"] == "SKIP"

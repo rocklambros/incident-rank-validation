@@ -46,6 +46,29 @@ def _hierarchical_sigma_u(spread: dict[str, object]) -> float | None:
     return None
 
 
+def _ranking_deliverable(
+    name: str,
+    engine_ranking: tuple[str, ...],
+    oracle_ranking: tuple[str, ...],
+    floor: float,
+) -> OracleDeliverable:
+    """Compare two rankings; FAIL (not crash) on entry-set mismatch.
+
+    A verification oracle must FLAG an entry-set disagreement between the
+    engine deliverable and what the oracle can reconstruct, rather than
+    raising (kendall_tau rejects mismatched sets) or silently filtering it
+    away (which would mask the inconsistency).
+    """
+    if set(engine_ranking) != set(oracle_ranking):
+        return OracleDeliverable(
+            name,
+            "FAIL",
+            "entry-set mismatch",
+            f"engine={sorted(engine_ranking)} oracle={sorted(oracle_ranking)}",
+        )
+    return compare_ranking(name, engine_ranking, oracle_ranking, floor)
+
+
 def run_oracle(cycle: Path) -> OracleVerdict:
     """Re-derive D1/D2/D3 independently and compare to the engine's output."""
     infer = cycle / "infer"
@@ -71,7 +94,7 @@ def run_oracle(cycle: Path) -> OracleVerdict:
             stratum_sizes,
         )
         deliverables.append(
-            compare_ranking("incidence", engine_ranking, oracle_ranking, ORACLE_TAU_INCIDENCE)
+            _ranking_deliverable("incidence", engine_ranking, oracle_ranking, ORACLE_TAU_INCIDENCE)
         )
     else:
         deliverables.append(
@@ -88,7 +111,7 @@ def run_oracle(cycle: Path) -> OracleVerdict:
         vote_ids = tuple(json.loads(vote_ids_path.read_text()))
         oracle_pl = oracle_pl_ranking_mm(ballots, vote_ids)
         deliverables.append(
-            compare_ranking("plackett_luce", engine_pl, oracle_pl, ORACLE_TAU_PL)
+            _ranking_deliverable("plackett_luce", engine_pl, oracle_pl, ORACLE_TAU_PL)
         )
     else:
         deliverables.append(
