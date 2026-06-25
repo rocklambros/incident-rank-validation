@@ -118,3 +118,31 @@ def oracle_pl_ranking_mm(
     worths = {e: float(pi[i]) for i, e in enumerate(entry_ids)}
     order = sorted(entry_ids, key=lambda e: (-worths[e], e))
     return tuple(order)
+
+
+def oracle_sigma_u_surrogate(lambda_samples: npt.NDArray[np.float64]) -> float:
+    """DerSimonian-Laird between-entry SD of log-lambda (random-effects moment).
+
+    A closed-form surrogate for the engine's NUTS HalfNormal sigma_u posterior:
+    y_e = median(log lambda_e), v_e = var(log lambda_e) (within-entry sampling
+    variance).  tau^2 = max(0, (Q - (k-1)) / C) with DSL weights w_e = 1/v_e.
+    No MCMC, no scipy.optimize.  Computed on the UNPOOLED poisson_flat samples
+    so it is an independent estimate of the pooling SD, not a re-read of the
+    hierarchical posterior.
+    """
+    k = lambda_samples.shape[1]
+    if k < 2:
+        return 0.0
+    log_lambda = np.log(np.clip(lambda_samples, 1e-12, None))
+    y = np.median(log_lambda, axis=0)
+    v = np.var(log_lambda, axis=0, ddof=1)
+    v = np.clip(v, 1e-12, None)
+    w = 1.0 / v
+    sum_w = float(np.sum(w))
+    y_bar = float(np.sum(w * y) / sum_w)
+    q = float(np.sum(w * (y - y_bar) ** 2))
+    c = sum_w - float(np.sum(w**2)) / sum_w
+    if c <= 0.0:
+        return 0.0
+    tau2 = max(0.0, (q - (k - 1)) / c)
+    return float(np.sqrt(tau2))
