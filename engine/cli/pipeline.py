@@ -942,6 +942,18 @@ def report_cmd(cycle: Path) -> None:
         raise click.ClickException(f"Report generation failed: {e}") from e
 
 
+@click.command("verify-oracle")
+@click.option("--cycle", required=True, type=click.Path(path_type=Path, exists=True))
+def verify_oracle_cmd(cycle: Path) -> None:
+    """Run the independent consistency-check oracle over a completed cycle."""
+    from engine.verify.check import run_oracle
+
+    verdict = run_oracle(cycle)
+    for d in verdict.deliverables:
+        click.echo(f"[{d.status}] {d.name}: {d.metric} ; {d.detail}")
+    click.echo(f"PROVISIONAL: {verdict.provisional}")
+
+
 @click.command(name="repro-bundle")
 @click.option("--cycle", required=True, type=click.Path(path_type=Path, exists=True))
 @click.option("--output", required=True, type=click.Path(path_type=Path))

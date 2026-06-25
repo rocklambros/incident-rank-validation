@@ -20,6 +20,7 @@ from engine.cli.pipeline import (
     report_cmd,
     report_narrative_cmd,
     repro_bundle_cmd,
+    verify_oracle_cmd,
 )
 from engine.cli.reclassify import reclassify
 from engine.cli.rubric import freeze_rubric_cmd, validate_rubric_cmd
@@ -50,6 +51,7 @@ cli.add_command(report_narrative_cmd)
 cli.add_command(repro_bundle_cmd)
 cli.add_command(corroborate)
 cli.add_command(reclassify)
+cli.add_command(verify_oracle_cmd)
 
 
 @cli.command()
