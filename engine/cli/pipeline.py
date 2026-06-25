@@ -120,6 +120,45 @@ def build_vote_pl_summary(
     }
 
 
+def build_incidence_ranking_artifact(
+    lambda_samples: npt.NDArray[np.float64],
+    entry_ids: tuple[str, ...],
+    common: list[str],
+    entry_strata: dict[str, tuple[str, ...]],
+    stratum_sizes: dict[str, int],
+) -> dict[str, object]:
+    """Persist the engine's incidence deliverable for the oracle to check (8d).
+
+    Uses the engine's OWN _ranks_from_incidence on the median lambda vector so
+    the persisted ranking is exactly the engine's method; the oracle re-derives
+    independently and compares.
+    """
+    from engine.decide.concordance import _ranks_from_incidence
+
+    inf_idx = {e: i for i, e in enumerate(entry_ids)}
+    median_lambda = np.median(lambda_samples, axis=0)
+    point_ranks = _ranks_from_incidence(
+        median_lambda, inf_idx, common, entry_strata, stratum_sizes
+    )
+    ranking = [e for _, e in sorted(zip(point_ranks, common, strict=True))]
+
+    incidence_median: dict[str, float] = {}
+    incidence_ci: dict[str, list[float]] = {}
+    for e in common:
+        total_size = float(sum(stratum_sizes[s] for s in entry_strata[e]))
+        draws = lambda_samples[:, inf_idx[e]] * total_size
+        incidence_median[e] = float(np.median(draws))
+        incidence_ci[e] = [
+            float(np.percentile(draws, 2.5)),
+            float(np.percentile(draws, 97.5)),
+        ]
+    return {
+        "ranking": ranking,
+        "incidence_median": incidence_median,
+        "incidence_ci": incidence_ci,
+    }
+
+
 def _load_robustness_spread(path: Path) -> RobustnessSpread | None:
     """Reload a persisted RobustnessSpread (Plan 8a Task 6).
 
@@ -698,6 +737,24 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
         )
         (out_dir / "vote_plackett_luce.json").write_text(
             json.dumps(vote_pl_summary, indent=2, sort_keys=True)
+        )
+
+        # Plan 8d: persist the engine deliverables the oracle checks against,
+        # and the ballot matrix so re-verification is self-contained.
+        _common = [e for e in inference_result.entry_ids if e in set(vote_posterior.entries)]
+        incidence_artifact = build_incidence_ranking_artifact(
+            inference_result.lambda_samples,
+            inference_result.entry_ids,
+            _common,
+            entry_strata,
+            stratum_sizes,
+        )
+        (out_dir / "incidence_ranking.json").write_text(
+            json.dumps(incidence_artifact, indent=2, sort_keys=True)
+        )
+        np.save(out_dir / "vote_rankings.npy", vote_data.rankings)
+        (out_dir / "vote_entry_ids.json").write_text(
+            json.dumps(list(vote_data.entry_ids), indent=2)
         )
 
         # Write rank comparison report
