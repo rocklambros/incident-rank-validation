@@ -10,9 +10,11 @@ independent verification (shared author/conceptual source).
 from __future__ import annotations
 
 from collections.abc import Mapping
+from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
+from scipy.stats import kendalltau
 
 
 def _incidence_value(
@@ -146,3 +148,76 @@ def oracle_sigma_u_surrogate(lambda_samples: npt.NDArray[np.float64]) -> float:
         return 0.0
     tau2 = max(0.0, (q - (k - 1)) / c)
     return float(np.sqrt(tau2))
+
+
+ORACLE_TAU_INCIDENCE: float = 0.95
+ORACLE_TAU_PL: float = 0.70
+ORACLE_SIGMA_U_BAND: float = 0.75
+
+
+@dataclass(frozen=True, slots=True)
+class OracleDeliverable:
+    name: str
+    status: str  # "PASS" | "FAIL" | "SKIP"
+    metric: str
+    detail: str
+
+
+@dataclass(frozen=True, slots=True)
+class OracleVerdict:
+    deliverables: tuple[OracleDeliverable, ...]
+
+    @property
+    def provisional(self) -> bool:
+        return any(d.status == "FAIL" for d in self.deliverables)
+
+
+def kendall_tau(rank_a: tuple[str, ...], rank_b: tuple[str, ...]) -> float:
+    """Kendall tau between two rankings over the same entry set."""
+    if set(rank_a) != set(rank_b):
+        raise ValueError("kendall_tau: rankings cover different entry sets")
+    pos_a = {e: i for i, e in enumerate(rank_a)}
+    pos_b = {e: i for i, e in enumerate(rank_b)}
+    entries = sorted(rank_a)
+    va = [pos_a[e] for e in entries]
+    vb = [pos_b[e] for e in entries]
+    return float(kendalltau(va, vb)[0])
+
+
+def top_tier_set(ranking: tuple[str, ...]) -> frozenset[str]:
+    """Top tier (matches engine tiering: n<=3 -> 1, else n//3)."""
+    n = len(ranking)
+    size = 1 if n <= 3 else n // 3
+    return frozenset(ranking[:size])
+
+
+def compare_ranking(
+    name: str,
+    engine_ranking: tuple[str, ...],
+    oracle_ranking: tuple[str, ...],
+    tau_floor: float,
+) -> OracleDeliverable:
+    tau = kendall_tau(engine_ranking, oracle_ranking)
+    tiers_match = top_tier_set(engine_ranking) == top_tier_set(oracle_ranking)
+    status = "PASS" if (tau >= tau_floor and tiers_match) else "FAIL"
+    return OracleDeliverable(
+        name=name,
+        status=status,
+        metric=f"kendall_tau={tau:.3f} (floor {tau_floor:.2f})",
+        detail=f"top_tier_match={tiers_match}",
+    )
+
+
+def compare_sigma_u(
+    engine_sigma_u: float,
+    oracle_sigma_u: float,
+    band: float,
+) -> OracleDeliverable:
+    delta = abs(engine_sigma_u - oracle_sigma_u)
+    status = "PASS" if delta <= band else "FAIL"
+    return OracleDeliverable(
+        name="sigma_u",
+        status=status,
+        metric=f"|delta|={delta:.3f} (band {band:.2f})",
+        detail=f"engine={engine_sigma_u:.3f} oracle={oracle_sigma_u:.3f}",
+    )
