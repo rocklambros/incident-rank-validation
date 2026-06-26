@@ -12,6 +12,8 @@ import json
 from collections.abc import Iterable, Mapping
 from pathlib import Path
 
+import numpy as np
+
 OOS_CLASS: str = "out-of-scope"
 
 
@@ -80,3 +82,46 @@ def balanced_accuracy_oos(
         return 0.0
     recall = per_class_recall(predictions, truth, classes)
     return sum(recall[c] for c in classes) / len(classes)
+
+
+LOCKBOX_FRACTION: float = 0.3
+
+
+def _primary_class(classes: frozenset[str]) -> str:
+    """Deterministic single stratification key for a (possibly multi-) truth set."""
+    return sorted(classes)[0]
+
+
+def lockbox_split(
+    truth: Mapping[str, frozenset[str]],
+    lockbox_fraction: float = LOCKBOX_FRACTION,
+    seed: int = 42,
+) -> tuple[frozenset[str], frozenset[str]]:
+    """Stratified, seeded held-back split: (dev_ids, lockbox_ids)."""
+    by_class: dict[str, list[str]] = {}
+    for incident_id in sorted(truth):  # sorted -> deterministic base order
+        by_class.setdefault(_primary_class(truth[incident_id]), []).append(incident_id)
+
+    rng = np.random.default_rng(seed)
+    lockbox: set[str] = set()
+    for cls in sorted(by_class):
+        ids = list(by_class[cls])
+        n_lock = int(round(len(ids) * lockbox_fraction))
+        if n_lock == 0:
+            continue
+        perm = rng.permutation(len(ids))
+        for idx in perm[:n_lock]:
+            lockbox.add(ids[int(idx)])
+    dev = set(truth) - lockbox
+    return frozenset(dev), frozenset(lockbox)
+
+
+def lockbox_cell_sizes(
+    lockbox_ids: Iterable[str], truth: Mapping[str, frozenset[str]]
+) -> dict[str, int]:
+    """Per-class truth count within the lockbox."""
+    sizes: dict[str, int] = {}
+    for incident_id in lockbox_ids:
+        for c in truth.get(incident_id, frozenset()):
+            sizes[c] = sizes.get(c, 0) + 1
+    return sizes
