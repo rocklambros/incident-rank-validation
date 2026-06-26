@@ -13,6 +13,7 @@ from collections.abc import Iterable, Mapping
 from pathlib import Path
 
 import numpy as np
+from scipy.stats import norm
 
 OOS_CLASS: str = "out-of-scope"
 
@@ -125,3 +126,35 @@ def lockbox_cell_sizes(
         for c in truth.get(incident_id, frozenset()):
             sizes[c] = sizes.get(c, 0) + 1
     return sizes
+
+
+def two_proportion_pvalue(hits_a: int, n_a: int, hits_b: int, n_b: int) -> float:
+    """Two-sided pooled z-test for a difference in two proportions."""
+    if n_a <= 0 or n_b <= 0:
+        return 1.0
+    p_a = hits_a / n_a
+    p_b = hits_b / n_b
+    p_pool = (hits_a + hits_b) / (n_a + n_b)
+    var = p_pool * (1.0 - p_pool) * (1.0 / n_a + 1.0 / n_b)
+    if var <= 0.0:
+        return 1.0
+    z = (p_a - p_b) / (var**0.5)
+    return float(2.0 * norm.sf(abs(z)))
+
+
+def benjamini_hochberg(pvalues: list[float], alpha: float) -> list[bool]:
+    """BH step-up procedure; returns a rejection mask in the input order."""
+    m = len(pvalues)
+    if m == 0:
+        return []
+    order = sorted(range(m), key=lambda i: pvalues[i])
+    k_max = -1
+    for rank, idx in enumerate(order, start=1):
+        if pvalues[idx] <= (rank / m) * alpha:
+            k_max = rank
+    rejected = [False] * m
+    if k_max > 0:
+        for rank, idx in enumerate(order, start=1):
+            if rank <= k_max:
+                rejected[idx] = True
+    return rejected
