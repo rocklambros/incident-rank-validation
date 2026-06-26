@@ -99,7 +99,7 @@ def build_prompt(incident: IncidentRecord, rubric_json: str) -> str:
         begin=INCIDENT_DELIMITER_BEGIN,
         end=INCIDENT_DELIMITER_END,
         rubric=compact_rubric(rubric_json),
-        incident_text=incident.text,
+        incident_text=_neutralize_delimiters(incident.text),
     )
 
 
