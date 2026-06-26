@@ -4,6 +4,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from engine.classify.bakeoff import ModelConfig
 from engine.cli.bakeoff import run_bakeoff
 
@@ -71,3 +73,26 @@ def test_run_bakeoff_no_winner_when_all_weak(tmp_path: Path) -> None:
         seed=7,
     )
     assert result.winner is None
+
+
+def test_run_bakeoff_raises_when_predictions_miss_lockbox(tmp_path: Path) -> None:
+    goldset = _write_goldset(tmp_path)
+    all_ids = [f"a{i}" for i in range(12)] + [f"b{i}" for i in range(12)]
+    floor = {k: "A" for k in all_ids}
+
+    def predict_fn(config_name: str) -> dict[str, str]:
+        return {}  # covers no lockbox incidents
+
+    label_file = tmp_path / "labeled_incidents.json"
+    label_file.write_text("[]\n")
+    with pytest.raises(ValueError):
+        run_bakeoff(
+            goldset_path=goldset,
+            config_names=["x"],
+            predict_fn=predict_fn,
+            floor_predictions=floor,
+            model_configs=[],
+            out_dir=tmp_path / "out",
+            label_file=label_file,
+            seed=7,
+        )

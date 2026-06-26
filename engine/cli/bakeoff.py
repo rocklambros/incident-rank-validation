@@ -40,10 +40,30 @@ def run_bakeoff(
     truth = load_bakeoff_truth(goldset_path)
     _dev, lockbox = lockbox_split(truth, lockbox_fraction=lockbox_fraction, seed=seed)
     config_predictions = {name: predict_fn(name) for name in config_names}
+    # Coverage guard: every lockbox incident must have a prediction, else the
+    # metric denominator silently shrinks (a Phase-3 footgun).
+    missing_floor = lockbox - set(floor_predictions)
+    if missing_floor:
+        raise ValueError(
+            f"floor_predictions missing {len(missing_floor)} lockbox incidents"
+        )
+    for name, preds in config_predictions.items():
+        missing = lockbox - set(preds)
+        if missing:
+            raise ValueError(
+                f"config {name!r} missing {len(missing)} lockbox incidents"
+            )
     result = select_winner(
         config_predictions, floor_predictions, truth, lockbox, alpha=alpha
     )
-    write_bakeoff_provenance(out_dir, result, model_configs, label_file)
+    write_bakeoff_provenance(
+        out_dir,
+        result,
+        model_configs,
+        label_file,
+        seed=seed,
+        lockbox_fraction=lockbox_fraction,
+    )
     return result
 
 

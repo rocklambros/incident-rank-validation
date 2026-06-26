@@ -210,7 +210,18 @@ def select_winner(
     """Pick the config with the highest OOS-balanced-accuracy that beats the
     floor after BH correction; sparse truth cells excluded from the metric."""
     sparse = sparse_classes(truth, min_n=min_cell)
-    selection = tuple(sorted(c for c in truth_cell_sizes(truth) if c not in sparse))
+    lb_cells = lockbox_cell_sizes(lockbox_ids, truth)
+    # A non-sparse class with ZERO lockbox truth cannot be measured on the
+    # lockbox; including it would feed 0/0 -> 0.0 into the balanced-accuracy
+    # mean and silently drag every config and the floor.  Exclude it from the
+    # selection metric (it is still carried downstream, like sparse classes).
+    selection = tuple(
+        sorted(
+            c
+            for c in truth_cell_sizes(truth)
+            if c not in sparse and lb_cells.get(c, 0) > 0
+        )
+    )
 
     floor_lb = _restrict(floor_predictions, lockbox_ids)
     floor_ba = balanced_accuracy_oos(floor_lb, truth, selection)
@@ -278,6 +289,8 @@ def write_bakeoff_provenance(
     result: BakeoffResult,
     model_configs: Iterable[ModelConfig],
     label_file: Path,
+    seed: int | None = None,
+    lockbox_fraction: float | None = None,
 ) -> Path:
     """Write classify_provenance.json: label-file hash + resolved model SHAs +
     grid + winner/scores.  Returns the written path."""
@@ -292,6 +305,8 @@ def write_bakeoff_provenance(
         "lockbox_cell_sizes": result.lockbox_cell_sizes,
         "eligible_configs": list(result.eligible_configs),
         "alpha": result.alpha,
+        "seed": seed,
+        "lockbox_fraction": lockbox_fraction,
         "label_file": str(label_file.name),
         "label_file_sha256": label_sha,
         "models": [

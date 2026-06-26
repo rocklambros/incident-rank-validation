@@ -48,3 +48,14 @@ def test_label_hash_is_content_addressed(tmp_path: Path) -> None:
     out = write_bakeoff_provenance(tmp_path, _result(), [], label_file)
     data = json.loads(out.read_text())
     assert data["label_file_sha256"] == hashlib.sha256(content.encode()).hexdigest()
+
+
+def test_provenance_records_seed_and_fraction(tmp_path: Path) -> None:
+    label_file = tmp_path / "labeled_incidents.json"
+    label_file.write_text("[]\n")
+    out = write_bakeoff_provenance(
+        tmp_path, _result(), [], label_file, seed=7, lockbox_fraction=0.3
+    )
+    data = json.loads(out.read_text())
+    assert data["seed"] == 7
+    assert data["lockbox_fraction"] == 0.3

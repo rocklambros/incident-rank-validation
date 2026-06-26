@@ -59,3 +59,26 @@ def test_sparse_class_excluded_from_metric() -> None:
     result = select_winner({"good": good}, floor, truth, lock)
     assert "C" in result.sparse_classes
     assert "C" not in result.selection_classes
+
+
+def test_zero_lockbox_cell_class_excluded_from_metric() -> None:
+    # C is non-sparse on the full goldset (6 >= 5) but has ZERO lockbox truth
+    # -> it cannot be measured on the lockbox and must be excluded from the
+    # selection metric (not scored as 0/0 = 0.0), and it is NOT "sparse".
+    truth: dict[str, frozenset[str]] = {}
+    for i in range(8):
+        truth[f"a{i}"] = frozenset({"A"})
+    for i in range(8):
+        truth[f"b{i}"] = frozenset({"B"})
+    for i in range(6):
+        truth[f"c{i}"] = frozenset({"C"})
+    # Lockbox excludes every C incident.
+    lock = frozenset([f"a{i}" for i in range(4)] + [f"b{i}" for i in range(4)])
+    floor = {k: "A" for k in truth}
+    good = {
+        k: ("A" if k.startswith("a") else ("B" if k.startswith("b") else "C"))
+        for k in truth
+    }
+    result = select_winner({"good": good}, floor, truth, lock)
+    assert "C" not in result.selection_classes
+    assert "C" not in result.sparse_classes
