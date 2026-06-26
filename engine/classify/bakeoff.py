@@ -8,6 +8,7 @@ reproducible floor.  No live model or RunPod call lives here.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
@@ -261,3 +262,49 @@ def select_winner(
         eligible_configs=eligible,
         alpha=alpha,
     )
+
+
+@dataclass(frozen=True, slots=True)
+class ModelConfig:
+    name: str
+    model_id: str
+    revision_sha: str  # pinned HF commit SHA (spec §10)
+    gpu_type: str
+    gpu_count: int
+
+
+def write_bakeoff_provenance(
+    out_dir: Path,
+    result: BakeoffResult,
+    model_configs: Iterable[ModelConfig],
+    label_file: Path,
+) -> Path:
+    """Write classify_provenance.json: label-file hash + resolved model SHAs +
+    grid + winner/scores.  Returns the written path."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    label_sha = hashlib.sha256(label_file.read_bytes()).hexdigest()
+    payload: dict[str, object] = {
+        "winner": result.winner,
+        "floor_balanced_accuracy": result.floor_balanced_accuracy,
+        "config_balanced_accuracy": result.config_balanced_accuracy,
+        "selection_classes": list(result.selection_classes),
+        "sparse_classes": list(result.sparse_classes),
+        "lockbox_cell_sizes": result.lockbox_cell_sizes,
+        "eligible_configs": list(result.eligible_configs),
+        "alpha": result.alpha,
+        "label_file": str(label_file.name),
+        "label_file_sha256": label_sha,
+        "models": [
+            {
+                "name": m.name,
+                "model_id": m.model_id,
+                "revision_sha": m.revision_sha,
+                "gpu_type": m.gpu_type,
+                "gpu_count": m.gpu_count,
+            }
+            for m in model_configs
+        ],
+    }
+    path = out_dir / "classify_provenance.json"
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True))
+    return path
