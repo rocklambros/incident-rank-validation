@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterable, Mapping
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -158,3 +159,105 @@ def benjamini_hochberg(pvalues: list[float], alpha: float) -> list[bool]:
             if rank <= k_max:
                 rejected[idx] = True
     return rejected
+
+
+BAKEOFF_ALPHA: float = 0.05
+
+
+@dataclass(frozen=True, slots=True)
+class BakeoffResult:
+    winner: str | None
+    floor_balanced_accuracy: float
+    config_balanced_accuracy: dict[str, float]
+    selection_classes: tuple[str, ...]
+    sparse_classes: tuple[str, ...]
+    lockbox_cell_sizes: dict[str, int]
+    eligible_configs: tuple[str, ...]
+    alpha: float
+
+
+def _restrict(
+    predictions: Mapping[str, str], lockbox_ids: frozenset[str]
+) -> dict[str, str]:
+    return {k: v for k, v in predictions.items() if k in lockbox_ids}
+
+
+def _class_hits(
+    predictions: Mapping[str, str], truth: Mapping[str, frozenset[str]], c: str
+) -> tuple[int, int]:
+    """(hits, denom) for class c over the given predictions."""
+    hits = 0
+    denom = 0
+    for incident_id, pred in predictions.items():
+        true_classes = truth.get(incident_id)
+        if true_classes is None or c not in true_classes:
+            continue
+        denom += 1
+        if pred == c:
+            hits += 1
+    return hits, denom
+
+
+def select_winner(
+    config_predictions: Mapping[str, Mapping[str, str]],
+    floor_predictions: Mapping[str, str],
+    truth: Mapping[str, frozenset[str]],
+    lockbox_ids: frozenset[str],
+    alpha: float = BAKEOFF_ALPHA,
+    min_cell: int = 5,
+) -> BakeoffResult:
+    """Pick the config with the highest OOS-balanced-accuracy that beats the
+    floor after BH correction; sparse truth cells excluded from the metric."""
+    sparse = sparse_classes(truth, min_n=min_cell)
+    selection = tuple(sorted(c for c in truth_cell_sizes(truth) if c not in sparse))
+
+    floor_lb = _restrict(floor_predictions, lockbox_ids)
+    floor_ba = balanced_accuracy_oos(floor_lb, truth, selection)
+
+    config_ba: dict[str, float] = {}
+    config_lb: dict[str, dict[str, str]] = {}
+    for name, preds in config_predictions.items():
+        lb = _restrict(preds, lockbox_ids)
+        config_lb[name] = lb
+        config_ba[name] = balanced_accuracy_oos(lb, truth, selection)
+
+    # Per-(config, class) two-proportion p-values vs floor, then BH across all.
+    keys: list[tuple[str, str]] = []
+    pvals: list[float] = []
+    directions: list[bool] = []  # True = config recall > floor recall
+    for name in sorted(config_lb):
+        for c in selection:
+            ch, cn = _class_hits(config_lb[name], truth, c)
+            fh, fn = _class_hits(floor_lb, truth, c)
+            keys.append((name, c))
+            pvals.append(two_proportion_pvalue(ch, cn, fh, fn))
+            directions.append((ch / cn if cn else 0.0) > (fh / fn if fn else 0.0))
+    rejected = benjamini_hochberg(pvals, alpha)
+
+    improved: dict[str, bool] = {name: False for name in config_lb}
+    regressed: dict[str, bool] = {name: False for name in config_lb}
+    for (name, _c), rej, up in zip(keys, rejected, directions, strict=True):
+        if rej and up:
+            improved[name] = True
+        if rej and not up:
+            regressed[name] = True
+
+    eligible = tuple(
+        sorted(
+            name
+            for name in config_lb
+            if config_ba[name] > floor_ba and improved[name] and not regressed[name]
+        )
+    )
+    winner = max(eligible, key=lambda n: config_ba[n]) if eligible else None
+
+    return BakeoffResult(
+        winner=winner,
+        floor_balanced_accuracy=floor_ba,
+        config_balanced_accuracy=config_ba,
+        selection_classes=selection,
+        sparse_classes=tuple(sorted(sparse)),
+        lockbox_cell_sizes=lockbox_cell_sizes(lockbox_ids, truth),
+        eligible_configs=eligible,
+        alpha=alpha,
+    )
