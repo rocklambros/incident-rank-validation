@@ -96,3 +96,54 @@ def test_run_bakeoff_raises_when_predictions_miss_lockbox(tmp_path: Path) -> Non
             label_file=label_file,
             seed=7,
         )
+
+
+def test_run_bakeoff_checkpoint_resumes(tmp_path: Path) -> None:
+    goldset = _write_goldset(tmp_path)
+    all_ids = [f"a{i}" for i in range(12)] + [f"b{i}" for i in range(12)]
+    floor = {k: "A" for k in all_ids}
+    label_file = tmp_path / "labeled_incidents.json"
+    label_file.write_text("[]\n")
+    ckpt = tmp_path / "ckpt"
+
+    def perfect(name: str) -> dict[str, str]:
+        return {k: ("A" if k.startswith("a") else "B") for k in all_ids}
+
+    r1 = run_bakeoff(
+        goldset_path=goldset, config_names=["perfect"], predict_fn=perfect,
+        floor_predictions=floor, model_configs=[], out_dir=tmp_path / "o1",
+        label_file=label_file, seed=7, checkpoint_dir=ckpt,
+    )
+    assert (ckpt / "perfect.json").exists()
+
+    def boom(name: str) -> dict[str, str]:
+        raise RuntimeError("predict_fn must not be called on a cache hit")
+
+    r2 = run_bakeoff(
+        goldset_path=goldset, config_names=["perfect"], predict_fn=boom,
+        floor_predictions=floor, model_configs=[], out_dir=tmp_path / "o2",
+        label_file=label_file, seed=7, checkpoint_dir=ckpt,
+    )
+    assert r2.winner == r1.winner == "perfect"
+
+
+def test_run_bakeoff_records_goldset_provenance(tmp_path: Path) -> None:
+    goldset = _write_goldset(tmp_path)
+    all_ids = [f"a{i}" for i in range(12)] + [f"b{i}" for i in range(12)]
+    floor = {k: "A" for k in all_ids}
+    label_file = tmp_path / "labeled_incidents.json"
+    label_file.write_text("[]\n")
+
+    def perfect(name: str) -> dict[str, str]:
+        return {k: ("A" if k.startswith("a") else "B") for k in all_ids}
+
+    run_bakeoff(
+        goldset_path=goldset, config_names=["perfect"], predict_fn=perfect,
+        floor_predictions=floor, model_configs=[], out_dir=tmp_path / "out",
+        label_file=label_file, seed=7,
+        corpus_class_counts={"A": 100, "B": 50},
+    )
+    prov = json.loads((tmp_path / "out" / "classify_provenance.json").read_text())
+    assert prov["goldset"]["sha256"]
+    assert prov["min_cell"] == 5
+    assert "corpus_tv_divergence" in prov["goldset"]

@@ -5,6 +5,7 @@ defers live RunPod wiring to Phase 3 (the deliberate, cost-bearing run step).
 """
 from __future__ import annotations
 
+import json
 from collections.abc import Callable, Mapping
 from pathlib import Path
 
@@ -13,8 +14,11 @@ import click
 from engine.classify.bakeoff import (
     BAKEOFF_ALPHA,
     LOCKBOX_FRACTION,
+    MIN_CELL,
     BakeoffResult,
     ModelConfig,
+    goldset_corpus_divergence,
+    goldset_provenance,
     load_bakeoff_truth,
     lockbox_split,
     select_winner,
@@ -35,11 +39,29 @@ def run_bakeoff(
     lockbox_fraction: float = LOCKBOX_FRACTION,
     seed: int = 42,
     alpha: float = BAKEOFF_ALPHA,
+    min_cell: int = MIN_CELL,
+    checkpoint_dir: Path | None = None,
+    corpus_class_counts: Mapping[str, int] | None = None,
 ) -> BakeoffResult:
     """Score every config against the goldset lockbox and select the winner."""
     truth = load_bakeoff_truth(goldset_path)
     _dev, lockbox = lockbox_split(truth, lockbox_fraction=lockbox_fraction, seed=seed)
-    config_predictions = {name: predict_fn(name) for name in config_names}
+
+    # F7: per-config checkpoint cache so a mid-sweep failure resumes instead of
+    # discarding a multi-hour grid run.
+    if checkpoint_dir is not None:
+        checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    config_predictions: dict[str, dict[str, str]] = {}
+    for name in config_names:
+        ckpt = checkpoint_dir / f"{name}.json" if checkpoint_dir is not None else None
+        if ckpt is not None and ckpt.exists():
+            config_predictions[name] = json.loads(ckpt.read_text())
+            continue
+        preds = dict(predict_fn(name))
+        config_predictions[name] = preds
+        if ckpt is not None:
+            ckpt.write_text(json.dumps(preds, sort_keys=True))
+
     # Coverage guard: every lockbox incident must have a prediction, else the
     # metric denominator silently shrinks (a Phase-3 footgun).
     missing_floor = lockbox - set(floor_predictions)
@@ -53,9 +75,17 @@ def run_bakeoff(
             raise ValueError(
                 f"config {name!r} missing {len(missing)} lockbox incidents"
             )
+
     result = select_winner(
-        config_predictions, floor_predictions, truth, lockbox, alpha=alpha
+        config_predictions, floor_predictions, truth, lockbox,
+        alpha=alpha, min_cell=min_cell,
     )
+
+    goldset_meta = goldset_provenance(goldset_path)
+    if corpus_class_counts is not None:
+        goldset_meta["corpus_tv_divergence"] = goldset_corpus_divergence(
+            truth, corpus_class_counts
+        )
     write_bakeoff_provenance(
         out_dir,
         result,
@@ -63,6 +93,8 @@ def run_bakeoff(
         label_file,
         seed=seed,
         lockbox_fraction=lockbox_fraction,
+        min_cell=min_cell,
+        goldset_meta=goldset_meta,
     )
     return result
 
