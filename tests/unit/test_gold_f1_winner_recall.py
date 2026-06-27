@@ -78,3 +78,35 @@ def test_vocab_guard_raises_on_unknown_classifier_label(tmp_path: Path) -> None:
             rubric_hash="r", adjudicator_id="t",
             classifier_labels={"INC-1": "A", "INC-2": "B-TYPO"},
         )
+
+
+def test_winner_recall_differs_from_consensus_end_to_end(tmp_path: Path) -> None:
+    from engine.calibrate.tally import TallyResult, calibrate_with_gold
+
+    gold_dir = _write_adjudicated(tmp_path)
+    base = TallyResult(
+        precision_counts={}, recall_counts={}, rollup_counts={},
+        total_coded=0, amendments_applied=0,
+    )
+
+    # Consensus channel: INC-1 consensus "A" == truth "A" -> recall HIT for A.
+    gold_consensus = load_gold_calibration(
+        gold_dir=gold_dir, valid_entry_ids={"A", "B"},
+        rubric_hash="r", adjudicator_id="t",
+    )
+    tally_c = calibrate_with_gold(base, gold_consensus, set(), {"A", "B"})
+    rc_a = tally_c.recall_counts[("A", "security")]
+    assert rc_a.true_positives == 1 and rc_a.false_negatives == 0
+
+    # Winner channel: INC-1 winner "B" != truth "A" -> recall MISS for A.
+    winner = {"INC-1": "B", "INC-2": "B"}
+    gold_winner = load_gold_calibration(
+        gold_dir=gold_dir, valid_entry_ids={"A", "B"},
+        rubric_hash="r", adjudicator_id="t", classifier_labels=winner,
+    )
+    tally_w = calibrate_with_gold(base, gold_winner, set(), {"A", "B"})
+    rw_a = tally_w.recall_counts[("A", "security")]
+    assert rw_a.true_positives == 0 and rw_a.false_negatives == 1
+
+    # The two channels genuinely disagree -> F1 wiring changes the recall.
+    assert rc_a != rw_a
