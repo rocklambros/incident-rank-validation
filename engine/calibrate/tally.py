@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from engine.calibrate.batch import CodingBatch, ValidationError, validate_coded_batch
-from engine.calibrate.gold_schema import GoldCalibration
+from engine.calibrate.gold_schema import OUT_OF_SCOPE, GoldCalibration
 
 
 @dataclass(frozen=True, slots=True)
@@ -257,7 +257,10 @@ def calibrate_with_gold(
             else:
                 recall_fn[rk] = recall_fn.get(rk, 0) + 1
 
-        if label.classifier_entry_id not in label.true_entry_ids:
+        if (
+            label.classifier_entry_id not in label.true_entry_ids
+            and label.classifier_entry_id != OUT_OF_SCOPE
+        ):
             pk = (label.classifier_entry_id, merge_stratum)
             precision_fp[pk] = precision_fp.get(pk, 0) + 1
             precision_total[pk] = precision_total.get(pk, 0) + 1

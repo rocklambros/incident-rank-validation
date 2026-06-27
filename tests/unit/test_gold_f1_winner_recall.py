@@ -116,3 +116,31 @@ def test_winner_recall_differs_from_consensus_end_to_end(tmp_path: Path) -> None
 
     # The two channels genuinely disagree -> F1 wiring changes the recall.
     assert rc_a != rw_a
+
+
+def test_oos_prediction_is_recall_miss_no_precision_fp() -> None:
+    from engine.calibrate.gold_schema import (
+        OUT_OF_SCOPE,
+        GoldCalibration,
+        GoldRecallLabel,
+    )
+    from engine.calibrate.tally import TallyResult, calibrate_with_gold
+
+    base = TallyResult(
+        precision_counts={}, recall_counts={}, rollup_counts={},
+        total_coded=0, amendments_applied=0,
+    )
+    gold = GoldCalibration(
+        recall_labels=[GoldRecallLabel(
+            incident_id="i0", true_entry_ids=["A"],
+            classifier_entry_id=OUT_OF_SCOPE, source="g",
+        )],
+        precision_labels=[],
+        provenance_hash="h", rubric_hash="r", adjudicator_id="t", session_count=1,
+    )
+    merged = calibrate_with_gold(base, gold, set(), {"A"})
+    # Recall: a miss for A (it was truly A, classifier said out-of-scope).
+    rc = merged.recall_counts[("A", "security")]
+    assert rc.true_positives == 0 and rc.false_negatives == 1
+    # Precision: NO false-positive cell for the OOS sentinel.
+    assert (OUT_OF_SCOPE, "security") not in merged.precision_counts
