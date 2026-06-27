@@ -384,7 +384,7 @@ def cal_tally(cycle: Path, manifest: Path, rubric: Path, gold_calibration: Path 
     )
 
     if gold_calibration is not None:
-        from engine.calibrate.gold_loader import load_gold_calibration
+        from engine.calibrate.gold_loader import load_classifier_labels, load_gold_calibration
 
         gold_path = Path(gold_calibration)
         gold_kwargs: dict[str, Any] = {}
@@ -398,11 +398,16 @@ def cal_tally(cycle: Path, manifest: Path, rubric: Path, gold_calibration: Path 
         else:
             gold_kwargs["curation_path"] = gold_path
 
+        _labeled = cycle / "classify" / "labeled_incidents.json"
+        _classifier_labels = (
+            load_classifier_labels(_labeled) if _labeled.exists() else None
+        )
         gold = load_gold_calibration(
             **gold_kwargs,
             valid_entry_ids=all_entry_ids,
             rubric_hash=rubric_hash,
             adjudicator_id="cli",
+            classifier_labels=_classifier_labels,
         )
 
         from engine.calibrate.tally import calibrate_with_gold

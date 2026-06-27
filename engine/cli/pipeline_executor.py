@@ -287,15 +287,17 @@ def execute_infer_phase(
     )
     if _has_gold_files:
         from engine.calibrate.confusion import build_overlap_from_confusion
-        from engine.calibrate.gold_loader import load_gold_calibration
+        from engine.calibrate.gold_loader import load_classifier_labels, load_gold_calibration
 
         _rubric_hash = manifest.rubric_hash or ""
         try:
+            _classifier_labels = load_classifier_labels(labeled_path)
             _gold = load_gold_calibration(
                 gold_dir=_gold_dir,
                 valid_entry_ids=set(measurable_entries),
                 rubric_hash=_rubric_hash,
                 adjudicator_id="executor",
+                classifier_labels=_classifier_labels,
             )
             _verify_goldset_hash(manifest, _gold)
             overlap = build_overlap_from_confusion(
