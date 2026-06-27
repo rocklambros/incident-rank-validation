@@ -82,3 +82,15 @@ def test_zero_lockbox_cell_class_excluded_from_metric() -> None:
     result = select_winner({"good": good}, floor, truth, lock)
     assert "C" not in result.selection_classes
     assert "C" not in result.sparse_classes
+
+
+def test_select_winner_raises_on_unknown_prediction_class() -> None:
+    truth: dict[str, frozenset[str]] = {f"a{i}": frozenset({"A"}) for i in range(8)}
+    truth.update({f"b{i}": frozenset({"B"}) for i in range(8)})
+    lock = frozenset(truth)
+    floor = {k: "A" for k in truth}
+    bad = {k: ("A" if k.startswith("a") else "B-TYPO") for k in truth}
+    import pytest
+
+    with pytest.raises(ValueError, match="goldset vocabulary"):
+        select_winner({"bad": bad}, floor, truth, lock)

@@ -233,6 +233,23 @@ def select_winner(
         config_lb[name] = lb
         config_ba[name] = balanced_accuracy_oos(lb, truth, selection)
 
+    # F5: predictions must use the goldset's class vocabulary, else they are
+    # silently scored as all-misses (a wrong-winner footgun).
+    allowed_classes = set(truth_cell_sizes(truth))
+    floor_unknown = {c for c in floor_lb.values() if c not in allowed_classes}
+    if floor_unknown:
+        raise ValueError(
+            f"floor predicts classes absent from the goldset vocabulary: "
+            f"{sorted(floor_unknown)}"
+        )
+    for _name, _lb in config_lb.items():
+        unknown = {c for c in _lb.values() if c not in allowed_classes}
+        if unknown:
+            raise ValueError(
+                f"config {_name!r} predicts classes absent from the goldset "
+                f"vocabulary: {sorted(unknown)}"
+            )
+
     # Per-(config, class) two-proportion p-values vs floor, then BH across all.
     keys: list[tuple[str, str]] = []
     pvals: list[float] = []
