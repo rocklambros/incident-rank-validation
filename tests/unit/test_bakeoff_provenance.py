@@ -93,3 +93,17 @@ def test_provenance_records_min_cell_and_goldset_block(tmp_path: Path) -> None:
     data = json.loads(out.read_text())
     assert data["min_cell"] == 5
     assert data["goldset"]["sha256"] == "abc"
+
+
+def test_goldset_corpus_divergence() -> None:
+    from engine.classify.bakeoff import goldset_corpus_divergence
+
+    truth = {f"a{i}": frozenset({"A"}) for i in range(5)}
+    truth.update({f"b{i}": frozenset({"B"}) for i in range(5)})
+    # identical mix (50/50) -> 0
+    assert goldset_corpus_divergence(truth, {"A": 50, "B": 50}) == 0.0
+    # disjoint -> 1.0
+    assert goldset_corpus_divergence(truth, {"C": 100}) == 1.0
+    # partial skew in (0,1)
+    d = goldset_corpus_divergence(truth, {"A": 90, "B": 10})
+    assert 0.0 < d < 1.0

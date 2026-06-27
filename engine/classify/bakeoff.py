@@ -376,3 +376,26 @@ def goldset_provenance(goldset_path: Path) -> dict[str, object]:
         "adjudicated_counts": adjudicated,
         "adjudicator": "single-author",
     }
+
+
+def goldset_corpus_divergence(
+    goldset_truth: Mapping[str, frozenset[str]],
+    corpus_class_counts: Mapping[str, int],
+) -> float:
+    """Total-variation distance between the goldset and corpus class mixes.
+
+    0 = identical mix, 1 = disjoint.  A high value means the goldset the winner
+    is SELECTED on is not representative of the corpus it is APPLIED to (F8).
+    """
+    gold_counts = truth_cell_sizes(goldset_truth)
+    gold_total = sum(gold_counts.values())
+    corpus_total = sum(corpus_class_counts.values())
+    if gold_total == 0 or corpus_total == 0:
+        return 0.0
+    classes = set(gold_counts) | set(corpus_class_counts)
+    tv = 0.0
+    for c in classes:
+        p = gold_counts.get(c, 0) / gold_total
+        q = corpus_class_counts.get(c, 0) / corpus_total
+        tv += abs(p - q)
+    return 0.5 * tv
