@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 
 from engine.calibrate.gold_schema import (
+    OUT_OF_SCOPE,
     GoldCalibration,
     GoldPrecisionLabel,
     GoldRecallLabel,
@@ -116,16 +117,13 @@ def _load_recall_from_adjudicated(
             # Backward-compatible: score the goldset's stored 3-model consensus.
             predicted = record.get("llm_consensus")
         else:
-            # Plan 8e F1: score the classifier whose labels build the incidence
-            # counts (the bake-off winner in Phase 3).
-            if incident_id not in classifier_labels:
-                raise ValueError(
-                    f"adjudicated incident '{incident_id}' absent from "
-                    f"classifier_labels (F1 coverage guard): every scored "
-                    f"goldset incident must have a classifier label."
-                )
-            predicted = classifier_labels[incident_id]
-            if predicted not in valid_entry_ids:
+            # Plan 8e F1 + OOS policy (a): score the classifier whose labels
+            # build the incidence counts (the bake-off winner in Phase 3).  A
+            # goldset incident with no in-scope classifier label (out-of-scope,
+            # hence absent from labeled_incidents.json) is a recall MISS, not a
+            # coverage error: predict the OOS sentinel.
+            predicted = classifier_labels.get(incident_id, OUT_OF_SCOPE)
+            if predicted != OUT_OF_SCOPE and predicted not in valid_entry_ids:
                 raise ValueError(
                     f"classifier label '{predicted}' for incident "
                     f"'{incident_id}' not in rubric."
@@ -138,7 +136,7 @@ def _load_recall_from_adjudicated(
             source="llm-adjudicated",
         ))
 
-        if predicted and labels:
+        if predicted and predicted != OUT_OF_SCOPE and labels:
             precision.append(GoldPrecisionLabel(
                 incident_id=incident_id,
                 claimed_entry_id=predicted,

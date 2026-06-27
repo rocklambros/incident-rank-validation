@@ -60,14 +60,20 @@ def test_default_is_backward_compatible_consensus(tmp_path: Path) -> None:
     assert by_id["INC-2"].classifier_entry_id == "A"
 
 
-def test_coverage_guard_raises_on_missing_incident(tmp_path: Path) -> None:
+def test_missing_classifier_label_becomes_oos_recall_miss(tmp_path: Path) -> None:
+    from engine.calibrate.gold_schema import OUT_OF_SCOPE
+
     gold_dir = _write_adjudicated(tmp_path)
-    with pytest.raises(ValueError, match="coverage guard"):
-        load_gold_calibration(
-            gold_dir=gold_dir, valid_entry_ids={"A", "B"},
-            rubric_hash="r", adjudicator_id="t",
-            classifier_labels={"INC-1": "A"},  # INC-2 missing
-        )
+    # INC-2 has no classifier label -> OOS sentinel (a recall miss for its truth).
+    gold = load_gold_calibration(
+        gold_dir=gold_dir, valid_entry_ids={"A", "B"},
+        rubric_hash="r", adjudicator_id="t",
+        classifier_labels={"INC-1": "A"},  # INC-2 deliberately absent
+    )
+    by_id = {r.incident_id: r for r in gold.recall_labels}
+    assert by_id["INC-2"].classifier_entry_id == OUT_OF_SCOPE
+    # No precision row is generated for an OOS prediction.
+    assert all(p.claimed_entry_id != OUT_OF_SCOPE for p in gold.precision_labels)
 
 
 def test_vocab_guard_raises_on_unknown_classifier_label(tmp_path: Path) -> None:
