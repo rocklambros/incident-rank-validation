@@ -236,6 +236,9 @@ def select_winner(
 
     # F5: predictions must use the goldset's class vocabulary, else they are
     # silently scored as all-misses (a wrong-winner footgun).
+    # INVARIANT: this guard must stay BEFORE the winner is constructed/returned;
+    # moving it below the BH block would let a vocabulary mismatch silently
+    # produce a wrong winner instead of raising.
     allowed_classes = set(truth_cell_sizes(truth))
     floor_unknown = {c for c in floor_lb.values() if c not in allowed_classes}
     if floor_unknown:
