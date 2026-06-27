@@ -37,6 +37,17 @@ def parse_entry_id_from_prefix(incident_id: str) -> str:
     return _SHORT_PREFIX_TO_ENTRY_ID.get(raw, raw)
 
 
+def load_classifier_labels(labeled_incidents_path: Path) -> dict[str, str]:
+    """Map incident_id -> the classifier's assigned entry_id (Plan 8e F1).
+
+    Source of the labels that BUILD the incidence counts; recall must be
+    measured for THIS classifier, not the goldset's stored llm_consensus.  In
+    Phase 3 this file is the bake-off winner's labeled_incidents.json.
+    """
+    data = json.loads(labeled_incidents_path.read_text(encoding="utf-8"))
+    return {str(rec["incident_id"]): str(rec["entry_id"]) for rec in data}
+
+
 def _load_recall_from_curation(
     path: Path,
     valid_entry_ids: set[str],
@@ -78,6 +89,7 @@ def _load_recall_from_curation(
 def _load_recall_from_adjudicated(
     path: Path,
     valid_entry_ids: set[str],
+    classifier_labels: dict[str, str] | None = None,
 ) -> tuple[list[GoldRecallLabel], list[GoldPrecisionLabel]]:
     recall: list[GoldRecallLabel] = []
     precision: list[GoldPrecisionLabel] = []
@@ -86,8 +98,8 @@ def _load_recall_from_adjudicated(
         if not line.strip():
             continue
         record = json.loads(line)
+        incident_id = record["incident_id"]
         labels = record.get("labels", [])
-        consensus = record.get("llm_consensus")
         adjudicated = record.get("adjudicated", "")
 
         if adjudicated == "uncertain":
@@ -97,21 +109,40 @@ def _load_recall_from_adjudicated(
             if eid not in valid_entry_ids:
                 raise ValueError(
                     f"Entry ID '{eid}' from adjudicated incident "
-                    f"'{record['incident_id']}' not in rubric."
+                    f"'{incident_id}' not in rubric."
+                )
+
+        if classifier_labels is None:
+            # Backward-compatible: score the goldset's stored 3-model consensus.
+            predicted = record.get("llm_consensus")
+        else:
+            # Plan 8e F1: score the classifier whose labels build the incidence
+            # counts (the bake-off winner in Phase 3).
+            if incident_id not in classifier_labels:
+                raise ValueError(
+                    f"adjudicated incident '{incident_id}' absent from "
+                    f"classifier_labels (F1 coverage guard): every scored "
+                    f"goldset incident must have a classifier label."
+                )
+            predicted = classifier_labels[incident_id]
+            if predicted not in valid_entry_ids:
+                raise ValueError(
+                    f"classifier label '{predicted}' for incident "
+                    f"'{incident_id}' not in rubric."
                 )
 
         recall.append(GoldRecallLabel(
-            incident_id=record["incident_id"],
+            incident_id=incident_id,
             true_entry_ids=labels if labels else [],
-            classifier_entry_id=consensus,
+            classifier_entry_id=predicted,
             source="llm-adjudicated",
         ))
 
-        if consensus and labels:
+        if predicted and labels:
             precision.append(GoldPrecisionLabel(
-                incident_id=record["incident_id"],
-                claimed_entry_id=consensus,
-                is_correct=(consensus in labels),
+                incident_id=incident_id,
+                claimed_entry_id=predicted,
+                is_correct=(predicted in labels),
                 source="llm-adjudicated",
             ))
 
@@ -143,6 +174,7 @@ def load_gold_calibration(
     adjudicator_id: str,
     base_incident_ids: set[str] | None = None,
     session_count: int = 1,
+    classifier_labels: dict[str, str] | None = None,
 ) -> GoldCalibration:
     recall_labels: list[GoldRecallLabel] = []
     precision_labels: list[GoldPrecisionLabel] = []
@@ -167,7 +199,7 @@ def load_gold_calibration(
 
     if adjudicated_path is not None:
         adj_recall, adj_precision = _load_recall_from_adjudicated(
-            adjudicated_path, valid_entry_ids,
+            adjudicated_path, valid_entry_ids, classifier_labels,
         )
         recall_labels.extend(adj_recall)
         precision_labels.extend(adj_precision)
