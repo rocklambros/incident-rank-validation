@@ -163,6 +163,7 @@ def benjamini_hochberg(pvalues: list[float], alpha: float) -> list[bool]:
 
 
 BAKEOFF_ALPHA: float = 0.05
+MIN_CELL: int = 5
 
 
 @dataclass(frozen=True, slots=True)
@@ -205,7 +206,7 @@ def select_winner(
     truth: Mapping[str, frozenset[str]],
     lockbox_ids: frozenset[str],
     alpha: float = BAKEOFF_ALPHA,
-    min_cell: int = 5,
+    min_cell: int = MIN_CELL,
 ) -> BakeoffResult:
     """Pick the config with the highest OOS-balanced-accuracy that beats the
     floor after BH correction; sparse truth cells excluded from the metric."""
@@ -308,6 +309,8 @@ def write_bakeoff_provenance(
     label_file: Path,
     seed: int | None = None,
     lockbox_fraction: float | None = None,
+    min_cell: int | None = None,
+    goldset_meta: dict[str, object] | None = None,
 ) -> Path:
     """Write classify_provenance.json: label-file hash + resolved model SHAs +
     grid + winner/scores.  Returns the written path."""
@@ -324,6 +327,8 @@ def write_bakeoff_provenance(
         "alpha": result.alpha,
         "seed": seed,
         "lockbox_fraction": lockbox_fraction,
+        "min_cell": min_cell,
+        "goldset": goldset_meta,
         "label_file": str(label_file.name),
         "label_file_sha256": label_sha,
         "models": [
@@ -340,3 +345,34 @@ def write_bakeoff_provenance(
     path = out_dir / "classify_provenance.json"
     path.write_text(json.dumps(payload, indent=2, sort_keys=True))
     return path
+
+
+def goldset_provenance(goldset_path: Path) -> dict[str, object]:
+    """Audit metadata for the goldset truth file (Plan 8e F3a/F9).
+
+    Records the content hash, record count, the blind-label vs llm-consensus
+    disagreement rate (a single-author truth-uncertainty signal), and the
+    adjudication breakdown.  Makes the truth the winner is selected against
+    auditable and bindable in the lock.
+    """
+    raw = goldset_path.read_bytes()
+    n = 0
+    blind_disagree = 0
+    adjudicated: dict[str, int] = {}
+    for line in raw.decode().splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        rec = json.loads(line)
+        n += 1
+        if rec.get("blind_label") != rec.get("llm_consensus"):
+            blind_disagree += 1
+        adj = str(rec.get("adjudicated", ""))
+        adjudicated[adj] = adjudicated.get(adj, 0) + 1
+    return {
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "n_records": n,
+        "blind_consensus_disagreement_rate": (blind_disagree / n) if n else 0.0,
+        "adjudicated_counts": adjudicated,
+        "adjudicator": "single-author",
+    }
