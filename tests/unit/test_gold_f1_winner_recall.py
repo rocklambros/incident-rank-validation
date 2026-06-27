@@ -144,3 +144,22 @@ def test_oos_prediction_is_recall_miss_no_precision_fp() -> None:
     assert rc.true_positives == 0 and rc.false_negatives == 1
     # Precision: NO false-positive cell for the OOS sentinel.
     assert (OUT_OF_SCOPE, "security") not in merged.precision_counts
+
+
+def test_oos_missing_label_recall_miss_end_to_end(tmp_path: Path) -> None:
+    from engine.calibrate.tally import TallyResult, calibrate_with_gold
+
+    gold_dir = _write_adjudicated(tmp_path)
+    base = TallyResult(
+        precision_counts={}, recall_counts={}, rollup_counts={},
+        total_coded=0, amendments_applied=0,
+    )
+    # INC-1 truly {A}; classifier gives NO label (OOS) -> recall miss for A.
+    gold = load_gold_calibration(
+        gold_dir=gold_dir, valid_entry_ids={"A", "B"},
+        rubric_hash="r", adjudicator_id="t",
+        classifier_labels={"INC-2": "B"},  # INC-1 absent -> OOS
+    )
+    merged = calibrate_with_gold(base, gold, set(), {"A", "B"})
+    rc_a = merged.recall_counts[("A", "security")]
+    assert rc_a.true_positives == 0 and rc_a.false_negatives == 1
