@@ -228,12 +228,18 @@ def calibrate_with_gold(
     precision_fp: dict[tuple[str, str], int] = {}
     precision_total: dict[tuple[str, str], int] = {}
 
-    # F-A: incidents that carry an EXPLICIT precision verdict (a GoldPrecisionLabel,
-    # e.g. every adjudicated incident) are scored for precision via that label
-    # below; deriving a second precision FP from the recall label would
-    # double-count.  The recall-derived FP therefore fires only for incidents
-    # WITHOUT a precision_label (the curation / F4 path).
-    precision_label_incident_ids = {p.incident_id for p in gold.precision_labels}
+    # F-A: a claim that already carries an EXPLICIT precision verdict (a
+    # GoldPrecisionLabel — e.g. every adjudicated in-scope claim on a truth-
+    # labeled incident) is scored for precision via that label below; deriving a
+    # second precision FP from the recall label would double-count.  Key on
+    # (incident_id, claimed_entry) — NOT incident_id alone — so the recall-
+    # derived FP is suppressed only for the SAME claim, never for a different
+    # entry an incident might also be misclassified as.  The recall-derived FP
+    # still fires for claims with no explicit precision verdict (the curation /
+    # F4 path, and in-scope claims on truth-OOS incidents).
+    precision_label_keys = {
+        (p.incident_id, p.claimed_entry_id) for p in gold.precision_labels
+    }
 
     for label in gold.recall_labels:
         if label.incident_id in base_incident_ids:
@@ -267,7 +273,8 @@ def calibrate_with_gold(
         if (
             label.classifier_entry_id not in label.true_entry_ids
             and label.classifier_entry_id != OUT_OF_SCOPE
-            and label.incident_id not in precision_label_incident_ids
+            and (label.incident_id, label.classifier_entry_id)
+            not in precision_label_keys
         ):
             pk = (label.classifier_entry_id, merge_stratum)
             precision_fp[pk] = precision_fp.get(pk, 0) + 1
