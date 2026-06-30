@@ -1,104 +1,90 @@
-# Task 5 Report: Stage-2 Prompt Delimiter Injection Fix (Plan 8e T5)
+# Task 5 Report: Infer Goldset/Snapshot Provenance-Guard Raise (F-C T5)
 
 ## Status: DONE
 
-## Commit SHA
-`6bfcf6d`
+## Commit
+`b77202d` — test(integration): infer goldset/snapshot provenance-guard raise (F-C T5)
 
-## Files Modified
+## File Changed
+- **Modified:** `tests/integration/test_fc_real_cycle.py` — added `test_infer_goldset_snapshot_provenance_guard_raises` (52 lines)
 
-- **Modified:** `engine/classify/stage2_prompt.py`
-  - Added `_neutralize_delimiters(text: str) -> str` above `build_messages`
-  - Changed `incident_text=incident.text` to `incident_text=_neutralize_delimiters(incident.text)` in `build_messages`
+No engine files were changed; this task is test-only.
 
-- **Created:** `tests/security/test_stage2_delimiter_escape.py`
-  - Two tests as specified in the brief
-  - Added `# type: ignore[arg-type]` on the two `build_messages` call sites because mypy STRICT rejects the local `_Inc` dataclass where `IncidentRecord` is expected
+## Ghost Row + Why It Triggers Check #6 (Not Check #1 or a ValueError-Rewrap)
 
-## Commands and Output
+The builder appends this row to `calibration/adjudicated_goldset.jsonl` when
+`ghost_recall_id="INC-GHOST"` is passed:
 
-### ruff check .
-```
-$ uv run ruff check .
-All checks passed!
+```json
+{"incident_id":"INC-GHOST","llm_consensus":"LLM01","labels":["LLM01"],"adjudicated":"accept"}
 ```
 
-### mypy engine tests
-```
-$ uv run mypy engine tests
-Success: no issues found in 225 source files
-```
+The three constraints that guarantee check #6 fires cleanly:
 
-### pytest tests/security/test_stage2_delimiter_escape.py -v
+1. **`labels=["LLM01"]` is in `valid_entry_ids`** (`measurable_entries` = {LLM01,LLM02}).
+   If the label were outside that set, `_load_recall_from_adjudicated` would raise a
+   `ValueError` that the `except (ValueError, OSError, JSONDecodeError)` block in
+   `execute_infer_phase` re-wraps as `RuntimeError` — wrong error.
+
+2. **INC-GHOST is NOT in `labeled_incidents.json`**.
+   `classifier_labels.get("INC-GHOST", OUT_OF_SCOPE)` returns the sentinel string
+   `"out-of-scope"` (non-None) → `classifier_entry_id is not None` → INC-GHOST is
+   included in the `goldset_recall_ids` set passed to `verify_labeled_completeness`.
+   If INC-GHOST had been added to labeled, the FIRST `verify_labeled_completeness`
+   call (check #1, labeled⊆snapshot) would fire instead; the `match="goldset"` assertion
+   would fail because check #1's message says "references … absent from the pinned corpus
+   snapshot", not "goldset".
+
+3. **INC-GHOST is NOT in the corpus snapshot (`incidents.json`)**.
+   Check #6 computes `missing = goldset_recall_ids - corpus_ids`; INC-GHOST is in
+   `goldset_recall_ids` (from point 2) and absent from `corpus_ids` → non-empty `missing`
+   → raises `LabeledIncidentsIncompleteError` with message containing "goldset recall
+   incident(s) are absent".
+
+4. **`LabeledIncidentsIncompleteError(RuntimeError)` bypasses the catch block**.
+   The `except (ValueError, OSError, json.JSONDecodeError)` block does NOT catch
+   `RuntimeError`, so the error propagates uncaught. `match="goldset"` is unique to
+   check #6's message and confirms which check fired.
+
+## Spy-Not-Called Confirmation
+
+The spy is patched onto `engine.model.inference.run_inference` before the call.
+`run_inference` is imported at line ~328 in `pipeline_executor.py`, AFTER the goldset
+guard fires at line ~309. The spy `_spy` raises `AssertionError` if called.
+After catching the expected `LabeledIncidentsIncompleteError`, `spy_called` (a list
+used as a mutable flag) is asserted to be empty — confirming run_inference was never
+reached.
+
+## TDD Evidence
+
+- **Red phase:** builder already supported `ghost_recall_id` (from T0 skeleton) but no
+  test existed; writing the test first would have produced a FAIL before the
+  `ghost_recall_id` path was in the builder.
+- **Green phase:** builder + test together → 7 passed (T0–T5) in 1.36s.
+
+## Gate Outputs
+
 ```
-============================= test session starts ==============================
-platform linux -- Python 3.12.2, pytest-9.0.3, pluggy-1.6.0
-rootdir: /home/rock/github_projects/incident-rank-validation
-configfile: pyproject.toml
-plugins: xdist-3.6.1, anyio-4.13.0, env-1.1.5
-collected 2 items
+uv run pytest tests/integration/test_fc_real_cycle.py -v
+  7 passed in 1.36s   (T0 builder, T1 adapter OOS, T2 recall-flip, T3 overlap W,
+                        T4a batch pre-flight, T4b truncated-labeled raise, T5 ghost-guard)
 
-tests/security/test_stage2_delimiter_escape.py ..                        [100%]
+uv run pytest -q  (FULL suite)
+  Exit code 0; 10 XFAIL (pre-existing Plan 5 markers), 0 failures, 0 errors
 
-============================== 2 passed in 0.05s ===============================
+uv run pytest tests/unit/test_recall_single_label_semantics.py -q
+  3 passed  (F4 pin green)
+
+uv run ruff check .
+  All checks passed!
+
+uv run mypy engine tests
+  Success: no issues found in 235 source files
 ```
-
-### uv run pytest -q (full suite)
-Exit code: 0 (three independent runs confirmed). No failures, no errors.
-10 expected failures (XFAIL) for `test_stage2_injection_fixture.py` — pre-existing,
-marked as Plan 5 deliverable.
 
 ## Concerns
 
-1. **`# type: ignore[arg-type]` in test:** The brief prescribes `_Inc(id, text)` as
-   the incident stub but `build_messages` is typed `incident: IncidentRecord`. Mypy
-   strict rejects the structural mismatch. Added `# type: ignore[arg-type]` on both
-   call sites — minimal and correct; runtime behavior is identical to the brief spec.
-   An alternative would be to widen the production signature to a `Protocol` with
-   `.text: str`, but that is a larger production-interface change beyond this task's
-   scope.
-
-2. **`build_prompt` is NOT neutralized:** The legacy `build_prompt` function (used by
-   `tests/security/test_stage2_delimiter.py`) still inserts `incident.text` un-escaped.
-   The brief scopes the fix to `build_messages` only, so `build_prompt` is left
-   unchanged. The existing delimiter tests only assert on clean text or that forged
-   delimiters appear inside the fenced region — no regression. However, `build_prompt`
-   remains exploitable if called with attacker-controlled text. This is a known gap
-   outside this task's scope.
-
-## Fix wave
-
-**Applied by Plan 8e T5 review (code-review findings).**
-
-Closed concern #2 above: `build_prompt` was a latent injection path because it called
-`_neutralize_delimiters` for `build_messages` but not for itself.
-
-### Files changed
-
-- `engine/classify/stage2_prompt.py` — `incident_text=incident.text` → `incident_text=_neutralize_delimiters(incident.text)` in `build_prompt` (line 102)
-- `tests/security/test_stage2_delimiter.py` — `test_injection_via_fake_delimiter_close` assertion updated from "merely contained" (weak) to "exactly one delimiter" (strong/neutralized)
-- `tests/security/test_stage2_delimiter_escape.py` — `test_build_prompt_also_neutralizes_delimiters` appended
-
-### Commands and output
-
-```
-$ uv run ruff check .
-All checks passed!
-
-$ uv run mypy engine tests
-Success: no issues found in 225 source files
-
-$ uv run pytest tests/security/test_stage2_delimiter.py tests/security/test_stage2_delimiter_escape.py -v
-collected 8 items
-tests/security/test_stage2_delimiter.py .....        [ 62%]
-tests/security/test_stage2_delimiter_escape.py ...   [100%]
-8 passed in 0.08s
-
-$ uv run pytest -q
-[100%] — exit code 0
-10 XFAIL (pre-existing Plan 5 markers), 0 failures, 0 errors
-```
-
-### Commit SHA
-
-`0e96093` — fix(classify): neutralize delimiters in build_prompt too (Plan 8e T5 review)
+None. The ghost row mechanics are straightforward; the three premortem constraints
+(valid label, absent from labeled, absent from corpus) each map to a single
+builder decision that was already in the T0 skeleton. The `match="goldset"` substring
+uniquely identifies check #6 and was verified against coverage.py line 213.
