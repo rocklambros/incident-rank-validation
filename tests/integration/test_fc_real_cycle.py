@@ -339,3 +339,55 @@ def test_cal_tally_raises_on_truncated_labeled(
         f"Expected 'does not reconcile' in exception message (check 5 unique substring); "
         f"got: {result.exception!s}"
     )
+
+
+# ── T5: infer goldset-guard RAISES when a scored recall incident is absent ───────
+
+
+@pytest.mark.integration
+def test_infer_goldset_snapshot_provenance_guard_raises(
+    real_minimal_cycle: Callable[..., Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """execute_infer_phase raises LabeledIncidentsIncompleteError (check #6).
+
+    INC-GHOST is in adjudicated_goldset.jsonl (labels=["LLM01"], adjudicated=accept)
+    but is absent from the corpus snapshot AND from labeled_incidents.json.
+
+    Why check #6 fires (not check #1 or a RuntimeError-rewrap):
+    - INC-GHOST is NOT in labeled_incidents.json → check #1 (labeled⊆snapshot) does
+      not see it; only check #6 (goldset⊆snapshot) can fire on it.
+    - ghost labels=["LLM01"] ∈ valid_entry_ids → no rubric ValueError in gold_loader;
+      classifier_labels.get("INC-GHOST", OUT_OF_SCOPE) returns the OOS sentinel
+      (non-None) → classifier_entry_id is not None → INC-GHOST is included in
+      goldset_recall_ids passed to verify_labeled_completeness.
+    - LabeledIncidentsIncompleteError(RuntimeError) is NOT caught by the gold-loader
+      try/except (ValueError, OSError, JSONDecodeError) block, so it propagates
+      uncaught and the match="goldset" substring is unique to check #6's message.
+
+    The spy is placed BEFORE the call.  run_inference lives at line ~341, after the
+    goldset guard at line ~309 — the guard fires first and the spy is never reached.
+    """
+    from engine.calibrate.coverage import LabeledIncidentsIncompleteError
+    from engine.cli.pipeline_executor import execute_infer_phase
+
+    cycle = real_minimal_cycle(tmp_path, ghost_recall_id="INC-GHOST")
+
+    spy_called: list[bool] = []
+
+    def _spy(**kwargs: Any) -> Any:  # pragma: no cover — must never be reached
+        spy_called.append(True)
+        raise AssertionError(
+            "run_inference reached — provenance guard did NOT fire before inference"
+        )
+
+    monkeypatch.setattr("engine.model.inference.run_inference", _spy)
+
+    with pytest.raises(LabeledIncidentsIncompleteError, match="goldset"):
+        execute_infer_phase(cycle, num_warmup=0, num_samples=1)
+
+    assert not spy_called, (
+        "run_inference was called before the provenance guard raised — "
+        "check #6 did not fire before inference"
+    )
