@@ -178,11 +178,22 @@ def run_inference(
     num_samples: int = 2000,
     num_chains: int = 4,
     timeout_seconds: float | None = None,
+    recall_floor_epsilon: float = 0.0,
 ) -> InferenceResult:
     """Run NUTS inference on the measurement-error model.
 
     All hyperparameters come from *manifest* (prior_scale, concentration_shape,
     concentration_rate, prng_seed).  No module-level constants for tunables.
+
+    Parameters
+    ----------
+    recall_floor_epsilon:
+        F6 uniform recall floor ε (default 0.0 = no-op, byte-identical to pre-F6).
+        When > 0, the sampled recall inside the NUTS model is clipped to
+        max(recall_sample, ε) UNIFORMLY across all cells (not just thin ones)
+        to prevent λ = observed/recall exploding when recall≈0 (e.g. TP==0
+        cells).  Applied via a Python-level conditional so the default path
+        (ε=0.0) adds zero operations to the JAX computation graph.
     """
     # Verify CPU backend for reproducibility
     assert jax.default_backend() == "cpu", (
@@ -225,6 +236,11 @@ def run_inference(
             "recall",
             dist.Beta(jnp.array(recall_alpha), jnp.array(recall_beta)),
         )
+        # F6 uniform recall floor: Python-level conditional so the default path
+        # (recall_floor_epsilon == 0.0) adds ZERO operations to the JAX graph,
+        # preserving byte-identical output for all existing callers.
+        if recall_floor_epsilon > 0.0:
+            recall = jnp.maximum(recall, recall_floor_epsilon)
         precision = numpyro.sample(
             "precision",
             dist.Beta(jnp.array(precision_alpha), jnp.array(precision_beta)),
