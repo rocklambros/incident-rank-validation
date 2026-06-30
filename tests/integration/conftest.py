@@ -411,9 +411,48 @@ def _build_minimal_cycle(
         write_provenance(_gen_prov, cal_dir / "generate_batches_provenance.json")
 
     if with_infer:
-        pass  # T6 will implement lambda_samples.npy + inference_summary.json
+        import numpy as np
+
+        infer_dir = cycle / "infer"
+        infer_dir.mkdir(parents=True, exist_ok=True)
+        # Clear-winner seed: LLM01 ~ Beta(5,1) median≈0.833; LLM02 ~ Beta(1,5)
+        # median≈0.167.  Incidence = lambda * stratum_size; both entries are in
+        # stratum "security" with size=4, so LLM01 incidence >> LLM02 — no tie,
+        # no tiebreak ambiguity → D1 PASS.  Column order aligns with entry_ids.
+        rng = np.random.default_rng(42)
+        col0 = rng.beta(5, 1, size=(200, 1))   # LLM01
+        col1 = rng.beta(1, 5, size=(200, 1))   # LLM02
+        lambda_samples = np.concatenate([col0, col1], axis=1)
+        np.save(infer_dir / "lambda_samples.npy", lambda_samples)
+        inference_summary: dict[str, object] = {
+            "entry_ids": ["LLM01", "LLM02"],
+            "r_hat": {"LLM01": 1.01, "LLM02": 1.01},
+            "ess": {"LLM01": 400.0, "LLM02": 400.0},
+            "divergences": 0,
+            "num_warmup": 1000,
+            "num_samples": 200,
+        }
+        (infer_dir / "inference_summary.json").write_text(
+            json.dumps(inference_summary, indent=2) + "\n"
+        )
+
     if with_vote:
-        pass  # T6 will implement vote/vote.xlsx
+        from openpyxl import Workbook
+
+        vote_dir = cycle / "vote"
+        vote_dir.mkdir(parents=True, exist_ok=True)
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Raw Results (Anonymized)"
+        # Simple format (_load_simple_format): header[0] is the label column
+        # (ignored by the loader); header[1:] are the entry_ids.  Subsequent
+        # rows: [respondent_id, rank_LLM01, rank_LLM02].  All 3 respondents
+        # rank LLM01=1 (best), LLM02=2 → unambiguous PL winner → D2 PASS.
+        ws.append(["respondent", "LLM01", "LLM02"])
+        ws.append(["R1", 1, 2])
+        ws.append(["R2", 1, 2])
+        ws.append(["R3", 1, 2])
+        wb.save(vote_dir / "vote.xlsx")
 
     return cycle
 

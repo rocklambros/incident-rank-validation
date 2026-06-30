@@ -391,3 +391,89 @@ def test_infer_goldset_snapshot_provenance_guard_raises(
         "run_inference was called before the provenance guard raised — "
         "check #6 did not fire before inference"
     )
+
+
+# ── T6: decide-real → run_oracle, 3 deliverables, none erroring (8d-I3) ─────────
+
+
+@pytest.mark.integration
+def test_decide_real_runs_oracle_writes_3_deliverables(
+    real_minimal_cycle: Callable[..., Path], tmp_path: Path
+) -> None:
+    """decide-real writes oracle_report.json with 3 deliverables (8d-I3 contract).
+
+    Assertion split:
+    - Pre-direct-call: verify decide's OWN oracle write.  decide wraps run_oracle
+      in a crash-suppressing try/except, so the file's existence is the only
+      signal that decide's invocation succeeded.  This assertion MUST come before
+      the direct run_oracle call, which overwrites the file.
+    - Post: call run_oracle directly to surface oracle-internal errors that the
+      decide wrapper would silently swallow.  Assert the in-memory verdict.
+
+    Deliverable expectations with this fixture:
+    - D1 incidence  → PASS (LLM01 clear winner, kendall_tau=1.0 ≥ 0.95)
+    - D2 plackett_luce → PASS (unanimous respondents, tau=1.0 ≥ 0.70)
+    - D3 sigma_u    → SKIP (robustness_specs=() → engine_sigma=None)
+    """
+    from click.testing import CliRunner
+
+    from engine.cli.pipeline import decide_real
+    from engine.verify.check import run_oracle
+
+    cycle = real_minimal_cycle(tmp_path, with_infer=True, with_vote=True)
+    vote_xlsx = cycle / "vote" / "vote.xlsx"
+
+    runner = CliRunner()
+    result = runner.invoke(
+        decide_real,
+        [
+            "--execute",
+            "--cycle", str(cycle),
+            "--vote-xlsx", str(vote_xlsx),
+        ],
+        catch_exceptions=True,
+    )
+    assert result.exit_code == 0, (
+        f"decide-real exited {result.exit_code}\n"
+        f"output:\n{result.output}"
+        + (f"\nexception: {result.exception!r}" if result.exception else "")
+    )
+
+    # Assert decide's OWN oracle write BEFORE the direct call overwrites the file.
+    oracle_path = cycle / "results" / "oracle_report.json"
+    assert oracle_path.exists(), (
+        "oracle_report.json not written by decide-real\n"
+        f"decide output:\n{result.output}"
+    )
+    decide_oracle_doc = json.loads(oracle_path.read_text())
+    assert len(decide_oracle_doc["deliverables"]) == 3, (
+        f"Expected 3 deliverables in decide's oracle_report.json, "
+        f"got {len(decide_oracle_doc['deliverables'])}: {decide_oracle_doc['deliverables']}"
+    )
+
+    # Byte-immutability guard: cycle must live under tmp_path.
+    assert tmp_path in cycle.parents
+
+    # Direct run_oracle call — surfaces oracle-internal errors the decide wrapper swallows.
+    verdict = run_oracle(cycle)
+
+    assert len(verdict.deliverables) == 3, (
+        f"Expected 3 deliverables from run_oracle, got {len(verdict.deliverables)}"
+    )
+    names = {d.name for d in verdict.deliverables}
+    assert names == {"incidence", "plackett_luce", "sigma_u"}, (
+        f"Unexpected deliverable names: {names}"
+    )
+    for d in verdict.deliverables:
+        assert d.status in {"PASS", "SKIP"}, (
+            f"Deliverable {d.name!r} status={d.status!r}; expected PASS or SKIP\n"
+            f"metric={d.metric!r} detail={d.detail!r}"
+        )
+    assert verdict.provisional is False, (
+        "verdict.provisional=True — at least one deliverable FAILed "
+        "(fixture-alignment bug):\n"
+        + "\n".join(
+            f"  {d.name}: {d.status} | {d.metric} | {d.detail}"
+            for d in verdict.deliverables
+        )
+    )
