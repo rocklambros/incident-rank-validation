@@ -290,7 +290,7 @@ class TestLock:
         import dataclasses
         import json
 
-        prereg = Path("projects/owasp-llm/cycles/2026/prereg")
+        prereg = Path(__file__).resolve().parents[2] / "projects/owasp-llm/cycles/2026/prereg"
         manifest_path = prereg / "manifest.json"
         lock_path = prereg / "manifest.lock"
         if not manifest_path.exists() or not lock_path.exists():

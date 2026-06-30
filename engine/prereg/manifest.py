@@ -107,7 +107,7 @@ class PreregManifest:
             result.pop("overlap_min_fp", None)
             # lambda_min was added after the v1 lock was written; exclude it from
             # the v1 canonical form so pre-existing v1 locks (e.g. the frozen 2026
-            # cycle) still verify. It IS bound at schema_version >= 2 (RM14).
+            # cycle) still verify. The v2+ canonical form includes it (RM14).
             result.pop("lambda_min", None)
         return result
 
