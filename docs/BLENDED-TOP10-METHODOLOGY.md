@@ -98,6 +98,25 @@ Scope 1 fold, rank-space blend, weights 0.75 human and 0.25 data. Vote rank and 
 
 Scope 3 audit: the parent-only order matches this list. The only difference is LLM01, whose blend reads 3.75 parent-only versus 3.00 folded. It holds second place either way. Folding does not reorder the list under current weights.
 
+### 5.1 Movement from the published order
+
+The previous ranking is the published 2026 order, the LLM01-to-LLM10 numbering on `main`. The blend reorders it as shown. Move is the change from published position to blended position.
+
+| Blended # | Risk | Published # | Move |
+|---|---|---|---|
+| 1 | LLM02 Sensitive Information Disclosure | 2 | up 1 |
+| 2 | LLM01 Prompt Injection | 1 | down 1 |
+| 3 | LLM06 Excessive Agency | 6 | up 3 |
+| 4 | LLM04 Data and Model Poisoning | 4 | no change |
+| 5 | LLM03 Supply Chain | 3 | down 2 |
+| 6 | LLM10 Unbounded Consumption | 10 | up 4 |
+| 7 | LLM07 Hidden Context Exposure | 7 | no change |
+| 8 | LLM09 Misinformation | 9 | up 1 |
+| 9 | LLM08 Vector and Embedding Weaknesses | 8 | down 1 |
+| 10 | LLM05 Improper Output Handling | 5 | down 5 |
+
+Biggest movers: Improper Output Handling falls five places, Unbounded Consumption rises four, Excessive Agency rises three. The published numbering is treated as the prior importance rank. If the intended baseline is the human-vote-only order instead, the move column changes and this table needs regenerating.
+
 ## 6. What the ranking shows
 
 Three patterns carry the result.
@@ -150,7 +169,22 @@ Paste the block below into Gamma.app (Create with AI, "Paste in text" or "Genera
 >
 > **Card 8, The reconciliation.** Show the rule on one card: final rank = 0.75 times the expert vote plus 0.25 times the data. The crowd leads at three-quarters weight because the list is a consensus product. The data enters at a quarter weight as a corrective, strong enough to move a risk a tier, not strong enough to overturn the consensus on one noisy corpus. Add one line on rollups: where the group merged a narrow risk into a broader one, the merged risk inherits the incidents of both.
 >
-> **Card 9, The reveal.** Present the blended Top 10 as a clean ranked table. 1 Sensitive Information Disclosure. 2 Prompt Injection. 3 Excessive Agency. 4 Data and Model Poisoning. 5 Supply Chain. 6 Unbounded Consumption. 7 Hidden Context Exposure. 8 Misinformation. 9 Vector and Embedding Weaknesses. 10 Improper Output Handling. Caption: "Belief and evidence, weighted together."
+> **Card 9, The reveal, before and after.** Show the blended Top 10 beside the published 2026 order so the movement is visible. Render it as a before-to-after comparison: published order on the left, blended order on the right, with up and down arrows on the movers and a muted dash for no change. Use this exact data.
+>
+> | Blended order (new) | Risk | Published order (was) | Move |
+> |---|---|---|---|
+> | 1 | Sensitive Information Disclosure | 2 | up 1 |
+> | 2 | Prompt Injection | 1 | down 1 |
+> | 3 | Excessive Agency | 6 | up 3 |
+> | 4 | Data and Model Poisoning | 4 | no change |
+> | 5 | Supply Chain | 3 | down 2 |
+> | 6 | Unbounded Consumption | 10 | up 4 |
+> | 7 | Hidden Context Exposure | 7 | no change |
+> | 8 | Misinformation | 9 | up 1 |
+> | 9 | Vector and Embedding Weaknesses | 8 | down 1 |
+> | 10 | Improper Output Handling | 5 | down 5 |
+>
+> Caption: "Belief and evidence, weighted together. Improper Output Handling falls five places, Unbounded Consumption rises four, Excessive Agency rises three." Visual direction: draw connector lines between the two columns so the audience can trace each risk's move at a glance, color rises in the accent color and falls in a muted gray.
 >
 > **Card 10, Surprise one, the underrated risk.** Misinformation. Voters rank it near the bottom, thirteenth of twenty. The incident record ranks it near the top, second. The engine flags this gap at 99 percent confidence. It still lands eighth on the blend because the data carries only a quarter weight, but this is the risk the evidence says we are sleeping on.
 >
