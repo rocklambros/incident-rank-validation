@@ -273,7 +273,9 @@ class TestLock:
 
         # goldset_hash, sigma_u_hyperprior_scale, and overlap_min_fp are all v2-only fields
         # excluded from the v1 canonical form; mutating them does NOT invalidate a v1 lock.
-        lock_invariant_fields = {"goldset_hash", "sigma_u_hyperprior_scale", "overlap_min_fp"}
+        lock_invariant_fields = {
+            "goldset_hash", "sigma_u_hyperprior_scale", "overlap_min_fp", "lambda_min",
+        }
         for field_name, alt_value in mutations.items():
             mutated = replace(m, **{field_name: alt_value})
             if field_name in lock_invariant_fields:
@@ -282,6 +284,23 @@ class TestLock:
             else:
                 with pytest.raises(ValueError, match="lock hash mismatch"):
                     verify_lock(mutated, lock_path)
+
+    def test_real_2026_v1_lock_verifies(self) -> None:
+        """RM14: the frozen 2026 cycle's v1 lock verifies against the manifest."""
+        import dataclasses
+        import json
+
+        prereg = Path("projects/owasp-llm/cycles/2026/prereg")
+        manifest_path = prereg / "manifest.json"
+        lock_path = prereg / "manifest.lock"
+        if not manifest_path.exists() or not lock_path.exists():
+            pytest.skip("2026 cycle prereg artifacts not present")
+        raw = json.loads(manifest_path.read_text())
+        field_names = {f.name for f in dataclasses.fields(PreregManifest)}
+        kwargs = {k: v for k, v in raw.items() if k in field_names}
+        manifest = PreregManifest(**kwargs)
+        assert manifest.schema_version == 1
+        verify_lock(manifest, lock_path)  # must not raise
 
 
 # ---------------------------------------------------------------------------

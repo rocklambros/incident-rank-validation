@@ -105,6 +105,10 @@ class PreregManifest:
             result.pop("goldset_hash", None)
             result.pop("sigma_u_hyperprior_scale", None)
             result.pop("overlap_min_fp", None)
+            # lambda_min was added after the v1 lock was written; exclude it from
+            # the v1 canonical form so pre-existing v1 locks (e.g. the frozen 2026
+            # cycle) still verify. It IS bound at schema_version >= 2 (RM14).
+            result.pop("lambda_min", None)
         return result
 
     def to_json(self) -> str:
