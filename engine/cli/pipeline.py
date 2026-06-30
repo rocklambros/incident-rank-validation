@@ -424,6 +424,14 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
             stage2_results=stage2_results,
             incident_strata=incident_strata,
         )
+        from engine.calibrate.coverage import write_classify_coverage
+
+        write_classify_coverage(
+            out_dir,
+            snapshot_hash=manifest_data.get("snapshot_hash", ""),
+            corpus_incident_ids={inc.id for inc in incidents_list},
+            in_scope_incident_ids={c.incident_id for c in result.classifications},
+        )
         click.echo(f"Classify phase complete. Artifacts written to {out_dir}")
     except Exception as e:
         raise click.ClickException(f"Classify phase failed: {e}") from e
