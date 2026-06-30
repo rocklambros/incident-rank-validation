@@ -8,7 +8,9 @@ from __future__ import annotations
 import json
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
+import numpy as np
 import pytest
 
 
@@ -37,3 +39,209 @@ def test_builder_happy_path(
     labeled = json.loads((cycle / "classify" / "labeled_incidents.json").read_text())
     labeled_ids = {str(r["incident_id"]) for r in labeled}
     verify_labeled_completeness(cycle, H, labeled_ids)  # must NOT raise
+
+
+# ── T1: adapter drops the future-dated record (universe-drift self-guard) ──────
+
+
+@pytest.mark.integration
+def test_adapter_drops_future_dated_record(
+    real_minimal_cycle: Callable[..., Path], tmp_path: Path
+) -> None:
+    """INC-FUTURE (dated 2026-05-21) must be absent from adapter output but
+    present in the raw snapshot, and the OOS set must be exactly
+    {INC-OOS, INC-FUTURE} — not merely a count of 2."""
+    from engine.adapters.genai_agentic import GenAIAgenticAdapter
+    from engine.calibrate.coverage import read_snapshot_universe_ids
+
+    cycle = real_minimal_cycle(tmp_path)
+
+    snap_dirs = list((cycle / "corpora" / "genai_agentic").iterdir())
+    assert len(snap_dirs) == 1
+    snap_dir = snap_dirs[0]
+    incidents_json = snap_dir / "incidents.json"
+
+    adapter = GenAIAgenticAdapter(snap_dir, snapshot_date="2026-05-20")
+    adapter_ids = {i.id for i in adapter.iter_incidents()}
+
+    # Adapter must silently drop INC-FUTURE (date "2026-05-21" > pull_date "2026-05-20").
+    assert "INC-FUTURE" not in adapter_ids
+
+    # The raw snapshot must still contain INC-FUTURE (unfiltered universe).
+    universe_ids = read_snapshot_universe_ids(incidents_json)
+    assert "INC-FUTURE" in universe_ids
+
+    # The specific OOS set: universe minus labeled — must be exactly these two.
+    labeled_data = json.loads((cycle / "classify" / "labeled_incidents.json").read_text())
+    labeled_ids = {str(r["incident_id"]) for r in labeled_data}
+    assert universe_ids - labeled_ids == {"INC-OOS", "INC-FUTURE"}
+
+
+# ── T2: recall-flip reflects the classifier, not consensus ─────────────────────
+
+
+@pytest.mark.integration
+def test_recall_flip_reflects_classifier_not_consensus(
+    real_minimal_cycle: Callable[..., Path], tmp_path: Path
+) -> None:
+    """INC-FLIP: classifier=LLM01 but truth=LLM02 (goldset llm_consensus=LLM02).
+
+    WITH classifier labels: INC-FLIP is a FN for LLM02 (classifier missed it).
+    WITHOUT classifier (consensus path): INC-FLIP is a TP for LLM02.
+    The FN delta of exactly 1 is attributable to INC-FLIP.
+    """
+    from engine.calibrate.gold_loader import load_classifier_labels, load_gold_calibration
+    from engine.calibrate.tally import RecallTally, TallyResult, calibrate_with_gold
+
+    cycle = real_minimal_cycle(tmp_path)
+
+    manifest_data = json.loads((cycle / "prereg" / "manifest.json").read_text())
+    rubric_hash = str(manifest_data["rubric_hash"])
+
+    labeled_path = cycle / "classify" / "labeled_incidents.json"
+    gold_dir = cycle / "calibration"
+    valid_entry_ids = {"LLM01", "LLM02"}
+
+    # Empty base tally — gold data is the sole signal in this test.
+    base_tally = TallyResult(
+        precision_counts={},
+        recall_counts={},
+        rollup_counts={},
+        total_coded=0,
+        amendments_applied=0,
+    )
+
+    # ── (a) WITH classifier labels ─────────────────────────────────────────────
+    # Classifier: INC-FLIP → LLM01; truth: LLM02 → FN for LLM02.
+    # Classifier: INC-02   → LLM02; truth: LLM02 → TP for LLM02.
+    classifier_labels = load_classifier_labels(labeled_path)
+    gold_with = load_gold_calibration(
+        gold_dir=gold_dir,
+        valid_entry_ids=valid_entry_ids,
+        rubric_hash=rubric_hash,
+        adjudicator_id="test",
+        classifier_labels=classifier_labels,
+    )
+    tally_with = calibrate_with_gold(
+        base_tally,
+        gold_with,
+        set(),           # base_incident_ids: none pre-coded in a batch
+        valid_entry_ids,
+        merge_stratum="security",
+    )
+
+    cell_with = tally_with.recall_counts[("LLM02", "security")]
+    assert cell_with == RecallTally(
+        true_positives=1,
+        false_negatives=1,
+        total_in_sample=2,
+    ), f"WITH classifier: expected TP=1,FN=1,total=2; got {cell_with}"
+
+    # ── (b) WITHOUT classifier (consensus path) ────────────────────────────────
+    # Both goldset incidents carry llm_consensus=LLM02, so both are TPs for LLM02.
+    gold_without = load_gold_calibration(
+        gold_dir=gold_dir,
+        valid_entry_ids=valid_entry_ids,
+        rubric_hash=rubric_hash,
+        adjudicator_id="test",
+        classifier_labels=None,
+    )
+    tally_without = calibrate_with_gold(
+        base_tally,
+        gold_without,
+        set(),
+        valid_entry_ids,
+        merge_stratum="security",
+    )
+
+    cell_without = tally_without.recall_counts[("LLM02", "security")]
+    assert cell_without == RecallTally(
+        true_positives=2,
+        false_negatives=0,
+        total_in_sample=2,
+    ), f"WITHOUT classifier: expected TP=2,FN=0,total=2; got {cell_without}"
+
+    # Delta assertion: the single FN is attributable to INC-FLIP.
+    assert cell_with.false_negatives - cell_without.false_negatives == 1
+
+
+# ── T3: overlap W non-empty end-to-end (W routed to the model call site) ───────
+
+
+@pytest.mark.integration
+def test_overlap_w_non_empty_routes_to_model_call(
+    real_minimal_cycle: Callable[..., Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """W is non-empty from the goldset confusion, and reaches run_inference.
+
+    INC-FLIP: classifier=LLM01, truth=LLM02 → FP for LLM01 leaked to LLM02.
+    With overlap_min_fp=1 that single FP is enough to form a W column.
+
+    Spy is placed on the SOURCE module (engine.model.inference.run_inference)
+    because execute_infer_phase imports it via a local 'from ... import ...' at
+    call time — patching the source dict is the only seam that works.
+    """
+    from engine.calibrate.confusion import build_overlap_from_confusion
+    from engine.calibrate.gold_loader import load_classifier_labels, load_gold_calibration
+    from engine.cli.pipeline_executor import execute_infer_phase
+    from engine.model.inference import InferenceResult
+    from engine.model.overlap import OverlapWeights
+
+    cycle = real_minimal_cycle(tmp_path)
+
+    manifest_data = json.loads((cycle / "prereg" / "manifest.json").read_text())
+    rubric_hash = str(manifest_data["rubric_hash"])
+    overlap_min_fp: int = int(manifest_data["overlap_min_fp"])  # 1
+
+    labeled_path = cycle / "classify" / "labeled_incidents.json"
+    gold_dir = cycle / "calibration"
+    valid_entry_ids = {"LLM01", "LLM02"}
+
+    classifier_labels = load_classifier_labels(labeled_path)
+    gold = load_gold_calibration(
+        gold_dir=gold_dir,
+        valid_entry_ids=valid_entry_ids,
+        rubric_hash=rubric_hash,
+        adjudicator_id="test",
+        classifier_labels=classifier_labels,
+    )
+
+    # Step 1: W must be non-empty from the goldset confusion.
+    W = build_overlap_from_confusion(
+        gold,
+        ("LLM01", "LLM02"),
+        min_fp_count=overlap_min_fp,
+    )
+    assert W.weights, (
+        f"W is empty with overlap_min_fp={overlap_min_fp}; "
+        "expected LLM01-claimed/LLM02-true FP from INC-FLIP to populate a column"
+    )
+
+    # Step 2: spy on the SOURCE module so the local import inside
+    # execute_infer_phase picks up the replacement at call time.
+    captured_overlap: list[OverlapWeights] = []
+
+    def _spy(**kwargs: Any) -> InferenceResult:
+        ov = kwargs.get("overlap")
+        if ov is not None:
+            captured_overlap.append(ov)
+        return InferenceResult(
+            entry_ids=("LLM01", "LLM02"),
+            lambda_samples=np.ones((200, 2), dtype=np.float64),
+            r_hat={"LLM01": 1.0, "LLM02": 1.0},
+            ess={"LLM01": 200.0, "LLM02": 200.0},
+            divergences=0,
+            num_warmup=0,
+            num_samples=1,
+        )
+
+    monkeypatch.setattr("engine.model.inference.run_inference", _spy)
+
+    execute_infer_phase(cycle, num_warmup=0, num_samples=1)
+
+    assert captured_overlap, "spy was never called — run_inference was not reached"
+    assert captured_overlap[0].weights, (
+        "run_inference received an EMPTY overlap; W was not routed to the call site"
+    )
