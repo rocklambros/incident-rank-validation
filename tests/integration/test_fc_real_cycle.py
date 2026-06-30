@@ -66,6 +66,8 @@ def test_adapter_drops_future_dated_record(
 
     # Adapter must silently drop INC-FUTURE (date "2026-05-21" > pull_date "2026-05-20").
     assert "INC-FUTURE" not in adapter_ids
+    # Adapter must yield INC-OOS (date "2025-12-05" ≤ pull_date; OOS = no labels, not filtered).
+    assert "INC-OOS" in adapter_ids
 
     # The raw snapshot must still contain INC-FUTURE (unfiltered universe).
     universe_ids = read_snapshot_universe_ids(incidents_json)
@@ -221,9 +223,11 @@ def test_overlap_w_non_empty_routes_to_model_call(
 
     # Step 2: spy on the SOURCE module so the local import inside
     # execute_infer_phase picks up the replacement at call time.
+    spy_invocations: list[bool] = []   # unconditional — proves spy was reached
     captured_overlap: list[OverlapWeights] = []
 
     def _spy(**kwargs: Any) -> InferenceResult:
+        spy_invocations.append(True)  # fires on every call, overlap or not
         ov = kwargs.get("overlap")
         if ov is not None:
             captured_overlap.append(ov)
@@ -241,7 +245,11 @@ def test_overlap_w_non_empty_routes_to_model_call(
 
     execute_infer_phase(cycle, num_warmup=0, num_samples=1)
 
-    assert captured_overlap, "spy was never called — run_inference was not reached"
+    # Explicit call-flag: distinguishes "spy reached" from "overlap was non-None".
+    assert spy_invocations, "spy was never called — run_inference was not reached"
+    assert captured_overlap, (
+        "run_inference received no overlap kwarg; W was not routed to the call site"
+    )
     assert captured_overlap[0].weights, (
         "run_inference received an EMPTY overlap; W was not routed to the call site"
     )

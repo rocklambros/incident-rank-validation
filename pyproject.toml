@@ -86,6 +86,7 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# DO NOT add -m filters here — integration tests must run in CI.
 addopts = "-ra -q"
 filterwarnings = [
   "error",
