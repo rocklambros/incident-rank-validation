@@ -96,14 +96,27 @@ def _resolve_snapshot_incidents(cycle: Path, snapshot_hash: str) -> Path | None:
 
     Returns None when no pinned snapshot is resolvable (synthetic sentinel,
     empty hash, or the snapshot dir is absent) -> the verifier no-ops.
+    Supports both 2-level layout (corpora/<corpus>/<hash>/incidents.json) and
+    1-level layout (corpora/<hash>/incidents.json).
     """
     if not snapshot_hash or snapshot_hash == _SYNTHETIC_SNAPSHOT:
         return None
     matches = sorted((cycle / "corpora").glob(f"*/{snapshot_hash}/incidents.json"))
+    if not matches:
+        matches = sorted((cycle / "corpora").glob(f"{snapshot_hash}/incidents.json"))
     return matches[0] if matches else None
 
 
-def _load_snapshot_ids(incidents_json: Path) -> set[str]:
+def read_snapshot_universe_ids(incidents_json: Path) -> set[str]:
+    """The pinned snapshot's full incident-id universe (RAW file, UNFILTERED).
+
+    Producer and verifier MUST both source the universe here so their counts
+    cannot drift: the producer records n_corpus from this set, the verifier
+    reconciles against it.  Deliberately does NOT apply the adapter's
+    date/quarantine filtering — the marker's n_oos absorbs any
+    adapter-excluded record (it is absent from labeled by construction and is
+    never scored for recall, since goldset incidents are always in-scope).
+    """
     data = json.loads(incidents_json.read_text(encoding="utf-8"))
     incidents = data["incidents"] if isinstance(data, dict) else data
     return {str(rec["id"]) for rec in incidents}
@@ -136,7 +149,7 @@ def verify_labeled_completeness(
     incidents_json = _resolve_snapshot_incidents(cycle, snapshot_hash)
     if incidents_json is None:
         return
-    corpus_ids = _load_snapshot_ids(incidents_json)
+    corpus_ids = read_snapshot_universe_ids(incidents_json)
 
     # (1) foreign / stale labeled file: a label for an incident absent from the
     #     pinned snapshot means labeled_incidents.json came from another run.

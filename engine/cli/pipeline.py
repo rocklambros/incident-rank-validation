@@ -294,6 +294,7 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
     click.echo("Executing classify phase...")
     try:
         from engine.adapters.genai_agentic import GenAIAgenticAdapter
+        from engine.calibrate.coverage import read_snapshot_universe_ids, write_classify_coverage
         from engine.cli.pipeline_executor import (
             merge_classifications,
             route_to_stage2,
@@ -424,12 +425,10 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
             stage2_results=stage2_results,
             incident_strata=incident_strata,
         )
-        from engine.calibrate.coverage import write_classify_coverage
-
         write_classify_coverage(
             out_dir,
             snapshot_hash=manifest_data.get("snapshot_hash", ""),
-            corpus_incident_ids={inc.id for inc in incidents_list},
+            corpus_incident_ids=read_snapshot_universe_ids(snapshot_dir / "incidents.json"),
             in_scope_incident_ids={c.incident_id for c in result.classifications},
         )
         click.echo(f"Classify phase complete. Artifacts written to {out_dir}")

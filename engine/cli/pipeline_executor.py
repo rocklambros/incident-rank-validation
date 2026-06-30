@@ -306,7 +306,6 @@ def execute_infer_phase(
                 classifier_labels=_classifier_labels,
             )
             _verify_goldset_hash(manifest, _gold)
-            from engine.calibrate.coverage import verify_labeled_completeness
             verify_labeled_completeness(
                 cycle, manifest.snapshot_hash, _labeled_ids,
                 goldset_recall_ids={

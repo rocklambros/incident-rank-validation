@@ -10,6 +10,7 @@ from engine.calibrate.coverage import (
     COVERAGE_FILENAME,
     ClassifyCoverage,
     LabeledIncidentsIncompleteError,
+    read_snapshot_universe_ids,
     verify_labeled_completeness,
     write_classify_coverage,
 )
@@ -133,3 +134,33 @@ def test_verify_raises_on_goldset_incident_absent_from_snapshot(tmp_path: Path) 
         verify_labeled_completeness(
             tmp_path, "h", {"a", "b"}, goldset_recall_ids={"a", "MANUAL-X-001"}
         )
+
+
+# --- shared reader: unfiltered raw universe --------------------------------
+
+def test_read_snapshot_universe_ids_is_unfiltered(tmp_path: Path) -> None:
+    snap = tmp_path / "incidents.json"
+    # one record carries a future date the corpus adapter would drop; the
+    # universe reader must still include it (producer + verifier agree on RAW).
+    snap.write_text(json.dumps({"incidents": [
+        {"id": "INC-1", "date": "2026-01-01"},
+        {"id": "INC-2", "date": "2099-12-31"},
+    ]}))
+    assert read_snapshot_universe_ids(snap) == {"INC-1", "INC-2"}
+
+
+# --- 1-level layout resolution --------------------------------------------
+
+def _make_snapshot_1level(cycle: Path, snapshot_hash: str, ids: list[str]) -> None:
+    snap_dir = cycle / "corpora" / snapshot_hash
+    snap_dir.mkdir(parents=True, exist_ok=True)
+    (snap_dir / "incidents.json").write_text(
+        json.dumps({"incident_count": len(ids), "incidents": [{"id": i} for i in ids]})
+    )
+
+
+def test_verify_resolves_one_level_layout(tmp_path: Path) -> None:
+    _make_snapshot_1level(tmp_path, "h", ["a", "b", "c"])
+    # snapshot resolves (1-level) but no marker -> guard must fire, not no-op.
+    with pytest.raises(LabeledIncidentsIncompleteError, match="coverage marker"):
+        verify_labeled_completeness(tmp_path, "h", {"a", "b"})

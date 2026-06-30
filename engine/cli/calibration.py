@@ -417,7 +417,7 @@ def cal_tally(cycle: Path, manifest: Path, rubric: Path, gold_calibration: Path 
             verify_labeled_completeness(
                 cycle,
                 str(_manifest_data.get("snapshot_hash", "")),
-                set(_classifier_labels),
+                set(_classifier_labels.keys()),
                 goldset_recall_ids={
                     lbl.incident_id for lbl in gold.recall_labels
                     if lbl.classifier_entry_id is not None
