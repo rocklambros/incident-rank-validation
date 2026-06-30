@@ -129,6 +129,43 @@ def _build_overlap_matrix(
     return W
 
 
+def _expected_counts(
+    overlap_matrix: npt.NDArray[np.float64],
+    true_rate: Any,
+    recall: Any,
+    precision: Any,
+) -> Any:
+    """Expected observed counts including the W (overlap) false-positive-leakage term.
+
+    Pure function extracted from the NUTS model closure so the W-consumption
+    unit test can import and call the PRODUCTION formula directly — the test
+    therefore fails if the W term is ever removed.
+
+    Parameters
+    ----------
+    overlap_matrix:
+        W[i, j] — fraction of entry j's FPs landing in entry i; shape (n_entries, n_entries).
+    true_rate:
+        lambda_e * stratum_size_s; shape (n_entries, n_strata).
+    recall:
+        Per-entry, per-stratum recall rate; shape (n_entries, n_strata).
+    precision:
+        Per-entry, per-stratum precision rate; shape (n_entries, n_strata).
+
+    Returns
+    -------
+    expected:
+        Clipped expected observed counts; shape (n_entries, n_strata).
+    """
+    tp = true_rate * recall
+    fp_rate = jnp.einsum(
+        "ij,js->is",
+        jnp.array(overlap_matrix),
+        true_rate * (1.0 - precision),
+    )
+    return jnp.clip(tp + fp_rate, 1e-6, None)
+
+
 def run_inference(
     manifest: PreregManifest,
     measurable_entries: tuple[str, ...],
@@ -202,17 +239,8 @@ def run_inference(
         # Expected true counts: lambda_e * stratum_size_s
         true_rate = lam[:, None] * sizes_data[None, :]  # (n_entries, n_strata)
 
-        # True positives: true_rate * recall
-        tp = true_rate * recall
-
-        # False positives from leakage: FP_i = sum_j W[i,j] * true_rate_j * (1 - precision_j)
-        fp_rate = jnp.einsum(
-            "ij,js->is",
-            jnp.array(W_data),
-            true_rate * (1.0 - precision),
-        )
-
-        expected = jnp.clip(tp + fp_rate, 1e-6, None)
+        # Expected counts: TP + FP leakage via overlap matrix W.
+        expected = _expected_counts(W_data, true_rate, recall, precision)
 
         # Negative-Binomial likelihood
         numpyro.sample(

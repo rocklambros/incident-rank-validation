@@ -263,15 +263,17 @@ class TestEmptyOverlap:
 
 
 class TestOverlapConsumption:
-    """Prove W is consumed by the likelihood, not merely routed to the call site.
+    """Prove W is consumed by the PRODUCTION likelihood formula.
 
-    Uses _build_overlap_matrix + the model's fp_rate formula directly in numpy
-    — no NUTS required; deterministic and fast.
+    Calls the real ``_expected_counts`` extracted from the NUTS model closure —
+    no NUTS required; deterministic and fast.  The test FAILS if the W term is
+    removed from ``_expected_counts`` because the empty-W and non-empty-W calls
+    would then return identical results.
     """
 
     def test_nonempty_w_changes_expected_counts(self) -> None:
-        """Non-empty W produces non-zero fp_rate; expected counts differ from empty W."""
-        from engine.model.inference import _build_overlap_matrix
+        """Non-empty W produces different expected counts via the real _expected_counts."""
+        from engine.model.inference import _build_overlap_matrix, _expected_counts
         from engine.model.overlap import OverlapWeights
 
         entries = ("E01", "E02")
@@ -288,26 +290,23 @@ class TestOverlapConsumption:
         precision = np.array([[0.9], [0.8]], dtype=np.float64)
         recall = np.array([[0.85], [0.80]], dtype=np.float64)
 
-        # fp_rate formula from the NUTS model (inference.py)
-        fp_empty = np.einsum("ij,js->is", W_empty, true_rate * (1.0 - precision))
-        fp_nonempty = np.einsum("ij,js->is", W_nonempty, true_rate * (1.0 - precision))
+        # Call the REAL production function — binds the formula, not a copy.
+        exp_empty = np.asarray(_expected_counts(W_empty, true_rate, recall, precision))
+        exp_nonempty = np.asarray(_expected_counts(W_nonempty, true_rate, recall, precision))
 
-        # Empty W → zero fp contribution
-        assert np.allclose(fp_empty, 0.0), (
-            f"Expected zero fp_rate with empty W, got {fp_empty}"
-        )
-
-        # Non-empty W → non-zero fp contribution (E01 row absorbs E02's FPs)
-        assert not np.allclose(fp_nonempty, 0.0), (
-            "Expected non-zero fp_rate with non-empty W; W is not being consumed"
-        )
-
-        # Expected counts must differ
-        tp = true_rate * recall
-        exp_empty = np.clip(tp + fp_empty, 1e-6, None)
-        exp_nonempty = np.clip(tp + fp_nonempty, 1e-6, None)
-
+        # Empty W → no FP leakage; non-empty W → E01 row absorbs E02's FPs.
         assert not np.allclose(exp_empty, exp_nonempty), (
             "Expected counts are identical with empty vs non-empty W — "
-            "W is not reaching the likelihood computation"
+            "W is not reaching the likelihood computation in _expected_counts"
+        )
+
+        # Confirm direction: E01's expected count is higher with non-empty W
+        # (E02's FPs leak into E01), E02's is unchanged.
+        assert exp_nonempty[0, 0] > exp_empty[0, 0], (
+            f"E01 expected count should be higher with W leakage; "
+            f"empty={exp_empty[0, 0]:.6f}, nonempty={exp_nonempty[0, 0]:.6f}"
+        )
+        assert np.isclose(exp_nonempty[1, 0], exp_empty[1, 0]), (
+            f"E02 expected count should be unchanged (W[1,:] is zero); "
+            f"empty={exp_empty[1, 0]:.6f}, nonempty={exp_nonempty[1, 0]:.6f}"
         )

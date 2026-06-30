@@ -349,6 +349,45 @@ def test_cal_tally_raises_on_truncated_labeled(
     )
 
 
+# ── T4c: check-4 raise — coverage marker n_corpus mismatch ────────────────────────
+
+
+@pytest.mark.integration
+def test_check4_wrong_n_corpus_raises(
+    real_minimal_cycle: Callable[..., Path], tmp_path: Path
+) -> None:
+    """Check-4 RAISE path: coverage marker n_corpus != pinned snapshot size.
+
+    Build a normal cycle (snapshot has 6 IDs), then overwrite the coverage
+    marker so n_corpus=5 (one fewer than the real snapshot).
+    verify_labeled_completeness must raise LabeledIncidentsIncompleteError with
+    the check-4 substring 'pinned snapshot size' (coverage.py:187).
+    """
+    from engine.calibrate.coverage import (
+        COVERAGE_FILENAME,
+        LabeledIncidentsIncompleteError,
+        verify_labeled_completeness,
+    )
+
+    cycle = real_minimal_cycle(tmp_path)
+
+    # Read the real marker so we can preserve all fields except n_corpus.
+    cov_path = cycle / "classify" / COVERAGE_FILENAME
+    cov_data = json.loads(cov_path.read_text())
+
+    # Write a marker whose n_corpus is 1 fewer than the 6-ID snapshot.
+    cov_data["n_corpus"] = cov_data["n_corpus"] - 1  # 6 → 5; snapshot still has 6
+    cov_path.write_text(json.dumps(cov_data, indent=2) + "\n")
+
+    manifest = json.loads((cycle / "prereg" / "manifest.json").read_text())
+    snap_hash = str(manifest["snapshot_hash"])
+    labeled_data = json.loads((cycle / "classify" / "labeled_incidents.json").read_text())
+    labeled_ids = {str(r["incident_id"]) for r in labeled_data}
+
+    with pytest.raises(LabeledIncidentsIncompleteError, match="pinned snapshot size"):
+        verify_labeled_completeness(cycle, snap_hash, labeled_ids)
+
+
 # ── T5: infer goldset-guard RAISES when a scored recall incident is absent ───────
 
 
@@ -473,10 +512,19 @@ def test_decide_real_runs_oracle_writes_3_deliverables(
         f"Unexpected deliverable names: {names}"
     )
     for d in verdict.deliverables:
-        assert d.status in {"PASS", "SKIP"}, (
-            f"Deliverable {d.name!r} status={d.status!r}; expected PASS or SKIP\n"
-            f"metric={d.metric!r} detail={d.detail!r}"
-        )
+        if d.name == "sigma_u":
+            # sigma_u legitimately SKIPs when robustness_specs=() → engine_sigma=None.
+            assert d.status in {"PASS", "SKIP"}, (
+                f"Deliverable {d.name!r} status={d.status!r}; expected PASS or SKIP\n"
+                f"metric={d.metric!r} detail={d.detail!r}"
+            )
+        else:
+            # D1 incidence: LLM01 clear winner (kendall_tau=1.0 ≥ 0.95) → PASS.
+            # D2 plackett_luce: unanimous respondents (tau=1.0 ≥ 0.70) → PASS.
+            assert d.status == "PASS", (
+                f"Deliverable {d.name!r} status={d.status!r}; expected PASS\n"
+                f"metric={d.metric!r} detail={d.detail!r}"
+            )
     assert verdict.provisional is False, (
         "verdict.provisional=True — at least one deliverable FAILed "
         "(fixture-alignment bug):\n"
