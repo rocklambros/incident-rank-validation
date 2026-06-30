@@ -42,6 +42,9 @@
 - Any genuinely irreversible external action beyond the granted authorization.
 - A safeguard-charter violation that cannot be remediated without a user decision (surface it, keep the rest moving).
 
+## Pre-Phase-3 gate (premortem F-C Round-1, Governance finding)
+The pre-Phase-3 gate requires **BOTH U1 (F-C) AND U2's F6 (recall min-denominator)** to be DONE — they are co-equal pre-run BLOCKERS (inventory blocker summary). "U1 DONE" alone does NOT clear Phase-3. U2's F6 item is hereby tagged **[BLOCKER]**; Phase-3 lock authoring (U5) must not begin until both land.
+
 ## Status (update as units land)
-- U1 F-C: not started ← NEXT
-- U2..U9: not started
+- U1 F-C: PLAN remediated (premortem Round-1 converged) → executing ← NEXT
+- U2..U9: not started (U2 F6 = co-blocker with U1)
