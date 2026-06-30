@@ -185,8 +185,9 @@ def verify_labeled_completeness(
     if cov.n_in_scope != len(labeled_incident_ids):
         raise LabeledIncidentsIncompleteError(
             f"coverage marker n_in_scope={cov.n_in_scope} != labeled_incidents.json "
-            f"count {len(labeled_incident_ids)}: labeled_incidents.json was truncated "
-            "after the coverage marker was written."
+            f"count {len(labeled_incident_ids)}: labeled_incidents.json does not "
+            "reconcile to the recorded classify coverage (truncated or altered after "
+            "the marker was written)."
         )
 
     # (6) goldset/snapshot provenance: every scored recall incident must be in

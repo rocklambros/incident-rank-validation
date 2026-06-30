@@ -118,6 +118,14 @@ def test_verify_raises_when_labeled_count_below_marker(tmp_path: Path) -> None:
         verify_labeled_completeness(tmp_path, "h", {"a", "b"})
 
 
+def test_verify_raises_when_labeled_count_above_marker(tmp_path: Path) -> None:
+    # Marker says 2 in-scope but labeled_incidents.json now has 3 -> altered file.
+    _make_snapshot(tmp_path, "h", ["a", "b", "c", "d"])
+    _write_marker(tmp_path, snapshot_hash="h", n_corpus=4, n_in_scope=2, n_oos=2)
+    with pytest.raises(LabeledIncidentsIncompleteError, match="does not reconcile"):
+        verify_labeled_completeness(tmp_path, "h", {"a", "b", "c"})
+
+
 def test_verify_raises_on_goldset_incident_absent_from_snapshot(tmp_path: Path) -> None:
     _make_snapshot(tmp_path, "h", ["a", "b", "c", "d"])
     _write_marker(tmp_path, snapshot_hash="h", n_corpus=4, n_in_scope=2, n_oos=2)
