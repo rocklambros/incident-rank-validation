@@ -10,7 +10,6 @@ Fixture is function-scoped (pytest default); every test gets a fresh tmp dir.
 """
 from __future__ import annotations
 
-import hashlib
 import json
 from collections.abc import Callable
 from pathlib import Path
@@ -150,15 +149,25 @@ def _build_minimal_cycle(
     cycle.mkdir(parents=True, exist_ok=True)
 
     # ── 1. incidents.json — written ONCE; hash computed AFTER ─────────────
+    from engine.snapshot.hashing import snapshot_hash
+
     data: dict[str, object] = {"incident_count": 6, "incidents": _INCIDENTS}
     incidents_serialized = json.dumps(data, sort_keys=True)
     incidents_bytes = incidents_serialized.encode("utf-8")
-    H = hashlib.sha256(incidents_bytes).hexdigest()
 
-    snap_dir = cycle / "corpora" / "genai_agentic" / H
+    # Write to temp file first, then compute hash using production snapshot_hash function
+    corpora_dir = cycle / "corpora" / "genai_agentic"
+    corpora_dir.mkdir(parents=True, exist_ok=True)
+    temp_incidents_path = corpora_dir / "_incidents.tmp.json"
+    temp_incidents_path.write_bytes(incidents_bytes)
+
+    # Compute hash using production snapshot_hash function
+    H = snapshot_hash(temp_incidents_path)
+
+    # Create final snapshot directory and move temp file there
+    snap_dir = corpora_dir / H
     snap_dir.mkdir(parents=True, exist_ok=True)
-    # Write bytes directly so snapshot_hash(path) == H is guaranteed.
-    (snap_dir / "incidents.json").write_bytes(incidents_bytes)
+    temp_incidents_path.rename(snap_dir / "incidents.json")
 
     # ── 2. Rubric ─────────────────────────────────────────────────────────
     from engine.calibrate.provenance import hash_file
