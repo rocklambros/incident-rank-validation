@@ -333,7 +333,83 @@ def _build_minimal_cycle(
     # with_vote).  Parameters are declared in the signature now so all
     # downstream tasks share the same fixture factory entry point.
     if with_batches:
-        pass  # T4 will implement batch chain writing
+        # ── T4: write a minimal VALID batch chain so cal_tally reaches the
+        # completeness check.  Order matters: rubric.json and manifest.lock are
+        # already written above; we hash them HERE so the batch header matches
+        # what cal_tally recomputes from the CLI --rubric / --manifest args.
+        import uuid
+        from datetime import UTC, datetime
+
+        from engine.calibrate.batch import BatchHeader, BatchIncident, CodingBatch
+        from engine.calibrate.provenance import (
+            StageProvenance,
+            hash_json,
+            write_provenance,
+        )
+        from engine.version import __version__ as _engine_version
+
+        # hash_file was already imported in step 2 above (in-scope here).
+        lock_h = hash_file(prereg / "manifest.lock")
+        # rubric_h was computed in step 2 above.
+
+        # sample_hash: any deterministic string — cal_tally reads it back
+        # from the batch header itself, so expected == actual by construction.
+        _sample_hash = hash_json(
+            {"frame": "recall", "stratum": "security", "fixture": "minimal"}
+        )
+
+        _batch_id = str(uuid.uuid4())
+        _header = BatchHeader(
+            cycle_id="2026fc",
+            batch_id=_batch_id,
+            frame="recall",
+            entry_id=None,
+            stratum="security",
+            sample_hash=_sample_hash,
+            rubric_hash=rubric_h,          # must equal hash_file(rubric.json)
+            manifest_lock_hash=lock_h,     # must equal hash_file(manifest.lock)
+            coder_id="synthetic",
+            generated_at=datetime.now(UTC).isoformat(),
+        )
+
+        # Build coded incidents from labeled_rows (possibly truncated).
+        # labels must not be None so the incidents count as coded.
+        _inc_text: dict[str, str] = {
+            str(inc["id"]): f"{inc['title']}: {inc['description']}"
+            for inc in _INCIDENTS
+        }
+        _batch_incidents = [
+            BatchIncident(
+                incident_id=row["incident_id"],
+                text=_inc_text.get(row["incident_id"], row["incident_id"]),
+                labels=[row["entry_id"]],
+            )
+            for row in labeled_rows
+        ]
+
+        _batch = CodingBatch(header=_header, incidents=_batch_incidents)
+        batch_dir = cal_dir / "batches"
+        batch_dir.mkdir(parents=True, exist_ok=True)
+        _batch.write(batch_dir / f"{_batch_id}.json")
+
+        # generate_batches_provenance.json — cal_tally reads this (read_provenance);
+        # it does NOT verify chained hashes from it, so any valid StageProvenance works.
+        _batches_meta = {
+            "batch_count": 1,
+            "coder_id": "synthetic",
+            "rubric_hash": rubric_h,
+            "manifest_lock_hash": lock_h,
+        }
+        _gen_prov = StageProvenance(
+            stage_name="generate-batches",
+            manifest_lock_hash=lock_h,
+            input_hashes={"sample": hash_json({"stub": "minimal-fixture"})},
+            output_hash=hash_json(_batches_meta),
+            timestamp=datetime.now(UTC).isoformat(),
+            engine_version=_engine_version,
+        )
+        write_provenance(_gen_prov, cal_dir / "generate_batches_provenance.json")
+
     if with_infer:
         pass  # T6 will implement lambda_samples.npy + inference_summary.json
     if with_vote:

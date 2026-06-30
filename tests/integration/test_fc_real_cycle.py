@@ -245,3 +245,97 @@ def test_overlap_w_non_empty_routes_to_model_call(
     assert captured_overlap[0].weights, (
         "run_inference received an EMPTY overlap; W was not routed to the call site"
     )
+
+
+# ── T4a: pre-flight — batch chain is clean; cal_tally exits 0 ──────────────────
+
+
+@pytest.mark.integration
+def test_cal_tally_batch_chain_valid(
+    real_minimal_cycle: Callable[..., Path], tmp_path: Path
+) -> None:
+    """Pre-flight: with_batches=True cycle passes cal_tally (exit 0).
+
+    Guards that the batch chain itself is sound — any non-zero exit here
+    means the builder is broken, not the completeness guard.
+    """
+    from click.testing import CliRunner
+
+    from engine.cli.calibration import cal_tally
+
+    cycle = real_minimal_cycle(tmp_path, with_batches=True)
+    manifest_lock = cycle / "prereg" / "manifest.lock"
+    rubric = cycle / "prereg" / "rubric.json"
+    cal_dir = cycle / "calibration"
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cal_tally,
+        [
+            "--cycle", str(cycle),
+            "--manifest", str(manifest_lock),
+            "--rubric", str(rubric),
+            "--gold-calibration", str(cal_dir),
+        ],
+        catch_exceptions=True,
+    )
+    assert result.exit_code == 0, (
+        f"cal_tally exited {result.exit_code} — builder bug, not a guard.\n"
+        f"output:\n{result.output}"
+        + (f"\nexception: {result.exception!r}" if result.exception else "")
+    )
+
+
+# ── T4b: raise test — truncated labeled_incidents triggers completeness check 5 ─
+
+
+@pytest.mark.integration
+def test_cal_tally_raises_on_truncated_labeled(
+    real_minimal_cycle: Callable[..., Path], tmp_path: Path
+) -> None:
+    """Raise test: truncate_labeled=True → LabeledIncidentsIncompleteError (check 5).
+
+    The coverage marker records n_in_scope=4 (unchanged), but labeled_incidents
+    carries only 3 rows (INC-03 dropped).  verify_labeled_completeness check 5
+    fires: n_in_scope=4 != labeled count=3, message contains 'does not reconcile'.
+
+    The 'does not reconcile' substring is UNIQUE to check 5 — it distinguishes
+    this from a batch-validation ValueError (check 1–4, no substring) and from
+    check 4's 'pinned snapshot size' message.
+    """
+    from click.testing import CliRunner
+
+    from engine.cli.calibration import cal_tally
+
+    cycle = real_minimal_cycle(tmp_path, truncate_labeled=True, with_batches=True)
+    manifest_lock = cycle / "prereg" / "manifest.lock"
+    rubric = cycle / "prereg" / "rubric.json"
+    cal_dir = cycle / "calibration"
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cal_tally,
+        [
+            "--cycle", str(cycle),
+            "--manifest", str(manifest_lock),
+            "--rubric", str(rubric),
+            "--gold-calibration", str(cal_dir),
+        ],
+        catch_exceptions=True,
+    )
+    assert result.exit_code != 0, (
+        "Expected non-zero exit from cal_tally on truncated labeled_incidents; "
+        f"got exit_code=0. Output:\n{result.output}"
+    )
+    assert result.exception is not None, (
+        "result.exit_code != 0 but result.exception is None — "
+        "a CLI usage error or SystemExit, not the completeness guard."
+    )
+    assert type(result.exception).__name__ == "LabeledIncidentsIncompleteError", (
+        f"Expected LabeledIncidentsIncompleteError, "
+        f"got {type(result.exception).__name__}: {result.exception!r}"
+    )
+    assert "does not reconcile" in str(result.exception), (
+        f"Expected 'does not reconcile' in exception message (check 5 unique substring); "
+        f"got: {result.exception!s}"
+    )
