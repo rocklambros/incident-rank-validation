@@ -46,5 +46,6 @@
 The pre-Phase-3 gate requires **BOTH U1 (F-C) AND U2's F6 (recall min-denominator)** to be DONE — they are co-equal pre-run BLOCKERS (inventory blocker summary). "U1 DONE" alone does NOT clear Phase-3. U2's F6 item is hereby tagged **[BLOCKER]**; Phase-3 lock authoring (U5) must not begin until both land.
 
 ## Status (update as units land)
-- U1 F-C: PLAN remediated (premortem Round-1 converged) → executing ← NEXT
-- U2..U9: not started (U2 F6 = co-blocker with U1)
+- U1 F-C: **DONE** (commits 12c8bf9..4baf0f9, CI GREEN on PR #22). Shared real-snapshot minimal-cycle fixture + T0–T7; opus whole-increment caught the W-consumption-test re-transcription → fixed (extracted `_expected_counts`). One pre-Phase-3 co-blocker cleared.
+- U2 Phase-2 integrity hardening: PLAN (research design done) → planning ← NEXT. Scope 6 tasks (U2-7 F3-sweep deferred→U5). F6 (co-blocker) first.
+- U3..U9: not started. (Pre-Phase-3 gate still needs U2's F6.)
