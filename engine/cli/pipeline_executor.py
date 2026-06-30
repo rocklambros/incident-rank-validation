@@ -268,6 +268,12 @@ def execute_infer_phase(
     # Load labeled incidents
     labeled = json.loads(labeled_path.read_text())
 
+    # Guard: labeled_incidents.json must cover the full pinned corpus snapshot.
+    from engine.calibrate.coverage import verify_labeled_completeness
+
+    _labeled_ids = {str(item["incident_id"]) for item in labeled}
+    verify_labeled_completeness(cycle, manifest.snapshot_hash, _labeled_ids)
+
     # Build observation arrays
     from engine.model.overlap import OverlapWeights
 
@@ -300,6 +306,14 @@ def execute_infer_phase(
                 classifier_labels=_classifier_labels,
             )
             _verify_goldset_hash(manifest, _gold)
+            from engine.calibrate.coverage import verify_labeled_completeness
+            verify_labeled_completeness(
+                cycle, manifest.snapshot_hash, _labeled_ids,
+                goldset_recall_ids={
+                    lbl.incident_id for lbl in _gold.recall_labels
+                    if lbl.classifier_entry_id is not None
+                },
+            )
             overlap = build_overlap_from_confusion(
                 _gold, measurable_entries, min_fp_count=manifest.overlap_min_fp,
             )

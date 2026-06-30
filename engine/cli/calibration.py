@@ -410,6 +410,24 @@ def cal_tally(cycle: Path, manifest: Path, rubric: Path, gold_calibration: Path 
             classifier_labels=_classifier_labels,
         )
 
+        if _classifier_labels is not None:
+            from engine.calibrate.coverage import verify_labeled_completeness
+
+            _manifest_data = json.loads(manifest.read_text(encoding="utf-8"))
+            verify_labeled_completeness(
+                cycle,
+                str(_manifest_data.get("snapshot_hash", "")),
+                set(_classifier_labels),
+                goldset_recall_ids={
+                    lbl.incident_id for lbl in gold.recall_labels
+                    if lbl.classifier_entry_id is not None
+                },
+            )
+            click.echo(
+                f"Completeness check passed: {len(_classifier_labels)} classifier "
+                "labels reconcile to the pinned corpus snapshot."
+            )
+
         from engine.calibrate.tally import calibrate_with_gold
 
         tally = calibrate_with_gold(tally, gold, set(), all_entry_ids)
