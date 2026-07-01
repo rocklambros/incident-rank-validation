@@ -34,7 +34,7 @@ def _verify_goldset_hash(manifest: PreregManifest, gold: GoldCalibration) -> Non
     goldset drives BOTH recall posteriors AND the overlap matrix W, so a silent
     mismatch corrupts the result (premortem F1)."""
     expected = manifest.goldset_hash
-    if expected is None or expected == "none":
+    if expected in (None, "", "none"):
         return
     if gold.provenance_hash != expected:
         raise RuntimeError(
@@ -306,6 +306,9 @@ def execute_infer_phase(
                 classifier_labels=_classifier_labels,
             )
             _verify_goldset_hash(manifest, _gold)
+            _infer_dir = cycle / "infer"
+            _infer_dir.mkdir(parents=True, exist_ok=True)
+            (_infer_dir / "goldset_hash.txt").write_text(_gold.provenance_hash + "\n")
             verify_labeled_completeness(
                 cycle, manifest.snapshot_hash, _labeled_ids,
                 goldset_recall_ids={
@@ -596,7 +599,7 @@ def write_reproduction_bundle(
     stage2_manifest_hash: str = "",
     calibration_hash: str = "",
     vote_data_hash: str = "",
-    goldset_hash: str = "none",
+    goldset_hash: str = "",
 ) -> None:
     from engine.repro.bundle import ReproductionBundle
 

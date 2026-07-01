@@ -40,4 +40,7 @@ class ReproductionBundle:
     @classmethod
     def read(cls, path: Path) -> ReproductionBundle:
         d = json.loads(path.read_text())
+        # Legacy bundles (pre-U2) may not have a goldset_hash key; default to
+        # "none" so _verify_goldset_hash treats them as unbound.
+        d.setdefault("goldset_hash", "none")
         return cls(**d)

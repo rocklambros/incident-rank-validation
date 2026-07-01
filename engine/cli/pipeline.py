@@ -1030,7 +1030,29 @@ def repro_bundle_cmd(cycle: Path, output: Path) -> None:
 
     manifest_data = json.loads((prereg / "manifest.json").read_text())
     cycle_id = manifest_data.get("cycle_id", cycle.name)
-    goldset_hash = manifest_data.get("goldset_hash", "none")
+
+    # Resolve goldset_hash: infer/goldset_hash.txt → manifest.goldset_hash → "".
+    # When BOTH are non-empty the manifest is authoritative; a mismatch means the
+    # scored goldset differs from the pre-registered one — a provenance break.
+    _infer_hash_path = cycle / "infer" / "goldset_hash.txt"
+    _file_goldset_hash = (
+        _infer_hash_path.read_text().strip()
+        if _infer_hash_path.exists()
+        else ""
+    )
+    _manifest_goldset_hash = manifest_data.get("goldset_hash") or ""
+    if (
+        _file_goldset_hash
+        and _manifest_goldset_hash
+        and _file_goldset_hash != _manifest_goldset_hash
+    ):
+        raise click.ClickException(
+            f"goldset_hash provenance break: infer/goldset_hash.txt has "
+            f"{_file_goldset_hash!r} but manifest.goldset_hash is "
+            f"{_manifest_goldset_hash!r}; the scored goldset differs from "
+            f"the pre-registered one."
+        )
+    goldset_hash = _file_goldset_hash or _manifest_goldset_hash or ""
 
     bundle = ReproductionBundle(
         cycle_id=cycle_id,
