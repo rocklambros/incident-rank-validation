@@ -14,6 +14,7 @@ from engine.cli.calibration import (
     cal_tally,
 )
 from engine.cli.freeze_baselines import freeze_baselines_cmd
+from engine.cli.live_run import live_run_cmd
 from engine.cli.pipeline import (
     classify_real,
     corroborate,
@@ -56,6 +57,8 @@ cli.add_command(corroborate)
 cli.add_command(reclassify)
 cli.add_command(verify_oracle_cmd)
 cli.add_command(bakeoff_cli_cmd)
+if live_run_cmd is not None:
+    cli.add_command(live_run_cmd)
 
 
 @cli.command()

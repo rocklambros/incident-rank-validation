@@ -13,12 +13,31 @@ import httpx
 
 
 def load_secret(pass_name: str, env_var: str) -> str:
+    """Load a secret from env-var first, then `pass show <pass_name>`.
+
+    R6: enforces a 5-second timeout on the subprocess call and raises a
+    redacted error so the key never appears in logs or tracebacks.
+    """
     val = os.environ.get(env_var, "")
     if val:
         return val
-    result = subprocess.run(
-        ["pass", "show", pass_name], capture_output=True, text=True, check=True
-    )
+    try:
+        result = subprocess.run(
+            ["pass", "show", pass_name],
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=5,
+        )
+    except subprocess.TimeoutExpired:
+        raise RuntimeError(
+            f"load_secret: 'pass show {pass_name}' timed out after 5s"
+        ) from None
+    except subprocess.CalledProcessError as exc:
+        raise RuntimeError(
+            f"load_secret: 'pass show {pass_name}' failed "
+            f"(exit {exc.returncode}) — secret not loaded"
+        ) from None
     return result.stdout.strip()
 
 

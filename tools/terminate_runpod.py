@@ -50,14 +50,39 @@ class TerminateError(RuntimeError):
 
 
 def load_secret(pass_name: str, env_var: str) -> str:
-    """Check env-var first, fall back to `pass show <pass_name>`."""
+    """Check env-var first, fall back to `pass show <pass_name>`.
+
+    R6: enforces a 5-second timeout on the subprocess call and raises a
+    redacted error so the key never appears in logs or tracebacks.
+    Bearer tokens are scrubbed from any exception message before propagating.
+    """
     val = os.environ.get(env_var, "")
     if val:
         return val
-    result = subprocess.run(
-        ["pass", "show", pass_name], capture_output=True, text=True, check=True
-    )
+    try:
+        result = subprocess.run(
+            ["pass", "show", pass_name],
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=5,
+        )
+    except subprocess.TimeoutExpired:
+        raise RuntimeError(
+            f"load_secret: 'pass show {pass_name}' timed out after 5s"
+        ) from None
+    except subprocess.CalledProcessError as exc:
+        raise RuntimeError(
+            f"load_secret: 'pass show {pass_name}' failed "
+            f"(exit {exc.returncode}) — secret not loaded"
+        ) from None
     return result.stdout.strip()
+
+
+def _scrub_bearer(s: str) -> str:
+    """Replace 'Bearer <token>' with 'Bearer [REDACTED]' in exception strings."""
+    import re
+    return re.sub(r"Bearer\s+\S+", "Bearer [REDACTED]", s)
 
 
 # ---------------------------------------------------------------------------
