@@ -85,5 +85,10 @@ def test_infer_raises_on_truncated_labeled(tmp_path: Path) -> None:
         "statistical_reviewer": None, "classifier_rule_hash": None,
         "rubric_hash": None, "post_hoc_register_path": None,
     }))
+    # R5: write a valid manifest.lock so _verify_manifest_lock passes and
+    # execute_infer_phase reaches the completeness check (the actual test intent).
+    from engine.cli.pipeline_executor import _load_manifest as _lm
+    from engine.prereg.lock import write_lock as _wl
+    _wl(_lm(cycle / "prereg" / "manifest.json"), cycle / "prereg" / "manifest.lock")
     with pytest.raises(LabeledIncidentsIncompleteError, match="truncated"):
         execute_infer_phase(cycle)
