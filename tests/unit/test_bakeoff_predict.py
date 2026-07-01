@@ -44,8 +44,8 @@ def _inc(i: str = "INC-1", text: str = "some incident") -> IncidentRecord:
 class _Client:
     """Replay client: pops responses/exceptions from the front of a list."""
 
-    def __init__(self, responses: list) -> None:
-        self._r = list(responses)
+    def __init__(self, responses: list[RunPodResponse | Exception]) -> None:
+        self._r: list[RunPodResponse | Exception] = list(responses)
         self.calls: int = 0
         self.received_messages: list[list[dict[str, str]]] = []
 
@@ -190,7 +190,7 @@ class TestBuildLivePredictFn:
     ) -> None:
         """(a) All incidents classified; checkpoint JSONL written under predict/."""
         from pathlib import Path
-        tmp = Path(str(tmp_path))  # type: ignore[arg-type]
+        tmp = Path(str(tmp_path))
         incs = {f"INC-{i}": _inc(f"INC-{i}", f"text {i}") for i in range(3)}
 
         created: dict[str, _SimpleClient] = {}
@@ -228,7 +228,7 @@ class TestBuildLivePredictFn:
     ) -> None:
         """(b) / R2: missing config → ValueError naming it, zero client calls."""
         from pathlib import Path
-        tmp = Path(str(tmp_path))  # type: ignore[arg-type]
+        tmp = Path(str(tmp_path))
 
         created: list[_SimpleClient] = []
 
@@ -264,7 +264,7 @@ class TestBuildLivePredictFn:
     ) -> None:
         """(c) / R5: re-entry skips done ids; client NOT called for them."""
         from pathlib import Path
-        tmp = Path(str(tmp_path))  # type: ignore[arg-type]
+        tmp = Path(str(tmp_path))
         incs = {f"INC-{i}": _inc(f"INC-{i}", f"text {i}") for i in range(3)}
 
         # Pre-write checkpoint: INC-0 already done
@@ -313,7 +313,7 @@ class TestBuildLivePredictFn:
         the predict_fn entirely.
         """
         from pathlib import Path
-        tmp = Path(str(tmp_path))  # type: ignore[arg-type]
+        tmp = Path(str(tmp_path))
 
         ct = CostTracker(ceiling_usd=0.001, _abort_factor=1.2)
         incs = {"INC-1": _inc("INC-1")}

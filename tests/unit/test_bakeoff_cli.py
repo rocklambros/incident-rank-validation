@@ -416,8 +416,8 @@ def test_bakeoff_cmd_ceiling_reaches_cost_tracker(
     captured: list[CostTracker] = []
     OriginalCostTracker = CostTracker
 
-    def _spy_cost_tracker(ceiling_usd: float, **kwargs: object) -> CostTracker:
-        t = OriginalCostTracker(ceiling_usd=ceiling_usd, **kwargs)
+    def _spy_cost_tracker(ceiling_usd: float, _abort_factor: float = 1.2) -> CostTracker:
+        t = OriginalCostTracker(ceiling_usd=ceiling_usd, _abort_factor=_abort_factor)
         captured.append(t)
         return t
 
