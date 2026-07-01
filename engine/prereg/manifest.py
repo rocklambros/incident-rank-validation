@@ -59,10 +59,17 @@ class PreregManifest:
     rollup_p_supported: float = 0.8
     rollup_p_contradicted: float = 0.2
     lambda_min: float | None = None  # noise floor; default: prior_scale * 0.02
-    schema_version: int = 1  # 1 = original field set; 2 = adds goldset_hash
+    schema_version: int = 1  # 1 = original field set; 2 = adds goldset_hash; 3 = adds F6
     goldset_hash: str | None = None  # bound only when schema_version >= 2
     sigma_u_hyperprior_scale: float | None = None  # HalfNormal scale for σ_u prior (schema >= 2)
     overlap_min_fp: int = 2  # min false-positive count to form a W leakage column (schema >= 2)
+    # F6 recall thin-denominator handling (schema >= 3, all default-off).
+    # Default values keep schema<3 canonical hashes byte-identical (excluded
+    # from to_dict() for schema_version < 3).
+    recall_min_denominator: int = 0           # K threshold: flag cell if total_in_sample < K
+    recall_min_denominator_gate: bool = False  # True = hard-exclude flagged entries from headline
+    recall_floor_epsilon: float = 0.0         # uniform recall floor ε (numerical stability)
+    recall_min_denominator_rationale: str = ""  # K derivation / thin-cells-left-bare note
 
     def __post_init__(self) -> None:
         if self.lambda_min is None:
@@ -80,6 +87,20 @@ class PreregManifest:
                 "robustness_specs declares 'hierarchical_pooling' but "
                 "sigma_u_hyperprior_scale is None; set it (schema_version >= 2)."
             )
+        # F6 active-but-unlocked guard (mirrors sigma_u guard above).
+        # Any non-default F6 field requires schema_version >= 3.
+        _f6_active = (
+            self.recall_min_denominator != 0
+            or self.recall_min_denominator_gate
+            or self.recall_floor_epsilon != 0.0
+            or self.recall_min_denominator_rationale != ""
+        )
+        if _f6_active and self.schema_version < 3:
+            raise ValueError(
+                "F6 fields (recall_min_denominator, recall_min_denominator_gate, "
+                "recall_floor_epsilon, recall_min_denominator_rationale) require "
+                f"schema_version >= 3; got schema_version={self.schema_version}."
+            )
 
     @property
     def non_publishable(self) -> bool:
@@ -96,10 +117,25 @@ class PreregManifest:
         When schema_version == 1 the canonical form is the ORIGINAL field set
         (no schema_version, no goldset_hash) so pre-existing v1 locks stay
         byte-stable. v2+ includes the new fields. (Plan 8a, SD3/RM13.)
+
+        Schema-3 F6 fields are excluded from the canonical form for
+        schema_version < 3 via an independent block below (U2-2).  This keeps
+        BOTH v1 AND v2 manifests hashing identically after the field addition.
+        The == 1 block is NOT extended — it remains the sole v1 guard.
         """
         result: dict[str, object] = {}
         for field in dataclasses.fields(self):
             result[field.name] = _dc_to_dict(getattr(self, field.name))
+        # Independent schema<3 guard: remove F6 fields from canonical form.
+        # MUST appear ABOVE the == 1 block; do NOT extend the == 1 list.
+        if self.schema_version < 3:
+            for _f in (
+                "recall_min_denominator",
+                "recall_min_denominator_gate",
+                "recall_floor_epsilon",
+                "recall_min_denominator_rationale",
+            ):
+                result.pop(_f, None)
         if self.schema_version == 1:
             result.pop("schema_version", None)
             result.pop("goldset_hash", None)

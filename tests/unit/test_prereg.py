@@ -264,6 +264,12 @@ class TestLock:
             "sigma_u_hyperprior_scale": 3.0,
             # overlap_min_fp is v2-only: excluded from the v1 canonical form like the above.
             "overlap_min_fp": 5,
+            # F6 fields are schema>=3-only: excluded from BOTH v1 AND v2 canonical forms.
+            # Mutating them alone does NOT invalidate a schema<3 lock (by design — U2-2).
+            "recall_min_denominator": 0,       # must stay 0 on schema<3 (guard prevents non-0)
+            "recall_min_denominator_gate": False,
+            "recall_floor_epsilon": 0.0,
+            "recall_min_denominator_rationale": "",
         }
 
         manifest_fields = {f.name for f in fields(m)}
@@ -271,10 +277,13 @@ class TestLock:
             f"mutation table is missing fields: {manifest_fields - set(mutations.keys())}"
         )
 
-        # goldset_hash, sigma_u_hyperprior_scale, and overlap_min_fp are all v2-only fields
-        # excluded from the v1 canonical form; mutating them does NOT invalidate a v1 lock.
+        # goldset_hash, sigma_u_hyperprior_scale, overlap_min_fp, lambda_min, and all four
+        # F6 fields are excluded from the v1 canonical form; mutating them does NOT
+        # invalidate a v1 lock.
         lock_invariant_fields = {
             "goldset_hash", "sigma_u_hyperprior_scale", "overlap_min_fp", "lambda_min",
+            "recall_min_denominator", "recall_min_denominator_gate",
+            "recall_floor_epsilon", "recall_min_denominator_rationale",
         }
         for field_name, alt_value in mutations.items():
             mutated = replace(m, **{field_name: alt_value})
@@ -284,6 +293,59 @@ class TestLock:
             else:
                 with pytest.raises(ValueError, match="lock hash mismatch"):
                     verify_lock(mutated, lock_path)
+
+    def test_v2_lock_still_verifies(self, tmp_path: Path) -> None:
+        """Golden-hash test: schema-2 manifest lock hash is FROZEN after F6 field addition.
+
+        If any new field leaks into the v2 canonical form (to_dict() for schema<3),
+        the computed hash will differ from this frozen value and the test will fail
+        immediately, proving byte-immutability was broken.
+        """
+        # Golden hash captured from the CURRENT code before U2-2 field addition.
+        # Computed via: compute_lock_hash(make_v2_manifest()) on 2026-06-30.
+        FROZEN_V2_HASH = (
+            "408ef9abffdcfacf318d92ec08b16594581a54fe763678d4a20676bb7d6c1527"
+        )
+        m = PreregManifest(
+            schema_version=2,
+            engine_version="0.1.0",
+            engine_version_range_min="0.1.0",
+            engine_version_range_max="0.2.0",
+            cycle_id="test-cycle-v2-golden",
+            taxonomy_hash="aaa",
+            snapshot_hash="bbb",
+            primary_spec="negative_binomial_per_stratum",
+            robustness_specs=("poisson_flat",),
+            flag_threshold_tau=0.8,
+            statistic="weighted_cohens_kappa",
+            measurability_minimum=10,
+            prior_scale=0.5,
+            concentration_shape=5.0,
+            concentration_rate=0.1,
+            ess_fraction=0.4,
+            meaningful_kappa_n=4,
+            prng_seed=42,
+            confidence_threshold=0.3,
+            rubric_drafting_attestation=None,
+            rubric_reviewer=None,
+            statistical_reviewer=None,
+            classifier_rule_hash=None,
+            rubric_hash=None,
+            post_hoc_register_path=None,
+            goldset_hash="v2-golden-goldset",
+            sigma_u_hyperprior_scale=1.5,
+            overlap_min_fp=3,
+        )
+        # Write + verify via normal lock roundtrip
+        lock_path = tmp_path / "v2.lock"
+        write_lock(m, lock_path)
+        verify_lock(m, lock_path)  # must not raise
+        # Frozen hash check: any future field that leaks into v2 canonical form fails here
+        assert compute_lock_hash(m) == FROZEN_V2_HASH, (
+            f"v2 canonical hash changed — a new field leaked into schema<3 to_dict().\n"
+            f"Expected: {FROZEN_V2_HASH}\n"
+            f"Actual:   {compute_lock_hash(m)}"
+        )
 
     def test_real_2026_v1_lock_verifies(self) -> None:
         """RM14: the frozen 2026 cycle's v1 lock verifies against the manifest."""

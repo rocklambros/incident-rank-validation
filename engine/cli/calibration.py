@@ -541,8 +541,24 @@ def cal_calibrate(cycle: Path, rubric: Path) -> None:
     samples_data = json.loads((cal_dir / "samples.json").read_text())
     frame_blind_ids: set[str] = set(samples_data.get("frame_blind_ids", []))
 
+    # Thread F6 params from manifest (schema_version >= 3 only; else defaults = F6 off).
+    _recall_min_denom = 0
+    manifest_path = cycle / "prereg" / "manifest.json"
+    if manifest_path.exists():
+        import dataclasses as _dc
+
+        from engine.prereg.manifest import PreregManifest
+        _mdata = json.loads(manifest_path.read_text(encoding="utf-8"))
+        _known = {f.name for f in _dc.fields(PreregManifest)}
+        _m = PreregManifest(**{k: v for k, v in _mdata.items() if k in _known})
+        if _m.schema_version >= 3:
+            _recall_min_denom = _m.recall_min_denominator
+
     cal, diag = compute_calibration(
-        tally, all_entry_ids=all_entry_ids, frame_blind_ids=frame_blind_ids,
+        tally,
+        all_entry_ids=all_entry_ids,
+        frame_blind_ids=frame_blind_ids,
+        recall_min_denominator=_recall_min_denom,
     )
 
     posteriors_data: dict[str, dict[str, dict[str, float]]] = {
@@ -576,6 +592,13 @@ def cal_calibrate(cycle: Path, rubric: Path) -> None:
                 "min_fold_count": r.min_fold_count,
                 "flag": r.flag,
                 "reason": r.reason,
+                # F6 recall-cell diagnostic flags (U2-2, additive — do not reorder above).
+                "thin_denominator": r.thin_denominator,
+                "under_detected": r.under_detected,
+                "min_recall_denominator": min(
+                    (v.total_in_sample for k, v in tally.recall_counts.items() if k[0] == eid),
+                    default=0,
+                ),
             }
             for eid, r in diag.entry_reports.items()
         },

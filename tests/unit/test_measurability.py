@@ -227,6 +227,9 @@ def test_to_coverage_json_has_expected_keys() -> None:
         "frame_blind",
         "below_prereg_minimum",
         "recall_p_above_threshold",
+        # F6 additive keys (U2-2): always present, empty for schema<3 cycles.
+        "thin_denominator_entries",
+        "under_detected_entries",
     }
     assert set(parsed.keys()) == expected_keys
 
