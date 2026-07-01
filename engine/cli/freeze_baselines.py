@@ -72,37 +72,53 @@ def _assert_not_in_cycles(output_path: Path) -> None:
 
 
 def _check_write_once(output_dir: Path, force: bool) -> None:
-    """Refuse to overwrite existing baselines whose SHA256SUMS content differs."""
-    sha256sums_path = output_dir / "SHA256SUMS"
-    rankings_path = output_dir / "rankings_baselines.json"
-    if not sha256sums_path.exists() or not rankings_path.exists():
-        return  # first run; no content to compare
+    """Integrity guard: raise if any artifact in SHA256SUMS has been tampered with.
 
-    # Read the existing SHA256SUMS to find the recorded hash for rankings_baselines.json
-    existing_sha: str | None = None
+    Reads SHA256SUMS and computes the on-disk digest for every listed artifact.
+    Raises ClickException naming each tampered file if any digest mismatches.
+
+    This is TAMPER DETECTION for the existing artifact tree — not source-data-change
+    detection.  The concordance byte-pin and git review are the anti-drift controls.
+    """
+    sha256sums_path = output_dir / "SHA256SUMS"
+    if not sha256sums_path.exists():
+        return  # first run; no SHA256SUMS to check
+
+    # Parse all entries from SHA256SUMS
+    entries: dict[str, str] = {}  # filename -> recorded sha
     for line in sha256sums_path.read_text().splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
             continue
         parts = line.split(None, 1)
-        if len(parts) == 2 and parts[1].strip() == "rankings_baselines.json":
-            existing_sha = parts[0]
-            break
+        if len(parts) == 2:
+            entries[parts[1].strip()] = parts[0]
 
-    if existing_sha is None:
-        return  # can't compare; allow rerun
+    if not entries:
+        return  # nothing to verify
 
-    current_sha = _sha256_path(rankings_path)
-    if current_sha != existing_sha:
+    # Check every listed artifact that exists on disk
+    tampered: list[str] = []
+    for filename, recorded_sha in sorted(entries.items()):
+        artifact_path = output_dir / filename
+        if not artifact_path.exists():
+            continue  # artifact absent; skip (first-run partial write)
+        actual_sha = _sha256_path(artifact_path)
+        if actual_sha != recorded_sha:
+            tampered.append(filename)
+
+    if tampered:
+        names = ", ".join(tampered)
+        verb = "has" if len(tampered) == 1 else "have"
         if not force:
             raise click.ClickException(
-                f"Existing baselines/2026/rankings_baselines.json has SHA256 "
-                f"{existing_sha[:12]}... but a fresh run would produce "
-                f"{current_sha[:12]}... (different content). "
-                "This indicates the source data has changed since the last freeze. "
+                f"Integrity check failed: {names} {verb} been modified since the last "
+                f"freeze (SHA256SUMS digest mismatch). "
+                "This guard detects tampering with the existing artifact tree — "
+                "the concordance byte-pin and git review are the anti-drift controls. "
                 "Pass --force to overwrite."
             )
-        click.echo("WARNING: --force: overwriting existing baselines with different content.")
+        click.echo(f"WARNING: --force: overwriting tampered artifacts: {names}")
 
 
 # ---------------------------------------------------------------------------
@@ -153,6 +169,8 @@ def _write_provenance(
     method_delta: float,
     measurable_kappa: float,
     frozen_at: str,
+    draws_differing: int = 0,
+    n_draws_total: int = 0,
 ) -> None:
     """Write PROVENANCE.md with all required disclosures."""
     concordance_entry = generated_from.get("concordance_json", {})
@@ -209,7 +227,7 @@ On 2026 OWASP-LLM data, bare-lambda ranking (`_ranks_from_lambda`, dead code in
 concordance.py) and lambda*size incidence ranking (`_ranks_from_incidence`) produce
 **identical kappa medians** (method_kappa_delta={method_delta:+.9f}).  This
 coincidence is DISCLOSED and NEVER credited as a method gain.  Individual draw
-rankings differ on 1927/5000 draws; the medians happen to coincide.
+rankings differ on {draws_differing}/{n_draws_total} draws; the medians happen to coincide.
 
 ## CI spans zero
 
@@ -462,20 +480,29 @@ def freeze_baselines_cmd(
     click.echo(f"Wrote rankings_baselines.json ({rankings_path.stat().st_size} bytes)")
 
     # ---- Write PROVENANCE.md ----
-    prev_ranking = manifest.get("previous_ranking", {})
-    if isinstance(prev_ranking, dict):
-        pass
     bare_sensitivity = manifest.get("bare_lambda_sensitivity", {})
     method_delta: float = 0.0
+    draws_differing: int = 0
+    n_draws_total: int = 0
     if isinstance(bare_sensitivity, dict):
         method_delta = float(bare_sensitivity.get("method_kappa_delta", 0.0))
+        draws_differing = int(bare_sensitivity.get("draws_differing", 0))
+        n_draws_total = int(bare_sensitivity.get("n_draws_total", 0))
     secondary = manifest.get("secondary_measurable_subset", {})
     measurable_kappa: float = 0.0
     if isinstance(secondary, dict):
         measurable_kappa = float(secondary.get("measurable_kappa_median", 0.0))
 
     frozen_at = datetime.now(UTC).isoformat(timespec="seconds")
-    _write_provenance(output_dir, generated_from, method_delta, measurable_kappa, frozen_at)
+    _write_provenance(
+        output_dir,
+        generated_from,
+        method_delta,
+        measurable_kappa,
+        frozen_at,
+        draws_differing=draws_differing,
+        n_draws_total=n_draws_total,
+    )
     click.echo("Wrote PROVENANCE.md")
 
     # ---- Write SHA256SUMS (after all other files are written) ----

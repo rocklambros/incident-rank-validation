@@ -1,6 +1,6 @@
 # PROVENANCE — 2026 OWASP-LLM Baselines
 
-Generated: 2026-07-01T07:02:24+00:00
+Generated: 2026-07-01T10:07:52+00:00
 
 ## Cycle source files (SHA256 at freeze)
 
@@ -24,7 +24,7 @@ On 2026 OWASP-LLM data, bare-lambda ranking (`_ranks_from_lambda`, dead code in
 concordance.py) and lambda*size incidence ranking (`_ranks_from_incidence`) produce
 **identical kappa medians** (method_kappa_delta=+0.000000000).  This
 coincidence is DISCLOSED and NEVER credited as a method gain.  Individual draw
-rankings differ on 1927/5000 draws; the medians happen to coincide.
+rankings differ on 3073/5000 draws; the medians happen to coincide.
 
 ## CI spans zero
 

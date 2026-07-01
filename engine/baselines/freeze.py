@@ -186,6 +186,8 @@ def build_rankings_baselines(
         inf_entry_ids=inf_entry_ids,
         vote_entry_ids=vote_entry_ids,
         incidence_kappa_median=prev.kappa_median,
+        entry_strata=entry_strata,
+        stratum_sizes=stratum_sizes,
     )
 
     # ------------------------------------------------------------------
@@ -251,6 +253,8 @@ def build_rankings_baselines(
             "ranking": list(bare.ranking),
             "kappa_median": bare.kappa_median,
             "method_kappa_delta": bare.method_kappa_delta,
+            "draws_differing": bare.draws_differing,
+            "n_draws_total": bare.n_draws_total,
             "disclosure": bare.disclosure,
         },
         "secondary_measurable_subset": {

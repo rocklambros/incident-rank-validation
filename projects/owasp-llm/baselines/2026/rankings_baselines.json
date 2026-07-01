@@ -146,7 +146,9 @@
     ],
     "kappa_median": 0.2028985507246377,
     "method_kappa_delta": 0.0,
-    "disclosure": "Bare-lambda (_ranks_from_lambda, dead code in concordance.py) kappa median differs from the incidence (lambda*size) kappa median by +0.000000000 on this data. This method delta is disclosed for transparency and is NOT credited as a method gain in any comparison. On 2026 OWASP-LLM data the delta is 0.0 (kappa medians coincide) even though individual draw rankings differ on some draws."
+    "draws_differing": 3073,
+    "n_draws_total": 5000,
+    "disclosure": "Bare-lambda (_ranks_from_lambda, dead code in concordance.py) kappa median differs from the incidence (lambda*size) kappa median by +0.000000000 on this data. This method delta is disclosed for transparency and is NOT credited as a method gain in any comparison. On 2026 OWASP-LLM data the delta is 0.0 (kappa medians coincide) even though individual draw rankings differ on 3073/5000 draws."
   },
   "secondary_measurable_subset": {
     "measurable_kappa_median": 0.12206572769953028,

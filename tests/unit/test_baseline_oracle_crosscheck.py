@@ -120,20 +120,44 @@ def test_gate_can_fail_perturbed_lambda() -> None:
     )
 
 
-def test_gate_fails_when_tie_broken_differently() -> None:
-    """Entries with equal incidence may differ between engine and oracle (gate can fail)."""
-    # Equal lambda -> equal incidence -> tie; argsort vs sorted may differ
+def test_gate_fails_when_different_inputs_force_disagreement() -> None:
+    """Different lambda inputs given to engine vs oracle produce disagreement (gate can fail).
+
+    This test uses DIFFERENT lambda arrays for each implementation to guarantee
+    the resulting rankings differ.  It proves the gate is real (not vacuous), but
+    does NOT test tie-breaking — the disagreement comes from different inputs, not
+    from different tie-breaking strategies with the same input.
+    """
     strata: dict[str, tuple[str, ...]] = {"X": ("s",), "Y": ("s",)}
     sizes: dict[str, int] = {"s": 100}
     ids: tuple[str, ...] = ("X", "Y")
-    # Use DIFFERENT lambdas per implementation to force disagreement
-    lam_engine = np.tile(np.array([0.5, 0.9], dtype=np.float64), (5, 1))  # Y first
-    lam_oracle = np.tile(np.array([0.9, 0.5], dtype=np.float64), (5, 1))  # X first
+    # Different lambda per implementation -> guaranteed disagreement
+    lam_engine = np.tile(np.array([0.5, 0.9], dtype=np.float64), (5, 1))  # Y > X
+    lam_oracle = np.tile(np.array([0.9, 0.5], dtype=np.float64), (5, 1))  # X > Y
 
     engine_rank = _engine_ranking_from_median(lam_engine, ids, strata, sizes)
     oracle_rank = oracle_incidence_ranking(lam_oracle, ids, strata, sizes)
     # Y higher in engine, X higher in oracle -> disagree
     assert engine_rank != oracle_rank
+
+
+def test_same_input_tie_produces_agreement() -> None:
+    """Same equal-lambda input to both engine and oracle -> both agree on order.
+
+    This is the true tie-breaking test: when incidence values are identical,
+    both implementations must produce the same ordering (alphabetical tiebreak).
+    """
+    strata: dict[str, tuple[str, ...]] = {"X": ("s",), "Y": ("s",)}
+    sizes: dict[str, int] = {"s": 100}
+    ids: tuple[str, ...] = ("X", "Y")
+    # Equal lambda -> equal incidence (tie); both must agree on tiebreak order
+    lam_equal = np.tile(np.array([0.5, 0.5], dtype=np.float64), (5, 1))
+
+    engine_rank = _engine_ranking_from_median(lam_equal, ids, strata, sizes)
+    oracle_rank = oracle_incidence_ranking(lam_equal, ids, strata, sizes)
+    assert engine_rank == oracle_rank, (
+        f"engine {engine_rank} != oracle {oracle_rank} on equal-lambda tie input"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -145,9 +169,11 @@ _LAMBDA_NPY = _CYCLE_DIR / "infer/lambda_samples.npy"
 _LABELED_JSON = _CYCLE_DIR / "classify/labeled_incidents.json"
 _INF_SUMMARY = _CYCLE_DIR / "infer/inference_summary.json"
 
-_REAL_DATA_AVAILABLE = (
-    _LAMBDA_NPY.exists() and _LABELED_JSON.exists() and _INF_SUMMARY.exists()
-)
+_REAL_DATA_FILES = {
+    "lambda_samples.npy": _LAMBDA_NPY,
+    "labeled_incidents.json": _LABELED_JSON,
+    "inference_summary.json": _INF_SUMMARY,
+}
 
 
 def _build_strata(
@@ -167,16 +193,22 @@ def _build_strata(
     return entry_strata, stratum_sizes
 
 
-@pytest.mark.skipif(
-    not _REAL_DATA_AVAILABLE,
-    reason="2026 cycle artifacts not available",
-)
 def test_real_data_engine_oracle_agree() -> None:
     """Engine _ranks_from_incidence ranking AGREES with oracle_incidence_ranking on 2026 data.
 
     This is the non-vacuous provisional gate: two independent implementations
     must agree before the baseline is considered trustworthy.
+
+    Hard-fail (parity with T11): missing tracked files cause pytest.fail(), not a skip.
     """
+    for name, path in _REAL_DATA_FILES.items():
+        if not path.exists():
+            pytest.fail(
+                f"Required tracked file not found: {path}. "
+                f"This provisional gate cannot silently vanish — file: {name}",
+                pytrace=False,
+            )
+
     lambda_samples: npt.NDArray[np.float64] = np.load(_LAMBDA_NPY)
     with open(_INF_SUMMARY) as f:
         inf = json.load(f)

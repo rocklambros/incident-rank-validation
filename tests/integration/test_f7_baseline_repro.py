@@ -240,6 +240,8 @@ def test_f7_bare_lambda_delta_zero_on_2026() -> None:
         inf_entry_ids=inf_entry_ids,
         vote_entry_ids=vote_entry_ids,
         incidence_kappa_median=prev.kappa_median,
+        entry_strata=entry_strata,
+        stratum_sizes=stratum_sizes,
     )
 
     assert bare.method_kappa_delta == 0.0, (
@@ -344,4 +346,58 @@ def test_f7_vote_rank_samples_shape() -> None:
     arr: npt.NDArray[np.float64] = np.load(vrs_path)
     assert arr.shape == (5000, 20), (
         f"vote_rank_samples.npy shape {arr.shape} != (5000, 20)"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Test 7: Ranking order consistency (Minor #6)
+#
+# rank_comparison_report.md is a stub (no ranking array), so we cannot compare
+# the frozen order against a shipped textual artifact.  Instead we verify that
+# the order stored in rankings_baselines.json matches the oracle on the real data
+# (rank-of-median-incidence, with alphabetical tie-breaking).  This closes the
+# compare/contrast loop: the frozen order is reconstructed from median incidence
+# and is cross-checked vs the independent oracle, both here and in
+# test_baseline_oracle_crosscheck.py.
+# ---------------------------------------------------------------------------
+
+
+def test_f7_ranking_order_matches_oracle() -> None:
+    """Frozen previous_ranking.ranking ORDER agrees with oracle on 2026 data (Minor #6).
+
+    Reads rankings_baselines.json and verifies the stored ranking list matches
+    oracle_incidence_ranking on the same lambda_samples.  Confirms the frozen
+    order is reconstructed from median incidence (not arbitrary).
+    """
+    from engine.verify.oracle import oracle_incidence_ranking
+
+    if not _RANKINGS_JSON.exists():
+        pytest.fail(
+            f"rankings_baselines.json not found at {_RANKINGS_JSON}. "
+            "Run the freeze-baselines CLI.",
+            pytrace=False,
+        )
+
+    with open(_RANKINGS_JSON) as f:
+        manifest = json.load(f)
+
+    frozen_ranking: list[str] = manifest["previous_ranking"]["ranking"]
+
+    # Load real data
+    lambda_samples: npt.NDArray[np.float64] = np.load(_LAMBDA_NPY)
+    with open(_INF_SUMMARY) as f:
+        inf = json.load(f)
+    inf_entry_ids: tuple[str, ...] = tuple(inf["entry_ids"])
+
+    with open(_LABELED) as f:
+        labeled: list[dict[str, object]] = json.load(f)
+    entry_strata, stratum_sizes = _build_strata(labeled)
+
+    oracle_rank = oracle_incidence_ranking(
+        lambda_samples, inf_entry_ids, entry_strata, stratum_sizes
+    )
+
+    assert tuple(frozen_ranking) == oracle_rank, (
+        f"Frozen previous_ranking.ranking does not match oracle on 2026 data.\n"
+        f"frozen:  {frozen_ranking}\noracle: {list(oracle_rank)}"
     )

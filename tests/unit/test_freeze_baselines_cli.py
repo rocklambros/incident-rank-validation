@@ -123,18 +123,18 @@ def test_write_once_guard_same_sha_no_raise(tmp_path: Path) -> None:
 
 
 def test_write_once_guard_different_sha_raises(tmp_path: Path) -> None:
-    """Existing SHA256SUMS with different SHA raises without --force."""
+    """Existing SHA256SUMS with tampered SHA raises without --force (integrity check)."""
     output_dir = tmp_path / "baselines"
     output_dir.mkdir()
     rankings = output_dir / "rankings_baselines.json"
     rankings.write_text('{"x": 1}')
-    # Write a DIFFERENT sha in SHA256SUMS
+    # Write a DIFFERENT sha in SHA256SUMS — simulates tampering
     _WRONG_SHA = "a" * 64  # 64 'a' chars — differs from the actual file hash
     (output_dir / "SHA256SUMS").write_text(
         f"{_WRONG_SHA}  rankings_baselines.json\n"
     )
 
-    with pytest.raises(click.ClickException, match="different content"):
+    with pytest.raises(click.ClickException, match="[Ii]ntegrity check|tamper|modified since"):
         _check_write_once(output_dir, force=False)
 
 
@@ -151,3 +151,60 @@ def test_write_once_guard_force_overrides(tmp_path: Path) -> None:
 
     # With --force: should not raise
     _check_write_once(output_dir, force=True)
+
+
+# ---------------------------------------------------------------------------
+# Write-once guard: tamper detection covers all artifacts in SHA256SUMS
+# ---------------------------------------------------------------------------
+
+_ALL_ARTIFACT_NAMES = [
+    "PROVENANCE.md",
+    "lambda_median.npy",
+    "rankings_baselines.json",
+    "reproduce.py",
+    "respondent_rankings.npy",
+    "vote_rank_samples.npy",
+    "votes_source.xlsx",
+]
+
+
+def _make_full_artifact_dir(base: Path) -> Path:
+    """Create a fake baselines dir with all 7 artifacts and a matching SHA256SUMS."""
+    import hashlib
+
+    out = base / "baselines"
+    out.mkdir()
+    sums: list[str] = []
+    for name in _ALL_ARTIFACT_NAMES:
+        artifact = out / name
+        artifact.write_bytes(name.encode())  # unique content per file
+        sha = hashlib.sha256(artifact.read_bytes()).hexdigest()
+        sums.append(f"{sha}  {name}")
+    (out / "SHA256SUMS").write_text("\n".join(sums) + "\n")
+    return out
+
+
+@pytest.mark.parametrize("artifact_name", _ALL_ARTIFACT_NAMES)
+def test_write_once_guard_tamper_each_artifact_raises(
+    tmp_path: Path, artifact_name: str
+) -> None:
+    """Tampering any single artifact in SHA256SUMS raises naming that artifact."""
+    output_dir = _make_full_artifact_dir(tmp_path)
+
+    # Overwrite the artifact with different content (simulates tampering)
+    (output_dir / artifact_name).write_bytes(b"tampered content")
+
+    with pytest.raises(click.ClickException) as exc_info:
+        _check_write_once(output_dir, force=False)
+
+    assert artifact_name in exc_info.value.format_message(), (
+        f"Exception message should name the tampered artifact '{artifact_name}', "
+        f"got: {exc_info.value.format_message()!r}"
+    )
+
+
+def test_write_once_guard_all_artifacts_clean_no_raise(tmp_path: Path) -> None:
+    """All artifacts matching SHA256SUMS -> no raise (clean tree, re-run allowed)."""
+    output_dir = _make_full_artifact_dir(tmp_path)
+    # All hashes correct — should not raise
+    _check_write_once(output_dir, force=False)
