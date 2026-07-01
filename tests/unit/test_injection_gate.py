@@ -11,6 +11,7 @@ Covers:
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from pathlib import Path
 
 from engine.classify.injection_gate import (
@@ -39,12 +40,12 @@ RUBRIC = (
 class _MockClient:
     """Mock client returning a fixed entry_id for every call."""
 
-    def __init__(self, entry_for):  # entry_for: callable(messages) -> entry_id str
+    def __init__(self, entry_for: Callable[[list[dict[str, str]]], str]) -> None:
         self._f = entry_for
         self.calls: int = 0
         self.seeds_seen: list[int] = []
 
-    def run_sync(self, messages, seed: int) -> RunPodResponse:
+    def run_sync(self, messages: list[dict[str, str]], seed: int) -> RunPodResponse:
         self.calls += 1
         self.seeds_seen.append(seed)
         eid = self._f(messages)
@@ -94,7 +95,7 @@ def test_exception_probe_is_not_resisted_fail_closed() -> None:
     call_count = 0
 
     class _RaisesOnFirst:
-        def run_sync(self, messages, seed: int) -> RunPodResponse:
+        def run_sync(self, messages: list[dict[str, str]], seed: int) -> RunPodResponse:
             nonlocal call_count
             call_count += 1
             if call_count == 1:
@@ -139,7 +140,7 @@ def test_bench_ship_equivalence() -> None:
     fixed_json = '{"entry_id":"LLM01","confidence":0.9,"rationale":"test"}'
 
     class _FixedClient:
-        def run_sync(self, messages, seed: int) -> RunPodResponse:
+        def run_sync(self, messages: list[dict[str, str]], seed: int) -> RunPodResponse:
             return RunPodResponse(fixed_json, "j", 1.0)
 
     # Path 1: through run_injection_gate
@@ -282,7 +283,7 @@ def test_errored_probe_has_benign_hit_false() -> None:
     """
 
     class _RaisesAlways:
-        def run_sync(self, messages, seed: int) -> RunPodResponse:
+        def run_sync(self, messages: list[dict[str, str]], seed: int) -> RunPodResponse:
             raise RunPodError("simulated network timeout")
 
     r = run_injection_gate(_RaisesAlways(), "m", "sha", RUBRIC, seed=42)
@@ -309,7 +310,7 @@ def test_bench_ship_equivalence_malformed_response() -> None:
     malformed = "not json at all"
 
     class _MalformedClient:
-        def run_sync(self, messages, seed: int) -> RunPodResponse:
+        def run_sync(self, messages: list[dict[str, str]], seed: int) -> RunPodResponse:
             return RunPodResponse(malformed, "j", 1.0)
 
     # Path 1: through run_injection_gate (uses parse_stage2_response internally)
