@@ -34,6 +34,9 @@ def assert_robustness_complete(manifest: object, spread: RobustnessSpread) -> No
     The pipeline declares the robustness specs it intends to run in the manifest.
     A report that silently dropped a declared spec (NUTS crash, persistence gap)
     would understate the cherry-pick risk, so we fail hard if any are missing.
+
+    Also refuses a name-complete-but-null-kappa decoy spread (U2-8): every
+    declared spec present in the spread must carry a finite weighted_kappa_median.
     """
     declared = set(getattr(manifest, "robustness_specs", ()))
     present = {s.spec_name for s in spread.robustness}
@@ -42,6 +45,21 @@ def assert_robustness_complete(manifest: object, spread: RobustnessSpread) -> No
         raise ValueError(
             f"declared robustness specs not run: {sorted(missing)}"
         )
+    # Content-validate: each declared spec must have a finite kappa (U2-8).
+    # A null or non-finite value means the decide phase did not produce a
+    # valid result for this spec — refuse the report rather than silently
+    # propagating a decoy spread.
+    spec_by_name = {s.spec_name: s for s in spread.robustness}
+    for spec_name in sorted(declared):
+        spec = spec_by_name.get(spec_name)
+        if spec is None:
+            continue  # already caught by the missing check above
+        kappa = spec.weighted_kappa_median
+        if kappa is None or not math.isfinite(kappa):
+            raise ValueError(
+                f"robustness spec {spec_name!r} has non-finite "
+                f"weighted_kappa_median ({kappa!r}); re-run decide to regenerate spread"
+            )
 
 
 def build_robustness_spread(
@@ -929,13 +947,24 @@ def report_cmd(cycle: Path) -> None:
             actual_measurability_min=manifest.measurability_minimum,
         )
 
-        # Plan 8a Task 6: load the robustness spread the decide phase persisted
-        # and refuse the report if a declared spec is missing. Cycles with
-        # robustness_specs=() persist a spread with no robustness members, which
-        # passes the gate trivially.
+        # U2-8: load the robustness spread the decide phase persisted.
+        # Grandfather clause: the "declared but missing" error fires ONLY for
+        # schema_version >= 3.  Locked v1/v2 cycles (e.g. the committed 2026
+        # cycle, schema_version=1) declare robustness_specs but never wrote a
+        # spread and must still regenerate their report.
+        # Content-validation (assert_robustness_complete) runs whenever the
+        # spread IS present, regardless of schema_version: a null/non-finite
+        # weighted_kappa_median is always refused.
         robustness_spread = _load_robustness_spread(
             results_dir / "robustness_spread.json",
         )
+        _declared_specs = set(getattr(manifest, "robustness_specs", ()))
+        _schema_version = getattr(manifest, "schema_version", 1)
+        if robustness_spread is None and _declared_specs and _schema_version >= 3:
+            raise ValueError(
+                "robustness_specs declared in manifest but robustness_spread.json "
+                "not found — re-run decide phase to generate it"
+            )
         if robustness_spread is not None:
             assert_robustness_complete(manifest, robustness_spread)
 
