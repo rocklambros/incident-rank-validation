@@ -46,6 +46,7 @@
 The pre-Phase-3 gate requires **BOTH U1 (F-C) AND U2's F6 (recall min-denominator)** to be DONE — they are co-equal pre-run BLOCKERS (inventory blocker summary). "U1 DONE" alone does NOT clear Phase-3. U2's F6 item is hereby tagged **[BLOCKER]**; Phase-3 lock authoring (U5) must not begin until both land.
 
 ## Status (update as units land)
-- U1 F-C: **DONE** (commits 12c8bf9..4baf0f9, CI GREEN on PR #22). Shared real-snapshot minimal-cycle fixture + T0–T7; opus whole-increment caught the W-consumption-test re-transcription → fixed (extracted `_expected_counts`). One pre-Phase-3 co-blocker cleared.
-- U2 Phase-2 integrity hardening: PLAN (research design done) → planning ← NEXT. Scope 6 tasks (U2-7 F3-sweep deferred→U5). F6 (co-blocker) first.
-- U3..U9: not started. (Pre-Phase-3 gate still needs U2's F6.)
+- U1 F-C: **DONE** (commits 12c8bf9..4baf0f9, CI GREEN). Co-blocker #1 cleared.
+- U2 Phase-2 integrity hardening: **DONE** (commits 23a7bbd..3f5e261, CI GREEN on PR #22). 7 tasks (U2-7 F3-sweep deferred→U5). **F6 REDESIGNED via premortem = flag-not-widen** (the original soft-Beta(5,5)-widen would deflate λ + hide under-detected entries). #1 byte-identity invariant holds (opus-verified); F8 guard clears real 2026 data. **Co-blocker #2 (F6) cleared → PRE-PHASE-3 GATE FULLY OPEN.** Cross-unit obligations tracked: D→U9 report disclosure, F→U9 sensitivity grid, I→U5 lock-acceptance.
+- U3 F7 baselines + prospective power: PLAN ← NEXT (offline; freezes the previous bare-λ 0.20 + λ·size rankings — preserve-previous-rankings mandate).
+- U4..U9: not started.
