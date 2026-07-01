@@ -14,6 +14,7 @@ Usage
     pool = PodLeasePool(terminator)
     with guaranteed_teardown(pool):
         pool.register(pod_id, name)   # writes durable registry immediately
+        wait_until_ready(pod_urls, is_ready_fn=..., clock=clock, ...)
         # ... bakeoff / classify ...
     # guarantee: terminate_all() was called in __exit__ no matter what
 """
@@ -24,7 +25,7 @@ import json
 import logging
 import os
 import tempfile
-from collections.abc import Generator
+from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Protocol
@@ -46,6 +47,10 @@ class CompoundTerminateError(RuntimeError):
     """
 
 
+class ReadinessTimeout(RuntimeError):
+    """Raised by wait_until_ready when pods fail to become ready within the cap."""
+
+
 # ---------------------------------------------------------------------------
 # Protocols — injectable seams (no real network in tests)
 # ---------------------------------------------------------------------------
@@ -61,6 +66,16 @@ class Terminator(Protocol):
         ...
 
     def list_live_ids(self) -> set[str]:
+        ...
+
+
+class Clock(Protocol):
+    """Injected clock — prevents any real time.sleep() inside tests."""
+
+    def now(self) -> float:
+        ...
+
+    def sleep(self, seconds: float) -> None:
         ...
 
 
@@ -276,3 +291,54 @@ def guaranteed_teardown(pool: PodLeasePool) -> Generator[None, None, None]:
         elif teardown_exc is not None:
             raise teardown_exc
         # else: both succeeded — normal return.
+
+
+# ---------------------------------------------------------------------------
+# wait_until_ready
+# ---------------------------------------------------------------------------
+
+
+def wait_until_ready(
+    pod_urls: dict[str, str],
+    *,
+    is_ready_fn: Callable[[str], bool],
+    clock: Clock,
+    readiness_cap_s: float,
+    poll_interval_s: float,
+) -> None:
+    """Poll pod URLs until all report ready or the wall-time cap elapses.
+
+    Parameters
+    ----------
+    pod_urls:
+        ``{name: url}`` mapping for each pod to check.
+    is_ready_fn:
+        ``(url) -> bool`` — called for each not-yet-ready pod.  Must NOT
+        perform real I/O in tests; inject a fake.
+    clock:
+        Injected clock with ``.now() -> float`` and ``.sleep(s) -> None``.
+        Using an injected clock ensures no real ``time.sleep`` in tests.
+    readiness_cap_s:
+        Maximum wall-clock seconds before ``ReadinessTimeout`` is raised.
+    poll_interval_s:
+        Seconds (fake or real) to sleep between poll rounds.
+
+    Raises
+    ------
+    ReadinessTimeout
+        If one or more pods are not ready within *readiness_cap_s* seconds.
+        The caller is responsible for tearing down the pool.
+    """
+    deadline = clock.now() + readiness_cap_s
+    while True:
+        not_ready = {
+            name: url for name, url in pod_urls.items() if not is_ready_fn(url)
+        }
+        if not not_ready:
+            return
+        if clock.now() >= deadline:
+            raise ReadinessTimeout(
+                f"Pods not ready within {readiness_cap_s}s:"
+                f" {sorted(not_ready.keys())}"
+            )
+        clock.sleep(poll_interval_s)

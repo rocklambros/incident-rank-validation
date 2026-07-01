@@ -1,9 +1,9 @@
 """Unit tests for engine/cli/live_run.py — Task 1 (PodLeasePool +
-guaranteed_teardown).
+guaranteed_teardown) and Task 2 (wait_until_ready).
 
-ALL tests use FAKE terminators — NO network, NO RunPod pod.
-The real tools/runpod_pods.json is NEVER touched; every test that exercises
-the durable registry uses a tmp_path fixture.
+ALL tests use FAKE terminators and clocks — NO network, NO RunPod pod,
+NO real sleep.  The real tools/runpod_pods.json is NEVER touched; every test
+that exercises the durable registry uses a tmp_path fixture.
 """
 from __future__ import annotations
 
@@ -15,7 +15,9 @@ import pytest
 from engine.cli.live_run import (
     CompoundTerminateError,
     PodLeasePool,
+    ReadinessTimeout,
     guaranteed_teardown,
+    wait_until_ready,
 )
 
 # ---------------------------------------------------------------------------
@@ -71,6 +73,21 @@ class _FakeTerminatorLieAboutSuccess:
 
     def list_live_ids(self) -> set[str]:
         return set(self.live)
+
+
+class _FakeClock:
+    """Injectable fake clock — sleep() advances internal time; no real wait."""
+
+    def __init__(self, start: float = 0.0) -> None:
+        self._t = start
+        self.slept: float = 0.0
+
+    def now(self) -> float:
+        return self._t
+
+    def sleep(self, seconds: float) -> None:
+        self._t += seconds
+        self.slept += seconds
 
 
 # ---------------------------------------------------------------------------
@@ -198,3 +215,49 @@ def test_terminate_all_raises_if_pod_still_live_after_terminate_pod_returns(
 
     # Both terminate calls were attempted
     assert set(t.terminated) == {"p1", "p2"}
+
+
+# ---------------------------------------------------------------------------
+# Task 2 — Test 6: wait_until_ready returns when all pods ready
+# ---------------------------------------------------------------------------
+
+
+def test_wait_until_ready_returns_when_all_ready() -> None:
+    """wait_until_ready returns without sleeping when is_ready_fn is True for all."""
+    clock = _FakeClock(start=0.0)
+
+    wait_until_ready(
+        {"pod1": "http://p1:8000", "pod2": "http://p2:8000"},
+        is_ready_fn=lambda url: True,
+        clock=clock,
+        readiness_cap_s=60.0,
+        poll_interval_s=5.0,
+    )
+    # No sleep necessary when all pods are immediately ready.
+    assert clock.slept == 0.0
+
+
+# ---------------------------------------------------------------------------
+# Task 2 — Test 7: wait_until_ready raises ReadinessTimeout
+# ---------------------------------------------------------------------------
+
+
+def test_wait_until_ready_raises_timeout() -> None:
+    """wait_until_ready raises ReadinessTimeout when pods are never ready.
+
+    Uses a fake clock so no real time elapses — sleep() just advances
+    the internal counter.
+    """
+    clock = _FakeClock(start=0.0)
+
+    with pytest.raises(ReadinessTimeout, match="pod1"):
+        wait_until_ready(
+            {"pod1": "http://p1:8000"},
+            is_ready_fn=lambda url: False,
+            clock=clock,
+            readiness_cap_s=10.0,
+            poll_interval_s=5.0,
+        )
+
+    # Fake clock must have advanced at or past the readiness cap.
+    assert clock.now() >= 10.0
