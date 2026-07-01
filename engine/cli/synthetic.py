@@ -276,6 +276,15 @@ def execute_synthetic_pipeline(
             e: tuple(sorted(ss)) for e, ss in _entry_strata_sets.items()
         }
 
+        # F8 guard: assert strata populations are disjoint before incidence ranking.
+        # Build minimal labeled rows from raw incidents (incident.id + corpus_stratum).
+        from engine.verify.strata_guard import check_strata_disjoint as _check_strata
+        _synth_labeled: list[dict[str, object]] = [
+            {"incident_id": inc.id, "stratum": inc.corpus_stratum}
+            for inc in incidents
+        ]
+        _check_strata(_synth_labeled, entry_strata)
+
         # 17. Compute concordance
         concordance_result = compute_concordance(
             inference_result,

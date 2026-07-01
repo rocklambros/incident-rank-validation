@@ -635,6 +635,10 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
             e: tuple(sorted(ss)) for e, ss in _entry_strata_sets.items()
         }
 
+        # F8 guard: assert strata populations are disjoint before incidence ranking.
+        from engine.verify.strata_guard import check_strata_disjoint as _check_strata
+        _check_strata(labeled_incidents, entry_strata)
+
         # Compute concordance
         concordance = compute_concordance(
             inference_result=inference_result,

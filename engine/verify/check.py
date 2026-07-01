@@ -94,6 +94,10 @@ def run_oracle(cycle: Path) -> OracleVerdict:
         entry_ids = tuple(json.loads(summ_path.read_text())["entry_ids"])
         labeled = json.loads(labeled_path.read_text())
         entry_strata, stratum_sizes = _build_strata(labeled)
+        # F8 guard: assert strata populations are disjoint before incidence ranking.
+        # Degrades gracefully when labeled_path is absent (outer exists() check).
+        from engine.verify.strata_guard import check_strata_disjoint
+        check_strata_disjoint(labeled, entry_strata)
         common = tuple(e for e in entry_ids if e in set(engine_ranking))
         oracle_ranking = oracle_incidence_ranking(
             lam[:, [entry_ids.index(e) for e in common]],
