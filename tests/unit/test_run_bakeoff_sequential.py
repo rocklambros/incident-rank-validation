@@ -220,6 +220,85 @@ def test_bakeoff_mode_picks_perfect_config(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
+# 1b. bakeoff mode writes the winner's-curse / thin-cell cross-check disclosure
+# ---------------------------------------------------------------------------
+
+def test_bakeoff_writes_crosscheck_disclosure(tmp_path: Path) -> None:
+    """bakeoff_crosscheck.json records dev-split BA per config + winner agreement.
+
+    cfg-perfect labels every incident correctly, so it tops BOTH the lockbox
+    (selection) and the held-out dev split -> winner_agrees_on_dev is True and
+    its dev_balanced_accuracy is 1.0.  cfg-decent is all-'A', so its dev BA is
+    0.5 (recall A=1, B=0).  This proves the cross-check is computed on the dev
+    split, not copied from the lockbox metric.
+    """
+    configs = [_make_config("cfg-perfect"), _make_config("cfg-decent")]
+    cycle_dir, all_ids = _write_cycle(tmp_path, configs=configs)
+    seq_dir = cycle_dir / "classify" / "seq"
+    seq_dir.mkdir(parents=True, exist_ok=True)
+
+    ids_a = [i for i in all_ids if i.startswith("a")]
+    ids_b = [i for i in all_ids if i.startswith("b")]
+    perfect_preds = {k: "A" for k in ids_a} | {k: "B" for k in ids_b}
+    decent_preds = {k: "A" for k in all_ids}
+
+    (seq_dir / "predictions_cfg-perfect.json").write_text(json.dumps(perfect_preds))
+    (seq_dir / "predictions_cfg-decent.json").write_text(json.dumps(decent_preds))
+    (seq_dir / "gate_cfg-perfect.json").write_text(json.dumps(_gate_payload(passed=True)))
+    (seq_dir / "gate_cfg-decent.json").write_text(json.dumps(_gate_payload(passed=True)))
+
+    floor_path = _write_floor(tmp_path, all_ids)
+    result = cmd_bakeoff(cycle_dir, floor_path=floor_path)
+    assert result.winner == "cfg-perfect"
+
+    xc_path = cycle_dir / "results" / "bakeoff_seq" / "bakeoff_crosscheck.json"
+    assert xc_path.exists(), "bakeoff_crosscheck.json not written"
+    xc = json.loads(xc_path.read_text())
+
+    # dev-split BA is computed on held-out data, and differs across configs.
+    assert xc["per_config"]["cfg-perfect"]["dev_balanced_accuracy"] == 1.0
+    assert xc["per_config"]["cfg-decent"]["dev_balanced_accuracy"] == 0.5
+    # Split-size guard: dev and lockbox are DISJOINT complements and the dev
+    # split is larger (0.7 vs 0.3). With 12 'A' incidents at fraction 0.3 the
+    # lockbox holds 4 and the dev split holds 8 — so a dev/lockbox unpack swap
+    # would flip these numbers and this assertion would catch it (the reason
+    # the equal-BA configs above cannot).
+    assert xc["dev_cell_sizes"]["A"] == 8
+    assert xc["lockbox_cell_sizes"]["A"] == 4
+    # winner tops the dev split too -> agreement recorded.
+    assert xc["winner"] == "cfg-perfect"
+    assert xc["winner_agrees_on_dev"] is True
+    assert xc["dev_ranking"][0] == "cfg-perfect"
+    assert xc["no_winner_reason"] is None
+
+
+def test_bakeoff_crosscheck_records_no_winner_reason(tmp_path: Path) -> None:
+    """When no config beats the floor+BH gate, winner is None and the disclosure
+    records a human-readable reason (honest 'no winner' outcome, premortem #1)."""
+    configs = [_make_config("cfg-tie")]
+    cycle_dir, all_ids = _write_cycle(tmp_path, configs=configs)
+    seq_dir = cycle_dir / "classify" / "seq"
+    seq_dir.mkdir(parents=True, exist_ok=True)
+
+    # cfg-tie predicts exactly the floor (all -> 'A'): cannot beat the floor.
+    tie_preds = {k: "A" for k in all_ids}
+    (seq_dir / "predictions_cfg-tie.json").write_text(json.dumps(tie_preds))
+    (seq_dir / "gate_cfg-tie.json").write_text(json.dumps(_gate_payload(passed=True)))
+
+    floor_path = _write_floor(tmp_path, all_ids)
+    result = cmd_bakeoff(cycle_dir, floor_path=floor_path)
+    assert result.winner is None
+
+    xc = json.loads(
+        (cycle_dir / "results" / "bakeoff_seq" / "bakeoff_crosscheck.json").read_text()
+    )
+    assert xc["winner"] is None
+    assert xc["winner_agrees_on_dev"] is False
+    assert xc["no_winner_reason"] is not None
+    assert "2026" in xc["no_winner_reason"]
+
+
+# ---------------------------------------------------------------------------
 # 2. score mode: mock client → predictions + gate files written, no network
 # ---------------------------------------------------------------------------
 

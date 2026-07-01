@@ -200,6 +200,26 @@ def _class_hits(
     return hits, denom
 
 
+def split_balanced_accuracy(
+    predictions: Mapping[str, str],
+    truth: Mapping[str, frozenset[str]],
+    split_ids: frozenset[str],
+    selection_classes: Iterable[str],
+) -> float:
+    """Balanced accuracy over ``selection_classes``, restricted to ``split_ids``.
+
+    A disclosure-only cross-check seam: ``select_winner`` scores every config on
+    the LOCKBOX split alone, so evaluating the SAME predictions on the held-back
+    DEV split (goldset minus lockbox) yields an out-of-selection-sample estimate
+    of a config's accuracy — an unbiased guard against the winner's curse and
+    against thin-lockbox-cell noise.  It does NOT participate in selection; the
+    winner is still chosen exactly as ``select_winner`` decides.
+    """
+    return balanced_accuracy_oos(
+        _restrict(predictions, split_ids), truth, selection_classes
+    )
+
+
 def select_winner(
     config_predictions: Mapping[str, Mapping[str, str]],
     floor_predictions: Mapping[str, str],

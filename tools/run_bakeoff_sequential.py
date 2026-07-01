@@ -35,7 +35,14 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any, cast
 
-from engine.classify.bakeoff import BakeoffResult, ModelConfig
+from engine.classify.bakeoff import (
+    BakeoffResult,
+    ModelConfig,
+    load_bakeoff_truth,
+    lockbox_cell_sizes,
+    lockbox_split,
+    split_balanced_accuracy,
+)
 from engine.classify.bakeoff_inputs import (
     compute_corpus_class_counts,
     load_floor_predictions,
@@ -425,6 +432,112 @@ def cmd_bakeoff(
         verdict = "PASS" if gr.passed else "FAIL"
         print(f"  {name}: resist_rate={gr.pass_rate:.3f}  (strict-gate {verdict})")
     print(f"  winner (by balanced accuracy, advisory gate): {result.winner!r}")
+
+    # --- Winner's-curse / thin-cell cross-check (DISCLOSURE ONLY; selection is
+    # unchanged — the winner is exactly what run_bakeoff/select_winner decided) ---
+    # The winner is selected on the 0.3 LOCKBOX split; the DEV split (the other
+    # 0.7 of the goldset) is never used in selection, so its balanced accuracy is
+    # an out-of-selection-sample cross-check against the winner's curse and thin
+    # lockbox cells.  Premortem remediations #1-#3 (2026-07-01).
+    truth = load_bakeoff_truth(goldset_path)
+    dev_ids, _lockbox_ids = lockbox_split(
+        truth, lockbox_fraction=lockbox_fraction, seed=seed
+    )
+    selection_classes = result.selection_classes
+    dev_cells = lockbox_cell_sizes(dev_ids, truth)
+    lockbox_ba = result.config_balanced_accuracy
+    dev_ba = {
+        name: split_balanced_accuracy(
+            saved_predictions[name], truth, dev_ids, selection_classes
+        )
+        for name in scored_configs
+    }
+    lb_ranked = sorted(scored_configs, key=lambda n: lockbox_ba[n], reverse=True)
+    dev_ranked = sorted(scored_configs, key=lambda n: dev_ba[n], reverse=True)
+    lb_margin = (
+        lockbox_ba[lb_ranked[0]] - lockbox_ba[lb_ranked[1]]
+        if len(lb_ranked) >= 2
+        else None
+    )
+    dev_margin = (
+        dev_ba[dev_ranked[0]] - dev_ba[dev_ranked[1]]
+        if len(dev_ranked) >= 2
+        else None
+    )
+    dev_top = dev_ranked[0] if dev_ranked else None
+    winner_agrees_on_dev = result.winner is not None and result.winner == dev_top
+    thin_lockbox_cells = {
+        c: result.lockbox_cell_sizes.get(c, 0)
+        for c in selection_classes
+        if result.lockbox_cell_sizes.get(c, 0) < min_cell
+    }
+    no_winner_reason = (
+        None
+        if result.winner is not None
+        else (
+            "No scored config both exceeded the 2026 floor balanced accuracy AND "
+            "showed a Benjamini-Hochberg-significant per-class improvement without a "
+            "significant regression on the lockbox; the 2026 status-quo ranking "
+            "therefore stands.  This is a valid outcome, not a failure."
+        )
+    )
+    crosscheck = {
+        "purpose": (
+            "Winner's-curse + thin-cell disclosure.  Selection is UNCHANGED "
+            "(lockbox-only, pre-registered); dev-split balanced accuracy is an "
+            "out-of-selection-sample cross-check reported alongside it."
+        ),
+        "selection_classes": list(selection_classes),
+        "lockbox_cell_sizes": {
+            c: result.lockbox_cell_sizes.get(c, 0) for c in selection_classes
+        },
+        "dev_cell_sizes": {c: dev_cells.get(c, 0) for c in selection_classes},
+        "thin_lockbox_cells": thin_lockbox_cells,
+        "floor_balanced_accuracy": result.floor_balanced_accuracy,
+        "eligible_configs": list(result.eligible_configs),
+        "per_config": {
+            name: {
+                "lockbox_balanced_accuracy": lockbox_ba[name],
+                "dev_balanced_accuracy": dev_ba[name],
+            }
+            for name in scored_configs
+        },
+        "lockbox_ranking": lb_ranked,
+        "dev_ranking": dev_ranked,
+        "lockbox_top2_margin": lb_margin,
+        "dev_top2_margin": dev_margin,
+        "winner": result.winner,
+        "winner_agrees_on_dev": winner_agrees_on_dev,
+        "no_winner_reason": no_winner_reason,
+    }
+    (out_dir / "bakeoff_crosscheck.json").write_text(
+        json.dumps(crosscheck, indent=2) + "\n"
+    )
+
+    print("\n=== winner's-curse / thin-cell cross-check (disclosure only) ===")
+    print(f"  selection classes         : {len(selection_classes)}")
+    if thin_lockbox_cells:
+        print(f"  thin lockbox cells (<{min_cell}) : {thin_lockbox_cells}")
+    print(f"  lockbox top-2 margin      : {lb_margin}")
+    print(f"  dev-split top-2 margin    : {dev_margin}")
+    for name in lb_ranked:
+        print(
+            f"    {name}: lockbox_ba={lockbox_ba[name]:.4f}  "
+            f"dev_ba={dev_ba[name]:.4f}"
+        )
+    print(f"  lockbox ranking           : {lb_ranked}")
+    print(f"  dev-split ranking         : {dev_ranked}")
+    if result.winner is None:
+        print(
+            "  NO WINNER: no config significantly beat the 2026 floor "
+            "(floor+BH gate); the 2026 ranking stands.  Valid outcome, not a failure."
+        )
+    else:
+        agree = "AGREES" if winner_agrees_on_dev else "DISAGREES"
+        print(
+            f"  winner={result.winner!r}; dev-split cross-check {agree} "
+            f"(dev top={dev_top!r})."
+        )
 
     return result
 
