@@ -13,6 +13,30 @@ from engine.schema import IncidentRecord
 logger = logging.getLogger(__name__)
 
 
+def parse_stage2_response(output_text: str, valid_entry_ids: frozenset[str]) -> str:
+    """Parse a Stage-2 LLM response JSON and return the validated ``entry_id``.
+
+    If ``output_text`` is not valid JSON, the ``entry_id`` field is absent, or
+    the returned value is not in ``valid_entry_ids``, returns ``"out-of-scope"``.
+
+    This is the canonical parse path shared by ``Stage2Classifier`` and
+    ``classify_one`` in ``bakeoff_predict``; do not re-implement JSON parsing
+    elsewhere.
+    """
+    try:
+        data = json.loads(output_text)
+        entry_id = str(data.get("entry_id", "out-of-scope"))
+        if entry_id not in valid_entry_ids:
+            logger.warning(
+                "Stage-2 returned invalid entry_id %r (not in rubric)", entry_id
+            )
+            return "out-of-scope"
+        return entry_id
+    except (json.JSONDecodeError, ValueError, KeyError):
+        logger.warning("Malformed Stage-2 response (JSON parse error)")
+        return "out-of-scope"
+
+
 class FallbackRateExceeded(RuntimeError):
     pass
 
