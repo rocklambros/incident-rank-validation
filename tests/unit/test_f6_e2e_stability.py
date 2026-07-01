@@ -181,6 +181,13 @@ class TestF6NutsStability:
         The floor clips sampled recall to >= 0.05, preventing λ = obs/recall from
         reaching extreme values.  Without the floor, the thin-cell recall can sample
         near 0, pushing the λ tail to arbitrarily large values.
+
+        NOTE — plausibility check, not authoritative proof:
+        The `or p99_on < 5.0` branch below means this test passes as long as the
+        floor-on tail is either tighter OR absolutely small.  MCMC variance across
+        seeds makes a strictly tighter comparison flaky.  The AUTHORITATIVE proof
+        that the floor deterministically bounds λ from above is
+        TestFloorUniformDirect::test_lambda_bound_by_floor (no MCMC, pure arithmetic).
         """
         result_on = self._run(recall_floor_epsilon=0.05, schema_version=3)
         result_off = self._run(recall_floor_epsilon=0.0, schema_version=1)
@@ -193,6 +200,7 @@ class TestF6NutsStability:
 
         # The floor-on tail should be strictly smaller than the floor-off tail.
         # Use a lenient multiplier (1.5x) to tolerate MCMC variance across seeds.
+        # See NOTE above: this `or` branch makes it a plausibility check.
         assert p99_on <= p99_off * 1.5 or p99_on < 5.0, (
             f"Floor-on 99th-pctile λ_E03 ({p99_on:.3f}) is unexpectedly large "
             f"vs floor-off ({p99_off:.3f}); floor may not be bounding the tail"
@@ -248,16 +256,22 @@ class TestFloorGating:
 
 @pytest.mark.slow
 class TestOracleAgreementFloorOn:
-    """oracle_incidence_ranking agrees with the engine's thick-entry order (floor-on run).
+    """Lambda-sample self-consistency on a single-stratum fixture (floor-on run).
 
-    This validates the "provisional until oracle agrees" guarantee at the lambda-sample
-    level, independent of the full cycle-dir run_oracle orchestration.
+    Confirms that oracle_incidence_ranking (which re-derives the ranking from
+    lambda samples via Σ(λ_e * size_s)) agrees with the engine's median-lambda
+    ranking for a single-stratum, equal-size fixture.
 
-    Note — FALLBACK oracle path (U2-3):
-    The oracle recomputes the incidence ranking from lambda samples (D1) but does NOT
-    recompute Beta posteriors from raw tallies (those are not persisted as an oracle-
-    readable artifact).  The oracle ranking agreement here proves the NUTS samples are
-    consistent; it does NOT independently re-derive the calibration posteriors.
+    IMPORTANT — this is NOT oracle independence (U2-3 note):
+    When all entries share one equal-size stratum, oracle_incidence_ranking is
+    algebraically equivalent to sorting by median lambda — it is the SAME
+    computation expressed differently, so agreement is guaranteed by construction.
+    The test proves that the NUTS samples are internally self-consistent (no
+    jnp.maximum / JAX graph artifact corrupts the sample ordering), NOT that
+    the calibration posteriors were re-derived from an independent source.
+
+    For Beta-posterior independence, see the direct unit tests in TestFloorUniformDirect
+    and the test_f6_recall_flags module.
     """
 
     def test_oracle_ranking_agrees_with_engine_thick_entries(self) -> None:

@@ -6,7 +6,15 @@ Covers:
 - RAISING: stratum repeated in entry_strata[e]
 - RAISING: empty stratum population for a multi-stratum entry
 - Graceful degradation: empty labeled_incidents list (check.py absent-file path)
+- Real-2026 regression: F8 guard does NOT raise on the committed 6,639-row
+  labeled_incidents.json (9/20 entries legitimately span both strata).
+- Canonicalization alignment (U2 fix #3): whitespace stratum + blank-id row that
+  the pipeline accepts must NOT false-positive the guard.
 """
+import json
+from collections import defaultdict
+from pathlib import Path
+
 import pytest
 
 from engine.verify.strata_guard import (
@@ -188,4 +196,91 @@ def test_rows_with_missing_incident_id_are_skipped() -> None:
         {"incident_id": "INC-001", "entry_id": "E1", "stratum": "security"},
     ]
     entry_strata: dict[str, tuple[str, ...]] = {"E1": ("security",)}
+    check_strata_disjoint(labeled, entry_strata)
+
+
+# ---------------------------------------------------------------------------
+# Real-2026 F8 regression: committed labeled_incidents.json must not raise
+# ---------------------------------------------------------------------------
+
+
+def test_real_2026_labeled_incidents_no_false_positive() -> None:
+    """F8 guard MUST NOT raise on the committed 2026 labeled_incidents.json.
+
+    This is a regression lock for the 6,639-row real corpus (9/20 entries
+    legitimately span both 'security' and 'ai-harm' strata with disjoint
+    incident populations).  A naive len(entry_strata[e]) > 1 guard would
+    false-positive on all 9 multi-stratum entries; this test permanently
+    locks in the 'no false-positive on legitimate multi-stratum entries'
+    property against the actual committed data.
+    """
+    labeled_path = (
+        Path(__file__).parent.parent.parent
+        / "projects" / "owasp-llm" / "cycles" / "2026" / "classify"
+        / "labeled_incidents.json"
+    )
+    if not labeled_path.exists():
+        pytest.skip(f"Real labeled_incidents.json not found: {labeled_path}")
+
+    labeled: list[dict[str, object]] = json.loads(labeled_path.read_text())
+
+    # Build entry_strata identically to _build_strata in engine/verify/check.py:
+    # for each entry_id, collect all strata that entry appears in (sorted tuple).
+    entry_strata_sets: dict[str, set[str]] = defaultdict(set)
+    for item in labeled:
+        eid = str(item.get("entry_id", ""))
+        stratum = str(item.get("stratum", "default"))
+        entry_strata_sets[eid].add(stratum)
+    entry_strata: dict[str, tuple[str, ...]] = {
+        e: tuple(sorted(ss)) for e, ss in entry_strata_sets.items()
+    }
+
+    # Must NOT raise — 9/20 entries legitimately span both strata with
+    # fully disjoint incident populations.
+    check_strata_disjoint(labeled, entry_strata)
+
+    # Verify the fixture has the expected multi-stratum entries so a future
+    # data change that removes them is detected.
+    multi_stratum_entries = [e for e, ss in entry_strata.items() if len(ss) > 1]
+    assert len(multi_stratum_entries) == 9, (
+        f"Expected 9 multi-stratum entries in the 2026 corpus; "
+        f"found {len(multi_stratum_entries)}: {sorted(multi_stratum_entries)}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Canonicalization alignment (U2 fix #3): whitespace stratum + blank-id row
+# ---------------------------------------------------------------------------
+
+
+def test_whitespace_stratum_and_blank_id_row_not_false_positive() -> None:
+    """Guard must NOT false-positive on data the pipeline accepts (U2 fix #3).
+
+    Two mismatch scenarios corrected by the fix:
+
+    (a) Whitespace stratum: a row has stratum=' security ' (with spaces).
+        _build_strata / _build_counts_from_labeled do NOT strip, so entry_strata
+        uses ' security ' as the key.  Before the fix the guard stripped strata,
+        so stratum_incident_sets used 'security' — assertion 4 looked up ' security '
+        and found nothing → false-positive raise.  After the fix the guard also does
+        NOT strip, so the key matches.
+
+    (b) Blank incident_id as the ONLY row in a stratum: the pipeline counts this row
+        toward stratum_doc_counts, making the stratum appear non-empty in the exposure
+        term.  Before the fix the guard skipped blank-id rows entirely, leaving the
+        stratum absent from stratum_incident_sets → assertion 4 raised on the
+        multi-stratum entry.  After the fix the stratum is registered (key present),
+        and assertion 4 uses key-existence rather than set-emptiness, so it passes.
+    """
+    labeled: list[dict[str, object]] = [
+        # (a) whitespace stratum — must not be stripped by the guard
+        {"incident_id": "INC-001", "entry_id": "E1", "stratum": " security "},
+        {"incident_id": "INC-002", "entry_id": "E1", "stratum": " security "},
+        # (b) blank incident_id as the only row in 'ai-harm' — pipeline counts it;
+        #     guard must register the stratum key and pass assertion 4.
+        {"incident_id": "", "entry_id": "E1", "stratum": "ai-harm"},
+    ]
+    # entry_strata as _build_strata would produce (no strip on stratum values):
+    entry_strata: dict[str, tuple[str, ...]] = {"E1": ("ai-harm", " security ")}
+    # Must NOT raise on either the whitespace stratum or the blank-id-only stratum.
     check_strata_disjoint(labeled, entry_strata)

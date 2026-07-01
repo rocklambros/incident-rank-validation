@@ -542,17 +542,16 @@ def cal_calibrate(cycle: Path, rubric: Path) -> None:
     frame_blind_ids: set[str] = set(samples_data.get("frame_blind_ids", []))
 
     # Thread F6 params from manifest (schema_version >= 3 only; else defaults = F6 off).
+    # Read schema_version and recall_min_denominator directly from the raw JSON dict
+    # rather than reconstructing PreregManifest(**...) — avoids running __post_init__
+    # validation, which could raise on a validation-tripping field combo that would
+    # not have caused cal calibrate to fail before the F6 schema guard was added (U2 fix #4).
     _recall_min_denom = 0
     manifest_path = cycle / "prereg" / "manifest.json"
     if manifest_path.exists():
-        import dataclasses as _dc
-
-        from engine.prereg.manifest import PreregManifest
         _mdata = json.loads(manifest_path.read_text(encoding="utf-8"))
-        _known = {f.name for f in _dc.fields(PreregManifest)}
-        _m = PreregManifest(**{k: v for k, v in _mdata.items() if k in _known})
-        if _m.schema_version >= 3:
-            _recall_min_denom = _m.recall_min_denominator
+        if int(_mdata.get("schema_version", 1)) >= 3:
+            _recall_min_denom = int(_mdata.get("recall_min_denominator", 0))
 
     cal, diag = compute_calibration(
         tally,

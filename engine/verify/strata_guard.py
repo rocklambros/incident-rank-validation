@@ -63,15 +63,25 @@ def check_strata_disjoint(
     incident_to_stratum: dict[str, str] = {}
 
     for item in labeled_incidents:
-        # Canonicalize: strip whitespace from both fields.
+        # Canonicalize identically to _build_counts_from_labeled and _build_strata:
+        # strip incident_id whitespace (for dedup correctness) but do NOT strip the
+        # stratum field (so the key space matches the pipeline's unstripped strata).
         raw_iid = str(item.get("incident_id", "")).strip()
-        stratum = str(item.get("stratum", "default")).strip()
-        if not raw_iid:
-            # Skip rows without an incident_id (defensive; should not occur).
-            continue
+        stratum = str(item.get("stratum", "default"))  # no .strip() — match pipeline
 
+        # Register the stratum even for blank-id rows so assertion 4 sees the same
+        # stratum set as the pipeline's exposure term (_build_counts_from_labeled
+        # counts blank-id rows toward stratum_doc_counts, so those strata appear in
+        # the strata tuple and therefore in entry_strata tuples passed to this guard).
         if stratum not in stratum_incident_sets:
             stratum_incident_sets[stratum] = set()
+
+        if not raw_iid:
+            # Blank incident_id: the pipeline counts this row toward the stratum
+            # population but there is no unique id to check for disjointness.
+            # Stratum already registered above; skip per-incident assertions.
+            continue
+
         stratum_incident_sets[stratum].add(raw_iid)
 
         # Assertion 1 / 3: each incident_id must map to exactly one stratum.
@@ -100,9 +110,13 @@ def check_strata_disjoint(
 
         # Assertion 4: multi-stratum entries must have non-empty populations.
         # Single-stratum entries are exempt (the Σsize just equals that one size).
+        # Use key-existence (s in stratum_incident_sets) rather than set-emptiness
+        # (not stratum_incident_sets.get(s)) so that strata whose only rows have
+        # blank incident_ids still pass — those rows are counted by the pipeline's
+        # stratum_doc_counts / Σsize term and must not false-positive here (U2 fix #3).
         if len(strata_tuple) > 1:
             for s in strata_tuple:
-                if not stratum_incident_sets.get(s):
+                if s not in stratum_incident_sets:
                     raise StrataOverlapError(
                         f"entry {eid!r} spans strata {strata_tuple!r} but stratum "
                         f"{s!r} has no incidents in labeled_incidents: the Σsize "

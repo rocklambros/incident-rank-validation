@@ -41,18 +41,29 @@ def run_robustness_inference(
     num_samples: int = 2000,
     num_chains: int = 4,
     timeout_seconds: float | None = None,
+    recall_floor_epsilon: float = 0.0,
 ) -> InferenceResult:
+    """Dispatch to the named robustness spec.
+
+    Parameters
+    ----------
+    recall_floor_epsilon:
+        F6 uniform recall floor ε (default 0.0 = no-op, byte-identical to pre-F6).
+        Threaded identically to ``run_inference`` so that a robustness spec run
+        alongside a floor-on primary uses the same floored recall distribution —
+        keeping primary and robustness specs apples-to-apples (U2 fix #1).
+    """
     if spec_name == "poisson_flat":
         return _run_poisson_flat(
             manifest, measurable_entries, strata, observed_counts,
             stratum_sizes, calibration, overlap, num_warmup, num_samples,
-            num_chains,
+            num_chains, recall_floor_epsilon=recall_floor_epsilon,
         )
     if spec_name == "hierarchical_pooling":
         return _run_hierarchical(
             manifest, measurable_entries, strata, observed_counts,
             stratum_sizes, calibration, overlap, num_warmup, num_samples,
-            num_chains,
+            num_chains, recall_floor_epsilon=recall_floor_epsilon,
         )
     raise ValueError(f"Unknown robustness spec: {spec_name}")
 
@@ -68,6 +79,7 @@ def _run_poisson_flat(
     num_warmup: int,
     num_samples: int,
     num_chains: int,
+    recall_floor_epsilon: float = 0.0,
 ) -> InferenceResult:
     assert jax.default_backend() == "cpu"
 
@@ -92,6 +104,11 @@ def _run_poisson_flat(
         recall = numpyro.sample(
             "recall", dist.Beta(jnp.array(recall_alpha), jnp.array(recall_beta)),
         )
+        # F6 uniform recall floor: Python-level conditional so the default path
+        # (recall_floor_epsilon == 0.0) adds ZERO operations to the JAX graph,
+        # preserving byte-identical output for all existing callers (U2 fix #1).
+        if recall_floor_epsilon > 0.0:
+            recall = jnp.maximum(recall, recall_floor_epsilon)
         precision = numpyro.sample(
             "precision", dist.Beta(jnp.array(precision_alpha), jnp.array(precision_beta)),
         )
@@ -166,6 +183,7 @@ def _run_hierarchical(
     num_warmup: int,
     num_samples: int,
     num_chains: int,
+    recall_floor_epsilon: float = 0.0,
 ) -> InferenceResult:
     assert jax.default_backend() == "cpu"
 
@@ -200,6 +218,11 @@ def _run_hierarchical(
         recall = numpyro.sample(
             "recall", dist.Beta(jnp.array(recall_alpha), jnp.array(recall_beta)),
         )
+        # F6 uniform recall floor: Python-level conditional so the default path
+        # (recall_floor_epsilon == 0.0) adds ZERO operations to the JAX graph,
+        # preserving byte-identical output for all existing callers (U2 fix #1).
+        if recall_floor_epsilon > 0.0:
+            recall = jnp.maximum(recall, recall_floor_epsilon)
         precision = numpyro.sample(
             "precision", dist.Beta(jnp.array(precision_alpha), jnp.array(precision_beta)),
         )

@@ -402,6 +402,14 @@ def execute_infer_phase(
                     num_warmup=num_warmup,
                     num_samples=num_samples,
                     num_chains=num_chains,
+                    # F6 (U2 fix #1): thread manifest recall floor identically to the
+                    # primary run_inference call so robustness specs use the same floored
+                    # recall distribution — keeps primary and robustness apples-to-apples.
+                    # Schema<3 gate is defense-in-depth (PreregManifest.__post_init__
+                    # already enforces recall_floor_epsilon==0.0 for schema<3).
+                    recall_floor_epsilon=(
+                        manifest.recall_floor_epsilon if manifest.schema_version >= 3 else 0.0
+                    ),
                 )
                 write_robustness_artifacts(r_result, out_dir, spec_name)
             except Exception as e:
