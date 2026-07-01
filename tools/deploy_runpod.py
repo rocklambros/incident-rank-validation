@@ -103,16 +103,16 @@ MODELS: list[ModelSpec] = [
         ),
     },
     {
-        "name": "qwen25-72b",
-        "model_id": "Qwen/Qwen2.5-72B-Instruct",
+        "name": "mistral-large-2411",
+        "model_id": "mistralai/Mistral-Large-Instruct-2411",
         "gpu_type": "NVIDIA H200",
-        "gpu_count": 2,
-        "container_disk_gb": 200,
+        "gpu_count": 4,
+        "container_disk_gb": 300,
         "vllm_cmd": (
-            "vllm serve Qwen/Qwen2.5-72B-Instruct "
-            "--revision 495f39366efef23836d0cfae4fbe635880d2be31 "
+            "vllm serve mistralai/Mistral-Large-Instruct-2411 "
+            "--revision ba78820945ae22361b0274cf0ae6d696c967c1a4 "
             "--host 0.0.0.0 --port 8000 "
-            "--tensor-parallel-size 2 "
+            "--tensor-parallel-size 4 "
             "--max-model-len 4096 "
             "--gpu-memory-utilization 0.90 "
             "--trust-remote-code"

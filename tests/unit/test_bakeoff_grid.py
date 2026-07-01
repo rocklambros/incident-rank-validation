@@ -9,7 +9,9 @@ GRID = Path("projects/owasp-llm/cycles/2026-rarr/prereg/bakeoff_grid.json")
 
 def test_grid_parses_to_four_model_configs() -> None:
     configs = load_bakeoff_grid(GRID)
-    assert [c.name for c in configs] == ["qwen3-235b", "llama-405b", "deepseek-v3", "qwen25-72b"]
+    assert [c.name for c in configs] == [
+        "qwen3-235b", "llama-405b", "deepseek-v3", "mistral-large-2411"
+    ]
     assert all(isinstance(c, ModelConfig) for c in configs)
     # every revision_sha is a 40-hex-char real commit id (never a placeholder)
     for c in configs:

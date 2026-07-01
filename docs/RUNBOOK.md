@@ -108,7 +108,7 @@ python tools/terminate_runpod.py      # should show 0 live_and_ours, 0 orphans
 ```
 
 Name-guard: only pods whose name starts with `qwen3-235b`, `llama-405b`,
-`deepseek-v3`, or `qwen25-72b` are auto-terminated.  Others are skipped and
+`deepseek-v3`, or `mistral-large-2411` are auto-terminated.  Others are skipped and
 logged — this prevents accidentally deleting unrelated pods on the account.
 
 ### Manual RunPod console fallback (API down or registry corrupt)

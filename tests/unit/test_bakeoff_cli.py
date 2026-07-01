@@ -157,7 +157,7 @@ def test_run_bakeoff_records_goldset_provenance(tmp_path: Path) -> None:
 def _write_cycle_fixture(
     base: Path,
     *,
-    config_name: str = "qwen25-72b",
+    config_name: str = "mistral-large-2411",
     n_class_a: int = 12,
     n_class_b: int = 12,
     cost_ceiling_usd: float = 500.0,
@@ -182,7 +182,7 @@ def _write_cycle_fixture(
         },
         "configs": [{
             "name": config_name,
-            "model_id": "Qwen/Qwen2.5-72B-Instruct",
+            "model_id": "mistralai/Mistral-Large-Instruct-2411",
             "revision_sha": "a" * 40,
             "gpu_type": "NVIDIA H200",
             "gpu_count": 2,
@@ -273,7 +273,7 @@ def test_bakeoff_cmd_injected_predict_fn_returns_bakeoff_result(tmp_path: Path) 
 
     result = bakeoff_cmd(cycle_dir, execute=False, predict_fn=perfect)
     assert isinstance(result, BakeoffResult)
-    assert result.winner == "qwen25-72b"
+    assert result.winner == "mistral-large-2411"
 
 
 def test_bakeoff_cmd_reads_cost_ceiling_from_manifest(tmp_path: Path) -> None:
@@ -332,7 +332,7 @@ def test_bakeoff_cmd_extra_manifest_fields_do_not_crash(tmp_path: Path) -> None:
 
     # Must not raise TypeError despite extra fields (would if Stage2Manifest.read() used)
     result = bakeoff_cmd(cycle_dir, execute=False, predict_fn=perfect)
-    assert result.winner == "qwen25-72b"
+    assert result.winner == "mistral-large-2411"
 
 
 def test_bakeoff_cmd_builds_live_predict_fn_with_injected_client_factory(
@@ -347,7 +347,7 @@ def test_bakeoff_cmd_builds_live_predict_fn_with_injected_client_factory(
     message via build_messages).  This lets a single config beat the all-A floor
     so result.winner == config_name is actually exercised.
     """
-    config_name = "qwen25-72b"
+    config_name = "mistral-large-2411"
     cycle_dir, all_ids = _write_cycle_fixture(tmp_path, config_name=config_name)
 
     # Monkeypatch env pod URLs so bakeoff_cmd's env-reading loop finds them

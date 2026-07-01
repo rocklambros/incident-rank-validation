@@ -31,7 +31,7 @@ DEFAULT_ALLOW: tuple[str, ...] = (
     "qwen3-235b",
     "llama-405b",
     "deepseek-v3",
-    "qwen25-72b",
+    "mistral-large-2411",
 )
 
 

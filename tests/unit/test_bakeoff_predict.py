@@ -202,23 +202,23 @@ class TestBuildLivePredictFn:
 
         ct = CostTracker(ceiling_usd=100.0)
         pf = build_live_predict_fn(
-            pod_urls={"qwen25-72b": "http://pod"},
-            model_names={"qwen25-72b": "Qwen/Qwen2.5-72B-Instruct"},
+            pod_urls={"mistral-large-2411": "http://pod"},
+            model_names={"mistral-large-2411": "mistralai/Mistral-Large-Instruct-2411"},
             goldset_incidents=incs,
             rubric_json=RUBRIC,
             cost_tracker=ct,
-            cost_per_call={"qwen25-72b": 0.01},
+            cost_per_call={"mistral-large-2411": 0.01},
             seed=42,
             checkpoint_dir=tmp,
             client_factory=factory,
         )
 
-        out = pf("qwen25-72b")
+        out = pf("mistral-large-2411")
 
         assert set(out) == {"INC-0", "INC-1", "INC-2"}
         assert all(v == "LLM01" for v in out.values())
         # R5: inner checkpoint is in the predict/ subdirectory
-        ckpt = tmp / "predict" / "predict_qwen25-72b.jsonl"
+        ckpt = tmp / "predict" / "predict_mistral-large-2411.jsonl"
         assert ckpt.exists()
         lines = [json.loads(ln) for ln in ckpt.read_text().splitlines() if ln.strip()]
         assert {r["incident_id"] for r in lines} == {"INC-0", "INC-1", "INC-2"}
@@ -252,8 +252,8 @@ class TestBuildLivePredictFn:
             client_factory=factory,
         )
 
-        with pytest.raises(ValueError, match="qwen25-72b"):
-            pf("qwen25-72b")
+        with pytest.raises(ValueError, match="mistral-large-2411"):
+            pf("mistral-large-2411")
 
         # No client should have been created or called
         assert len(created) == 0
@@ -270,7 +270,7 @@ class TestBuildLivePredictFn:
         # Pre-write checkpoint: INC-0 already done
         predict_dir = tmp / "predict"
         predict_dir.mkdir(parents=True)
-        ckpt = predict_dir / "predict_qwen25-72b.jsonl"
+        ckpt = predict_dir / "predict_mistral-large-2411.jsonl"
         ckpt.write_text(
             json.dumps({"incident_id": "INC-0", "entry_id": "LLM01"}) + "\n"
         )
@@ -284,18 +284,18 @@ class TestBuildLivePredictFn:
 
         ct = CostTracker(ceiling_usd=100.0)
         pf = build_live_predict_fn(
-            pod_urls={"qwen25-72b": "http://pod"},
-            model_names={"qwen25-72b": "Qwen/Qwen2.5-72B-Instruct"},
+            pod_urls={"mistral-large-2411": "http://pod"},
+            model_names={"mistral-large-2411": "mistralai/Mistral-Large-Instruct-2411"},
             goldset_incidents=incs,
             rubric_json=RUBRIC,
             cost_tracker=ct,
-            cost_per_call={"qwen25-72b": 0.01},
+            cost_per_call={"mistral-large-2411": 0.01},
             seed=42,
             checkpoint_dir=tmp,
             client_factory=factory,
         )
 
-        out = pf("qwen25-72b")
+        out = pf("mistral-large-2411")
 
         # All 3 incidents must appear in result
         assert set(out) == {"INC-0", "INC-1", "INC-2"}
@@ -319,19 +319,19 @@ class TestBuildLivePredictFn:
         incs = {"INC-1": _inc("INC-1")}
 
         pf = build_live_predict_fn(
-            pod_urls={"qwen25-72b": "http://pod"},
-            model_names={"qwen25-72b": "Qwen/Qwen2.5-72B-Instruct"},
+            pod_urls={"mistral-large-2411": "http://pod"},
+            model_names={"mistral-large-2411": "mistralai/Mistral-Large-Instruct-2411"},
             goldset_incidents=incs,
             rubric_json=RUBRIC,
             cost_tracker=ct,
-            cost_per_call={"qwen25-72b": 0.01},  # 0.01 >> 0.001 * 1.2 = 0.0012
+            cost_per_call={"mistral-large-2411": 0.01},  # 0.01 >> 0.001 * 1.2 = 0.0012
             seed=42,
             checkpoint_dir=tmp,
             client_factory=lambda *a, **kw: _SimpleClient(),
         )
 
         with pytest.raises(CostCeilingExceeded):
-            pf("qwen25-72b")
+            pf("mistral-large-2411")
 
 
 # ---------------------------------------------------------------------------
