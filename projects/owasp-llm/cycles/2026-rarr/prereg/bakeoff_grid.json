@@ -12,5 +12,10 @@
     {"name": "llama-405b",  "model_id": "meta-llama/Llama-3.1-405B-Instruct-FP8",  "revision_sha": "64a54b704768dfd589a3e4ac05d546052f67f4fd", "gpu_type": "NVIDIA H200", "gpu_count": 4},
     {"name": "deepseek-v3", "model_id": "deepseek-ai/DeepSeek-V3",                 "revision_sha": "e815299b0bcbac849fa540c768ef21845365c9eb", "gpu_type": "NVIDIA H200", "gpu_count": 8},
     {"name": "qwen25-72b",  "model_id": "Qwen/Qwen2.5-72B-Instruct",               "revision_sha": "495f39366efef23836d0cfae4fbe635880d2be31", "gpu_type": "NVIDIA H200", "gpu_count": 2}
-  ]
+  ],
+  "revision_provenance": {
+    "resolved_utc": "2026-07-01",
+    "method": "HF api model_info sha (main HEAD at resolution), pinned as immutable commit id",
+    "verified": true
+  }
 }
