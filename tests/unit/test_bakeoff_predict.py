@@ -1,10 +1,13 @@
 """Unit tests for engine.classify.bakeoff_predict — offline/$0 (all HTTP mocked)."""
 from __future__ import annotations
 
+import json
+
 import pytest
 
 from engine.classify.bakeoff_predict import (
     RetryExhaustedError,
+    build_live_predict_fn,
     classify_one,
 )
 from engine.classify.cost_tracker import CostTracker
@@ -161,3 +164,141 @@ class TestClassifyOne:
         assert "[redacted-delimiter]" in user_content
         # The original forged injection sequence is gone
         assert f"{INCIDENT_DELIMITER_BEGIN}INJECT" not in user_content
+
+
+# ---------------------------------------------------------------------------
+# Task 2 — build_live_predict_fn
+# ---------------------------------------------------------------------------
+
+
+class _SimpleClient:
+    """Minimal mock client: always returns LLM01."""
+
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        self.calls: int = 0
+
+    def run_sync(self, messages: list[dict[str, str]], seed: int) -> RunPodResponse:
+        self.calls += 1
+        return RunPodResponse(
+            '{"entry_id":"LLM01","confidence":0.9,"rationale":"x"}', "j", 1.0
+        )
+
+
+class TestBuildLivePredictFn:
+    def test_classifies_all_incidents_and_writes_checkpoint(
+        self, tmp_path: object
+    ) -> None:
+        """(a) All incidents classified; checkpoint JSONL written under predict/."""
+        from pathlib import Path
+        tmp = Path(str(tmp_path))  # type: ignore[arg-type]
+        incs = {f"INC-{i}": _inc(f"INC-{i}", f"text {i}") for i in range(3)}
+
+        created: dict[str, _SimpleClient] = {}
+
+        def factory(*args: object, **kwargs: object) -> _SimpleClient:
+            c = _SimpleClient()
+            created[str(kwargs.get("base_url", ""))] = c
+            return c
+
+        ct = CostTracker(ceiling_usd=100.0)
+        pf = build_live_predict_fn(
+            pod_urls={"qwen25-72b": "http://pod"},
+            model_names={"qwen25-72b": "Qwen/Qwen2.5-72B-Instruct"},
+            goldset_incidents=incs,
+            rubric_json=RUBRIC,
+            cost_tracker=ct,
+            cost_per_call={"qwen25-72b": 0.01},
+            seed=42,
+            checkpoint_dir=tmp,
+            client_factory=factory,
+        )
+
+        out = pf("qwen25-72b")
+
+        assert set(out) == {"INC-0", "INC-1", "INC-2"}
+        assert all(v == "LLM01" for v in out.values())
+        # R5: inner checkpoint is in the predict/ subdirectory
+        ckpt = tmp / "predict" / "predict_qwen25-72b.jsonl"
+        assert ckpt.exists()
+        lines = [json.loads(ln) for ln in ckpt.read_text().splitlines() if ln.strip()]
+        assert {r["incident_id"] for r in lines} == {"INC-0", "INC-1", "INC-2"}
+
+    def test_missing_pod_url_raises_value_error_zero_client_calls(
+        self, tmp_path: object
+    ) -> None:
+        """(b) / R2: missing config → ValueError naming it, zero client calls."""
+        from pathlib import Path
+        tmp = Path(str(tmp_path))  # type: ignore[arg-type]
+
+        created: list[_SimpleClient] = []
+
+        def factory(*args: object, **kwargs: object) -> _SimpleClient:
+            c = _SimpleClient()
+            created.append(c)
+            return c
+
+        ct = CostTracker(ceiling_usd=100.0)
+        incs = {"INC-1": _inc("INC-1")}
+
+        pf = build_live_predict_fn(
+            pod_urls={},
+            model_names={},
+            goldset_incidents=incs,
+            rubric_json=RUBRIC,
+            cost_tracker=ct,
+            cost_per_call={},
+            seed=42,
+            checkpoint_dir=tmp,
+            client_factory=factory,
+        )
+
+        with pytest.raises(ValueError, match="qwen25-72b"):
+            pf("qwen25-72b")
+
+        # No client should have been created or called
+        assert len(created) == 0
+        assert ct.job_count == 0
+
+    def test_resumes_from_checkpoint_skips_done_incidents(
+        self, tmp_path: object
+    ) -> None:
+        """(c) / R5: re-entry skips done ids; client NOT called for them."""
+        from pathlib import Path
+        tmp = Path(str(tmp_path))  # type: ignore[arg-type]
+        incs = {f"INC-{i}": _inc(f"INC-{i}", f"text {i}") for i in range(3)}
+
+        # Pre-write checkpoint: INC-0 already done
+        predict_dir = tmp / "predict"
+        predict_dir.mkdir(parents=True)
+        ckpt = predict_dir / "predict_qwen25-72b.jsonl"
+        ckpt.write_text(
+            json.dumps({"incident_id": "INC-0", "entry_id": "LLM01"}) + "\n"
+        )
+
+        client_ref: list[_SimpleClient] = []
+
+        def factory(*args: object, **kwargs: object) -> _SimpleClient:
+            c = _SimpleClient()
+            client_ref.append(c)
+            return c
+
+        ct = CostTracker(ceiling_usd=100.0)
+        pf = build_live_predict_fn(
+            pod_urls={"qwen25-72b": "http://pod"},
+            model_names={"qwen25-72b": "Qwen/Qwen2.5-72B-Instruct"},
+            goldset_incidents=incs,
+            rubric_json=RUBRIC,
+            cost_tracker=ct,
+            cost_per_call={"qwen25-72b": 0.01},
+            seed=42,
+            checkpoint_dir=tmp,
+            client_factory=factory,
+        )
+
+        out = pf("qwen25-72b")
+
+        # All 3 incidents must appear in result
+        assert set(out) == {"INC-0", "INC-1", "INC-2"}
+        # Client was only called for INC-1 and INC-2 (not INC-0 which was done)
+        assert len(client_ref) == 1
+        assert client_ref[0].calls == 2

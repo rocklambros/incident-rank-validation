@@ -6,12 +6,14 @@ no real model call.  The live run is U8.
 from __future__ import annotations
 
 import json
+import threading
 import time
 from collections.abc import Callable
-from pathlib import Path  # noqa: F401  — used by Task 2 (build_live_predict_fn)
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
 from engine.classify.cost_tracker import CostTracker
-from engine.classify.runpod_client import RunPodError
+from engine.classify.runpod_client import HttpRunPodClient, RunPodError
 from engine.classify.stage2 import parse_stage2_response
 from engine.classify.stage2_prompt import build_messages
 from engine.schema import IncidentRecord
@@ -114,3 +116,143 @@ def classify_one(
                 sleep_fn(2.0 ** attempt)
 
     raise RetryExhaustedError(str(last_error)) from last_error
+
+
+def build_live_predict_fn(
+    pod_urls: dict[str, str],
+    model_names: dict[str, str],
+    goldset_incidents: dict[str, IncidentRecord],
+    rubric_json: str,
+    cost_tracker: CostTracker,
+    cost_per_call: dict[str, float],
+    *,
+    seed: int,
+    checkpoint_dir: Path | None = None,
+    client_factory: object = HttpRunPodClient,
+    max_workers: int = 18,
+) -> PredictFn:
+    """Build a label-blind ``predict_fn`` for the live bake-off.
+
+    The returned ``predict_fn(config_name) -> dict[incident_id, entry_id]``
+    classifies every incident in ``goldset_incidents`` via the named config's
+    pod and returns the full mapping.  Labels are never passed in or out.
+
+    Two-level checkpoint contract
+    ==============================
+    OUTER (``run_bakeoff`` level):
+        ``checkpoint_dir/{config_name}.json`` — written by ``run_bakeoff``
+        itself as a full per-config result dict.  On resume, ``run_bakeoff``
+        short-circuits ``predict_fn`` entirely for already-complete configs.
+
+    INNER (this function):
+        ``checkpoint_dir/predict/predict_{config_name}.jsonl`` — one JSON line
+        per completed incident (``{"incident_id": ..., "entry_id": ...}``),
+        appended as each future finishes.  On re-entry, already-done incident
+        ids are loaded and skipped so a mid-config crash resumes without
+        re-invoking the LLM for finished work.  The ``predict/`` subdirectory
+        isolates inner files from outer checkpoint files to avoid naming
+        conflicts.
+
+    Parameters
+    ----------
+    pod_urls:
+        Mapping of config_name → pod base URL.
+    model_names:
+        Mapping of config_name → HuggingFace model identifier forwarded to
+        the pod.
+    goldset_incidents:
+        Mapping of incident_id → IncidentRecord.  Records carry only ``id``
+        and ``text`` — no labels are threaded through.
+    rubric_json:
+        Serialised rubric shared across all configs.
+    cost_tracker:
+        Shared tracker; receives one record per classify_one attempt across
+        all configs.
+    cost_per_call:
+        Mapping of config_name → per-call cost estimate (USD).
+    seed:
+        PRNG seed forwarded to all model endpoints.
+    checkpoint_dir:
+        Directory for checkpoint files.  ``None`` disables checkpointing.
+    client_factory:
+        Callable that produces a RunPodClient; defaults to ``HttpRunPodClient``.
+        Injectable for offline tests.
+    max_workers:
+        Thread-pool size for concurrent incident classification.
+
+    Returns
+    -------
+    PredictFn
+        ``predict_fn(config_name) -> dict[incident_id, entry_id]``
+
+    Raises
+    ------
+    ValueError
+        If ``config_name`` is not in ``pod_urls`` (R2 — raised before any
+        thread is spawned; zero client calls).
+    """
+
+    def predict_fn(config_name: str) -> dict[str, str]:
+        # R2: validate config has a pod_url BEFORE spawning any threads
+        if config_name not in pod_urls:
+            raise ValueError(
+                f"Config {config_name!r} has no entry in pod_urls. "
+                f"Available configs: {sorted(pod_urls)}"
+            )
+
+        url = pod_urls[config_name]
+        model_name = model_names.get(config_name, "")
+        call_cost = cost_per_call[config_name]
+        client = client_factory(base_url=url, model_name=model_name)  # type: ignore[operator]
+
+        # R5: load inner per-incident checkpoint
+        done: dict[str, str] = {}
+        checkpoint_file: Path | None = None
+        write_lock = threading.Lock()
+
+        if checkpoint_dir is not None:
+            predict_subdir = checkpoint_dir / "predict"
+            predict_subdir.mkdir(parents=True, exist_ok=True)
+            checkpoint_file = predict_subdir / f"predict_{config_name}.jsonl"
+            if checkpoint_file.exists():
+                with checkpoint_file.open() as fh:
+                    for line in fh:
+                        line = line.strip()
+                        if line:
+                            rec = json.loads(line)
+                            done[rec["incident_id"]] = rec["entry_id"]
+
+        # Only classify incidents not already done
+        todo = {
+            inc_id: inc
+            for inc_id, inc in goldset_incidents.items()
+            if inc_id not in done
+        }
+
+        results: dict[str, str] = dict(done)
+
+        def _worker(inc_id: str, inc: IncidentRecord) -> tuple[str, str]:
+            entry_id = classify_one(
+                client, inc, rubric_json, seed, cost_tracker, call_cost
+            )
+            return inc_id, entry_id
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {
+                executor.submit(_worker, inc_id, inc): inc_id
+                for inc_id, inc in todo.items()
+            }
+            for future in as_completed(futures):
+                # R2: .result() propagates worker exceptions instead of swallowing
+                inc_id, entry_id = future.result()
+                results[inc_id] = entry_id
+                if checkpoint_file is not None:
+                    with write_lock, checkpoint_file.open("a") as fh:
+                        fh.write(
+                            json.dumps({"incident_id": inc_id, "entry_id": entry_id})
+                            + "\n"
+                        )
+
+        return results
+
+    return predict_fn
