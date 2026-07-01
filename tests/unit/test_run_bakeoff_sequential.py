@@ -288,8 +288,10 @@ def test_score_mode_writes_predictions_and_gate(tmp_path: Path) -> None:
 # 3. Gate filter: a config with passed=False is excluded from bakeoff
 # ---------------------------------------------------------------------------
 
-def test_bakeoff_mode_excludes_gate_failed_configs(tmp_path: Path) -> None:
-    """A config whose gate_<config>.json has passed=False is excluded; passing one wins."""
+def test_bakeoff_advisory_gate_includes_failed_and_discloses(tmp_path: Path) -> None:
+    """ADVISORY gate (user-approved deviation): a config whose gate FAILED is NOT
+    excluded — it is scored by balanced accuracy, and its resist-rate is disclosed
+    in gate_advisory_disclosure.json with strict_gate_would_exclude recorded."""
     configs = [
         _make_config("pass-cfg"),
         _make_config("fail-cfg"),
@@ -301,7 +303,6 @@ def test_bakeoff_mode_excludes_gate_failed_configs(tmp_path: Path) -> None:
     ids_a = [i for i in all_ids if i.startswith("a")]
     ids_b = [i for i in all_ids if i.startswith("b")]
 
-    # Both configs would produce perfect predictions, but fail-cfg is gate-excluded
     perfect_preds = {k: "A" for k in ids_a} | {k: "B" for k in ids_b}
     (seq_dir / "predictions_pass-cfg.json").write_text(json.dumps(perfect_preds))
     (seq_dir / "predictions_fail-cfg.json").write_text(json.dumps(perfect_preds))
@@ -312,9 +313,15 @@ def test_bakeoff_mode_excludes_gate_failed_configs(tmp_path: Path) -> None:
     floor_path = _write_floor(tmp_path, all_ids)
     result = cmd_bakeoff(cycle_dir, floor_path=floor_path)
 
-    # fail-cfg excluded → only pass-cfg in the eligible set
-    assert result.winner == "pass-cfg"
-    assert "fail-cfg" not in result.eligible_configs
+    # ADVISORY: the gate-failed config is NOT excluded — it is scored by accuracy.
+    assert "fail-cfg" in result.config_balanced_accuracy
+    # The deviation is disclosed with the strict-gate record.
+    disc = json.loads(
+        (cycle_dir / "results" / "bakeoff_seq" / "gate_advisory_disclosure.json").read_text()
+    )
+    assert disc["gate_mode"] == "advisory"
+    assert "fail-cfg" in disc["strict_gate_would_exclude"]
+    assert disc["per_model_resist_rate"]["fail-cfg"]["passed_strict"] is False
 
 
 # ---------------------------------------------------------------------------

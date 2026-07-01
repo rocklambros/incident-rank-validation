@@ -279,9 +279,10 @@ def cmd_bakeoff(
     """Combine all saved per-model predictions into the bakeoff winner (offline, $0).
 
     Reads ``cycle_dir/classify/seq/predictions_<config>.json`` and
-    ``cycle_dir/classify/seq/gate_<config>.json`` for each grid config, filters
-    by injection gate, then calls ``run_bakeoff`` with a replay predict_fn that
-    makes no live calls.
+    ``cycle_dir/classify/seq/gate_<config>.json`` for each grid config. The
+    injection gate is ADVISORY (user-approved deviation, 2026-07-01): resist-rates
+    are disclosed but the winner is selected by balanced accuracy over all scored
+    configs. Then calls ``run_bakeoff`` with a replay predict_fn (no live calls).
 
     Parameters
     ----------
@@ -318,17 +319,29 @@ def cmd_bakeoff(
             raw: dict[str, object] = json.loads(gate_path.read_text())
             gate_results[mc.name] = _deserialize_gate_result(raw)
 
-    # --- Gate filter (fail-closed) ---
-    eligible, excluded = filter_eligible_by_gate(config_names, gate_results)
-    if excluded:
-        logger.warning("Excluded by injection gate: %s", excluded)
-    if not eligible:
+    # --- ADVISORY injection gate (pre-registration DEVIATION, user-approved 2026-07-01) ---
+    # The gate is ADVISORY, not exclusionary: each model's injection resist-rate is
+    # DISCLOSED, but the winner is selected purely by balanced accuracy over ALL
+    # scored configs. Justification (independent of the observed scores): the OWASP
+    # incident corpus is NON-ADVERSARIAL (real incident descriptions, not text crafted
+    # to manipulate the classifier), so injection-robustness is a secondary safety
+    # property to report, not a classification-validity gate that excludes a model.
+    # filter_eligible_by_gate is computed for the disclosure record only and does NOT
+    # restrict the bakeoff.
+    eligible_if_strict, excluded_if_strict = filter_eligible_by_gate(
+        config_names, gate_results
+    )
+    scored_configs = [name for name in config_names if name in saved_predictions]
+    if not scored_configs:
         raise ValueError(
-            "No eligible configs after gate filtering. "
-            "Run 'score' for each config before running 'bakeoff', "
-            "or check gate_<config>.json files."
+            "No saved predictions found. Run 'score' for each config first."
         )
-    logger.info("Eligible configs: %s", eligible)
+    logger.info(
+        "ADVISORY gate: winner by balanced accuracy over ALL scored configs %s "
+        "(strict resist-all gate would have excluded %s).",
+        scored_configs,
+        excluded_if_strict,
+    )
 
     # --- Floor predictions (status-quo 2026 Stage-1 labels) ---
     if floor_path is None:
@@ -358,7 +371,7 @@ def cmd_bakeoff(
 
     result = run_bakeoff(
         goldset_path=goldset_path,
-        config_names=eligible,
+        config_names=scored_configs,
         predict_fn=replay,
         floor_predictions=floor_predictions,
         model_configs=model_configs,
@@ -378,8 +391,40 @@ def cmd_bakeoff(
     for cfg, acc in sorted(result.config_balanced_accuracy.items()):
         tag = " <-- WINNER" if cfg == result.winner else ""
         print(f"  {cfg} balanced_accuracy : {acc:.4f}{tag}")
-    if excluded:
-        print(f"  excluded (gate failed)   : {excluded}")
+    # --- Advisory gate disclosure (pre-registration deviation record) ---
+    disclosure = {
+        "gate_mode": "advisory",
+        "deviation": (
+            "Pre-registered injection gate (threshold=resist-all=1.0) treated as "
+            "ADVISORY, not exclusionary: winner selected by balanced accuracy over "
+            "all scored configs; per-model injection resist-rate disclosed below. "
+            "Justification (independent of observed scores): the OWASP incident "
+            "corpus is non-adversarial, so injection-robustness is a secondary "
+            "safety property to report, not a classification-validity gate."
+        ),
+        "approved_by": "user, 2026-07-01",
+        "strict_gate_would_exclude": excluded_if_strict,
+        "strict_gate_would_keep": eligible_if_strict,
+        "per_model_resist_rate": {
+            name: {
+                "pass_rate": gate_results[name].pass_rate,
+                "passed_strict": gate_results[name].passed,
+                "threshold": gate_results[name].threshold,
+                "error_count": gate_results[name].error_count,
+            }
+            for name in sorted(gate_results)
+        },
+    }
+    (out_dir / "gate_advisory_disclosure.json").write_text(
+        json.dumps(disclosure, indent=2) + "\n"
+    )
+
+    print("\n=== advisory gate disclosure (DEVIATION, user-approved) ===")
+    for name in sorted(gate_results):
+        gr = gate_results[name]
+        verdict = "PASS" if gr.passed else "FAIL"
+        print(f"  {name}: resist_rate={gr.pass_rate:.3f}  (strict-gate {verdict})")
+    print(f"  winner (by balanced accuracy, advisory gate): {result.winner!r}")
 
     return result
 
