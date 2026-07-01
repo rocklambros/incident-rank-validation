@@ -201,7 +201,7 @@ def terminate_all_registered(
             terminate_pod(pod_id)
             summary["terminated"].append({"name": name, "pod_id": pod_id})
             print(f"  TERMINATED: {name} ({pod_id})")
-        except TerminateError as exc:
+        except (TerminateError, httpx.HTTPError) as exc:
             summary["errors"].append(
                 {"name": name, "pod_id": pod_id, "error": str(exc)}
             )
@@ -273,6 +273,7 @@ def reconcile(
         "live_and_ours": live_and_ours,
         "orphans": orphans,
         "terminated": [],
+        "skipped_by_guard": [],
         "errors": [],
     }
 
@@ -285,6 +286,9 @@ def reconcile(
                     f"  SKIP (guard): name={name_e!r} not in allow-prefixes",
                     file=sys.stderr,
                 )
+                summary["skipped_by_guard"].append(
+                    {"name": name_e, "pod_id": pod_id_e}
+                )
                 continue
             try:
                 terminate_pod(pod_id_e)
@@ -292,7 +296,7 @@ def reconcile(
                     {"name": name_e, "pod_id": pod_id_e}
                 )
                 print(f"  TERMINATED: {name_e} ({pod_id_e})")
-            except TerminateError as exc:
+            except (TerminateError, httpx.HTTPError) as exc:
                 summary["errors"].append(
                     {"name": name_e, "pod_id": pod_id_e, "error": str(exc)}
                 )
@@ -362,15 +366,23 @@ def _cli_main() -> None:
                 entry = next(
                     (p for p in pods if p["pod_id"] == args.pod_id), None
                 )
-                if entry is not None:
-                    name = entry.get("name", "")
-                    if not any(name.startswith(pfx) for pfx in DEFAULT_ALLOW):
-                        print(
-                            f"ERROR: pod {args.pod_id} has name {name!r} which"
-                            " is not in allow-prefixes. Use --force to override.",
-                            file=sys.stderr,
-                        )
-                        sys.exit(1)
+                if entry is None:
+                    # Pod not in registry — block unless --force was given.
+                    # Untracked pods must never be deleted silently.
+                    print(
+                        f"ERROR: pod {args.pod_id} is not in the registry."
+                        " Use --force to terminate an untracked pod.",
+                        file=sys.stderr,
+                    )
+                    sys.exit(1)
+                name = entry.get("name", "")
+                if not any(name.startswith(pfx) for pfx in DEFAULT_ALLOW):
+                    print(
+                        f"ERROR: pod {args.pod_id} has name {name!r} which"
+                        " is not in allow-prefixes. Use --force to override.",
+                        file=sys.stderr,
+                    )
+                    sys.exit(1)
             try:
                 ok = terminate_pod(args.pod_id)
                 print(f"{'OK' if ok else 'FAILED'}: pod {args.pod_id}")
@@ -394,9 +406,18 @@ def _cli_main() -> None:
                 "  (pass --execute to act)"
             )
 
-    # Final live count — always re-query after any termination
-    live_after = list_live_pods()
-    print(f"\nverify: {len(live_after)} pods still live")
+    # Final live count — only re-query when we actually issued deletes; skip on
+    # dry-run (execute=False) to avoid a confusing network call that has no
+    # bearing on a plan-only run.
+    if args.execute:
+        try:
+            live_after = list_live_pods()
+            print(f"\nverify: {len(live_after)} pods still live")
+        except (TerminateError, httpx.HTTPError) as exc:
+            print(
+                f"\nWARNING: post-run verify query failed (degraded): {exc}",
+                file=sys.stderr,
+            )
 
 
 if __name__ == "__main__":

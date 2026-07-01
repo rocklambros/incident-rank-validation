@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+import httpx
 import pytest
 
 import tools.terminate_runpod as trm
@@ -358,3 +359,202 @@ class TestRegistryEdgeCases:
         result = terminate_all_registered(ws_only, execute=False)
 
         assert result["would_terminate"] == []
+
+
+# ---------------------------------------------------------------------------
+# Test 8 — CLI: --pod-id with unregistered pod blocks without --force (C-1)
+# ---------------------------------------------------------------------------
+
+
+class TestCliUnregisteredPodGuard:
+    """Covers C-1: untracked pod must not be deleted without --force."""
+
+    def test_unregistered_pod_without_force_exits1_no_delete(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """--pod-id <unregistered> --execute (no --force) → SystemExit(1), DELETE never called."""
+        delete_calls: list[str] = []
+
+        def spy_delete(url: str, headers: dict[str, str]) -> FakeResponse:
+            delete_calls.append(url)
+            return FakeResponse(status_code=200, _body={})
+
+        registry = _write_registry(tmp_path, [])  # empty — pod is untracked
+        monkeypatch.setattr(trm, "load_secret", _fake_load_secret)
+        monkeypatch.setattr(trm, "_http_delete", spy_delete)
+        monkeypatch.setattr(
+            "sys.argv",
+            [
+                "terminate_runpod.py",
+                "--pod-id", "untracked-pod-xyz",
+                "--execute",
+                "--registry", str(registry),
+            ],
+        )
+
+        with pytest.raises(SystemExit) as exc_info:
+            trm._cli_main()
+
+        assert exc_info.value.code == 1
+        assert delete_calls == [], "DELETE must NOT be called when guard fires"
+
+    def test_unregistered_pod_with_force_calls_delete_once(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """--pod-id <unregistered> --execute --force → guard bypassed, DELETE called once."""
+        delete_calls: list[str] = []
+
+        def spy_delete(url: str, headers: dict[str, str]) -> FakeResponse:
+            delete_calls.append(url)
+            return FakeResponse(status_code=200, _body={})
+
+        def mock_get(url: str, headers: dict[str, str]) -> FakeResponse:
+            return FakeResponse(status_code=200, _body=[])
+
+        registry = _write_registry(tmp_path, [])
+        monkeypatch.setattr(trm, "load_secret", _fake_load_secret)
+        monkeypatch.setattr(trm, "_http_delete", spy_delete)
+        monkeypatch.setattr(trm, "_http_get", mock_get)
+        monkeypatch.setattr(
+            "sys.argv",
+            [
+                "terminate_runpod.py",
+                "--pod-id", "untracked-pod-xyz",
+                "--execute",
+                "--force",
+                "--registry", str(registry),
+            ],
+        )
+
+        trm._cli_main()  # must not raise
+
+        assert len(delete_calls) == 1
+        assert "untracked-pod-xyz" in delete_calls[0]
+
+    def test_registered_allowed_pod_executes_without_force(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """--pod-id <registered-allowed> --execute → guard passes, DELETE called once."""
+        delete_calls: list[str] = []
+
+        def spy_delete(url: str, headers: dict[str, str]) -> FakeResponse:
+            delete_calls.append(url)
+            return FakeResponse(status_code=200, _body={})
+
+        def mock_get(url: str, headers: dict[str, str]) -> FakeResponse:
+            return FakeResponse(status_code=200, _body=[])
+
+        registry = _write_registry(
+            tmp_path,
+            [
+                {
+                    "name": "qwen3-235b",
+                    "model_id": "Qwen/Qwen3-235B-A22B",
+                    "pod_id": "reg-pod-abc",
+                }
+            ],
+        )
+        monkeypatch.setattr(trm, "load_secret", _fake_load_secret)
+        monkeypatch.setattr(trm, "_http_delete", spy_delete)
+        monkeypatch.setattr(trm, "_http_get", mock_get)
+        monkeypatch.setattr(
+            "sys.argv",
+            [
+                "terminate_runpod.py",
+                "--pod-id", "reg-pod-abc",
+                "--execute",
+                "--registry", str(registry),
+            ],
+        )
+
+        trm._cli_main()  # must not raise
+
+        assert len(delete_calls) == 1
+        assert "reg-pod-abc" in delete_calls[0]
+
+    def test_dry_run_pod_id_makes_no_http_calls(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """--pod-id without --execute → dry-run, zero DELETE and zero GET calls."""
+        delete_calls: list[str] = []
+        get_calls: list[str] = []
+
+        monkeypatch.setattr(
+            trm,
+            "_http_delete",
+            lambda url, h: delete_calls.append(url) or FakeResponse(200),  # type: ignore[func-returns-value]
+        )
+        monkeypatch.setattr(
+            trm,
+            "_http_get",
+            lambda url, h: get_calls.append(url) or FakeResponse(200, []),  # type: ignore[func-returns-value]
+        )
+
+        registry = _write_registry(tmp_path, [])
+        monkeypatch.setattr(trm, "load_secret", _fake_load_secret)
+        monkeypatch.setattr(
+            "sys.argv",
+            [
+                "terminate_runpod.py",
+                "--pod-id", "some-pod",
+                "--registry", str(registry),
+                # --execute intentionally absent
+            ],
+        )
+
+        trm._cli_main()  # dry-run, no execute
+
+        assert delete_calls == []
+        assert get_calls == []
+
+
+# ---------------------------------------------------------------------------
+# Test 9 — terminate_all_registered continues past httpx.ConnectError (I-1)
+# ---------------------------------------------------------------------------
+
+
+class TestTerminateAllContinuesOnNetworkError:
+    """Covers I-1: raw httpx network errors must not abort the per-pod loop."""
+
+    def test_connect_error_recorded_loop_continues_to_remaining_pods(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """Pod raising httpx.ConnectError is recorded in errors; subsequent pods still terminate."""
+        call_order: list[str] = []
+
+        def mock_delete(url: str, headers: dict[str, str]) -> FakeResponse:
+            if "pod-bad" in url:
+                raise httpx.ConnectError("simulated network failure")
+            call_order.append(url)
+            return FakeResponse(status_code=200, _body={})
+
+        monkeypatch.setattr(trm, "load_secret", _fake_load_secret)
+        monkeypatch.setattr(trm, "_http_delete", mock_delete)
+
+        registry = _write_registry(
+            tmp_path,
+            [
+                {
+                    "name": "qwen3-235b",
+                    "model_id": "Qwen/Qwen3-235B-A22B",
+                    "pod_id": "pod-bad",
+                },
+                {
+                    "name": "llama-405b",
+                    "model_id": "meta-llama/Llama-3.1-405B",
+                    "pod_id": "pod-good",
+                },
+            ],
+        )
+
+        result = terminate_all_registered(registry, execute=True)
+
+        # Failing pod is recorded in errors, not silently dropped
+        assert len(result["errors"]) == 1
+        assert result["errors"][0]["pod_id"] == "pod-bad"
+        assert "simulated network failure" in result["errors"][0]["error"]
+
+        # Second pod still terminates despite the first failing
+        assert len(result["terminated"]) == 1
+        assert result["terminated"][0]["pod_id"] == "pod-good"
+        assert any("pod-good" in url for url in call_order)
