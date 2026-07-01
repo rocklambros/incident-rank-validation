@@ -52,16 +52,20 @@ class ModelSpec(TypedDict):
 
 MODELS: list[ModelSpec] = [
     {
+        # Qwen3-235B-A22B bf16 weights are ~470GB, so the container disk MUST
+        # exceed that (300GB fills mid-download and the pod hangs on a 404
+        # forever).  8xH200/TP8 (4xH200 OOMs once the KV cache is added); 800GB
+        # disk matches the proven DeepSeek-V3 (671GB) config.
         "name": "qwen3-235b",
         "model_id": "Qwen/Qwen3-235B-A22B",
         "gpu_type": "NVIDIA H200",
-        "gpu_count": 4,
-        "container_disk_gb": 300,
+        "gpu_count": 8,
+        "container_disk_gb": 800,
         "vllm_cmd": (
             "vllm serve Qwen/Qwen3-235B-A22B "
             "--revision 8efa61729e24bd65b1d152b5ab5409052aa80e65 "
             "--host 0.0.0.0 --port 8000 "
-            "--tensor-parallel-size 4 "
+            "--tensor-parallel-size 8 "
             "--enable-expert-parallel "
             "--max-model-len 4096 "
             "--gpu-memory-utilization 0.90 "
