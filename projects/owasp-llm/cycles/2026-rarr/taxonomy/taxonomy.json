@@ -1,0 +1,27 @@
+{
+  "cycle_id": "2026",
+  "source_repo": "https://github.com/GenAI-Security-Project/GenAI-LLM-Top10",
+  "vendored_at": "2026-05-20",
+  "entries": [
+    {"entry_id": "LLM01", "canonical_name": "Prompt Injection", "source_file": "LLM01_PromptInjection.md", "is_incumbent": true, "is_rollup_candidate": false, "rolled_into": null},
+    {"entry_id": "LLM02", "canonical_name": "Sensitive Information Disclosure", "source_file": "LLM02_SensitiveInformationDisclosure.md", "is_incumbent": true, "is_rollup_candidate": false, "rolled_into": null},
+    {"entry_id": "LLM03", "canonical_name": "Supply Chain Vulnerabilities", "source_file": "LLM03_SupplyChain.md", "is_incumbent": true, "is_rollup_candidate": false, "rolled_into": null},
+    {"entry_id": "LLM04", "canonical_name": "Data and Model Poisoning", "source_file": "LLM04_DataModelPoisoning.md", "is_incumbent": true, "is_rollup_candidate": false, "rolled_into": null},
+    {"entry_id": "LLM05", "canonical_name": "Improper Output Handling", "source_file": "LLM05_ImproperOutputHandling.md", "is_incumbent": true, "is_rollup_candidate": false, "rolled_into": null},
+    {"entry_id": "LLM06", "canonical_name": "Excessive Agency", "source_file": "LLM06_ExcessiveAgency.md", "is_incumbent": true, "is_rollup_candidate": false, "rolled_into": null},
+    {"entry_id": "LLM07", "canonical_name": "Hidden Context Exposure", "source_file": "LLM07_HiddenContextExposure.md", "is_incumbent": true, "is_rollup_candidate": false, "rolled_into": null},
+    {"entry_id": "LLM08", "canonical_name": "Vector and Embedding Weaknesses", "source_file": "LLM08_VectorAndEmbeddingWeaknesses.md", "is_incumbent": true, "is_rollup_candidate": false, "rolled_into": null},
+    {"entry_id": "LLM09", "canonical_name": "Misinformation", "source_file": "LLM09_Misinformation.md", "is_incumbent": true, "is_rollup_candidate": false, "rolled_into": null},
+    {"entry_id": "LLM10", "canonical_name": "Unbounded Consumption", "source_file": "LLM10_UnboundedConsumption.md", "is_incumbent": true, "is_rollup_candidate": false, "rolled_into": null},
+    {"entry_id": "NEW-PMP", "canonical_name": "Persistent Memory Poisoning", "source_file": "persistent-memory-poisoning.md", "is_incumbent": false, "is_rollup_candidate": false, "rolled_into": null},
+    {"entry_id": "NEW-MTIE", "canonical_name": "MCP Tool Interface Exploitation", "source_file": "mcp-tool-interface-exploitation.md", "is_incumbent": false, "is_rollup_candidate": false, "rolled_into": null},
+    {"entry_id": "NEW-MA", "canonical_name": "Model Misalignment", "source_file": "model-misalignment.md", "is_incumbent": false, "is_rollup_candidate": false, "rolled_into": null},
+    {"entry_id": "NEW-ITSCD", "canonical_name": "Inference-Time Side-Channel Disclosure", "source_file": "inference-time-side-channel-disclosure.md", "is_incumbent": false, "is_rollup_candidate": false, "rolled_into": null},
+    {"entry_id": "NEW-WLA", "canonical_name": "Weaponized LLM Abuse", "source_file": "weaponized-llm-abuse.md", "is_incumbent": false, "is_rollup_candidate": false, "rolled_into": null},
+    {"entry_id": "NEW-MSDA", "canonical_name": "Model Scheming and Deceptive Alignment", "source_file": "model-scheming-and-deceptive-alignment.md", "is_incumbent": false, "is_rollup_candidate": false, "rolled_into": null},
+    {"entry_id": "ROLL-CMSB", "canonical_name": "Cross-Modal Safety Bypass", "source_file": "cross-modal-safety-bypass.md", "is_incumbent": false, "is_rollup_candidate": true, "rolled_into": "LLM01"},
+    {"entry_id": "ROLL-LAPTF", "canonical_name": "LLM Artifact Promotion Trust Failure", "source_file": "llm-artifact-promotion-trust-failure.md", "is_incumbent": false, "is_rollup_candidate": true, "rolled_into": "LLM03"},
+    {"entry_id": "ROLL-SICG", "canonical_name": "Systemic Insecure Code Generation", "source_file": "systemic-insecure-code-generation.md", "is_incumbent": false, "is_rollup_candidate": true, "rolled_into": "LLM05"},
+    {"entry_id": "ROLL-CFAS", "canonical_name": "Compositional Fine-tuning Alignment Subversion", "source_file": "compositional-finetuning-alignment-subversion.md", "is_incumbent": false, "is_rollup_candidate": true, "rolled_into": "LLM04"}
+  ]
+}
