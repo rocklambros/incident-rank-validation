@@ -136,14 +136,18 @@ class Stage2Classifier:
         return tuple(self.classify(inc, rubric_hash) for inc in incidents)
 
     def _parse_response(self, incident_id: str, output: str) -> Stage2Classification:
+        # Delegate entry_id extraction+validation to the canonical shared parser
+        # so bench (bake-off via parse_stage2_response) and ship (Stage2Classifier)
+        # can never drift on the entry_id decision.
+        entry_id = parse_stage2_response(output, self._valid_entry_ids)
+        # Re-parse JSON to extract confidence/rationale and to detect whether
+        # the original entry_id was rejected (→ fallback with confidence=0.0).
         try:
             data = json.loads(output)
-            entry_id = str(data.get("entry_id", "out-of-scope"))
-            if entry_id not in self._valid_entry_ids:
-                logger.warning(
-                    "Stage-2 returned invalid entry_id %r for %s (not in rubric)",
-                    entry_id, incident_id,
-                )
+            raw_id = str(data.get("entry_id", "out-of-scope"))
+            if raw_id not in self._valid_entry_ids:
+                # parse_stage2_response already logged the rejection warning;
+                # preserve fallback confidence/rationale behaviour.
                 return self._fallback(incident_id)
             return Stage2Classification(
                 incident_id=incident_id,
@@ -155,7 +159,6 @@ class Stage2Classifier:
                 prompt_hash=self._prompt_hash,
             )
         except (json.JSONDecodeError, ValueError, KeyError):
-            logger.warning("Malformed Stage-2 response for %s", incident_id)
             return self._fallback(incident_id)
 
     def _fallback(self, incident_id: str) -> Stage2Classification:

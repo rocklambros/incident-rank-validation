@@ -340,24 +340,34 @@ def test_bakeoff_cmd_builds_live_predict_fn_with_injected_client_factory(
 ) -> None:
     """R6: bakeoff_cmd(execute=True, predict_fn=None, client_factory=mock) exercises
     the full env-pod-URLs → build_live_predict_fn → classify_one glue offline/$0.
+
+    The mock client is DISCRIMINATING: it returns the correct entry_id for each
+    incident by detecting the incident text in the message (the fixture writes
+    title="incident a{i}" / "incident b{i}", which lands verbatim in the user
+    message via build_messages).  This lets a single config beat the all-A floor
+    so result.winner == config_name is actually exercised.
     """
     config_name = "qwen25-72b"
     cycle_dir, all_ids = _write_cycle_fixture(tmp_path, config_name=config_name)
 
-    # Monkeypatch env pod URLs so _load_model_configs-style reading finds them
+    # Monkeypatch env pod URLs so bakeoff_cmd's env-reading loop finds them
     monkeypatch.setenv("RUNPOD_MODEL_1_NAME", config_name)
     monkeypatch.setenv("RUNPOD_MODEL_1_URL", "http://mock-pod")
 
-    # Mock client factory: always returns a perfect classification response
+    # Discriminating mock: returns the correct class for each incident.
+    # The fixture snapshot writes title=f"incident {inc_id}", so the user
+    # message contains "incident a0" … "incident a11" for class A and
+    # "incident b0" … "incident b11" for class B.  str(messages) is the
+    # Python repr of a list of dicts (single-quoted), which reliably contains
+    # the substring "incident a" for class-A incidents and not for class-B.
     class _MockClient:
         def __init__(self, *args: object, **kwargs: object) -> None:
             self.calls = 0
 
         def run_sync(self, messages: object, seed: int) -> RunPodResponse:
             self.calls += 1
-            # Determine class from the incident id embedded in the user message
             msg_text = str(messages)
-            entry_id = "A" if '"a' in msg_text else "B"
+            entry_id = "A" if "incident a" in msg_text else "B"
             return RunPodResponse(
                 output_text=json.dumps(
                     {"entry_id": entry_id, "confidence": 0.95, "rationale": "test"}
@@ -381,7 +391,45 @@ def test_bakeoff_cmd_builds_live_predict_fn_with_injected_client_factory(
     )
 
     assert isinstance(result, BakeoffResult)
-    # The single config should win (perfect mock) — or at minimum the run completes
-    assert result.winner == config_name or result.winner is None  # None if floor is also perfect
-    # The mock client factory was actually called (live predict_fn was built)
-    assert len(mock_clients) > 0
+    # run_sync was invoked for every goldset incident (live glue actually ran)
+    assert sum(c.calls for c in mock_clients) == len(all_ids)
+    # Predictions were scored (config appears in balanced-accuracy table)
+    assert config_name in result.config_balanced_accuracy
+    # The discriminating mock produces a perfect classifier → beats the all-A floor
+    assert result.winner == config_name
+
+
+def test_bakeoff_cmd_ceiling_reaches_cost_tracker(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """R3 e2e: cost_ceiling_usd from stage2_manifest flows into CostTracker.ceiling_usd.
+
+    The existing R3 tests verify the manifest is read and the CLI has no
+    --cost-ceiling flag, but they do not prove the value actually reaches the
+    CostTracker that guards the live run.  This test uses a spy to capture the
+    constructed CostTracker and assert its ceiling matches the manifest value.
+    """
+    from engine.classify.cost_tracker import CostTracker
+
+    cycle_dir, all_ids = _write_cycle_fixture(tmp_path, cost_ceiling_usd=500.0)
+
+    captured: list[CostTracker] = []
+    OriginalCostTracker = CostTracker
+
+    def _spy_cost_tracker(ceiling_usd: float, **kwargs: object) -> CostTracker:
+        t = OriginalCostTracker(ceiling_usd=ceiling_usd, **kwargs)
+        captured.append(t)
+        return t
+
+    monkeypatch.setattr("engine.cli.bakeoff.CostTracker", _spy_cost_tracker)
+
+    def perfect(config_name: str) -> dict[str, str]:
+        return {k: ("A" if k.startswith("a") else "B") for k in all_ids}
+
+    bakeoff_cmd(cycle_dir, execute=False, predict_fn=perfect)
+
+    assert len(captured) == 1, "bakeoff_cmd must construct exactly one CostTracker"
+    assert captured[0].ceiling_usd == 500.0, (
+        f"CostTracker.ceiling_usd should be 500.0 (from manifest), "
+        f"got {captured[0].ceiling_usd}"
+    )

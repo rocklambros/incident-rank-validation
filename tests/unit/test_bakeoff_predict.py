@@ -10,7 +10,7 @@ from engine.classify.bakeoff_predict import (
     build_live_predict_fn,
     classify_one,
 )
-from engine.classify.cost_tracker import CostTracker
+from engine.classify.cost_tracker import CostCeilingExceeded, CostTracker
 from engine.classify.runpod_client import RunPodError, RunPodResponse
 from engine.classify.stage2_prompt import INCIDENT_DELIMITER_BEGIN
 from engine.schema import IncidentRecord
@@ -302,6 +302,36 @@ class TestBuildLivePredictFn:
         # Client was only called for INC-1 and INC-2 (not INC-0 which was done)
         assert len(client_ref) == 1
         assert client_ref[0].calls == 2
+
+    def test_cost_ceiling_abort_fires_end_to_end(self, tmp_path: object) -> None:
+        """R1 e2e: CostCeilingExceeded propagates from classify_one through
+        build_live_predict_fn when per-call cost exceeds ceiling * abort_factor.
+
+        ceiling=0.001, abort_factor=1.2, threshold=0.0012.
+        cost_per_call=0.01 > 0.0012 → the very first successful call triggers
+        check_or_abort() inside classify_one and the exception bubbles out of
+        the predict_fn entirely.
+        """
+        from pathlib import Path
+        tmp = Path(str(tmp_path))  # type: ignore[arg-type]
+
+        ct = CostTracker(ceiling_usd=0.001, _abort_factor=1.2)
+        incs = {"INC-1": _inc("INC-1")}
+
+        pf = build_live_predict_fn(
+            pod_urls={"qwen25-72b": "http://pod"},
+            model_names={"qwen25-72b": "Qwen/Qwen2.5-72B-Instruct"},
+            goldset_incidents=incs,
+            rubric_json=RUBRIC,
+            cost_tracker=ct,
+            cost_per_call={"qwen25-72b": 0.01},  # 0.01 >> 0.001 * 1.2 = 0.0012
+            seed=42,
+            checkpoint_dir=tmp,
+            client_factory=lambda *a, **kw: _SimpleClient(),
+        )
+
+        with pytest.raises(CostCeilingExceeded):
+            pf("qwen25-72b")
 
 
 # ---------------------------------------------------------------------------
