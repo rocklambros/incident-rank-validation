@@ -48,5 +48,6 @@ The pre-Phase-3 gate requires **BOTH U1 (F-C) AND U2's F6 (recall min-denominato
 ## Status (update as units land)
 - U1 F-C: **DONE** (commits 12c8bf9..4baf0f9, CI GREEN). Co-blocker #1 cleared.
 - U2 Phase-2 integrity hardening: **DONE** (commits 23a7bbd..3f5e261, CI GREEN on PR #22). 7 tasks (U2-7 F3-sweep deferred→U5). **F6 REDESIGNED via premortem = flag-not-widen** (the original soft-Beta(5,5)-widen would deflate λ + hide under-detected entries). #1 byte-identity invariant holds (opus-verified); F8 guard clears real 2026 data. **Co-blocker #2 (F6) cleared → PRE-PHASE-3 GATE FULLY OPEN.** Cross-unit obligations tracked: D→U9 report disclosure, F→U9 sensitivity grid, I→U5 lock-acceptance.
-- U3 F7 baselines + prospective power: PLAN ← NEXT (offline; freezes the previous bare-λ 0.20 + λ·size rankings — preserve-previous-rankings mandate).
-- U4..U9: not started.
+- U3 F7 baselines + prospective power: **DONE** (commits ee42599..a066689, CI GREEN on PR #22). Premortem caught a CODE-CONFIRMED Critical (F1: the published κ=0.2029 is the λ·size ranking over 20 entries via `_ranks_from_incidence`, NOT a "bare-λ over 17"; `_ranks_from_lambda` is dead) + a wrong hardcoded disclosure (1927→3073 draws). The **previous ranking is frozen byte-pinned to `concordance.json`** in `projects/owasp-llm/baselines/2026/` (the "previous" side of the U9 compare); power statement β-corrected + honestly framed as prospective. Human-calls in the plan's FOR-THE-HUMAN block.
+- U4 hygiene: ← NEXT (git-add done-but-untracked docs; curation relocation; engine_version reconcile).
+- U5..U9: not started.
