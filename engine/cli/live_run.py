@@ -25,6 +25,7 @@ import hashlib
 import json
 import logging
 import os
+import sys
 import tempfile
 import threading
 from collections.abc import Callable, Generator
@@ -32,6 +33,18 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
+
+# ``tools/`` is a top-level package (has ``__init__.py``) but is NOT in the
+# installed ``packages`` list, so it is importable under pytest (tests/conftest
+# puts the repo root on sys.path) but NOT under the ``incident-rank`` console
+# script — where ``from tools import ...`` (deferred, inside live_run_cli /
+# _RealProvisioner) would raise ModuleNotFoundError. Ensure the repo root is on
+# sys.path so the live-run CLI works in every invocation context. (This gap was
+# caught by the U8 $0 dry-run; all unit tests run under pytest's path and missed
+# it.)
+_REPO_ROOT = str(Path(__file__).resolve().parents[2])
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
 
 logger = logging.getLogger(__name__)
 
