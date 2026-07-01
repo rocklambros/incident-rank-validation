@@ -1115,10 +1115,10 @@ def live_run_cli(
         classify_fn=classify_fn,
         cost_tracker=cost_tracker,
         clock=clock,
-        readiness_cap_s=3600.0,   # 60-min readiness cap
+        readiness_cap_s=7200.0,   # 120-min readiness cap (huge models: DeepSeek-V3 ~671GB download)
         wall_cap_s=21600.0,        # 6-hour total wall cap
         poll_s=20.0,               # monitor polls every 20s
-        poll_interval_s=30.0,      # readiness re-poll every 30s
+        poll_interval_s=60.0,      # readiness re-poll every 60s (downloads are slow; don't hammer)
     )
 
 
