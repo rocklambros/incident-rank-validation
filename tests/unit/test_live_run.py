@@ -24,6 +24,7 @@ from engine.cli.live_run import (
     PodLeasePool,
     ReadinessTimeout,
     RealClock,
+    _pool_terminate_one,
     guaranteed_teardown,
     live_run_cli,
     orchestrate_live_run,
@@ -298,8 +299,11 @@ class _FakeProvisioner:
         self.pods = pods
         self.deploy_called = False
 
-    def deploy(self) -> list[PodInfo]:
+    def deploy(self, on_pod_created: Any = None) -> list[PodInfo]:
         self.deploy_called = True
+        for pod in self.pods:
+            if on_pod_created is not None:
+                on_pod_created(pod.pod_id, pod.name)
         return self.pods
 
 
@@ -872,4 +876,131 @@ def test_live_run_cli_orphan_raises_before_provision(tmp_path: Path) -> None:
 
     assert not _SpyProvisioner.deploy_called, (
         "provisioner.deploy() must not be called when orphan pods are detected"
+    )
+
+
+# ===========================================================================
+# Safety-review fixes — Test 18: CRITICAL-1 incremental registration
+# ===========================================================================
+
+
+def test_incremental_registration_survives_mid_provision_crash(tmp_path: Path) -> None:
+    """CRITICAL-1: on_pod_created callback writes p1 to durable registry before
+    deploy() raises; guaranteed_teardown terminates p1 (pool is not empty)."""
+    registry = tmp_path / "pods.json"
+    term = _FakeTerminator(live={"p1"})
+    registry_at_crash: list[str] = []
+
+    class _CrashAfterFirstPodProvisioner:
+        def deploy(self, on_pod_created: Any = None) -> list[PodInfo]:
+            # Register p1 via callback — incremental, before p2 is created.
+            if on_pod_created is not None:
+                on_pod_created("p1", "n1")
+            # Snapshot durable registry right after callback, before the raise.
+            if registry.exists():
+                data: list[dict[str, Any]] = json.loads(registry.read_text())
+                registry_at_crash.extend(e["pod_id"] for e in data if "pod_id" in e)
+            # Crash before provisioning p2.
+            raise RuntimeError("crash mid-provision after p1")
+
+    with pytest.raises(RuntimeError, match="crash mid-provision"):
+        orchestrate_live_run(
+            tmp_path,
+            provisioner=_CrashAfterFirstPodProvisioner(),
+            terminator=term,
+            gate_fn=lambda name: _make_gate_result(name, passed=True),
+            bakeoff_fn=lambda eligible: _FakeBakeoffResult("n1"),
+            classify_fn=lambda w: None,
+            cost_tracker=_FakeCostTracker(),
+            clock=_FakeClock(),
+            readiness_cap_s=60.0,
+            wall_cap_s=3600.0,
+            on_fatal=lambda r: None,
+            poll_s=0.01,
+            is_ready_fn=lambda url: True,
+            registry_path=registry,
+        )
+
+    # (a) p1 was written to the durable registry at crash time via on_pod_created.
+    assert "p1" in registry_at_crash, (
+        "p1 must be in durable registry immediately after on_pod_created callback "
+        "(before deploy() raises) — binds CRITICAL-1 incremental-registration path"
+    )
+    # (b) guaranteed_teardown tore down p1 — pool was NOT empty at crash time.
+    assert "p1" in term.terminated, (
+        "guaranteed_teardown must terminate p1 when deploy() raises mid-way "
+        "(if pool were empty, p1 would have leaked)"
+    )
+
+
+# ===========================================================================
+# Safety-review fixes — Test 19: CRITICAL-2 preflight uses real terminator
+# ===========================================================================
+
+
+def test_preflight_calls_real_reconcile_not_none(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """CRITICAL-2: live_run_cli without _terminator_module passes _tmod (resolved)
+    to _preflight, not None; reconcile is called and no AttributeError occurs."""
+    import sys
+
+    reconcile_calls: list[bool] = []
+
+    class _SpyTmod:
+        def reconcile(self, registry_path: Any = None, *, execute: bool) -> dict[str, Any]:
+            reconcile_calls.append(True)
+            return {"orphans": [], "live_and_ours": [], "registered_gone": []}
+
+        def terminate_pod(self, pod_id: str) -> bool:
+            return True
+
+        def list_live_pods(self) -> list[Any]:
+            return []
+
+    spy = _SpyTmod()
+    # Inject the spy as tools.terminate_runpod so live_run_cli picks it up when
+    # _terminator_module is None (the production path).
+    monkeypatch.setitem(sys.modules, "tools.terminate_runpod", spy)
+    tools_mod = sys.modules.get("tools")
+    if tools_mod is not None:
+        monkeypatch.setattr(tools_mod, "terminate_runpod", spy, raising=False)
+
+    cycle = _make_cycle_fixture(tmp_path)
+    # Production path: no _terminator_module injected → live_run_cli resolves it.
+    live_run_cli(cycle, execute=False)
+
+    assert reconcile_calls, (
+        "preflight must call reconcile on the resolved _tmod, not on None "
+        "(the bug: _preflight was passed terminator_module=_terminator_module=None)"
+    )
+
+
+# ===========================================================================
+# Safety-review fixes — Test 20: IMPORTANT-3 lied-success non-winner stays tracked
+# ===========================================================================
+
+
+def test_non_winner_lied_success_stays_in_registry(tmp_path: Path) -> None:
+    """IMPORTANT-3: _pool_terminate_one re-verifies after terminate_pod; a lied-success
+    pod stays in the durable registry so the final terminate_all can catch it."""
+    registry = tmp_path / "pods.json"
+    term = _FakeTerminatorLieAboutSuccess()
+    pool = PodLeasePool(term, registry_path=registry)
+    pool.register("p1", "pod-one")
+    pool.register("p2", "pod-two")
+
+    # p1 is the "non-winner" being early-terminated; the terminator lies about success.
+    with pytest.raises(RuntimeError):
+        _pool_terminate_one(pool, "p1")
+
+    # p1 must remain in in-memory pool — NOT silently dropped.
+    assert "p1" in pool._registered, (
+        "p1 must remain in pool._registered when terminate_pod lied about success"
+    )
+    # p1 must remain in durable registry so the final terminate_all can catch it.
+    data: list[dict[str, Any]] = json.loads(registry.read_text())
+    pod_ids_in_registry = {e.get("pod_id") for e in data}
+    assert "p1" in pod_ids_in_registry, (
+        "p1 must remain in durable registry when terminate_pod lied about success"
     )

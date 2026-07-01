@@ -109,6 +109,8 @@ class PodLeasePool:
         # pod_id -> name for every pod registered in this process instance.
         self._registered: dict[str, str] = {}
         self._atexit_registered = False
+        # M2: RLock guards _registered + registry file writes against monitor-thread races.
+        self._lock = threading.RLock()
 
     # ------------------------------------------------------------------
     # Public API
@@ -125,16 +127,17 @@ class PodLeasePool:
         second process reading the file before the readiness wait (or after a
         SIGKILL) can still recover the pod.
         """
-        if pod_id in self._registered:
-            return
+        with self._lock:
+            if pod_id in self._registered:
+                return
 
-        # R1: persist to disk FIRST, before touching in-memory state.
-        self._append_to_registry(pod_id, name)
-        self._registered[pod_id] = name
+            # R1: persist to disk FIRST, before touching in-memory state.
+            self._append_to_registry(pod_id, name)
+            self._registered[pod_id] = name
 
-        if not self._atexit_registered:
-            atexit.register(self._atexit_handler)
-            self._atexit_registered = True
+            if not self._atexit_registered:
+                atexit.register(self._atexit_handler)
+                self._atexit_registered = True
 
         logger.info("Registered pod %s (%s) for teardown", pod_id, name)
 
@@ -150,7 +153,8 @@ class PodLeasePool:
         our registered pods are still live.  The durable registry is NOT
         cleared unless the re-verify confirms all are gone.
         """
-        pods_snapshot = dict(self._registered)
+        with self._lock:
+            pods_snapshot = dict(self._registered)
         errors: list[tuple[str, Exception]] = []
 
         for pod_id, name in pods_snapshot.items():
@@ -189,8 +193,9 @@ class PodLeasePool:
 
         # All confirmed gone — safe to remove our entries from the registry
         # and clear in-memory state.
-        self._remove_our_pods_from_registry()
-        self._registered.clear()
+        with self._lock:
+            self._remove_our_pods_from_registry()
+            self._registered.clear()
 
     # ------------------------------------------------------------------
     # Durable registry helpers (R1)
@@ -398,9 +403,17 @@ class InsufficientEligibleModels(RuntimeError):
 
 
 class Provisioner(Protocol):
-    """Deploy all candidate pods and return their info."""
+    """Deploy all candidate pods and return their info.
 
-    def deploy(self) -> list[PodInfo]:
+    ``on_pod_created`` is called with ``(pod_id, name)`` immediately after each
+    pod is created inside the loop — before the next pod is attempted.  This
+    lets the orchestrator register pods durably one-at-a-time so a mid-deploy
+    crash/SIGKILL does not leak already-created pods (CRITICAL-1).
+    """
+
+    def deploy(
+        self, on_pod_created: Callable[[str, str], None] | None = None
+    ) -> list[PodInfo]:
         ...
 
 
@@ -526,7 +539,8 @@ def _pool_terminate_one(pool: PodLeasePool, pod_id: str) -> None:
     definition in Task 1 self-contained while still being tested via the same
     pool instance.
     """
-    name = pool._registered.get(pod_id, pod_id)
+    with pool._lock:
+        name = pool._registered.get(pod_id, pod_id)
     try:
         result = pool._terminator.terminate_pod(pod_id)
         logger.info(
@@ -545,9 +559,27 @@ def _pool_terminate_one(pool: PodLeasePool, pod_id: str) -> None:
         )
         raise
 
-    # Only release on success — failure leaves the pod in pool for retry.
-    del pool._registered[pod_id]
-    _pool_remove_single_from_registry(pool, pod_id)
+    # IMPORTANT-3 re-verify: mirror terminate_all's re-verify semantics.
+    # terminate_pod() may return True even when the pod is still live (silent API
+    # lie).  Re-query list_live_ids() before removing from tracking — if the pod
+    # is still live, keep it registered so the final terminate_all() catches it.
+    live_ids = pool._terminator.list_live_ids()
+    if pod_id in live_ids:
+        logger.error(
+            "SEV-1: non-winner pod %s (%s) still live after terminate_pod returned True"
+            " — pod RETAINED in pool for final teardown (silent API lie?)",
+            pod_id,
+            name,
+        )
+        raise RuntimeError(
+            f"SEV-1: pod {pod_id} ({name}) still live after terminate_pod returned True"
+            " — retained in pool for final teardown"
+        )
+
+    # Confirmed gone — release from in-memory pool and durable registry.
+    with pool._lock:
+        del pool._registered[pod_id]
+        _pool_remove_single_from_registry(pool, pod_id)
 
 
 def _pool_remove_single_from_registry(pool: PodLeasePool, pod_id: str) -> None:
@@ -687,12 +719,12 @@ def orchestrate_live_run(
 
     try:
         with guaranteed_teardown(pool):
-            # Step 1: Provision — register each pod IMMEDIATELY (R1 durable).
-            pods = provisioner.deploy()
-            pod_urls: dict[str, str] = {}
-            for pod in pods:
-                pool.register(pod.pod_id, pod.name)  # durable registry write
-                pod_urls[pod.name] = pod.url
+            # Step 1: Provision — register each pod IMMEDIATELY via on_pod_created
+            # callback (R1 durable).  The callback fires per-pod inside deploy()
+            # so a crash/SIGKILL between pod creations does NOT leak the already-
+            # created pods (CRITICAL-1 incremental registration).
+            pods = provisioner.deploy(on_pod_created=pool.register)
+            pod_urls: dict[str, str] = {pod.name: pod.url for pod in pods}
             logger.info(
                 "Provisioned %d pod(s): %s",
                 len(pods),
@@ -810,10 +842,9 @@ def _preflight(
             f"cycle_dir must be under a cycles/2026-rarr directory, got {cycle_dir}. "
             "NEVER write into cycles/2026/ (the locked 2026 cycle)."
         )
-    if "2026" in parts and "2026-rarr" not in parts:
-        raise ValueError(
-            f"cycle_dir appears to be under cycles/2026/ (not 2026-rarr): {cycle_dir}"
-        )
+    # M1: second guard ("2026" in parts and "2026-rarr" not in parts) was dead
+    # code — the first branch already raises when "2026-rarr" is absent, so the
+    # second condition could never be True here.  Removed.
 
     # (2) Manifest lock verification.
     manifest_path = cycle_dir / "prereg" / "manifest.json"
@@ -915,7 +946,9 @@ def live_run_cli(
         from tools import terminate_runpod as _tmod
 
     # --- Preflight (unconditional, offline) ---
-    _preflight(cycle_dir, terminator_module=_terminator_module)
+    # CRITICAL-2 fix: pass _tmod (the resolved module), NOT _terminator_module
+    # (the raw parameter, which is None in production → None.reconcile() crash).
+    _preflight(cycle_dir, terminator_module=_tmod)
 
     if not execute:
         # DRY-RUN: print the plan and stop.
@@ -970,7 +1003,10 @@ def live_run_cli(
         hf_token = _dp_load_secret("huggingface/token", "HF_TOKEN")
 
         class _RealProvisioner:
-            def deploy(self) -> list[PodInfo]:
+            def deploy(
+                self,
+                on_pod_created: Callable[[str, str], None] | None = None,
+            ) -> list[PodInfo]:
                 pods: list[PodInfo] = []
                 for model in MODELS:
                     pod_name = f"classify-{model['name']}"
@@ -991,7 +1027,11 @@ def live_run_cli(
                     pod_id = str(data["id"])
                     url = f"https://{pod_id}-8000.proxy.runpod.net"
                     _url_store[model["name"]] = url
-                    pods.append(PodInfo(pod_id=pod_id, name=model["name"], url=url))
+                    pod = PodInfo(pod_id=pod_id, name=model["name"], url=url)
+                    # CRITICAL-1: register immediately before creating the next pod.
+                    if on_pod_created is not None:
+                        on_pod_created(pod_id, model["name"])
+                    pods.append(pod)
                 return pods
 
         provisioner: Any = _RealProvisioner()
