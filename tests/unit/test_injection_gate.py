@@ -22,9 +22,18 @@ from engine.classify.injection_gate import (
 from engine.classify.injection_probes import INJECTION_PROBES
 from engine.classify.runpod_client import RunPodError, RunPodResponse
 
-# Minimal rubric with two real entry_ids.  INJECTION_PROBES[0].attacker_target
-# is LLM05, which is present here, so the subverted-model test works correctly.
-RUBRIC = '{"entries":[{"entry_id":"LLM01"},{"entry_id":"LLM05"}]}'
+# Full 10-entry rubric covering all INJECTION_PROBES attacker_targets (LLM01-LLM10).
+# A 2-entry rubric can no longer be used as the default because the new rubric-
+# completeness precondition raises ValueError if any probe's attacker_target is
+# absent from the rubric.
+RUBRIC = (
+    '{"entries":['
+    '{"entry_id":"LLM01"},{"entry_id":"LLM02"},{"entry_id":"LLM03"},'
+    '{"entry_id":"LLM04"},{"entry_id":"LLM05"},{"entry_id":"LLM06"},'
+    '{"entry_id":"LLM07"},{"entry_id":"LLM08"},{"entry_id":"LLM09"},'
+    '{"entry_id":"LLM10"}'
+    ']}'
+)
 
 
 class _MockClient:
@@ -227,3 +236,117 @@ def test_provenance_written_with_integrity_fields(tmp_path: Path) -> None:
     # Verify the hash matches the golden value from test_injection_probes.py
     from tests.unit.test_injection_probes import _GOLDEN_PROBE_SET_SHA256
     assert data["probe_set_sha256"] == _GOLDEN_PROBE_SET_SHA256
+
+
+# ── FIX 1: rubric-completeness precondition ────────────────────────────────────
+
+def test_rubric_completeness_precondition_raises_on_truncated_rubric() -> None:
+    """FIX 1: run_injection_gate must raise ValueError when the rubric is missing
+    any probe's attacker_target (e.g. rubric only has LLM01 + LLM05; all other
+    probe targets are absent).  A missing target makes that probe a silent no-op:
+    parse_stage2_response collapses any response to 'out-of-scope', so the probe
+    can never observe its attacker_target and always scores 'resisted' falsely.
+    """
+    import pytest
+
+    # Truncated rubric: only LLM01 + LLM05.  INJECTION_PROBES include targets
+    # LLM02, LLM03, LLM04, LLM06, LLM07, LLM08, LLM09, LLM10 — all absent.
+    truncated_rubric = '{"entries":[{"entry_id":"LLM01"},{"entry_id":"LLM05"}]}'
+    with pytest.raises(ValueError, match="rubric missing probe targets"):
+        run_injection_gate(
+            _MockClient(lambda m: "out-of-scope"),
+            "m",
+            "sha",
+            truncated_rubric,
+            seed=42,
+        )
+
+
+def test_rubric_completeness_precondition_passes_with_full_rubric() -> None:
+    """FIX 1 (negative): the full 10-entry RUBRIC must NOT raise ValueError and
+    must complete normally — the precondition must not block the real path.
+    """
+    r = run_injection_gate(
+        _MockClient(lambda m: "out-of-scope"), "m", "sha", RUBRIC, seed=42
+    )
+    assert r.passed is True  # full rubric + always-out-of-scope → all resisted
+
+
+# ── FIX 2: benign_hit is False on errored probes ───────────────────────────────
+
+def test_errored_probe_has_benign_hit_false() -> None:
+    """FIX 2: an errored probe must record benign_hit=False regardless of whether
+    the default returned_entry_id ('out-of-scope') matches the probe's
+    benign_expectation.  A non-null error alongside benign_hit=True is misleading
+    for audit.
+    """
+
+    class _RaisesAlways:
+        def run_sync(self, messages, seed: int) -> RunPodResponse:
+            raise RunPodError("simulated network timeout")
+
+    r = run_injection_gate(_RaisesAlways(), "m", "sha", RUBRIC, seed=42)
+    for pr in r.probe_results:
+        assert pr.error is not None
+        assert pr.benign_hit is False, (
+            f"Probe {pr.probe_id!r}: benign_hit={pr.benign_hit} but error is set "
+            f"({pr.error!r}) — benign_hit must be False on errored probes"
+        )
+
+
+# ── FIX 3: bench=ship equivalence on malformed response ───────────────────────
+
+def test_bench_ship_equivalence_malformed_response() -> None:
+    """FIX 3: gate classify path and bakeoff_predict.classify_one must agree when
+    the model returns malformed (non-JSON) output.  Both must collapse to the same
+    fallback value ('out-of-scope'), confirming the shared parser's fallback branch
+    is identical — not just the happy path.
+    """
+    from engine.classify.bakeoff_predict import classify_one
+    from engine.classify.cost_tracker import CostTracker
+    from engine.schema import IncidentRecord
+
+    malformed = "not json at all"
+
+    class _MalformedClient:
+        def run_sync(self, messages, seed: int) -> RunPodResponse:
+            return RunPodResponse(malformed, "j", 1.0)
+
+    # Path 1: through run_injection_gate (uses parse_stage2_response internally)
+    gate_result = run_injection_gate(_MalformedClient(), "m", "sha", RUBRIC, seed=42)
+    gate_entry_id = gate_result.probe_results[0].returned_entry_id
+
+    # Path 2: through classify_one (bakeoff_predict) — must produce same entry_id.
+    probe = INJECTION_PROBES[0]
+    inc = IncidentRecord(
+        id=f"GATE-PROBE-{probe.probe_id}",
+        date="2026-01-01",
+        text=probe.incident_text,
+        severity="High",
+        source_class="injection-probe",
+        corpus_stratum="gate",
+        quality="auto",
+        native_labels=(),
+        source_url="https://gate.internal/injection-probe",
+    )
+    bakeoff_entry_id = classify_one(
+        _MalformedClient(),
+        inc,
+        RUBRIC,
+        42,
+        CostTracker(ceiling_usd=100.0),
+        0.01,
+        sleep_fn=lambda _: None,
+    )
+
+    assert gate_entry_id == "out-of-scope", (
+        f"Gate path on malformed input: expected 'out-of-scope', got {gate_entry_id!r}"
+    )
+    assert bakeoff_entry_id == "out-of-scope", (
+        f"bakeoff_predict on malformed input: expected 'out-of-scope', "
+        f"got {bakeoff_entry_id!r}"
+    )
+    assert gate_entry_id == bakeoff_entry_id, (
+        f"bench≠ship on malformed path: gate={gate_entry_id!r}, "
+        f"bakeoff={bakeoff_entry_id!r}"
+    )

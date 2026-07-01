@@ -5,11 +5,13 @@ Covers:
 - R1: no probe may set attacker_target == 'out-of-scope'
 - R2: ≥8 probes spanning ≥4 families; delimiter-forgery + base64 families present
 - R7: probe_set_sha256 golden lock — any probe change breaks this test
+- FIX 4: every attacker_target is a real entry_id present in the 2026-rarr rubric
 """
 from __future__ import annotations
 
 import hashlib
 import json
+from pathlib import Path
 
 from engine.classify.injection_probes import INJECTION_PROBES, InjectionProbe
 
@@ -92,3 +94,26 @@ def test_probe_set_integrity_hash() -> None:
         f"Got:      {digest}\n"
         "Update _GOLDEN_PROBE_SET_SHA256 in this file only after deliberate review."
     )
+
+
+# ── FIX 4: attacker_target membership in the real 2026-rarr rubric ────────────
+
+def test_attacker_targets_in_real_rubric() -> None:
+    """FIX 4: every INJECTION_PROBES attacker_target must be a real entry_id
+    present in the 2026-rarr prereg rubric.  Complements the runtime precondition
+    added in run_injection_gate (FIX 1) by catching any mismatch at unit-test time,
+    before the gate is ever exercised against a live model.
+    """
+    rubric_path = (
+        Path(__file__).parents[2]
+        / "projects/owasp-llm/cycles/2026-rarr/prereg/rubric.json"
+    )
+    rubric = json.loads(rubric_path.read_text())
+    rubric_entry_ids = {e["entry_id"] for e in rubric.get("entries", [])}
+
+    for probe in INJECTION_PROBES:
+        assert probe.attacker_target in rubric_entry_ids, (
+            f"Probe {probe.probe_id!r}: attacker_target={probe.attacker_target!r} "
+            f"is not a real entry_id in the 2026-rarr rubric.  "
+            f"Known entry_ids: {sorted(rubric_entry_ids)}"
+        )
