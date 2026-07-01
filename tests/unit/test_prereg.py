@@ -270,6 +270,11 @@ class TestLock:
             "recall_min_denominator_gate": False,
             "recall_floor_epsilon": 0.0,
             "recall_min_denominator_rationale": "",
+            # D6 power fields are schema>=4-only: excluded from v1/v2/v3 canonical forms.
+            # Mutating them alone does NOT invalidate a schema<4 lock (by design — D6).
+            "prospective_power_target_kappa": 0.0,       # must stay 0.0 on schema<4 (guard)
+            "prospective_power_confidence_level": 0.0,   # must stay 0.0 on schema<4 (guard)
+            "prospective_power_1_minus_beta": 0.0,       # must stay 0.0 on schema<4 (guard)
         }
 
         manifest_fields = {f.name for f in fields(m)}
@@ -277,13 +282,16 @@ class TestLock:
             f"mutation table is missing fields: {manifest_fields - set(mutations.keys())}"
         )
 
-        # goldset_hash, sigma_u_hyperprior_scale, overlap_min_fp, lambda_min, and all four
-        # F6 fields are excluded from the v1 canonical form; mutating them does NOT
-        # invalidate a v1 lock.
+        # goldset_hash, sigma_u_hyperprior_scale, overlap_min_fp, lambda_min, all four
+        # F6 fields, and all three D6 power fields are excluded from the v1 canonical
+        # form; mutating them does NOT invalidate a v1 lock.
         lock_invariant_fields = {
             "goldset_hash", "sigma_u_hyperprior_scale", "overlap_min_fp", "lambda_min",
             "recall_min_denominator", "recall_min_denominator_gate",
             "recall_floor_epsilon", "recall_min_denominator_rationale",
+            "prospective_power_target_kappa",
+            "prospective_power_confidence_level",
+            "prospective_power_1_minus_beta",
         }
         for field_name, alt_value in mutations.items():
             mutated = replace(m, **{field_name: alt_value})
@@ -344,6 +352,63 @@ class TestLock:
         assert compute_lock_hash(m) == FROZEN_V2_HASH, (
             f"v2 canonical hash changed — a new field leaked into schema<3 to_dict().\n"
             f"Expected: {FROZEN_V2_HASH}\n"
+            f"Actual:   {compute_lock_hash(m)}"
+        )
+
+    def test_v3_lock_still_verifies(self, tmp_path: Path) -> None:
+        """Golden-hash test: schema-3 manifest lock hash is FROZEN after D6 power field addition.
+
+        If any new field leaks into the v3 canonical form (to_dict() for schema<4),
+        the computed hash will differ from this frozen value and the test will fail
+        immediately, proving byte-immutability was broken.
+        """
+        # Golden hash captured from the code before D6 field addition.
+        # Computed via: compute_lock_hash(make_v3_manifest()) on 2026-06-30.
+        FROZEN_V3_HASH = (
+            "665463d6874d31bec0e5dd8f67a40e51c341fd98acb7ef9e4bc61d681a461567"
+        )
+        m = PreregManifest(
+            schema_version=3,
+            engine_version="0.1.0",
+            engine_version_range_min="0.1.0",
+            engine_version_range_max="0.2.0",
+            cycle_id="test-cycle-v3-golden",
+            taxonomy_hash="aaa",
+            snapshot_hash="bbb",
+            primary_spec="negative_binomial_per_stratum",
+            robustness_specs=("poisson_flat",),
+            flag_threshold_tau=0.8,
+            statistic="weighted_cohens_kappa",
+            measurability_minimum=10,
+            prior_scale=0.5,
+            concentration_shape=5.0,
+            concentration_rate=0.1,
+            ess_fraction=0.4,
+            meaningful_kappa_n=4,
+            prng_seed=42,
+            confidence_threshold=0.3,
+            rubric_drafting_attestation=None,
+            rubric_reviewer=None,
+            statistical_reviewer=None,
+            classifier_rule_hash=None,
+            rubric_hash=None,
+            post_hoc_register_path=None,
+            goldset_hash="v3-golden-goldset",
+            sigma_u_hyperprior_scale=1.5,
+            overlap_min_fp=3,
+            recall_min_denominator=5,
+            recall_min_denominator_gate=True,
+            recall_floor_epsilon=0.01,
+            recall_min_denominator_rationale="test-rationale",
+        )
+        # Write + verify via normal lock roundtrip
+        lock_path = tmp_path / "v3.lock"
+        write_lock(m, lock_path)
+        verify_lock(m, lock_path)  # must not raise
+        # Frozen hash check: any future field that leaks into v3 canonical form fails here
+        assert compute_lock_hash(m) == FROZEN_V3_HASH, (
+            f"v3 canonical hash changed — a new field leaked into schema<4 to_dict().\n"
+            f"Expected: {FROZEN_V3_HASH}\n"
             f"Actual:   {compute_lock_hash(m)}"
         )
 

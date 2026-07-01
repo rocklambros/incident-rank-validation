@@ -59,7 +59,7 @@ class PreregManifest:
     rollup_p_supported: float = 0.8
     rollup_p_contradicted: float = 0.2
     lambda_min: float | None = None  # noise floor; default: prior_scale * 0.02
-    schema_version: int = 1  # 1 = original field set; 2 = adds goldset_hash; 3 = adds F6
+    schema_version: int = 1  # 1 = original; 2 = goldset_hash; 3 = F6; 4 = power fields
     goldset_hash: str | None = None  # bound only when schema_version >= 2
     sigma_u_hyperprior_scale: float | None = None  # HalfNormal scale for σ_u prior (schema >= 2)
     overlap_min_fp: int = 2  # min false-positive count to form a W leakage column (schema >= 2)
@@ -70,6 +70,12 @@ class PreregManifest:
     recall_min_denominator_gate: bool = False  # True = hard-exclude flagged entries from headline
     recall_floor_epsilon: float = 0.0         # uniform recall floor ε (numerical stability)
     recall_min_denominator_rationale: str = ""  # K derivation / thin-cells-left-bare note
+    # D6 prospective power pre-registration (schema >= 4, all defaulted to 0.0/off).
+    # Default values keep schema<4 canonical hashes byte-identical (excluded from
+    # to_dict() for schema_version < 4).
+    prospective_power_target_kappa: float = 0.0        # κ target (0.0 = off)
+    prospective_power_confidence_level: float = 0.0    # 1-α two-sided (0.0 = off)
+    prospective_power_1_minus_beta: float = 0.0        # power 1−β (0.0 = off)
 
     def __post_init__(self) -> None:
         if self.lambda_min is None:
@@ -101,6 +107,20 @@ class PreregManifest:
                 "recall_floor_epsilon, recall_min_denominator_rationale) require "
                 f"schema_version >= 3; got schema_version={self.schema_version}."
             )
+        # D6 power active-but-unlocked guard (mirrors F6 guard above).
+        # Any non-default power field requires schema_version >= 4.
+        _power_active = (
+            self.prospective_power_target_kappa != 0.0
+            or self.prospective_power_confidence_level != 0.0
+            or self.prospective_power_1_minus_beta != 0.0
+        )
+        if _power_active and self.schema_version < 4:
+            raise ValueError(
+                "Power fields (prospective_power_target_kappa, "
+                "prospective_power_confidence_level, prospective_power_1_minus_beta) "
+                "require schema_version >= 4; "
+                f"got schema_version={self.schema_version}."
+            )
 
     @property
     def non_publishable(self) -> bool:
@@ -126,6 +146,15 @@ class PreregManifest:
         result: dict[str, object] = {}
         for field in dataclasses.fields(self):
             result[field.name] = _dc_to_dict(getattr(self, field.name))
+        # Independent schema<4 guard: remove D6 power fields from canonical form.
+        # MUST appear ABOVE the <3 block; do NOT extend the <3 or == 1 lists.
+        if self.schema_version < 4:
+            for _f in (
+                "prospective_power_target_kappa",
+                "prospective_power_confidence_level",
+                "prospective_power_1_minus_beta",
+            ):
+                result.pop(_f, None)
         # Independent schema<3 guard: remove F6 fields from canonical form.
         # MUST appear ABOVE the == 1 block; do NOT extend the == 1 list.
         if self.schema_version < 3:
