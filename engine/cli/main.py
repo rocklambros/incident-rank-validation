@@ -4,7 +4,7 @@ from pathlib import Path
 
 import click
 
-from engine.cli.bakeoff import bakeoff_cmd
+from engine.cli.bakeoff import bakeoff_cli_cmd
 from engine.cli.calibration import (
     cal_calibrate,
     cal_classify,
@@ -55,7 +55,7 @@ cli.add_command(repro_bundle_cmd)
 cli.add_command(corroborate)
 cli.add_command(reclassify)
 cli.add_command(verify_oracle_cmd)
-cli.add_command(bakeoff_cmd)
+cli.add_command(bakeoff_cli_cmd)
 
 
 @cli.command()
