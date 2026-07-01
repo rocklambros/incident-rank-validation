@@ -413,7 +413,14 @@ def cal_tally(cycle: Path, manifest: Path, rubric: Path, gold_calibration: Path 
         if _classifier_labels is not None:
             from engine.calibrate.coverage import verify_labeled_completeness
 
-            _manifest_data = json.loads(manifest.read_text(encoding="utf-8"))
+            # Read snapshot_hash from manifest.json (not from manifest.lock — the
+            # lock file only stores the canonical hash, not manifest fields).
+            _manifest_json = cycle / "prereg" / "manifest.json"
+            _manifest_data = (
+                json.loads(_manifest_json.read_text(encoding="utf-8"))
+                if _manifest_json.exists()
+                else {}
+            )
             verify_labeled_completeness(
                 cycle,
                 str(_manifest_data.get("snapshot_hash", "")),

@@ -272,6 +272,12 @@ def classify_real(cycle: Path, stage2_config: Path | None, execute: bool) -> Non
         raise click.ClickException("prereg/manifest.json not found")
     if not (prereg / "manifest.lock").exists():
         raise click.ClickException("prereg lock not found — run prereg first")
+    # R5: verify manifest.lock canonical hash before classification.
+    try:
+        from engine.cli.pipeline_executor import _verify_manifest_lock
+        _verify_manifest_lock(prereg)
+    except ValueError as exc:
+        raise click.ClickException(str(exc)) from exc
     if not (prereg / "rubric.json").exists():
         raise click.ClickException("prereg/rubric.json not found — freeze rubric first")
 
@@ -474,6 +480,12 @@ def infer_real(
     prereg = cycle / "prereg"
     if not (prereg / "manifest.lock").exists():
         raise click.ClickException("prereg lock not found")
+    # R5: verify manifest.lock canonical hash before inference.
+    try:
+        from engine.cli.pipeline_executor import _verify_manifest_lock
+        _verify_manifest_lock(prereg)
+    except ValueError as exc:
+        raise click.ClickException(str(exc)) from exc
 
     vote_dir = cycle / "vote"
     if vote_dir.exists() and any(vote_dir.iterdir()):
@@ -569,7 +581,11 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
     # Execute real decision pipeline
     click.echo("Executing decide phase...")
     try:
-        from engine.cli.pipeline_executor import _load_manifest, write_decide_artifacts
+        from engine.cli.pipeline_executor import (
+            _load_manifest,
+            _verify_manifest_lock,
+            write_decide_artifacts,
+        )
         from engine.decide.concordance import compute_concordance
         from engine.decide.selection_bias import compute_selection_bias
         from engine.model.inference import InferenceResult
@@ -593,6 +609,8 @@ def decide_real(cycle: Path, vote_xlsx: Path, execute: bool, wandb: bool) -> Non
             except RuntimeError:
                 click.echo("WandB credentials not found; continuing without monitoring")
 
+        # R5: verify manifest.lock canonical hash before using manifest for decide.
+        _verify_manifest_lock(prereg)
         # Load manifest
         manifest = _load_manifest(prereg / "manifest.json")
 

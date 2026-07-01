@@ -533,3 +533,83 @@ def test_decide_real_runs_oracle_writes_3_deliverables(
             for d in verdict.deliverables
         )
     )
+
+
+# ── R5: manifest.lock canonical-hash verification ──────────────────────────────
+
+
+@pytest.mark.integration
+def test_r5_lock_hash_mismatch_raises_before_inference(
+    real_minimal_cycle: Callable[..., Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """execute_infer_phase raises ValueError before inference if manifest is tampered.
+
+    Tamper: rewrite manifest.json with a changed prior_scale WITHOUT updating
+    manifest.lock.  The lock hash no longer matches → ValueError raised before
+    run_inference is called (R5, lock-before-numbers).
+    """
+    from engine.cli.pipeline_executor import execute_infer_phase
+
+    cycle = real_minimal_cycle(tmp_path)
+
+    # Spy — must NOT be reached.
+    spy_called: list[bool] = []
+
+    def _spy(**kwargs: Any) -> Any:  # pragma: no cover
+        spy_called.append(True)
+        raise AssertionError(
+            "run_inference reached — _verify_manifest_lock did NOT fire before inference"
+        )
+
+    monkeypatch.setattr("engine.model.inference.run_inference", _spy)
+
+    # Tamper: change prior_scale in manifest.json without updating manifest.lock.
+    manifest_path = cycle / "prereg" / "manifest.json"
+    manifest_data = json.loads(manifest_path.read_text())
+    manifest_data["prior_scale"] = 9999.0
+    manifest_path.write_text(json.dumps(manifest_data, indent=2) + "\n")
+
+    with pytest.raises(ValueError, match="lock hash mismatch"):
+        execute_infer_phase(cycle, num_warmup=0, num_samples=1)
+
+    assert not spy_called, (
+        "run_inference was called — lock hash mismatch check did NOT fire before inference"
+    )
+
+
+@pytest.mark.integration
+def test_r5_missing_lock_raises_before_inference(
+    real_minimal_cycle: Callable[..., Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """execute_infer_phase raises FileNotFoundError if manifest.lock is absent.
+
+    The existing missing-lock guard was only a CLI-level ClickException; this
+    verifies that the programmatic path (execute_infer_phase) also raises before
+    inference when the lock file is missing.
+    """
+    from engine.cli.pipeline_executor import execute_infer_phase
+
+    cycle = real_minimal_cycle(tmp_path)
+
+    spy_called: list[bool] = []
+
+    def _spy(**kwargs: Any) -> Any:  # pragma: no cover
+        spy_called.append(True)
+        raise AssertionError(
+            "run_inference reached — missing-lock check did NOT fire before inference"
+        )
+
+    monkeypatch.setattr("engine.model.inference.run_inference", _spy)
+
+    (cycle / "prereg" / "manifest.lock").unlink()
+
+    with pytest.raises(FileNotFoundError, match="manifest.lock"):
+        execute_infer_phase(cycle, num_warmup=0, num_samples=1)
+
+    assert not spy_called, (
+        "run_inference was called — missing manifest.lock check did NOT fire before inference"
+    )

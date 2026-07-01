@@ -187,6 +187,25 @@ def _load_manifest(manifest_path: Path) -> PreregManifest:
     return PreregManifest(**filtered)
 
 
+def _verify_manifest_lock(prereg_dir: Path) -> None:
+    """Verify the pre-registration manifest.lock canonical hash.
+
+    Raises FileNotFoundError if manifest.lock is absent.
+    Raises ValueError (propagated from verify_lock) if the stored hash
+    does not match the current manifest — indicating manifest tampering
+    after pre-registration.  Called on the real inference path (R5).
+    """
+    from engine.prereg.lock import verify_lock
+
+    lock_path = prereg_dir / "manifest.lock"
+    if not lock_path.exists():
+        raise FileNotFoundError(
+            f"manifest.lock not found: {lock_path}. Run 'prereg' to lock the manifest."
+        )
+    manifest = _load_manifest(prereg_dir / "manifest.json")
+    verify_lock(manifest, lock_path)
+
+
 def _build_counts_from_labeled(
     labeled: list[dict[str, object]],
 ) -> tuple[dict[tuple[str, str], int], dict[str, int], tuple[str, ...], tuple[str, ...]]:
@@ -258,8 +277,9 @@ def execute_infer_phase(
             "Vote enters only at decide (HANDOFF §6 control 2)."
         )
 
-    # Load manifest
+    # Load manifest — verify lock hash first (R5: lock-before-numbers).
     prereg = cycle / "prereg"
+    _verify_manifest_lock(prereg)
     manifest = _load_manifest(prereg / "manifest.json")
 
     # Load calibration posteriors

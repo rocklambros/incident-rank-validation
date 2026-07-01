@@ -252,10 +252,12 @@ def _build_minimal_cycle(
         overlap_min_fp=1,
         schema_version=2,
     )
-    # Byte-identical manifest.json and manifest.lock.
+    # Write manifest.json; write manifest.lock in the canonical lock format
+    # ({"manifest_hash": <sha256>}) so that verify_lock passes on this cycle.
     manifest_content = json.dumps(manifest_obj.to_dict(), sort_keys=True, indent=2) + "\n"
     (prereg / "manifest.json").write_text(manifest_content)
-    (prereg / "manifest.lock").write_text(manifest_content)
+    from engine.prereg.lock import write_lock
+    write_lock(manifest_obj, prereg / "manifest.lock")
 
     # ── 4. Calibration posteriors (Beta(1,1) for LLM01 and LLM02) ─────────
     cal_dir = cycle / "calibration"
