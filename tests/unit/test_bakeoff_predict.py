@@ -302,3 +302,35 @@ class TestBuildLivePredictFn:
         # Client was only called for INC-1 and INC-2 (not INC-0 which was done)
         assert len(client_ref) == 1
         assert client_ref[0].calls == 2
+
+
+# ---------------------------------------------------------------------------
+# Task 3 — estimate_cost_per_call
+# ---------------------------------------------------------------------------
+
+from engine.classify.bakeoff_predict import estimate_cost_per_call  # noqa: E402
+
+
+class TestEstimateCostPerCall:
+    def test_arithmetic_correct(self) -> None:
+        """2 GPUs, $4/hr, 3600 calls/hr → 2*4/3600."""
+        result = estimate_cost_per_call(2, 4.0, 3600)
+        assert result == pytest.approx(2 * 4.0 / 3600)
+
+    def test_higher_gpu_count_yields_higher_per_call_cost(self) -> None:
+        """More GPUs renting at the same rate → higher per-call cost."""
+        cost_1 = estimate_cost_per_call(1, 4.0, 200)
+        cost_2 = estimate_cost_per_call(2, 4.0, 200)
+        assert cost_2 > cost_1
+
+    def test_low_calls_per_hour_yields_conservative_estimate(self) -> None:
+        """R4: lower est_calls_per_hour → larger (more conservative) per-call cost."""
+        conservative = estimate_cost_per_call(1, 4.0, 200)
+        optimistic = estimate_cost_per_call(1, 4.0, 3600)
+        assert conservative > optimistic
+
+    def test_default_est_calls_per_hour_is_low(self) -> None:
+        """R4: default est_calls_per_hour=200 gives a conservative over-estimate."""
+        default_cost = estimate_cost_per_call(1)  # uses default 200 calls/hr
+        explicit_low = estimate_cost_per_call(1, 4.0, 200)
+        assert default_cost == pytest.approx(explicit_low)

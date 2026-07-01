@@ -256,3 +256,29 @@ def build_live_predict_fn(
         return results
 
     return predict_fn
+
+
+def estimate_cost_per_call(
+    gpu_count: int,
+    hourly_rate_per_gpu_usd: float = 4.0,
+    est_calls_per_hour: float = 200,
+) -> float:
+    """Return a conservative (over-estimated) per-call cost in USD.
+
+    Formula: ``gpu_count * hourly_rate_per_gpu_usd / est_calls_per_hour``.
+
+    The default ``est_calls_per_hour=200`` is intentionally LOW for a 72B
+    parameter model on H200 hardware (real throughput is likely 200–500
+    calls/hr depending on prompt length).  Under-estimating throughput means
+    the per-call cost estimate is *over*-estimated, so
+    ``CostTracker.check_or_abort`` fires EARLY (safe) rather than late
+    (dangerous).  R4 remediation — do NOT raise this default without a
+    post-run reconciliation confirming real throughput via
+    ``CostTracker.reconcile(billing_total)``.
+
+    Example
+    -------
+    >>> estimate_cost_per_call(2, 4.0, 200)
+    0.04
+    """
+    return gpu_count * hourly_rate_per_gpu_usd / est_calls_per_hour
