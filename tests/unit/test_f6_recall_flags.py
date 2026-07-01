@@ -107,13 +107,15 @@ class TestByteIdentityWhenOff:
         assert r_default.reason == r_off.reason
 
     def test_f6_fields_false_when_off(self) -> None:
-        """With K=0, thin_denominator must be False (no threshold active)."""
+        """With K=0 and TP>0, thin_denominator and under_detected must both be False."""
+        # rec_tp=10 > 0 → under_detected=False; K=0 → thin_denominator=False.
         tally = _tally(rec_tp=10, rec_fn=2)
         _, diag = compute_calibration(
             tally, ["E1"], frame_blind_ids=set(), recall_min_denominator=0
         )
         rep: EntryCalibrationReport = diag.entry_reports["E1"]
         assert rep.thin_denominator is False
+        assert rep.under_detected is False
 
     def test_thick_cell_can_still_be_adequate_when_off(self) -> None:
         """A well-measured cell with K=0 must still reach 'adequate'."""
@@ -145,8 +147,7 @@ class TestThinCellNeverAdequate:
         )
 
         # Now activate K = total_in_sample + 1 so cell is thin.
-        K = 56 + 1  # total_in_sample = 50+5+1 = 56? No: rec_tp=50, rec_fn=5 → total=55.
-        K = 56  # 55 < 56 → thin
+        K = 56  # rec_tp=50, rec_fn=5 → total_in_sample=55; 55 < 56 → thin
         _, diag_on = compute_calibration(
             tally, ["E1"], frame_blind_ids=set(), recall_min_denominator=K
         )
@@ -197,29 +198,57 @@ class TestUnderDetectedNeverAdequate:
     """A recall cell where true_positives == 0 and total_in_sample > 0 is under-detected."""
 
     def test_under_detected_forces_non_adequate(self) -> None:
-        """TP=0 cell, regardless of CI width, must not be 'adequate'."""
-        # rec_tp=0, rec_fn=1 → Beta(1,2), low recall.
-        # prec is good to make it a candidate for adequate on the precision side.
-        tally = _tally(rec_tp=0, rec_fn=1, prec_tp=50, prec_fp=5)
-        _, diag = compute_calibration(
+        """TP=0 tight-CI cell: adequate at K=0 (byte-identity), not adequate at K>0 (F6 on)."""
+        # rec_tp=0, rec_fn=100 → Beta(1,101): recall CI width ≈ 0.028 < 0.30 (tight!).
+        # prec_tp=50, prec_fp=5 → Beta(51,6): precision CI also tight.
+        # max_width < 0.30 → would be 'adequate' if under_detected guard were off.
+        tally = _tally(rec_tp=0, rec_fn=100, prec_tp=50, prec_fp=5)
+
+        # Precondition (byte-identity): with K=0 the guard is OFF → flag IS 'adequate'.
+        _, diag_off = compute_calibration(
             tally, ["E1"], frame_blind_ids=set(), recall_min_denominator=0
         )
-        rep = diag.entry_reports["E1"]
-        assert rep.flag != "adequate", (
-            f"Under-detected cell must not be adequate; got flag={rep.flag!r}"
+        rep_off = diag_off.entry_reports["E1"]
+        assert rep_off.flag == "adequate", (
+            f"Precondition: tight-CI TP=0 cell must be 'adequate' at K=0 "
+            f"(under_detected guard is off); got flag={rep_off.flag!r}"
         )
-        assert rep.under_detected is True
+        assert rep_off.under_detected is True  # field disclosed even when guard is off
 
-    def test_under_detected_fires_without_K(self) -> None:
-        """under_detected fires independently of K (even K=0)."""
-        tally = _tally(rec_tp=0, rec_fn=5, prec_tp=50, prec_fp=5)
-        for K in (0, 10, 100):
+        # With K>0 the guard IS on → same cell must NOT be 'adequate'.
+        _, diag_on = compute_calibration(
+            tally, ["E1"], frame_blind_ids=set(), recall_min_denominator=1
+        )
+        rep_on = diag_on.entry_reports["E1"]
+        assert rep_on.flag != "adequate", (
+            f"Under-detected cell must not be adequate at K>0; got flag={rep_on.flag!r}"
+        )
+        assert rep_on.under_detected is True
+
+    def test_under_detected_field_set_regardless_of_k(self) -> None:
+        """under_detected field is True regardless of K — it is always computed for disclosure.
+        However, it only BLOCKS adequacy when K>0 (F6 active).
+        Use tight-CI scenario (rec_fn=100) so the distinction is observable."""
+        tally = _tally(rec_tp=0, rec_fn=100, prec_tp=50, prec_fp=5)
+        # K=0: field is True (disclosure), but guard is OFF → flag is 'adequate'.
+        _, diag_k0 = compute_calibration(
+            tally, ["E1"], frame_blind_ids=set(), recall_min_denominator=0
+        )
+        rep_k0 = diag_k0.entry_reports["E1"]
+        assert rep_k0.under_detected is True
+        assert rep_k0.flag == "adequate", (
+            f"at K=0 under_detected must NOT block adequacy; got flag={rep_k0.flag!r}"
+        )
+        # K>0: field is True AND guard is ON → flag must NOT be 'adequate'.
+        for K in (1, 10, 100):
             _, diag = compute_calibration(
                 tally, ["E1"], frame_blind_ids=set(), recall_min_denominator=K
             )
             rep = diag.entry_reports["E1"]
             assert rep.under_detected is True
-            assert rep.flag != "adequate", f"Failed at K={K}: flag={rep.flag!r}"
+            assert rep.flag != "adequate", (
+                f"at K={K} under_detected must block adequacy; got flag={rep.flag!r}"
+            )
 
     def test_detected_cell_not_under_detected(self) -> None:
         """TP > 0 cell is not under-detected."""
@@ -231,13 +260,46 @@ class TestUnderDetectedNeverAdequate:
         assert rep.under_detected is False
 
     def test_under_detected_reason_encodes_under_detected(self) -> None:
-        """Reason string must indicate under-detected when flagged."""
-        tally = _tally(rec_tp=0, rec_fn=3, prec_tp=50, prec_fp=5)
+        """Reason string must indicate under-detected when F6 is active (K>0)."""
+        # Use tight-CI scenario so the guard is the ONLY reason it is wide.
+        # K=1 activates the guard; reason must include 'under-detected'.
+        tally = _tally(rec_tp=0, rec_fn=100, prec_tp=50, prec_fp=5)
         _, diag = compute_calibration(
-            tally, ["E1"], frame_blind_ids=set(), recall_min_denominator=0
+            tally, ["E1"], frame_blind_ids=set(), recall_min_denominator=1
         )
         rep = diag.entry_reports["E1"]
         assert "under-detected" in rep.reason.lower() or "under_detected" in rep.reason.lower()
+
+    def test_authoritative_under_detected_gated_by_recall_min_denominator(self) -> None:
+        """AUTHORITATIVE: tight-CI TP==0 cell proves the K-gating of under_detected.
+
+        rec_tp=0, rec_fn=100 → Beta(1,101), CI width ≈ 0.028 < 0.30.
+        prec_tp=50, prec_fp=5 → Beta(51,6), CI also tight.
+        max_width < 0.30 → entry WOULD be 'adequate' absent the under_detected guard.
+
+        K=0 (F6 OFF): guard is inactive → flag IS 'adequate' (byte-identity preserved).
+        K>0 (F6 ON):  guard fires     → flag is NOT 'adequate' (invariant enforced).
+        """
+        tally = _tally(rec_tp=0, rec_fn=100, prec_tp=50, prec_fp=5)
+
+        _, diag_off = compute_calibration(
+            tally, ["E1"], frame_blind_ids=set(), recall_min_denominator=0
+        )
+        rep_off = diag_off.entry_reports["E1"]
+        assert rep_off.flag == "adequate", (
+            f"K=0: under_detected guard OFF → must be 'adequate'; got {rep_off.flag!r}"
+        )
+        assert rep_off.under_detected is True  # field disclosed for transparency
+        assert rep_off.thin_denominator is False
+
+        _, diag_on = compute_calibration(
+            tally, ["E1"], frame_blind_ids=set(), recall_min_denominator=1
+        )
+        rep_on = diag_on.entry_reports["E1"]
+        assert rep_on.flag != "adequate", (
+            f"K=1: under_detected guard ON → must not be 'adequate'; got {rep_on.flag!r}"
+        )
+        assert rep_on.under_detected is True
 
     def test_tp_zero_total_zero_is_not_under_detected(self) -> None:
         """TP=0 with total_in_sample=0 is NOT under-detected (no observations)."""

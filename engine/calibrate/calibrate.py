@@ -25,7 +25,8 @@ class EntryCalibrationReport:
     # thin_denominator: True only when recall_min_denominator > 0 AND any recall
     #   cell for this entry has total_in_sample < recall_min_denominator.
     # under_detected: True when any recall cell has TP==0 AND total_in_sample > 0
-    #   (caught none of N known), independent of recall_min_denominator.
+    #   (caught none of N known).  Always computed for disclosure, but only
+    #   BLOCKS adequacy when recall_min_denominator > 0 (F6 active).
     thin_denominator: bool
     under_detected: bool
 
@@ -69,7 +70,10 @@ def compute_calibration(
         F6 thin-cell threshold K (default 0 = off).  When K > 0, a recall cell
         with total_in_sample < K is flagged thin_denominator=True and its
         adequacy label is forced to 'wide' (never 'adequate').
-        Setting K=0 preserves byte-identical behaviour with pre-F6 output.
+        Setting K=0 (default) preserves byte-identical behaviour with pre-F6
+        output: NEITHER thin_denominator NOR under_detected blocks the adequacy
+        decision when F6 is off.  Both fields are still computed for disclosure
+        when K=0, but they do not alter the flag/reason.
     """
     recall_posteriors: dict[tuple[str, str], BetaPosterior] = {}
     precision_posteriors: dict[tuple[str, str], BetaPosterior] = {}
@@ -98,9 +102,11 @@ def compute_calibration(
 
     # ------------------------------------------------------------------
     # F6: build per-entry thin/under-detected flags from UN-widened counts.
-    # Only active when recall_min_denominator > 0 for thin; under_detected
-    # is always computed (independent of K).  Default K=0 → thin_entries
-    # stays empty → byte-identical output for all existing callers.
+    # thin: active only when recall_min_denominator > 0.
+    # under_detected: ALWAYS computed (for disclosure), but only BLOCKS
+    #   adequacy when recall_min_denominator > 0 (F6 active).
+    # Default K=0 → _thin_entries empty AND _under_detected_entries does
+    # NOT affect the adequacy decision → byte-identical to pre-F6 output.
     # ------------------------------------------------------------------
     _thin_entries: set[str] = set()
     _under_detected_entries: set[str] = set()
@@ -165,9 +171,12 @@ def compute_calibration(
             no_data += 1
         elif has_prec and has_rec:
             max_width = max(w for w in [prec_w, rec_w] if w is not None)
-            # F6: thin or under-detected cells must NEVER be labeled 'adequate'.
-            # adequate/wide decision uses UN-widened counts (no prior shifting).
-            _f6_flagged = eid in _thin_entries or eid in _under_detected_entries
+            # F6: when K>0, thin OR under-detected cells must NEVER be 'adequate'.
+            # When K==0 (F6 off), neither thin nor under-detected blocks adequacy
+            # → byte-identical to pre-F6 output.
+            _f6_flagged = eid in _thin_entries or (
+                recall_min_denominator > 0 and eid in _under_detected_entries
+            )
             if max_width < 0.30 and not _f6_flagged:
                 flag = "adequate"
                 reason = "adequate"
