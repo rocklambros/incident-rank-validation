@@ -30,6 +30,7 @@ MODELS = [
         "container_disk_gb": 300,
         "vllm_cmd": (
             "vllm serve Qwen/Qwen3-235B-A22B "
+            "--revision 8efa61729e24bd65b1d152b5ab5409052aa80e65 "
             "--host 0.0.0.0 --port 8000 "
             "--tensor-parallel-size 4 "
             "--enable-expert-parallel "
@@ -46,6 +47,7 @@ MODELS = [
         "container_disk_gb": 500,
         "vllm_cmd": (
             "vllm serve meta-llama/Llama-3.1-405B-Instruct-FP8 "
+            "--revision 64a54b704768dfd589a3e4ac05d546052f67f4fd "
             "--host 0.0.0.0 --port 8000 "
             "--tensor-parallel-size 4 "
             "--max-model-len 4096 "
@@ -62,9 +64,26 @@ MODELS = [
         "container_disk_gb": 800,
         "vllm_cmd": (
             "vllm serve deepseek-ai/DeepSeek-V3 "
+            "--revision e815299b0bcbac849fa540c768ef21845365c9eb "
             "--host 0.0.0.0 --port 8000 "
             "--tensor-parallel-size 8 "
             "--enable-expert-parallel "
+            "--max-model-len 4096 "
+            "--gpu-memory-utilization 0.90 "
+            "--trust-remote-code"
+        ),
+    },
+    {
+        "name": "qwen25-72b",
+        "model_id": "Qwen/Qwen2.5-72B-Instruct",
+        "gpu_type": "NVIDIA H200",
+        "gpu_count": 2,
+        "container_disk_gb": 200,
+        "vllm_cmd": (
+            "vllm serve Qwen/Qwen2.5-72B-Instruct "
+            "--revision 495f39366efef23836d0cfae4fbe635880d2be31 "
+            "--host 0.0.0.0 --port 8000 "
+            "--tensor-parallel-size 2 "
             "--max-model-len 4096 "
             "--gpu-memory-utilization 0.90 "
             "--trust-remote-code"
