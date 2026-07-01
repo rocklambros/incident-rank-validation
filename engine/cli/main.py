@@ -13,6 +13,7 @@ from engine.cli.calibration import (
     cal_sample,
     cal_tally,
 )
+from engine.cli.freeze_baselines import freeze_baselines_cmd
 from engine.cli.pipeline import (
     classify_real,
     corroborate,
@@ -44,6 +45,7 @@ cli.add_command(cal_tally)
 cli.add_command(cal_calibrate)
 cli.add_command(cal_cv_stability)
 
+cli.add_command(freeze_baselines_cmd)
 cli.add_command(classify_real)
 cli.add_command(infer_real)
 cli.add_command(decide_real)

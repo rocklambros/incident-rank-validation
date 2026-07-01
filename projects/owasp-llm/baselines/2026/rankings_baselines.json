@@ -1,0 +1,191 @@
+{
+  "artifact_type": "rankings_baselines",
+  "schema_version": 4,
+  "cycle": "2026",
+  "generated_from": {
+    "lambda_samples": {
+      "path": "projects/owasp-llm/cycles/2026/infer/lambda_samples.npy",
+      "shape": [
+        16000,
+        20
+      ],
+      "sha256": "5f655cc687c321f0a7432197317a66cc8fe23074a46820078ae4e9d5b26efb07"
+    },
+    "inference_summary": {
+      "path": "projects/owasp-llm/cycles/2026/infer/inference_summary.json",
+      "sha256": "6762bfbfa0bd9db731f7b26dafc8726313a079ac8bc8a40a099941837187a786"
+    },
+    "labeled_incidents": {
+      "path": "projects/owasp-llm/cycles/2026/classify/labeled_incidents.json",
+      "sha256": "61736c0890c1dc64fb2c011326c29ea86f5feba204c5d7af3d07ac0eb949a333"
+    },
+    "respondent_rankings": {
+      "path": "projects/owasp-llm/baselines/2026/respondent_rankings.npy",
+      "shape": [
+        29,
+        20
+      ],
+      "sha256": "cff05ee4b80ac79e60cc05262b7fb2707544b2bd38e3c56e9e9fe623a13e4fc2"
+    },
+    "concordance_json": {
+      "path": "projects/owasp-llm/cycles/2026/results/concordance.json",
+      "sha256": "202c36aeca83b7aa6009cd95031807357fb7f0e52e017e2a4177246d8208cd9e",
+      "seed": 20260520
+    }
+  },
+  "entry_ids": [
+    "LLM01",
+    "LLM02",
+    "LLM03",
+    "LLM04",
+    "LLM05",
+    "LLM06",
+    "LLM07",
+    "LLM08",
+    "LLM09",
+    "LLM10",
+    "NEW-ITSCD",
+    "NEW-MA",
+    "NEW-MSDA",
+    "NEW-MTIE",
+    "NEW-PMP",
+    "NEW-WLA",
+    "ROLL-CFAS",
+    "ROLL-CMSB",
+    "ROLL-LAPTF",
+    "ROLL-SICG"
+  ],
+  "measurable_entry_ids": [
+    "LLM01",
+    "LLM02",
+    "LLM03",
+    "LLM05",
+    "LLM06",
+    "LLM07",
+    "LLM09",
+    "NEW-ITSCD",
+    "NEW-MA",
+    "NEW-MSDA",
+    "NEW-MTIE",
+    "NEW-PMP",
+    "NEW-WLA",
+    "ROLL-CFAS",
+    "ROLL-CMSB",
+    "ROLL-LAPTF",
+    "ROLL-SICG"
+  ],
+  "not_measurable": [
+    "LLM04",
+    "LLM08",
+    "LLM10"
+  ],
+  "previous_ranking": {
+    "method": "incidence_lambda_size",
+    "function": "_ranks_from_incidence",
+    "tier_boundaries": [
+      6,
+      12
+    ],
+    "n_common": 20,
+    "bootstrap_draws": 5000,
+    "bootstrap_seed": 20260520,
+    "ranking": [
+      "LLM09",
+      "LLM02",
+      "LLM04",
+      "LLM07",
+      "LLM06",
+      "NEW-WLA",
+      "ROLL-CMSB",
+      "LLM03",
+      "NEW-MA",
+      "LLM05",
+      "LLM01",
+      "LLM08",
+      "ROLL-CFAS",
+      "LLM10",
+      "NEW-MSDA",
+      "NEW-MTIE",
+      "ROLL-SICG",
+      "NEW-PMP",
+      "ROLL-LAPTF",
+      "NEW-ITSCD"
+    ],
+    "kappa_median": 0.2028985507246377,
+    "kappa_ci": [
+      -0.1594202898550725,
+      0.5652173913043478
+    ],
+    "kappa_ci_method": "paired_draw_percentile",
+    "byte_pinned_to": "projects/owasp-llm/cycles/2026/results/concordance.json"
+  },
+  "bare_lambda_sensitivity": {
+    "method": "_ranks_from_lambda",
+    "function": "_ranks_from_lambda",
+    "ranking": [
+      "LLM09",
+      "LLM02",
+      "LLM04",
+      "LLM07",
+      "LLM06",
+      "NEW-WLA",
+      "ROLL-CMSB",
+      "LLM03",
+      "LLM05",
+      "NEW-MA",
+      "LLM01",
+      "LLM08",
+      "ROLL-CFAS",
+      "LLM10",
+      "NEW-MSDA",
+      "NEW-MTIE",
+      "ROLL-SICG",
+      "NEW-PMP",
+      "ROLL-LAPTF",
+      "NEW-ITSCD"
+    ],
+    "kappa_median": 0.2028985507246377,
+    "method_kappa_delta": 0.0,
+    "disclosure": "Bare-lambda (_ranks_from_lambda, dead code in concordance.py) kappa median differs from the incidence (lambda*size) kappa median by +0.000000000 on this data. This method delta is disclosed for transparency and is NOT credited as a method gain in any comparison. On 2026 OWASP-LLM data the delta is 0.0 (kappa medians coincide) even though individual draw rankings differ on some draws."
+  },
+  "secondary_measurable_subset": {
+    "measurable_kappa_median": 0.12206572769953028,
+    "measurable_kappa_ci": [
+      -0.21728395061728412,
+      0.5211267605633803
+    ],
+    "n_measurable": 17,
+    "standing_caveat_contradiction": "concordance.py:48 (STANDING_CAVEAT) claims 'computed over the measurable subset only', but the as-shipped concordance.json kappa (0.2028985507246377) is over all 20 inference-union-vote entries (total_count=20, measurable_count=17). The measurable-subset kappa (~0.12) differs from the shipped number. This contradiction is surfaced as a standing disclosure, not silently resolved.",
+    "concordance_json_claims": "measurable_count=17"
+  },
+  "prospective_power": {
+    "target_kappa": 0.4,
+    "alpha_two_sided": 0.05,
+    "power_1_minus_beta": 0.8,
+    "criterion": "design_n_ci_excludes_zero",
+    "registered_date": "2026-06-30",
+    "scope": "prospective_future_cycles",
+    "method": "fleiss_cohen_everitt_wk_variance",
+    "h1_joint_model": {
+      "variant": "3tier_uniform_marginal",
+      "description": "3 tiers, uniform marginals (1/3 each). Diagonal=1/5, off-diagonal=1/15. Agreement weights w_ij=1-(i-j)^2/4. Achieves kappa=0.40 exactly.",
+      "p_diagonal": 0.2,
+      "p_off_diagonal": 0.06666666666666667,
+      "p_e": 0.6666666666666666,
+      "p_o": 0.8
+    },
+    "sigma2": 0.9359999999999999,
+    "n_required": 46,
+    "current_n": 20,
+    "excludes_zero_at_current_n": false,
+    "stage": "design",
+    "disclosure": "Coarse design-stage surrogate. The Fleiss-Cohen-Everitt asymptotic variance is DISTINCT from and does NOT govern the reported paired-draw bootstrap CI. Normal-approximation at n \u2248 20 with ranked/stratum dependence violates iid. Power statement is a rough sizing guide only, not a claim about the reported CI.",
+    "structural_adequacy_verdict": "n is a fixed ~20-entry taxonomy, not growable \u2014 structural-adequacy verdict, not a 'collect more entries' instruction."
+  },
+  "disclosures": {
+    "incidence_kappa": true,
+    "method_delta_zero": true,
+    "ci_spans_zero": true,
+    "omnibus_bridge": true
+  }
+}
