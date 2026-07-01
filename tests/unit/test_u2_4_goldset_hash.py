@@ -59,6 +59,10 @@ def test_infer_writes_goldset_hash_when_gold_present(tmp_path: Path) -> None:
     (cycle / "prereg" / "manifest.json").write_text("{}")
 
     manifest = _make_manifest(robustness_specs=())
+    # Write manifest.lock so the R5 _verify_manifest_lock guard passes.
+    # Must match the patched _load_manifest return value (same manifest object).
+    from engine.prereg.lock import write_lock
+    write_lock(manifest, cycle / "prereg" / "manifest.lock")
     fake_gold = _fake_gold("deadbeef42")
     fake_counts = (np.array([1.0]), np.array([5.0]), ["e1"], [MagicMock()])
 

@@ -9,6 +9,23 @@ from click.testing import CliRunner
 from engine.cli.main import cli
 
 
+def _write_valid_manifest_lock(prereg: Path) -> None:
+    """Write a minimal valid PreregManifest + matching manifest.lock for test fixtures.
+
+    Uses _MINIMAL_MANIFEST_FIELDS (defined later in this module — resolved at call
+    time, not at definition time, so forward-reference is safe).
+    """
+    from engine.prereg.lock import write_lock
+    from engine.prereg.manifest import PreregManifest
+
+    fields: dict[str, object] = dict(_MINIMAL_MANIFEST_FIELDS)
+    rs = fields["robustness_specs"]
+    fields["robustness_specs"] = tuple(rs) if isinstance(rs, list) else rs
+    manifest = PreregManifest(**fields)  # type: ignore[arg-type]
+    (prereg / "manifest.json").write_text(json.dumps(manifest.to_dict()))
+    write_lock(manifest, prereg / "manifest.lock")
+
+
 class TestClassifyRealCLI:
     def test_classify_real_requires_manifest(self, tmp_path: Path) -> None:
         runner = CliRunner()
@@ -20,8 +37,7 @@ class TestClassifyRealCLI:
         """R3: calibration posteriors must exist before classify-real."""
         prereg = tmp_path / "prereg"
         prereg.mkdir()
-        (prereg / "manifest.json").write_text("{}")
-        (prereg / "manifest.lock").write_text("{}")
+        _write_valid_manifest_lock(prereg)
         (prereg / "rubric.json").write_text("{}")
         (tmp_path / "corpora").mkdir()
         runner = CliRunner()
@@ -49,7 +65,7 @@ class TestInferRealCLI:
     def test_infer_real_rejects_vote_data(self, tmp_path: Path) -> None:
         prereg = tmp_path / "prereg"
         prereg.mkdir()
-        (prereg / "manifest.lock").write_text("{}")
+        _write_valid_manifest_lock(prereg)
         classify_dir = tmp_path / "classify"
         classify_dir.mkdir()
         (classify_dir / "labeled_incidents.json").write_text("[]")
@@ -64,7 +80,7 @@ class TestInferRealCLI:
     def test_infer_real_requires_classify_output(self, tmp_path: Path) -> None:
         prereg = tmp_path / "prereg"
         prereg.mkdir()
-        (prereg / "manifest.lock").write_text("{}")
+        _write_valid_manifest_lock(prereg)
         runner = CliRunner()
         result = runner.invoke(cli, ["infer-real", "--cycle", str(tmp_path)])
         assert result.exit_code != 0
@@ -168,8 +184,7 @@ class TestExecuteFlags:
         cycle = tmp_path / "cycle"
         prereg = cycle / "prereg"
         prereg.mkdir(parents=True)
-        (prereg / "manifest.json").write_text("{}")
-        (prereg / "manifest.lock").write_text("{}")
+        _write_valid_manifest_lock(prereg)
         rubric_data = json.dumps({
             "cycle_id": "test-2026",
             "version": 1,

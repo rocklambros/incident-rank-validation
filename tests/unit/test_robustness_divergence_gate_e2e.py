@@ -98,6 +98,11 @@ def test_robustness_divergence_gate_e2e_monkeypatched(
         "post_hoc_register_path": None,
     }
     (prereg_dir / "manifest.json").write_text(json.dumps(manifest_dict) + "\n")
+    # Write a valid manifest.lock so the R5 _verify_manifest_lock guard passes.
+    from engine.cli.pipeline_executor import _load_manifest
+    from engine.prereg.lock import write_lock as _write_lock
+    write_lock_manifest = _load_manifest(prereg_dir / "manifest.json")
+    _write_lock(write_lock_manifest, prereg_dir / "manifest.lock")
 
     # ---- Monkeypatches ----------------------------------------------------------
     # Primary: returns a valid InferenceResult — no divergences, diagnostics pass.
