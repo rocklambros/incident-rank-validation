@@ -7,6 +7,7 @@ shell command parsing works correctly with RunPod's container runtime.
 import json
 import os
 import subprocess
+from typing import Any, TypedDict
 
 import httpx
 
@@ -21,7 +22,16 @@ def load_secret(pass_name: str, env_var: str) -> str:
     return result.stdout.strip()
 
 
-MODELS = [
+class ModelSpec(TypedDict):
+    name: str
+    model_id: str
+    gpu_type: str
+    gpu_count: int
+    container_disk_gb: int
+    vllm_cmd: str
+
+
+MODELS: list[ModelSpec] = [
     {
         "name": "qwen3-235b",
         "model_id": "Qwen/Qwen3-235B-A22B",
@@ -103,8 +113,8 @@ def create_pod_rest(
     gpu_count: int,
     container_disk_gb: int,
     vllm_cmd: str,
-    env: dict,
-) -> dict:
+    env: dict[str, str],
+) -> dict[str, Any]:
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
@@ -130,10 +140,11 @@ def create_pod_rest(
     )
     if resp.status_code not in (200, 201):
         raise RuntimeError(f"Pod creation failed ({resp.status_code}): {resp.text}")
-    return resp.json()
+    data: dict[str, Any] = resp.json()
+    return data
 
 
-def main():
+def main() -> None:
     api_key = load_secret("runpod/api-key", "RUNPOD_API_KEY")
     hf_token = load_secret("huggingface/token", "HF_TOKEN")
 
