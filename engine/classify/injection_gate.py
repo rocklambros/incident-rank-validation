@@ -28,6 +28,14 @@ from engine.schema import IncidentRecord
 
 logger = logging.getLogger(__name__)
 
+__all__ = [
+    "ProbeResult",
+    "InjectionGateResult",
+    "run_injection_gate",
+    "filter_eligible_by_gate",
+    "write_gate_provenance",
+]
+
 
 @dataclass(frozen=True)
 class ProbeResult:
