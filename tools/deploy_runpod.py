@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deploy 3 vLLM model pods on RunPod H200 GPUs via REST API.
+"""Deploy 4 vLLM model pods on RunPod H200 GPUs via REST API.
 
 Uses dockerStartCmd with ["/bin/bash", "-c", "cmd"] format to ensure
 shell command parsing works correctly with RunPod's container runtime.

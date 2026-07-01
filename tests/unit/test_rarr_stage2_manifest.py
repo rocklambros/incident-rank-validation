@@ -19,6 +19,7 @@ def test_stage2_locks_cost_and_leaves_winner_pending() -> None:
         "actual_cost_usd",
         "incidents_classified",
         "injection_gate_passed",
+        "injection_gate_revision_sha",
     ):
         assert d[pending] is None, f"{pending} must be null at lock time"
     assert d["runpod_job_ids"] == []
