@@ -1,0 +1,16 @@
+{
+  "grid_version": "2026-rarr.1",
+  "selection": {
+    "lockbox_fraction": 0.3,
+    "alpha": 0.05,
+    "min_cell": 5,
+    "seed": 42,
+    "winner_none_rule": "empty_eligible_set"
+  },
+  "configs": [
+    {"name": "qwen3-235b",  "model_id": "Qwen/Qwen3-235B-A22B",                    "revision_sha": "8efa61729e24bd65b1d152b5ab5409052aa80e65", "gpu_type": "NVIDIA H200", "gpu_count": 4},
+    {"name": "llama-405b",  "model_id": "meta-llama/Llama-3.1-405B-Instruct-FP8",  "revision_sha": "64a54b704768dfd589a3e4ac05d546052f67f4fd", "gpu_type": "NVIDIA H200", "gpu_count": 4},
+    {"name": "deepseek-v3", "model_id": "deepseek-ai/DeepSeek-V3",                 "revision_sha": "e815299b0bcbac849fa540c768ef21845365c9eb", "gpu_type": "NVIDIA H200", "gpu_count": 8},
+    {"name": "qwen25-72b",  "model_id": "Qwen/Qwen2.5-72B-Instruct",               "revision_sha": "495f39366efef23836d0cfae4fbe635880d2be31", "gpu_type": "NVIDIA H200", "gpu_count": 2}
+  ]
+}
