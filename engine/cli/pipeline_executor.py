@@ -349,6 +349,14 @@ def execute_infer_phase(
             num_warmup=num_warmup,
             num_samples=num_samples,
             num_chains=num_chains,
+            # F6 (U2-3): thread manifest recall floor.  The schema<3 gate keeps
+            # recall_floor_epsilon at 0.0 for all pre-existing cycles even though
+            # PreregManifest.__post_init__ already enforces that invariant — the
+            # explicit gate here is defense-in-depth and makes the byte-identity
+            # guarantee visible at the call site.
+            recall_floor_epsilon=(
+                manifest.recall_floor_epsilon if manifest.schema_version >= 3 else 0.0
+            ),
         )
         wall_seconds = time.monotonic() - t0
 

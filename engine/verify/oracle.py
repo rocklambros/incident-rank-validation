@@ -6,6 +6,26 @@ module MUST NOT import engine estimator code (concordance / plackett_luce /
 model / calibrate); it reads persisted artifacts as plain numpy/JSON so it is
 a genuine cross-check, not a re-run.  It is a CONSISTENCY check, not
 independent verification (shared author/conceptual source).
+
+F6 ORACLE LIMITATION (U2-3 fallback decision):
+The oracle does NOT independently validate the F6 recall regularization
+(recall_floor_epsilon / thin-cell flagging).  The reason: posteriors.json
+persists only the computed Beta(alpha, beta) values — not the raw tally
+counts (TP, FN, FP per entry/stratum).  Back-deriving tp = alpha-1 and
+fn = beta-1 then re-verifying Beta(1+tp, 1+fn) == Beta(alpha, beta) is
+circular and provides no genuine independence.  The goldset source files
+(adjudicated_goldset.jsonl, precision_verification.jsonl) would allow a
+true cross-check but are not always present (synthetic cycles omit them)
+and their parsing requires non-trivial domain logic.
+Validation of F6 is covered instead by:
+  - tests/unit/test_f6_recall_flags.py: posterior byte-identity (floor off),
+    floor bounds the lambda tail, thick cells unaffected.
+  - tests/unit/test_f6_e2e_stability.py: end-to-end NUTS stability with a
+    thin/TP=0 recall cell + schema-3 manifest; oracle ranking agreement
+    confirmed on the resulting lambda samples.
+If a future cycle persists raw tally counts as a standalone artifact,
+extend run_oracle (check.py) with a D4 deliverable that independently
+recomputes Beta posteriors via scipy and compares within tolerance.
 """
 from __future__ import annotations
 

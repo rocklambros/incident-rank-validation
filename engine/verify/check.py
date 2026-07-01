@@ -70,7 +70,15 @@ def _ranking_deliverable(
 
 
 def run_oracle(cycle: Path) -> OracleVerdict:
-    """Re-derive D1/D2/D3 independently and compare to the engine's output."""
+    """Re-derive D1/D2/D3 independently and compare to the engine's output.
+
+    Note — F6 calibration NOT validated here (U2-3 fallback): this oracle
+    validates the incidence ranking (D1), PL ranking (D2), and sigma_u
+    surrogate (D3) from persisted lambda samples.  It does NOT recompute
+    recall/precision Beta posteriors because the raw tally counts are not
+    persisted as a standalone oracle-readable artifact.  See oracle.py
+    module docstring for the full rationale and path to a future D4.
+    """
     infer = cycle / "infer"
     results = cycle / "results"
     deliverables: list[OracleDeliverable] = []
