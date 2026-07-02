@@ -91,7 +91,7 @@ def render_stratum_bar(data: dict[str, Any], figures_dir: Path) -> None:
     ax.set_ylabel("Count")
     ax.tick_params(axis="x", rotation=0)
     fig.tight_layout()
-    fig.savefig(figures_dir / "stratum_bar.png", dpi=150, bbox_inches="tight")
+    fig.savefig(figures_dir / "stratum_bar.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -115,7 +115,7 @@ def render_tier_donut(data: dict[str, Any], figures_dir: Path) -> None:
     ax.add_patch(centre_circle)
     ax.set_title("Consensus Tier Distribution")
     fig.tight_layout()
-    fig.savefig(figures_dir / "tier_donut.png", dpi=150, bbox_inches="tight")
+    fig.savefig(figures_dir / "tier_donut.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -153,7 +153,7 @@ def render_confusion_heatmap(data: dict[str, Any], figures_dir: Path) -> None:
     )
     ax.set_title("Entry-Pair Disagreement Frequency")
     fig.tight_layout()
-    fig.savefig(figures_dir / "confusion_heatmap.png", dpi=150, bbox_inches="tight")
+    fig.savefig(figures_dir / "confusion_heatmap.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -179,7 +179,7 @@ def render_precision_bars(data: dict[str, Any], figures_dir: Path) -> None:
     ax.set_title("Precision Posteriors (security stratum only)")
     ax.axvline(x=0.5, color="red", linestyle="--", alpha=0.5)
     fig.tight_layout()
-    fig.savefig(figures_dir / "precision_bars.png", dpi=150, bbox_inches="tight")
+    fig.savefig(figures_dir / "precision_bars.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -207,7 +207,7 @@ def render_precision_posteriors(data: dict[str, Any], figures_dir: Path) -> None
             ax.text(0.5, 0.5, f"No data for {eid}", ha="center", va="center")
     fig.suptitle("Precision Posterior Distributions")
     fig.tight_layout()
-    fig.savefig(figures_dir / "precision_posteriors.png", dpi=150, bbox_inches="tight")
+    fig.savefig(figures_dir / "precision_posteriors.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -235,7 +235,7 @@ def render_ridge_plot(data: dict[str, Any], figures_dir: Path) -> None:
     axes[-1].set_xlabel("λ (incident rate)")
     fig.suptitle("Posterior λ Distributions (sorted by median)")
     fig.tight_layout()
-    fig.savefig(figures_dir / "ridge_plot.png", dpi=150, bbox_inches="tight")
+    fig.savefig(figures_dir / "ridge_plot.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -274,7 +274,7 @@ def render_dumbbell_chart(data: dict[str, Any], figures_dir: Path) -> None:
     ax.set_title("Incident-Derived Rankings with Uncertainty")
     ax.invert_xaxis()
     fig.tight_layout()
-    fig.savefig(figures_dir / "dumbbell_chart.png", dpi=150, bbox_inches="tight")
+    fig.savefig(figures_dir / "dumbbell_chart.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -301,7 +301,7 @@ def render_bump_chart(data: dict[str, Any], figures_dir: Path) -> None:
     if not common:
         fig, ax = plt.subplots(figsize=(10, 6))
         ax.text(0.5, 0.5, "No rank data available", ha="center", va="center")
-        fig.savefig(figures_dir / "bump_chart.png", dpi=150, bbox_inches="tight")
+        fig.savefig(figures_dir / "bump_chart.png", dpi=300, bbox_inches="tight")
         plt.close(fig)
         return
 
@@ -322,7 +322,7 @@ def render_bump_chart(data: dict[str, Any], figures_dir: Path) -> None:
     ax.invert_yaxis()
     ax.set_title("Expert vs Incident Rankings")
     fig.tight_layout()
-    fig.savefig(figures_dir / "bump_chart.png", dpi=150, bbox_inches="tight")
+    fig.savefig(figures_dir / "bump_chart.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -359,7 +359,7 @@ def render_ci_overlap(data: dict[str, Any], figures_dir: Path) -> None:
     if not entries_data:
         fig, ax = plt.subplots()
         ax.text(0.5, 0.5, "No CI data", ha="center")
-        fig.savefig(figures_dir / "ci_overlap.png", dpi=150)
+        fig.savefig(figures_dir / "ci_overlap.png", dpi=300)
         plt.close(fig)
         return
 
@@ -384,7 +384,7 @@ def render_ci_overlap(data: dict[str, Any], figures_dir: Path) -> None:
     ax.set_xlabel("Rank")
     ax.set_title("CI Overlap: Incident (solid) vs Expert (dashed)")
     fig.tight_layout()
-    fig.savefig(figures_dir / "ci_overlap.png", dpi=150, bbox_inches="tight")
+    fig.savefig(figures_dir / "ci_overlap.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -394,7 +394,7 @@ def render_paired_dots(data: dict[str, Any], figures_dir: Path) -> None:
     if not flags:
         fig, ax = plt.subplots()
         ax.text(0.5, 0.5, "No flagged entries", ha="center")
-        fig.savefig(figures_dir / "paired_dots.png", dpi=150)
+        fig.savefig(figures_dir / "paired_dots.png", dpi=300)
         plt.close(fig)
         return
 
@@ -413,7 +413,7 @@ def render_paired_dots(data: dict[str, Any], figures_dir: Path) -> None:
     ax.axvline(x=0.8, color="red", linestyle="--", alpha=0.5, label="τ = 0.80")
     ax.legend()
     fig.tight_layout()
-    fig.savefig(figures_dir / "paired_dots.png", dpi=150, bbox_inches="tight")
+    fig.savefig(figures_dir / "paired_dots.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -447,7 +447,7 @@ def render_theme_bars(
     if not theme_counts:
         fig, ax = plt.subplots(figsize=(8, 4))
         ax.text(0.5, 0.5, f"No theme keywords found for {entry_id}", ha="center")
-        fig.savefig(figures_dir / filename, dpi=150)
+        fig.savefig(figures_dir / filename, dpi=300)
         plt.close(fig)
         return
 
@@ -462,7 +462,7 @@ def render_theme_bars(
     ax.set_xlabel("Keyword Frequency")
     ax.set_title(f"Incident Themes: {entry_id}")
     fig.tight_layout()
-    fig.savefig(figures_dir / filename, dpi=150, bbox_inches="tight")
+    fig.savefig(figures_dir / filename, dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -500,7 +500,7 @@ def render_confusion_matrix_3x3(data: dict[str, Any], figures_dir: Path) -> None
     )
     ax.set_title("Confusion Boundary: Model Disagreement")
     fig.tight_layout()
-    fig.savefig(figures_dir / "confusion_matrix_3x3.png", dpi=150, bbox_inches="tight")
+    fig.savefig(figures_dir / "confusion_matrix_3x3.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -548,8 +548,8 @@ def render_plotly_rankings(data: dict[str, Any], figures_dir: Path) -> None:
         title="Incident-Derived Rankings (λ posteriors)",
         labels={"median": "λ (posterior median)", "entry_id": "Entry"},
     )
-    fig.update_layout(height=600, width=1000, yaxis={"categoryorder": "total ascending"})
-    _plotly_write_image(fig, str(figures_dir / "plotly_rankings.png"), width=1000, height=600)
+    fig.update_layout(height=1200, width=2000, yaxis={"categoryorder": "total ascending"})
+    _plotly_write_image(fig, str(figures_dir / "plotly_rankings.png"), width=2000, height=1200)
 
 
 def render_oos_treemap(data: dict[str, Any], figures_dir: Path) -> None:
@@ -614,7 +614,7 @@ def render_oos_treemap(data: dict[str, Any], figures_dir: Path) -> None:
             names=["No OOS data"], parents=[""], values=[1],
             title="Out-of-Scope Incidents (no data)",
         )
-        _plotly_write_image(fig, str(figures_dir / "oos_treemap.png"), width=1000, height=600)
+        _plotly_write_image(fig, str(figures_dir / "oos_treemap.png"), width=2000, height=1200)
         return
 
     import pandas as pd
@@ -627,8 +627,8 @@ def render_oos_treemap(data: dict[str, Any], figures_dir: Path) -> None:
         df, path=["parent", "cluster"], values="count",
         title=f"Out-of-Scope Incidents by Theme ({sum(cluster_counts.values())} total)",
     )
-    fig.update_layout(width=1000, height=600)
-    _plotly_write_image(fig, str(figures_dir / "oos_treemap.png"), width=1000, height=600)
+    fig.update_layout(width=2000, height=1200)
+    _plotly_write_image(fig, str(figures_dir / "oos_treemap.png"), width=2000, height=1200)
 
 
 def render_sankey_confusion(data: dict[str, Any], figures_dir: Path) -> None:
@@ -659,7 +659,7 @@ def render_sankey_confusion(data: dict[str, Any], figures_dir: Path) -> None:
     if not flows:
         fig = go_plotly.Figure()
         fig.add_annotation(text="No confusion boundary data", x=0.5, y=0.5, showarrow=False)
-        _plotly_write_image(fig, str(figures_dir / "sankey_confusion.png"), width=1000, height=600)
+        _plotly_write_image(fig, str(figures_dir / "sankey_confusion.png"), width=2000, height=1200)
         return
 
     all_labels = sorted(set(
@@ -675,8 +675,8 @@ def render_sankey_confusion(data: dict[str, Any], figures_dir: Path) -> None:
         node=dict(label=all_labels, pad=15, thickness=20),
         link=dict(source=source, target=target, value=value),
     )])
-    fig.update_layout(title="Model Votes → Consensus (Confusion Boundary)", width=1000, height=600)
-    _plotly_write_image(fig, str(figures_dir / "sankey_confusion.png"), width=1000, height=600)
+    fig.update_layout(title="Model Votes → Consensus (Confusion Boundary)", width=2000, height=1200)
+    _plotly_write_image(fig, str(figures_dir / "sankey_confusion.png"), width=2000, height=1200)
 
 
 def generate_all_plotly_charts(data: dict[str, Any], figures_dir: Path) -> None:
@@ -688,3 +688,243 @@ def generate_all_plotly_charts(data: dict[str, Any], figures_dir: Path) -> None:
         render_plotly_rankings(data, figures_dir)
         render_oos_treemap(data, figures_dir)
         render_sankey_confusion(data, figures_dir)
+
+
+# ---------------------------------------------------------------------------
+# Preprint charts (Task 3)
+# ---------------------------------------------------------------------------
+
+
+def render_rank_change_2025_2026(
+    blended: list[dict[str, Any]],
+    entry_names: dict[str, str],
+    figures_dir: Path,
+) -> Path:
+    """Preprint chart: slope chart of 2025 published rank -> 2026 blended rank.
+
+    Incumbents (LLM01-LLM10) are anchored at their 2025 Top-10 position on the
+    left axis.  NEW-* and ROLL-* entries appear only on the right axis as
+    diamond markers.  The five biggest movers (by absolute delta) are drawn with
+    thicker, fully-opaque lines; all others draw at 50 % opacity.
+    """
+    out = figures_dir / "rank_change_2025_2026.png"
+
+    rows: list[dict[str, Any]] = []
+    for item in blended:
+        eid = item["entry_id"]
+        blend_rank = item["blend_rank"]
+        pub_rank: int | None = None
+        if eid.startswith("LLM") and eid[3:].isdigit():
+            pub_rank = int(eid[3:])
+        rows.append({"entry_id": eid, "pub_rank": pub_rank, "blend_rank": blend_rank})
+
+    # Top-5 biggest movers among incumbents
+    movers = [r for r in rows if r["pub_rank"] is not None]
+    movers_sorted = sorted(
+        movers, key=lambda r: abs(r["blend_rank"] - r["pub_rank"]), reverse=True
+    )
+    top_movers = {r["entry_id"] for r in movers_sorted[:5]}
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+
+    for r in rows:
+        eid = r["entry_id"]
+        color = ENTRY_COLORS.get(eid, "#999999")
+        label = entry_names.get(eid, eid)
+        if r["pub_rank"] is not None:
+            highlight = eid in top_movers
+            ax.plot(
+                [0, 1],
+                [r["pub_rank"], r["blend_rank"]],
+                marker="o",
+                color=color,
+                linewidth=3 if highlight else 1.5,
+                alpha=1.0 if highlight else 0.5,
+                markersize=7,
+            )
+            ax.annotate(
+                eid,
+                (0, r["pub_rank"]),
+                textcoords="offset points",
+                xytext=(-5, 0),
+                fontsize=9,
+                ha="right",
+                color=color,
+            )
+            ax.annotate(
+                f"{eid} ({label})",
+                (1, r["blend_rank"]),
+                textcoords="offset points",
+                xytext=(5, 0),
+                fontsize=8,
+                ha="left",
+                color=color,
+            )
+        else:
+            # New / rollup — only on right axis
+            ax.scatter([1], [r["blend_rank"]], color=color, s=60, marker="D", zorder=5)
+            ax.annotate(
+                f"{eid} ({label})",
+                (1, r["blend_rank"]),
+                textcoords="offset points",
+                xytext=(5, 0),
+                fontsize=8,
+                ha="left",
+                color=color,
+            )
+
+    ax.set_xticks([0, 1])
+    ax.set_xticklabels(["2025 Published", "2026 Blended"])
+    ax.set_ylabel("Rank")
+    ax.set_title("Published → Blended Rank Changes (2025 → 2026)")
+    ax.invert_yaxis()
+    fig.tight_layout()
+    fig.savefig(out, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+    return out
+
+
+def render_entry_expansion_map(
+    entries: list[dict[str, Any]],
+    figures_dir: Path,
+) -> Path:
+    """Preprint chart: grouped map of the 20-entry candidate ballot.
+
+    Three column panels — incumbent (LLM*), new (NEW-*), rollup (ROLL-*) —
+    with horizontal arrows from each ROLL-* box to the incumbent it rolls into.
+    """
+    out = figures_dir / "entry_expansion_map.png"
+
+    groups: dict[str, list[dict[str, Any]]] = {"incumbent": [], "new": [], "rollup": []}
+    rolled_into: dict[str, str] = {}
+    for e in entries:
+        g = e.get("group", "")
+        if g in groups:
+            groups[g].append(e)
+        parent = e.get("rolled_into")
+        if parent:
+            rolled_into[e["entry_id"]] = parent
+
+    n_rows = max(len(v) for v in groups.values()) if any(groups.values()) else 1
+    fig, ax = plt.subplots(figsize=(14, max(6, n_rows * 0.8 + 2)))
+    ax.set_xlim(0, 3)
+    ax.set_ylim(-1, n_rows + 0.5)
+    ax.axis("off")
+
+    col_x = {"incumbent": 0.35, "new": 1.5, "rollup": 2.65}
+    col_labels = {
+        "incumbent": "Incumbent (LLM*)",
+        "new": "New Entries (NEW-*)",
+        "rollup": "Roll-ups (ROLL-*)",
+    }
+
+    entry_pos: dict[str, tuple[float, float]] = {}
+
+    for grp, col_xv in col_x.items():
+        ax.text(
+            col_xv, -0.6, col_labels[grp],
+            ha="center", va="center", fontsize=11, fontweight="bold",
+        )
+        for i, e in enumerate(groups[grp]):
+            eid = e["entry_id"]
+            name = e.get("canonical_name", eid)
+            y = float(i)
+            color = ENTRY_COLORS.get(eid, "#999999")
+            rect = mpatches.FancyBboxPatch(
+                (col_xv - 0.42, y - 0.22),
+                0.84,
+                0.44,
+                boxstyle="round,pad=0.04",
+                facecolor=color,
+                edgecolor="white",
+                alpha=0.88,
+                linewidth=1,
+            )
+            ax.add_patch(rect)
+            ax.text(
+                col_xv, y,
+                f"{eid}\n{name[:18]}",
+                ha="center", va="center", fontsize=7,
+                color="white", fontweight="bold",
+            )
+            entry_pos[eid] = (col_xv, y)
+
+    # Arrows from ROLL-* to their incumbent parent
+    for eid, parent_id in rolled_into.items():
+        if eid in entry_pos and parent_id in entry_pos:
+            sx, sy = entry_pos[eid]
+            tx, ty = entry_pos[parent_id]
+            ax.annotate(
+                "",
+                xy=(tx + 0.42, ty),
+                xytext=(sx - 0.42, sy),
+                arrowprops=dict(
+                    arrowstyle="->",
+                    color="#555555",
+                    lw=1.5,
+                    connectionstyle="arc3,rad=0.15",
+                ),
+            )
+
+    ax.set_title(
+        "2026 Entry Expansion Map: 20 Candidate Entries",
+        fontsize=13, pad=20,
+    )
+    fig.tight_layout()
+    fig.savefig(out, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+    return out
+
+
+def render_rarr_robustness(robustness: dict[str, Any], figures_dir: Path) -> Path:
+    """Preprint chart: RARR ranking-fidelity bar chart.
+
+    Draws one horizontal bar per model / ensemble from
+    ``robustness["ranking_fidelity_spearman_vs_truth"]`` and adds a vertical
+    reference line at the ``floor`` value.
+    """
+    out = figures_dir / "rarr_robustness.png"
+    fidelity: dict[str, float] = robustness["ranking_fidelity_spearman_vs_truth"]
+    floor_val: float = fidelity["floor"]
+
+    model_keys = [k for k in fidelity if k != "floor"]
+    values = [fidelity[k] for k in model_keys]
+
+    incumbent_color = ENTRY_COLORS.get("LLM01", "#2196F3")
+    bar_colors = [
+        "#E53935" if v < floor_val else incumbent_color
+        for v in values
+    ]
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    y_pos = range(len(model_keys))
+    bars = ax.barh(list(y_pos), values, color=bar_colors, alpha=0.85, edgecolor="white")
+    ax.set_yticks(list(y_pos))
+    ax.set_yticklabels(model_keys, fontsize=10)
+    ax.set_xlabel("Spearman ρ vs Ground Truth", fontsize=11)
+    ax.set_title("RARR Ranking Fidelity: Spearman ρ vs Held-Out Truth", fontsize=12)
+
+    ax.axvline(
+        x=floor_val,
+        color="#FF6F00",
+        linestyle="--",
+        linewidth=2,
+        label=f"Floor ρ = {floor_val:.3f}",
+    )
+    ax.legend(fontsize=9)
+
+    x_max = max(list(values) + [floor_val])
+    for bar, v in zip(bars, values, strict=False):
+        ax.text(
+            v + x_max * 0.01,
+            bar.get_y() + bar.get_height() / 2,
+            f"{v:.3f}",
+            va="center",
+            fontsize=9,
+        )
+
+    ax.set_xlim(0, x_max * 1.15)
+    fig.tight_layout()
+    fig.savefig(out, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+    return out

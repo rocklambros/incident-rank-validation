@@ -46,3 +46,4 @@ notebook.aux
 notebook.log
 notebook.out
 notebook.toc
+notebooks/preprint/*_executed.ipynb
