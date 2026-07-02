@@ -5,3 +5,4 @@ seaborn>=0.13
 plotly>=5.15
 scipy>=1.10
 kaleido>=0.2
+jinja2>=3.0
