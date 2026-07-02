@@ -3,7 +3,13 @@
 The preprint is built **notebook-first**: update the notebook → execute → export markdown → pandoc + custom LaTeX template → PDF. This file records the exact, reproducible build environment (hard-won during Task 4/4.5).
 
 ## Kernel (IMPORTANT)
-Execute the notebook with the **`preprint-build`** kernel, registered from the project `uv` env:
+The notebook-execution stack (`nbconvert`, `ipykernel`) is a declared extra — install it (with the chart deps) before registering the kernel:
+
+```bash
+uv sync --extra narrative --extra preprint   # or: uv sync --all-extras
+```
+
+Then register the **`preprint-build`** kernel from the project `uv` env:
 
 ```bash
 uv run python -m ipykernel install --user --name preprint-build --display-name "preprint-build"
