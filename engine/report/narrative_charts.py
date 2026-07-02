@@ -47,6 +47,60 @@ ENTRY_IDS = [
 ]
 FRAME_BLIND = {"LLM04", "LLM08", "LLM10"}
 
+# Official 2025 OWASP LLM Top-10 published names (fixed historical facts) —
+# used on the left axis of the 2025->2026 slopegraph.
+PUBLISHED_2025_NAMES = {
+    "LLM01": "Prompt Injection",
+    "LLM02": "Sensitive Information Disclosure",
+    "LLM03": "Supply Chain",
+    "LLM04": "Data and Model Poisoning",
+    "LLM05": "Improper Output Handling",
+    "LLM06": "Excessive Agency",
+    "LLM07": "System Prompt Leakage",
+    "LLM08": "Vector and Embedding Weaknesses",
+    "LLM09": "Misinformation",
+    "LLM10": "Unbounded Consumption",
+}
+# Incumbents whose 2026 canonical name is a true rename (not a cosmetic diff).
+RENAMED_2026 = {"LLM07"}
+
+
+def _rank_change_rows(
+    blended: list[dict[str, Any]], entry_names: dict[str, str]
+) -> list[dict[str, Any]]:
+    """Row model for the 2025->2026 incumbent slopegraph.
+
+    published rank = int(LLMkk); move = published - blend_rank (positive = moved
+    up toward #1). Style band: nc (move 0) / hold (|move|==1) / mover (|move|>=2).
+    New right-side code = LLM<blend_rank:02d>.
+    """
+    rows: list[dict[str, Any]] = []
+    for item in blended:
+        eid = item["entry_id"]
+        if not (eid.startswith("LLM") and eid[3:].isdigit()):
+            continue  # slopegraph is incumbents-only
+        pub = int(eid[3:])
+        blend_rank = int(item["blend_rank"])
+        move = pub - blend_rank
+        if move == 0:
+            style = "nc"
+        elif abs(move) == 1:
+            style = "hold"
+        else:
+            style = "mover"
+        rows.append({
+            "left_num": pub,
+            "left_code": eid,
+            "left_name": PUBLISHED_2025_NAMES.get(eid, eid),
+            "right_code": f"LLM{blend_rank:02d}",
+            "right_name": entry_names.get(eid, eid),
+            "move": move,
+            "renamed": eid in RENAMED_2026,
+            "style": style,
+        })
+    return rows
+
+
 sns.set_theme(style="whitegrid", font_scale=1.1)
 
 
@@ -700,84 +754,46 @@ def render_rank_change_2025_2026(
     entry_names: dict[str, str],
     figures_dir: Path,
 ) -> Path:
-    """Preprint chart: slope chart of 2025 published rank -> 2026 blended rank.
-
-    Incumbents (LLM01-LLM10) are anchored at their 2025 Top-10 position on the
-    left axis.  NEW-* and ROLL-* entries appear only on the right axis as
-    diamond markers.  The five biggest movers (by absolute delta) are drawn with
-    thicker, fully-opaque lines; all others draw at 50 % opacity.
-    """
+    """Reference-matched 2025->2026 incumbent slopegraph (replaces the §4.2 table)."""
     out = figures_dir / "rank_change_2025_2026.png"
+    rows = _rank_change_rows(blended, entry_names)
 
-    rows: list[dict[str, Any]] = []
-    for item in blended:
-        eid = item["entry_id"]
-        blend_rank = item["blend_rank"]
-        pub_rank: int | None = None
-        if eid.startswith("LLM") and eid[3:].isdigit():
-            pub_rank = int(eid[3:])
-        rows.append({"entry_id": eid, "pub_rank": pub_rank, "blend_rank": blend_rank})
+    MOVER = "#E8590C"   # orange
+    GREY = "#9AA0A6"
+    style_kw: dict[str, dict[str, Any]] = {
+        "mover": dict(color=MOVER, lw=3.2, ls="-", alpha=0.95),
+        "hold": dict(color=GREY, lw=2.0, ls="-", alpha=0.75),
+        "nc": dict(color=GREY, lw=1.6, ls=(0, (4, 3)), alpha=0.7),
+    }
 
-    # Top-5 biggest movers among incumbents
-    movers = [r for r in rows if r["pub_rank"] is not None]
-    movers_sorted = sorted(
-        movers, key=lambda r: abs(r["blend_rank"] - r["pub_rank"]), reverse=True
-    )
-    top_movers = {r["entry_id"] for r in movers_sorted[:5]}
-
-    fig, ax = plt.subplots(figsize=(10, 10))
-
+    fig, ax = plt.subplots(figsize=(12, 6.6))
     for r in rows:
-        eid = r["entry_id"]
-        color = ENTRY_COLORS.get(eid, "#999999")
-        label = entry_names.get(eid, eid)
-        if r["pub_rank"] is not None:
-            highlight = eid in top_movers
-            ax.plot(
-                [0, 1],
-                [r["pub_rank"], r["blend_rank"]],
-                marker="o",
-                color=color,
-                linewidth=3 if highlight else 1.5,
-                alpha=1.0 if highlight else 0.5,
-                markersize=7,
-            )
-            ax.annotate(
-                eid,
-                (0, r["pub_rank"]),
-                textcoords="offset points",
-                xytext=(-5, 0),
-                fontsize=9,
-                ha="right",
-                color=color,
-            )
-            ax.annotate(
-                f"{eid} ({label})",
-                (1, r["blend_rank"]),
-                textcoords="offset points",
-                xytext=(5, 0),
-                fontsize=8,
-                ha="left",
-                color=color,
-            )
-        else:
-            # New / rollup — only on right axis
-            ax.scatter([1], [r["blend_rank"]], color=color, s=60, marker="D", zorder=5)
-            ax.annotate(
-                f"{eid} ({label})",
-                (1, r["blend_rank"]),
-                textcoords="offset points",
-                xytext=(5, 0),
-                fontsize=8,
-                ha="left",
-                color=color,
-            )
-
+        y0 = r["left_num"]                 # 2025 published rank
+        y1 = r["left_num"] - r["move"]     # blended rank (= published - move)
+        ax.plot([0, 1], [y0, y1], solid_capstyle="round", **style_kw[r["style"]])
+        ax.scatter([0], [y0], s=34, color=style_kw[r["style"]]["color"], zorder=4)
+        ax.scatter([1], [y1], s=34, color=style_kw[r["style"]]["color"], zorder=4)
+        ax.annotate(
+            f'{r["left_num"]}  {r["left_code"]}  {r["left_name"]}',
+            (0, y0), textcoords="offset points", xytext=(-10, 0),
+            ha="right", va="center", fontsize=12, color="#202124",
+        )
+        move_txt = "nc" if r["move"] == 0 else f'{r["move"]:+d}'
+        rn = " [renamed]" if r["renamed"] else ""
+        ax.annotate(
+            f'{r["right_code"]}  {r["right_name"]}{rn}  ({move_txt})',
+            (1, y1), textcoords="offset points", xytext=(10, 0),
+            ha="left", va="center", fontsize=12,
+            color=(MOVER if r["style"] == "mover" else "#202124"),
+        )
+    ax.set_xlim(-0.55, 1.75)
+    ax.set_ylim(10.6, 0.4)  # rank 1 at top
     ax.set_xticks([0, 1])
-    ax.set_xticklabels(["2025 Published", "2026 Blended"])
-    ax.set_ylabel("Rank")
-    ax.set_title("Published → Blended Rank Changes (2025 → 2026)")
-    ax.invert_yaxis()
+    ax.set_xticklabels(["2025 Published", "2026 Blended"], fontsize=14, fontweight="bold")
+    ax.set_yticks([])
+    for side in ("left", "right", "top", "bottom"):
+        ax.spines[side].set_visible(False)
+    ax.tick_params(length=0)
     fig.tight_layout()
     fig.savefig(out, dpi=300, bbox_inches="tight")
     plt.close(fig)
