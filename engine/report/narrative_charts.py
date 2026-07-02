@@ -283,11 +283,16 @@ def render_ridge_plot(data: dict[str, Any], figures_dir: Path) -> None:
     for row, eid in enumerate(order):
         idx = entry_ids.index(eid)
         vals = lambda_samples[:, idx]
-        # A near-degenerate column (near-zero variance) makes gaussian_kde's
-        # internal covariance matrix singular, raising LinAlgError. Real cycle
-        # data has not hit this (min column variance ~0.038 as of 2026-07),
-        # but guard defensively: skip the KDE curve for that entry rather than
-        # letting the whole chart fail, and still draw its label.
+        # A near-degenerate column (near-zero variance) can make gaussian_kde's
+        # internal covariance matrix singular, raising LinAlgError from the
+        # constructor -- that genuine failure mode is still guarded below.
+        # But the more common degenerate case does NOT raise at all: kde(xs)
+        # silently returns an all-zero density array. The old guard stopped
+        # there and let `dens / dens.max()` run unguarded, which is a 0/0
+        # division -> RuntimeWarning that this repo's filterwarnings=["error"]
+        # policy turns into a hard crash. So we must check dens for
+        # finiteness/positivity BEFORE normalizing, not just check dens is
+        # not None.
         try:
             with warnings.catch_warnings():
                 warnings.filterwarnings("error", category=RuntimeWarning)
@@ -297,11 +302,13 @@ def render_ridge_plot(data: dict[str, Any], figures_dir: Path) -> None:
             dens = None
         base = row * pitch
         color = ENTRY_COLORS.get(eid, "#999999")
-        if dens is not None:
+        if dens is not None and np.isfinite(dens).all() and dens.max() > 0:
             dens = dens / dens.max() * scale
             ax.fill_between(xs, base, base + dens, color=color, alpha=0.85,
                             zorder=n - row, lw=0)
             ax.plot(xs, base + dens, color="white", lw=0.6, zorder=n - row)
+        # else: degenerate (near-)zero-variance column -- no curve to draw,
+        # but the row label below still renders so the entry is accounted for.
         ax.text(x_lo, base + 0.15, eid, ha="right", va="bottom", fontsize=9,
                 color=color, fontweight="bold")
     ax.set_yticks([])
