@@ -402,6 +402,30 @@ class TestOOSTreemap:
         assert 0.55 <= h / w <= 0.80, f"treemap aspect out of band: h/w={h / w:.2f}"
 
 
+@pytest.mark.integration
+class TestSankey:
+    """Fig 15: confusion-boundary sankey, real cycle data.
+
+    Regression guard for the legibility upgrade (larger fonts, coloured
+    flows, node totals) — asserts a real PNG in a landscape aspect band.
+    """
+
+    def test_renders_landscape(self, figures_dir: Path) -> None:
+        from PIL import Image
+
+        from engine.report.narrative_charts import render_sankey_confusion
+        from engine.report.narrative_data import load_narrative_data
+        render_sankey_confusion(load_narrative_data(CYCLE), figures_dir)
+        out = figures_dir / "sankey_confusion.png"
+        assert out.exists() and out.stat().st_size > 1024
+        # Context manager avoids a dangling FileIO handle — this repo's pytest
+        # config runs with filterwarnings = ["error"], which turns the
+        # ResourceWarning from an unclosed Image.open() into a hard failure.
+        with Image.open(out) as img:
+            w, h = img.size
+        assert 0.55 <= h / w <= 0.72, f"sankey aspect out of band: h/w={h / w:.2f}"
+
+
 class TestRidgePlotDegenerateColumn:
     """Fast unit test (synthetic data): a zero-variance lambda column must not
     crash render_ridge_plot. gaussian_kde(...)(xs) silently returns an

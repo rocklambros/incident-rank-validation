@@ -781,7 +781,7 @@ def render_sankey_confusion(data: dict[str, Any], figures_dir: Path) -> None:
     if not flows:
         fig = go_plotly.Figure()
         fig.add_annotation(text="No confusion boundary data", x=0.5, y=0.5, showarrow=False)
-        _plotly_write_image(fig, str(figures_dir / "sankey_confusion.png"), width=2000, height=1200)
+        _plotly_write_image(fig, str(figures_dir / "sankey_confusion.png"), width=1600, height=1000)
         return
 
     all_labels = sorted(set(
@@ -793,12 +793,47 @@ def render_sankey_confusion(data: dict[str, Any], figures_dir: Path) -> None:
     target = [label_idx[k[1]] for k in flows]
     value = list(flows.values())
 
+    node_colors = [
+        ENTRY_COLORS.get(lb.split(": ")[-1], "#888888") for lb in all_labels
+    ]
+
+    # Colour each link by its source node, semi-transparent so overlapping
+    # flows stay legible.
+    def _rgba(hex_c: str, a: float = 0.45) -> str:
+        h = hex_c.lstrip("#")
+        r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+        return f"rgba({r},{g},{b},{a})"
+
+    link_colors = [_rgba(node_colors[s]) for s in source]
+
+    # Node totals: every node in this sankey is either a "model: entry" vote
+    # node (always a link *source*, never a target — labels contain ": ") or
+    # a bare consensus-entry node (always a link *target*, never a source —
+    # labels have no ": "). That label-format invariant is verified against
+    # real cycle data (see task-6 report) so the two sums below never both
+    # apply to the same node; summing per-direction directly (rather than
+    # rescanning source/target/value once per node) is O(edges) instead of
+    # O(nodes * edges) and doesn't rely on a truthy-zero fallback to pick the
+    # right side.
+    outbound: dict[int, int] = defaultdict(int)
+    inbound: dict[int, int] = defaultdict(int)
+    for s, t, v in zip(source, target, value, strict=False):
+        outbound[s] += v
+        inbound[t] += v
+    node_totals = [outbound.get(i, 0) or inbound.get(i, 0) for i in range(len(all_labels))]
+    node_labels = [f"{lb}  ({v})" for lb, v in zip(all_labels, node_totals, strict=False)]
+
     fig = go_plotly.Figure(data=[go_plotly.Sankey(
-        node=dict(label=all_labels, pad=15, thickness=20),
-        link=dict(source=source, target=target, value=value),
+        node=dict(label=node_labels, color=node_colors, pad=22, thickness=26,
+                  line=dict(color="white", width=1)),
+        link=dict(source=source, target=target, value=value, color=link_colors),
     )])
-    fig.update_layout(title="Model Votes → Consensus (Confusion Boundary)", width=2000, height=1200)
-    _plotly_write_image(fig, str(figures_dir / "sankey_confusion.png"), width=2000, height=1200)
+    fig.update_layout(
+        title="Model votes → consensus at the confusion boundary",
+        font=dict(size=18), title_font_size=26,
+        width=1600, height=1000, margin=dict(t=80, l=10, r=10, b=10),
+    )
+    _plotly_write_image(fig, str(figures_dir / "sankey_confusion.png"), width=1600, height=1000)
 
 
 def generate_all_plotly_charts(data: dict[str, Any], figures_dir: Path) -> None:
