@@ -359,6 +359,24 @@ class TestRidgeJoyplot:
         assert h / w <= 0.90, f"ridge too tall: h/w={h/w:.2f}"
 
 
+@pytest.mark.integration
+class TestDumbbellCompact:
+    """Fig 8: compact single-column dumbbell rank chart, real cycle data."""
+
+    def test_not_tall(self, figures_dir: Path) -> None:
+        from PIL import Image
+
+        from engine.report.narrative_charts import render_dumbbell_chart
+        from engine.report.narrative_data import load_narrative_data
+        render_dumbbell_chart(load_narrative_data(CYCLE), figures_dir)
+        # Context manager avoids a dangling FileIO handle — this repo's pytest
+        # config runs with filterwarnings = ["error"], which turns the
+        # ResourceWarning from an unclosed Image.open() into a hard failure.
+        with Image.open(figures_dir / "dumbbell_chart.png") as img:
+            w, h = img.size
+        assert h / w <= 0.90, f"dumbbell too tall: h/w={h/w:.2f}"
+
+
 class TestRidgePlotDegenerateColumn:
     """Fast unit test (synthetic data): a zero-variance lambda column must not
     crash render_ridge_plot. gaussian_kde(...)(xs) silently returns an

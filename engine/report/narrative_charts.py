@@ -342,20 +342,23 @@ def render_dumbbell_chart(data: dict[str, Any], figures_dir: Path) -> None:
 
     sorted_entries = sorted(entry_ids, key=lambda e: rank_medians[e])
 
-    fig, ax = plt.subplots(figsize=(10, 12))
+    fig, ax = plt.subplots(figsize=(11, 7.2))
     y_pos = range(len(sorted_entries))
     for y, eid in zip(y_pos, sorted_entries, strict=False):
-        ci = rank_cis[eid]
+        lo, hi = rank_cis[eid]
         color = ENTRY_COLORS.get(eid, "#999999")
-        ax.plot([ci[0], ci[1]], [y, y], color=color, linewidth=2, alpha=0.6)
-        ax.scatter([rank_medians[eid]], [y], color=color, s=80, zorder=5)
-    ax.set_yticks(y_pos)
+        ax.plot([lo, hi], [y, y], color=color, linewidth=3.0, alpha=0.55,
+                solid_capstyle="round")
+        ax.scatter([rank_medians[eid]], [y], color=color, s=70, zorder=5)
+    ax.set_yticks(list(y_pos))
     ax.set_yticklabels(
-        [f"{e} ({data['entry_names'].get(e, e)})" for e in sorted_entries], fontsize=9
+        [f"{e}  {data['entry_names'].get(e, e)}" for e in sorted_entries], fontsize=10
     )
-    ax.set_xlabel("Rank (90% CI)")
-    ax.set_title("Incident-Derived Rankings with Uncertainty")
+    ax.set_xlabel("Incident-derived rank (median · 90% CI)", fontsize=12)
     ax.invert_xaxis()
+    ax.margins(y=0.02)
+    for side in ("top", "right"):
+        ax.spines[side].set_visible(False)
     fig.tight_layout()
     fig.savefig(figures_dir / "dumbbell_chart.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
