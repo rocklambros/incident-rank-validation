@@ -31,6 +31,35 @@ class DiagnosticsFailure(RuntimeError):
     """NUTS diagnostics failed — report not emitted."""
 
 
+_AUX_PARAMS = {"concentration"}
+
+
+def _check_diagnostics(
+    r_hat: dict[str, float],
+    ess: dict[str, float],
+    divergences: int,
+    ess_fraction: float,
+    total_draws: int,
+) -> None:
+    """Raise DiagnosticsFailure if NUTS diagnostics are out of bounds.
+
+    Shared by the primary and robustness specs so a divergent / poorly-mixed
+    robustness fit cannot silently feed the spread (premortem F2). The ESS gate
+    covers all sampled sites except `concentration` (so it covers lambda AND
+    sigma_u for the hierarchical spec)."""
+    max_rhat = max(r_hat.values()) if r_hat else 1.0
+    if max_rhat > 1.01:
+        raise DiagnosticsFailure(f"R-hat exceeded threshold: max R-hat = {max_rhat:.4f} > 1.01")
+    if divergences > 0:
+        raise DiagnosticsFailure(f"Post-warmup divergences detected: {divergences}")
+    gated_ess = {k: v for k, v in ess.items() if k.split("[")[0] not in _AUX_PARAMS}
+    min_ess_fraction = min((v / total_draws for v in gated_ess.values()), default=1.0)
+    if min_ess_fraction < ess_fraction:
+        raise DiagnosticsFailure(
+            f"ESS below threshold: min ESS fraction = {min_ess_fraction:.4f} < {ess_fraction}"
+        )
+
+
 @dataclass(frozen=True, slots=True)
 class InferenceResult:
     lambda_samples: npt.NDArray[np.float64]  # shape (num_samples, num_entries)
@@ -40,6 +69,7 @@ class InferenceResult:
     divergences: int
     num_warmup: int
     num_samples: int
+    sigma_u: float | None = None  # hierarchical pooling scale posterior median (Plan 8b)
 
 
 def _build_observation_arrays(
@@ -99,6 +129,43 @@ def _build_overlap_matrix(
     return W
 
 
+def _expected_counts(
+    overlap_matrix: npt.NDArray[np.float64],
+    true_rate: Any,
+    recall: Any,
+    precision: Any,
+) -> Any:
+    """Expected observed counts including the W (overlap) false-positive-leakage term.
+
+    Pure function extracted from the NUTS model closure so the W-consumption
+    unit test can import and call the PRODUCTION formula directly — the test
+    therefore fails if the W term is ever removed.
+
+    Parameters
+    ----------
+    overlap_matrix:
+        W[i, j] — fraction of entry j's FPs landing in entry i; shape (n_entries, n_entries).
+    true_rate:
+        lambda_e * stratum_size_s; shape (n_entries, n_strata).
+    recall:
+        Per-entry, per-stratum recall rate; shape (n_entries, n_strata).
+    precision:
+        Per-entry, per-stratum precision rate; shape (n_entries, n_strata).
+
+    Returns
+    -------
+    expected:
+        Clipped expected observed counts; shape (n_entries, n_strata).
+    """
+    tp = true_rate * recall
+    fp_rate = jnp.einsum(
+        "ij,js->is",
+        jnp.array(overlap_matrix),
+        true_rate * (1.0 - precision),
+    )
+    return jnp.clip(tp + fp_rate, 1e-6, None)
+
+
 def run_inference(
     manifest: PreregManifest,
     measurable_entries: tuple[str, ...],
@@ -111,11 +178,22 @@ def run_inference(
     num_samples: int = 2000,
     num_chains: int = 4,
     timeout_seconds: float | None = None,
+    recall_floor_epsilon: float = 0.0,
 ) -> InferenceResult:
     """Run NUTS inference on the measurement-error model.
 
     All hyperparameters come from *manifest* (prior_scale, concentration_shape,
     concentration_rate, prng_seed).  No module-level constants for tunables.
+
+    Parameters
+    ----------
+    recall_floor_epsilon:
+        F6 uniform recall floor ε (default 0.0 = no-op, byte-identical to pre-F6).
+        When > 0, the sampled recall inside the NUTS model is clipped to
+        max(recall_sample, ε) UNIFORMLY across all cells (not just thin ones)
+        to prevent λ = observed/recall exploding when recall≈0 (e.g. TP==0
+        cells).  Applied via a Python-level conditional so the default path
+        (ε=0.0) adds zero operations to the JAX computation graph.
     """
     # Verify CPU backend for reproducibility
     assert jax.default_backend() == "cpu", (
@@ -158,6 +236,11 @@ def run_inference(
             "recall",
             dist.Beta(jnp.array(recall_alpha), jnp.array(recall_beta)),
         )
+        # F6 uniform recall floor: Python-level conditional so the default path
+        # (recall_floor_epsilon == 0.0) adds ZERO operations to the JAX graph,
+        # preserving byte-identical output for all existing callers.
+        if recall_floor_epsilon > 0.0:
+            recall = jnp.maximum(recall, recall_floor_epsilon)
         precision = numpyro.sample(
             "precision",
             dist.Beta(jnp.array(precision_alpha), jnp.array(precision_beta)),
@@ -172,17 +255,8 @@ def run_inference(
         # Expected true counts: lambda_e * stratum_size_s
         true_rate = lam[:, None] * sizes_data[None, :]  # (n_entries, n_strata)
 
-        # True positives: true_rate * recall
-        tp = true_rate * recall
-
-        # False positives from leakage: FP_i = sum_j W[i,j] * true_rate_j * (1 - precision_j)
-        fp_rate = jnp.einsum(
-            "ij,js->is",
-            jnp.array(W_data),
-            true_rate * (1.0 - precision),
-        )
-
-        expected = jnp.clip(tp + fp_rate, 1e-6, None)
+        # Expected counts: TP + FP leakage via overlap matrix W.
+        expected = _expected_counts(W_data, true_rate, recall, precision)
 
         # Negative-Binomial likelihood
         numpyro.sample(
@@ -217,6 +291,7 @@ def run_inference(
         mcmc.run(
             jax.random.PRNGKey(manifest.prng_seed),
             obs, sizes, recall_a, recall_b, prec_a, prec_b, W,
+            extra_fields=("diverging",),
         )
     finally:
         if timeout_seconds is not None:
@@ -256,34 +331,7 @@ def run_inference(
     # ------------------------------------------------------------------
     # Diagnostic gates (HANDOFF §5.4)
     # ------------------------------------------------------------------
-    # R-hat <= 1.01
-    max_rhat = max(r_hat_dict.values()) if r_hat_dict else 1.0
-    if max_rhat > 1.01:
-        raise DiagnosticsFailure(
-            f"R-hat exceeded threshold: max R-hat = {max_rhat:.4f} > 1.01"
-        )
-
-    # Zero post-warmup divergences
-    if divergences > 0:
-        raise DiagnosticsFailure(
-            f"Post-warmup divergences detected: {divergences}"
-        )
-
-    # Sufficient ESS — gate on lambda parameters only; auxiliary parameters
-    # (concentration) are shared scalars with inherently lower ESS.
-    _AUX_PARAMS = {"concentration"}
-    total_draws = num_samples * num_chains
-    lambda_ess = {
-        k: v for k, v in ess_dict.items() if k.split("[")[0] not in _AUX_PARAMS
-    }
-    min_ess_fraction = (
-        min(v / total_draws for v in lambda_ess.values()) if lambda_ess else 1.0
-    )
-    if min_ess_fraction < ess_fraction:
-        raise DiagnosticsFailure(
-            f"ESS below threshold: min ESS fraction = {min_ess_fraction:.4f} "
-            f"< {ess_fraction}"
-        )
+    _check_diagnostics(r_hat_dict, ess_dict, divergences, ess_fraction, num_samples * num_chains)
 
     return InferenceResult(
         lambda_samples=lambda_samples,

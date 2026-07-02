@@ -4,6 +4,7 @@ from pathlib import Path
 
 import click
 
+from engine.cli.bakeoff import bakeoff_cli_cmd
 from engine.cli.calibration import (
     cal_calibrate,
     cal_classify,
@@ -12,6 +13,8 @@ from engine.cli.calibration import (
     cal_sample,
     cal_tally,
 )
+from engine.cli.freeze_baselines import freeze_baselines_cmd
+from engine.cli.live_run import live_run_cmd
 from engine.cli.pipeline import (
     classify_real,
     corroborate,
@@ -20,6 +23,7 @@ from engine.cli.pipeline import (
     report_cmd,
     report_narrative_cmd,
     repro_bundle_cmd,
+    verify_oracle_cmd,
 )
 from engine.cli.reclassify import reclassify
 from engine.cli.rubric import freeze_rubric_cmd, validate_rubric_cmd
@@ -42,6 +46,7 @@ cli.add_command(cal_tally)
 cli.add_command(cal_calibrate)
 cli.add_command(cal_cv_stability)
 
+cli.add_command(freeze_baselines_cmd)
 cli.add_command(classify_real)
 cli.add_command(infer_real)
 cli.add_command(decide_real)
@@ -50,6 +55,10 @@ cli.add_command(report_narrative_cmd)
 cli.add_command(repro_bundle_cmd)
 cli.add_command(corroborate)
 cli.add_command(reclassify)
+cli.add_command(verify_oracle_cmd)
+cli.add_command(bakeoff_cli_cmd)
+if live_run_cmd is not None:
+    cli.add_command(live_run_cmd)
 
 
 @cli.command()

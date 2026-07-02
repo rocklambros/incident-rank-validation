@@ -48,7 +48,18 @@ def test_lambda_min_explicit_override() -> None:
 
 
 def test_lambda_min_in_to_dict() -> None:
-    m = _make_manifest()
+    # lambda_min is excluded from the v1 canonical form (RM14 fix) but IS present
+    # in the v2 canonical form where it was originally introduced.
+    m = _make_manifest(schema_version=2)
     d = m.to_dict()
     assert "lambda_min" in d
     assert d["lambda_min"] == m.lambda_min
+
+
+def test_lambda_min_excluded_from_v1_canonical_form() -> None:
+    # RM14: lambda_min was added after the v1 lock was written; it must not
+    # appear in the v1 canonical form so that pre-existing v1 locks still verify.
+    m = _make_manifest()  # schema_version=1 by default
+    assert m.schema_version == 1
+    d = m.to_dict()
+    assert "lambda_min" not in d

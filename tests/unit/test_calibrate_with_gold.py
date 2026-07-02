@@ -117,6 +117,8 @@ class TestCalibrateWithGold:
 
         base = TallyResult(
             precision_counts={("LLM01", "security"): PrecisionTally(5, 2, 7)},
+            # Base recall (frame-size-padded) is intentionally discarded by
+            # calibrate_with_gold: recall derives solely from gold (Plan 8a SD1/RM2).
             recall_counts={("LLM01", "security"): RecallTally(8, 2, 100)},
             rollup_counts={},
             total_coded=100,
@@ -134,7 +136,8 @@ class TestCalibrateWithGold:
 
         assert ("LLM01", "security") in result.precision_counts
         assert ("LLM01", "security") in result.recall_counts
-        assert result.recall_counts[("LLM01", "security")].true_positives == 9
+        # Gold-only recall: 1 TP from gold, base frame-size padding dropped.
+        assert result.recall_counts[("LLM01", "security")].true_positives == 1
         assert result.total_coded == 101
 
     def test_multi_label_recall(self) -> None:

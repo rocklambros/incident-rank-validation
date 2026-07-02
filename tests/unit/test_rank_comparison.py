@@ -9,6 +9,15 @@ from engine.model.inference import InferenceResult
 from engine.vote.bootstrap import VoteRankPosterior
 
 
+def _make_entry_strata(
+    entries: tuple[str, ...],
+) -> tuple[dict[str, tuple[str, ...]], dict[str, int]]:
+    """Build minimal single-stratum entry_strata and stratum_sizes for tests."""
+    entry_strata: dict[str, tuple[str, ...]] = {e: ("default",) for e in entries}
+    stratum_sizes = {"default": max(len(entries) * 10, 1)}
+    return entry_strata, stratum_sizes
+
+
 def _make_inference(
     entry_ids: tuple[str, ...],
     n_samples: int = 100,
@@ -55,6 +64,7 @@ def test_concordance_includes_per_entry_comparison() -> None:
     entries = tuple(f"E{i}" for i in range(10))
     inf = _make_inference(entries, n_samples=200)
     vote = _make_vote_posterior(entries, n_bootstrap=200)
+    entry_strata, stratum_sizes = _make_entry_strata(entries)
 
     result = compute_concordance(
         inference_result=inf,
@@ -65,6 +75,8 @@ def test_concordance_includes_per_entry_comparison() -> None:
         total_count=10,
         meaningful_kappa_n=5,
         measurability_minimum=5,
+        entry_strata=entry_strata,
+        stratum_sizes=stratum_sizes,
     )
     assert result.entry_comparisons is not None
     assert len(result.entry_comparisons) > 0
@@ -88,6 +100,7 @@ def test_na_result_has_none_comparisons() -> None:
     entries = ("A", "B")
     inf = _make_inference(entries)
     vote = _make_vote_posterior(entries)
+    entry_strata, stratum_sizes = _make_entry_strata(entries)
 
     result = compute_concordance(
         inference_result=inf,
@@ -98,5 +111,7 @@ def test_na_result_has_none_comparisons() -> None:
         total_count=10,
         meaningful_kappa_n=5,
         measurability_minimum=3,
+        entry_strata=entry_strata,
+        stratum_sizes=stratum_sizes,
     )
     assert result.entry_comparisons is None

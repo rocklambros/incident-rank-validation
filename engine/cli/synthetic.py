@@ -267,6 +267,24 @@ def execute_synthetic_pipeline(
 
         total_entries = len(entries)
 
+        # Build entry_strata from observed_counts keys (entry, stratum) pairs
+        from collections import defaultdict as _defaultdict
+        _entry_strata_sets: dict[str, set[str]] = _defaultdict(set)
+        for (eid, s) in observed_counts:
+            _entry_strata_sets[eid].add(s)
+        entry_strata: dict[str, tuple[str, ...]] = {
+            e: tuple(sorted(ss)) for e, ss in _entry_strata_sets.items()
+        }
+
+        # F8 guard: assert strata populations are disjoint before incidence ranking.
+        # Build minimal labeled rows from raw incidents (incident.id + corpus_stratum).
+        from engine.verify.strata_guard import check_strata_disjoint as _check_strata
+        _synth_labeled: list[dict[str, object]] = [
+            {"incident_id": inc.id, "stratum": inc.corpus_stratum}
+            for inc in incidents
+        ]
+        _check_strata(_synth_labeled, entry_strata)
+
         # 17. Compute concordance
         concordance_result = compute_concordance(
             inference_result,
@@ -277,6 +295,8 @@ def execute_synthetic_pipeline(
             total_entries,
             meaningful_kappa_n,
             measurability_minimum,
+            entry_strata=entry_strata,
+            stratum_sizes=stratum_sizes_int,
         )
 
         # 18. Compute selection bias
@@ -337,6 +357,10 @@ def execute_synthetic_pipeline(
         "cycle_id": cycle_id,
         "engine_version": __version__,
         "corpus_mode": corpus_mode,
+        # Plan 8a Task 6: record the EXECUTED primary spec so the two-cycle
+        # parity proof can assert model identity (a silent fallback to a
+        # different model would fail the proof).
+        "primary_spec": manifest.primary_spec,
         "nuts_succeeded": not nuts_failed,
         "measurable_count": len(censoring.measurable),
         "frame_blind_count": len(censoring.frame_blind),

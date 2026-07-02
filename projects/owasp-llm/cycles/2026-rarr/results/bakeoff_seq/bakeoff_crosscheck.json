@@ -1,0 +1,102 @@
+{
+  "purpose": "Winner's-curse + thin-cell disclosure.  Selection is UNCHANGED (lockbox-only, pre-registered); dev-split balanced accuracy is an out-of-selection-sample cross-check reported alongside it.",
+  "selection_classes": [
+    "LLM01",
+    "LLM02",
+    "LLM03",
+    "LLM04",
+    "LLM05",
+    "LLM06",
+    "LLM07",
+    "LLM09",
+    "LLM10",
+    "NEW-MA",
+    "NEW-MSDA",
+    "NEW-MTIE",
+    "NEW-PMP",
+    "NEW-WLA",
+    "ROLL-CMSB",
+    "ROLL-SICG",
+    "out-of-scope"
+  ],
+  "lockbox_cell_sizes": {
+    "LLM01": 14,
+    "LLM02": 17,
+    "LLM03": 29,
+    "LLM04": 13,
+    "LLM05": 23,
+    "LLM06": 18,
+    "LLM07": 2,
+    "LLM09": 34,
+    "LLM10": 14,
+    "NEW-MA": 14,
+    "NEW-MSDA": 2,
+    "NEW-MTIE": 8,
+    "NEW-PMP": 2,
+    "NEW-WLA": 20,
+    "ROLL-CMSB": 6,
+    "ROLL-SICG": 5,
+    "out-of-scope": 138
+  },
+  "dev_cell_sizes": {
+    "LLM01": 31,
+    "LLM02": 41,
+    "LLM03": 69,
+    "LLM04": 29,
+    "LLM05": 56,
+    "LLM06": 42,
+    "LLM07": 4,
+    "LLM09": 80,
+    "LLM10": 33,
+    "NEW-MA": 31,
+    "NEW-MSDA": 6,
+    "NEW-MTIE": 17,
+    "NEW-PMP": 4,
+    "NEW-WLA": 45,
+    "ROLL-CMSB": 15,
+    "ROLL-SICG": 12,
+    "out-of-scope": 321
+  },
+  "thin_lockbox_cells": {
+    "LLM07": 2,
+    "NEW-MSDA": 2,
+    "NEW-PMP": 2
+  },
+  "floor_balanced_accuracy": 0.8633140671384526,
+  "eligible_configs": [],
+  "per_config": {
+    "qwen3-235b": {
+      "lockbox_balanced_accuracy": 0.7327362938680981,
+      "dev_balanced_accuracy": 0.7423735256376576
+    },
+    "llama-405b": {
+      "lockbox_balanced_accuracy": 0.744319010786253,
+      "dev_balanced_accuracy": 0.7367694585601638
+    },
+    "deepseek-v3": {
+      "lockbox_balanced_accuracy": 0.7114434656570596,
+      "dev_balanced_accuracy": 0.7286958097227586
+    },
+    "mistral-large-2411": {
+      "lockbox_balanced_accuracy": 0.6905484354607112,
+      "dev_balanced_accuracy": 0.7068190807280537
+    }
+  },
+  "lockbox_ranking": [
+    "llama-405b",
+    "qwen3-235b",
+    "deepseek-v3",
+    "mistral-large-2411"
+  ],
+  "dev_ranking": [
+    "qwen3-235b",
+    "llama-405b",
+    "deepseek-v3",
+    "mistral-large-2411"
+  ],
+  "lockbox_top2_margin": 0.011582716918154823,
+  "dev_top2_margin": 0.005604067077493724,
+  "winner": null,
+  "winner_agrees_on_dev": false,
+  "no_winner_reason": "No scored config both exceeded the 2026 floor balanced accuracy AND showed a Benjamini-Hochberg-significant per-class improvement without a significant regression on the lockbox; the 2026 status-quo ranking therefore stands.  This is a valid outcome, not a failure."
+}

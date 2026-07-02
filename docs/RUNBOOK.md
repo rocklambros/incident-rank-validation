@@ -72,3 +72,90 @@
 - **Symptom:** a finding surfaces and the first instinct is "the engine has many controls, the bug must be elsewhere."
 - **Diagnosis:** cognitive trap — see SUCCESSOR-PRIMER.
 - **Remediation:** treat the engine as a hypothesis. Check whether the relevant control's *assumptions* hold for the case at hand before assuming the control fired correctly.
+
+---
+
+## RARR Live-Run: Pod-Leak Recovery (SIGKILL / crash)
+
+Every pod provisioned by `orchestrate_live_run` is written to `tools/runpod_pods.json`
+atomically (write-temp + fsync + os.replace) **before** the readiness wait.
+The file survives `SIGKILL` and `os._exit` — it is the backstop when both
+atexit and the try/finally teardown are bypassed.
+
+### Detect leaks
+
+```bash
+cat tools/runpod_pods.json            # registry snapshot
+python tools/terminate_runpod.py      # dry-run reconcile — no DELETEs issued
+```
+
+Reconcile output categories:
+- `live_and_ours`: in registry AND live → will be terminated with `--execute`.
+- `orphans`: live but NOT in registry → reported loudly; NOT auto-terminated.
+- `registered_gone`: in registry but already gone → safe to ignore.
+
+### Terminate via registry (primary path)
+
+```bash
+# 1. Dry-run — inspect the plan:
+python tools/terminate_runpod.py
+
+# 2. Execute:
+python tools/terminate_runpod.py --execute
+
+# 3. Verify clean:
+python tools/terminate_runpod.py      # should show 0 live_and_ours, 0 orphans
+```
+
+Name-guard: only pods whose name starts with `qwen3-235b`, `llama-405b`,
+`deepseek-v3`, or `mistral-large-2411` are auto-terminated.  Others are skipped and
+logged — this prevents accidentally deleting unrelated pods on the account.
+
+### Manual RunPod console fallback (API down or registry corrupt)
+
+1. Open <https://www.runpod.io/console/pods>
+2. Identify pods named `classify-<model>` (e.g. `classify-qwen3-235b`)
+3. Stop/terminate each manually
+4. Remove their entries from `tools/runpod_pods.json` (or delete the file if empty)
+
+### Terminate a specific pod (with force override)
+
+```bash
+python tools/terminate_runpod.py --pod-id <ID> --execute         # name-guard enforced
+python tools/terminate_runpod.py --pod-id <ID> --execute --force  # bypass guard
+```
+
+### Preflight fail-closed (R2)
+
+`live_run_cli` calls `reconcile(execute=False)` before provisioning and raises
+if **any** live pod or orphan is detected.  Always clear leaked pods before re-running:
+
+```bash
+python tools/terminate_runpod.py --execute
+# then confirm clean, then re-run the live-run CLI
+```
+
+### Post-run HF token rotation (R6)
+
+The HF token (`HF_TOKEN`) is injected into pod environment at pod-creation time
+and is no longer needed once pods are terminated.  After each live run:
+
+1. Rotate at <https://huggingface.co/settings/tokens>
+2. Update `pass`: `pass edit huggingface/token`
+3. Prefer injecting via RunPod pod-secrets (console → Pod → Secrets) rather than
+   env var to limit exposure window.
+
+### Grid-lock and manifest-lock
+
+`live_run_cli` verifies before provisioning:
+- `cycles/2026-rarr/prereg/manifest.lock` — SHA-256 of the pre-registration manifest
+- `cycles/2026-rarr/prereg/grid_lock.json` — SHA-256 of `bakeoff_grid.json`
+  (created on first preflight; must be committed alongside the grid file)
+
+If a lock mismatch is reported after an intentional change, delete `grid_lock.json`,
+re-run preflight to re-lock, run a new premortem, then commit.
+
+### All outputs are PROVISIONAL until U9 oracle agrees
+
+`orchestrate_live_run` returns `LiveRunResult(provisional=True)`.  Do not use
+outputs for any decision before the independent Python oracle (U9) confirms.

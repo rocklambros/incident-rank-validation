@@ -1,0 +1,23 @@
+{
+  "model_identity": null,
+  "weight_provenance_hash": null,
+  "selected_from": "bakeoff_grid.json",
+  "prompt_hash": "fbe8cd2cf3be7df536c449bbcade44e16d2f4d3b7016edab85dcb5f65e59b0b5",
+  "prompt_template_version": "1.0.0",
+  "batch_size": 1,
+  "prng_seed": 20260520,
+  "temperature": 0.0,
+  "top_p": 1.0,
+  "cost_ceiling_usd": 500.0,
+  "abort_factor": 1.2,
+  "provider": "runpod",
+  "gpu_type": null,
+  "gpu_count": null,
+  "region": null,
+  "runpod_job_ids": [],
+  "wall_time_seconds": null,
+  "actual_cost_usd": null,
+  "incidents_classified": null,
+  "injection_gate_passed": null,
+  "injection_gate_revision_sha": null
+}

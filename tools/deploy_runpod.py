@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deploy 3 vLLM model pods on RunPod H200 GPUs via REST API.
+"""Deploy 4 vLLM model pods on RunPod H200 GPUs via REST API.
 
 Uses dockerStartCmd with ["/bin/bash", "-c", "cmd"] format to ensure
 shell command parsing works correctly with RunPod's container runtime.
@@ -7,31 +7,65 @@ shell command parsing works correctly with RunPod's container runtime.
 import json
 import os
 import subprocess
+from typing import Any, TypedDict
 
 import httpx
 
 
 def load_secret(pass_name: str, env_var: str) -> str:
+    """Load a secret from env-var first, then `pass show <pass_name>`.
+
+    R6: enforces a 5-second timeout on the subprocess call and raises a
+    redacted error so the key never appears in logs or tracebacks.
+    """
     val = os.environ.get(env_var, "")
     if val:
         return val
-    result = subprocess.run(
-        ["pass", "show", pass_name], capture_output=True, text=True, check=True
-    )
+    try:
+        result = subprocess.run(
+            ["pass", "show", pass_name],
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=5,
+        )
+    except subprocess.TimeoutExpired:
+        raise RuntimeError(
+            f"load_secret: 'pass show {pass_name}' timed out after 5s"
+        ) from None
+    except subprocess.CalledProcessError as exc:
+        raise RuntimeError(
+            f"load_secret: 'pass show {pass_name}' failed "
+            f"(exit {exc.returncode}) — secret not loaded"
+        ) from None
     return result.stdout.strip()
 
 
-MODELS = [
+class ModelSpec(TypedDict):
+    name: str
+    model_id: str
+    gpu_type: str
+    gpu_count: int
+    container_disk_gb: int
+    vllm_cmd: str
+
+
+MODELS: list[ModelSpec] = [
     {
+        # Qwen3-235B-A22B bf16 weights are ~470GB, so the container disk MUST
+        # exceed that (300GB fills mid-download and the pod hangs on a 404
+        # forever).  8xH200/TP8 (4xH200 OOMs once the KV cache is added); 800GB
+        # disk matches the proven DeepSeek-V3 (671GB) config.
         "name": "qwen3-235b",
         "model_id": "Qwen/Qwen3-235B-A22B",
         "gpu_type": "NVIDIA H200",
-        "gpu_count": 4,
-        "container_disk_gb": 300,
+        "gpu_count": 8,
+        "container_disk_gb": 800,
         "vllm_cmd": (
             "vllm serve Qwen/Qwen3-235B-A22B "
+            "--revision 8efa61729e24bd65b1d152b5ab5409052aa80e65 "
             "--host 0.0.0.0 --port 8000 "
-            "--tensor-parallel-size 4 "
+            "--tensor-parallel-size 8 "
             "--enable-expert-parallel "
             "--max-model-len 4096 "
             "--gpu-memory-utilization 0.90 "
@@ -46,6 +80,7 @@ MODELS = [
         "container_disk_gb": 500,
         "vllm_cmd": (
             "vllm serve meta-llama/Llama-3.1-405B-Instruct-FP8 "
+            "--revision 64a54b704768dfd589a3e4ac05d546052f67f4fd "
             "--host 0.0.0.0 --port 8000 "
             "--tensor-parallel-size 4 "
             "--max-model-len 4096 "
@@ -62,9 +97,26 @@ MODELS = [
         "container_disk_gb": 800,
         "vllm_cmd": (
             "vllm serve deepseek-ai/DeepSeek-V3 "
+            "--revision e815299b0bcbac849fa540c768ef21845365c9eb "
             "--host 0.0.0.0 --port 8000 "
             "--tensor-parallel-size 8 "
             "--enable-expert-parallel "
+            "--max-model-len 4096 "
+            "--gpu-memory-utilization 0.90 "
+            "--trust-remote-code"
+        ),
+    },
+    {
+        "name": "mistral-large-2411",
+        "model_id": "mistralai/Mistral-Large-Instruct-2411",
+        "gpu_type": "NVIDIA H200",
+        "gpu_count": 4,
+        "container_disk_gb": 300,
+        "vllm_cmd": (
+            "vllm serve mistralai/Mistral-Large-Instruct-2411 "
+            "--revision ba78820945ae22361b0274cf0ae6d696c967c1a4 "
+            "--host 0.0.0.0 --port 8000 "
+            "--tensor-parallel-size 4 "
             "--max-model-len 4096 "
             "--gpu-memory-utilization 0.90 "
             "--trust-remote-code"
@@ -84,8 +136,8 @@ def create_pod_rest(
     gpu_count: int,
     container_disk_gb: int,
     vllm_cmd: str,
-    env: dict,
-) -> dict:
+    env: dict[str, str],
+) -> dict[str, Any]:
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
@@ -111,10 +163,11 @@ def create_pod_rest(
     )
     if resp.status_code not in (200, 201):
         raise RuntimeError(f"Pod creation failed ({resp.status_code}): {resp.text}")
-    return resp.json()
+    data: dict[str, Any] = resp.json()
+    return data
 
 
-def main():
+def main() -> None:
     api_key = load_secret("runpod/api-key", "RUNPOD_API_KEY")
     hf_token = load_secret("huggingface/token", "HF_TOKEN")
 

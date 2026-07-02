@@ -1,6 +1,6 @@
 [project]
 name = "incident-rank-validation"
-version = "1.1.0"
+version = "1.2.0"
 description = "Engine for validating ranked taxonomies against incident corpora."
 requires-python = ">=3.12,<3.13"
 license = { text = "Apache-2.0" }
@@ -86,6 +86,7 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# DO NOT add -m filters here — integration tests must run in CI.
 addopts = "-ra -q"
 filterwarnings = [
   "error",
@@ -94,5 +95,9 @@ filterwarnings = [
   "ignore::FutureWarning:numpyro",
   "ignore:There are not enough devices to run parallel chains:UserWarning",
 ]
-markers = ["slow: NUTS / e2e tests", "timeout: per-test wall-clock timeout hint (seconds)"]
+markers = [
+  "slow: NUTS / e2e tests",
+  "timeout: per-test wall-clock timeout hint (seconds)",
+  "integration: real-adapter CLI integration tests (tmp-only, no NUTS)",
+]
 env = ["JAX_ENABLE_X64=true", "JAX_PLATFORM_NAME=cpu"]

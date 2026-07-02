@@ -1,0 +1,67 @@
+{
+  "note": "Multi-metric goldset comparison (n=1200, primary-class single-label). Pre-registered SELECTION metric was balanced-accuracy (recall-only) -> winner=None; these deployment-relevant metrics show frontier models/ensemble significantly beat the 2026 floor.",
+  "per_config": {
+    "2026-floor": {
+      "accuracy": 0.515,
+      "macro_f1": 0.6699,
+      "weighted_f1": 0.4176,
+      "cohen_kappa": 0.4861
+    },
+    "llama-405b": {
+      "accuracy": 0.4992,
+      "macro_f1": 0.6098,
+      "weighted_f1": 0.4534,
+      "cohen_kappa": 0.4599
+    },
+    "deepseek-v3": {
+      "accuracy": 0.6175,
+      "macro_f1": 0.6218,
+      "weighted_f1": 0.6195,
+      "cohen_kappa": 0.5511
+    },
+    "mistral-large-2411": {
+      "accuracy": 0.5108,
+      "macro_f1": 0.5968,
+      "weighted_f1": 0.4909,
+      "cohen_kappa": 0.4588
+    },
+    "qwen3-235b": {
+      "accuracy": 0.6017,
+      "macro_f1": 0.6634,
+      "weighted_f1": 0.6041,
+      "cohen_kappa": 0.5277
+    },
+    "ensemble_4vote": {
+      "accuracy": 0.6125,
+      "macro_f1": 0.6829,
+      "weighted_f1": 0.5946,
+      "cohen_kappa": 0.5674
+    }
+  },
+  "significance_vs_floor_bootstrap": {
+    "deepseek-v3": {
+      "delta_accuracy_mean": 0.1022,
+      "delta_accuracy_ci95": [
+        0.07,
+        0.1342
+      ],
+      "delta_kappa_mean": 0.0647,
+      "delta_kappa_ci95": [
+        0.0315,
+        0.0976
+      ]
+    },
+    "ensemble_4vote": {
+      "delta_accuracy_mean": 0.0979,
+      "delta_accuracy_ci95": [
+        0.0733,
+        0.1217
+      ],
+      "delta_kappa_mean": 0.0816,
+      "delta_kappa_ci95": [
+        0.0582,
+        0.1052
+      ]
+    }
+  }
+}

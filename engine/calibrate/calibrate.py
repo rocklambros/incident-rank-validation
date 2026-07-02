@@ -21,6 +21,14 @@ class EntryCalibrationReport:
     min_fold_count: int
     flag: str
     reason: str
+    # F6 recall-cell diagnostic flags (U2-1).
+    # thin_denominator: True only when recall_min_denominator > 0 AND any recall
+    #   cell for this entry has total_in_sample < recall_min_denominator.
+    # under_detected: True when any recall cell has TP==0 AND total_in_sample > 0
+    #   (caught none of N known).  Always computed for disclosure, but only
+    #   BLOCKS adequacy when recall_min_denominator > 0 (F6 active).
+    thin_denominator: bool
+    under_detected: bool
 
 
 @dataclass(frozen=True, slots=True)
@@ -42,7 +50,31 @@ def compute_calibration(
     frame_blind_ids: set[str],
     n_folds: int = 5,
     classifier_entry_ids: set[str] | None = None,
+    recall_min_denominator: int = 0,
 ) -> tuple[Calibration, CalibrationDiagnostic]:
+    """Compute per-entry per-stratum Beta posteriors + calibration-adequacy diagnostic.
+
+    Parameters
+    ----------
+    tally:
+        Aggregated precision/recall counts from the coding batches.
+    all_entry_ids:
+        All entry IDs to produce reports for.
+    frame_blind_ids:
+        Entries with no second-frame data (receive empirical precision prior).
+    n_folds:
+        Number of CV folds for the min-fold-count diagnostic.
+    classifier_entry_ids:
+        If provided, entries not in this set receive 'no-data: no-classifier-rules'.
+    recall_min_denominator:
+        F6 thin-cell threshold K (default 0 = off).  When K > 0, a recall cell
+        with total_in_sample < K is flagged thin_denominator=True and its
+        adequacy label is forced to 'wide' (never 'adequate').
+        Setting K=0 (default) preserves byte-identical behaviour with pre-F6
+        output: NEITHER thin_denominator NOR under_detected blocks the adequacy
+        decision when F6 is off.  Both fields are still computed for disclosure
+        when K=0, but they do not alter the flag/reason.
+    """
     recall_posteriors: dict[tuple[str, str], BetaPosterior] = {}
     precision_posteriors: dict[tuple[str, str], BetaPosterior] = {}
 
@@ -67,6 +99,23 @@ def compute_calibration(
         cal.precision, frame_blind_ids,
     )
     cal = Calibration(recall=cal.recall, precision=updated_precision)
+
+    # ------------------------------------------------------------------
+    # F6: build per-entry thin/under-detected flags from UN-widened counts.
+    # thin: active only when recall_min_denominator > 0.
+    # under_detected: ALWAYS computed (for disclosure), but only BLOCKS
+    #   adequacy when recall_min_denominator > 0 (F6 active).
+    # Default K=0 → _thin_entries empty AND _under_detected_entries does
+    # NOT affect the adequacy decision → byte-identical to pre-F6 output.
+    # ------------------------------------------------------------------
+    _thin_entries: set[str] = set()
+    _under_detected_entries: set[str] = set()
+    for _key, _rt in tally.recall_counts.items():
+        _eid_k = _key[0]
+        if recall_min_denominator > 0 and _rt.total_in_sample < recall_min_denominator:
+            _thin_entries.add(_eid_k)
+        if _rt.true_positives == 0 and _rt.total_in_sample > 0:
+            _under_detected_entries.add(_eid_k)
 
     both = 0
     recall_only = 0
@@ -122,12 +171,26 @@ def compute_calibration(
             no_data += 1
         elif has_prec and has_rec:
             max_width = max(w for w in [prec_w, rec_w] if w is not None)
-            if max_width < 0.30:
+            # F6: when K>0, thin OR under-detected cells must NEVER be 'adequate'.
+            # When K==0 (F6 off), neither thin nor under-detected blocks adequacy
+            # → byte-identical to pre-F6 output.
+            _f6_flagged = eid in _thin_entries or (
+                recall_min_denominator > 0 and eid in _under_detected_entries
+            )
+            if max_width < 0.30 and not _f6_flagged:
                 flag = "adequate"
                 reason = "adequate"
             else:
                 flag = "wide"
-                reason = f"wide: small-sample (n={min(prec_size, rec_size)})"
+                if _f6_flagged:
+                    _parts: list[str] = []
+                    if eid in _thin_entries:
+                        _parts.append("thin-denominator")
+                    if eid in _under_detected_entries:
+                        _parts.append("under-detected")
+                    reason = f"wide: {'+'.join(_parts)} (n={min(prec_size, rec_size)})"
+                else:
+                    reason = f"wide: small-sample (n={min(prec_size, rec_size)})"
             both += 1
         else:
             flag = "wide"
@@ -145,6 +208,8 @@ def compute_calibration(
             min_fold_count=min_fold,
             flag=flag,
             reason=reason,
+            thin_denominator=eid in _thin_entries,
+            under_detected=eid in _under_detected_entries,
         )
 
     diagnostic = CalibrationDiagnostic(

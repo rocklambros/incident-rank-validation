@@ -22,6 +22,7 @@ __all__ = [
     "compute_concordance",
     "format_rank_comparison_report",
     "_tier_agreement_label",
+    "_ranks_from_incidence",
 ]
 
 
@@ -57,6 +58,33 @@ def _ranks_from_lambda(
 ) -> npt.NDArray[np.float64]:
     """Convert a lambda draw to ordinal ranks for the common entries."""
     vals = np.array([lam_draw[idx_map[e]] for e in common])
+    order = np.argsort(-vals)
+    ranks = np.empty_like(order, dtype=np.float64)
+    ranks[order] = np.arange(1, len(common) + 1, dtype=np.float64)
+    return ranks
+
+
+def _ranks_from_incidence(
+    lam_draw: npt.NDArray[np.float64],
+    idx_map: dict[str, int],
+    common: list[str],
+    entry_strata: dict[str, tuple[str, ...]],
+    stratum_sizes: dict[str, int],
+) -> npt.NDArray[np.float64]:
+    """Rank entries by incidence (lambda_e * sum of stratum sizes), descending.
+
+    Entries may span multiple strata (confirmed in real OWASP-LLM data: 9/20
+    entries appear in both 'security' and 'ai-harm').  Incidence is therefore
+    lambda_e * Σ_s size_s for all strata s where entry e was observed.  This
+    sum correctly weights multi-stratum entries by their total exposure rather
+    than arbitrarily picking one stratum.
+    """
+    vals = np.array(
+        [
+            lam_draw[idx_map[e]] * float(sum(stratum_sizes[s] for s in entry_strata[e]))
+            for e in common
+        ]
+    )
     order = np.argsort(-vals)
     ranks = np.empty_like(order, dtype=np.float64)
     ranks[order] = np.arange(1, len(common) + 1, dtype=np.float64)
@@ -103,10 +131,43 @@ def compute_concordance(
     total_count: int,
     meaningful_kappa_n: int,
     measurability_minimum: int,
+    entry_strata: dict[str, tuple[str, ...]],
+    stratum_sizes: dict[str, int],
 ) -> ConcordanceResult:
-    """Transparency-first concordance (HANDOFF §5.5)."""
+    """Transparency-first concordance (HANDOFF §5.5).
+
+    Ranks by incidence (lambda_e * Σ stratum_sizes) rather than bare lambda,
+    which is the decision-relevant quantity (SD8, Plan 8a Task 4).  Entries
+    spanning multiple strata (9/20 in the 2026 OWASP-LLM cycle) use the sum
+    of all strata sizes they were observed in.
+    """
     below_min = measurable_count < measurability_minimum
     coverage = measurable_count / total_count if total_count > 0 else 0.0
+
+    # Precondition: every measurable entry must appear in entry_strata (Plan 8e
+    # must build entry_strata to cover ALL measurable entries).
+    vote_set_pre = set(vote_posterior.entries)
+    common_pre = [e for e in inference_result.entry_ids if e in vote_set_pre]
+    missing_entries = sorted(e for e in common_pre if e not in entry_strata)
+    if missing_entries:
+        raise ValueError(
+            f"compute_concordance: measurable entries missing from entry_strata: "
+            f"{missing_entries}; entry_strata must cover all measurable entries "
+            f"(see Plan 8e)"
+        )
+    # Precondition: every stratum referenced by common entries must be in stratum_sizes.
+    missing_strata = sorted(
+        s
+        for e in common_pre
+        for s in entry_strata[e]
+        if s not in stratum_sizes
+    )
+    if missing_strata:
+        raise ValueError(
+            f"compute_concordance: strata referenced by entries but absent from "
+            f"stratum_sizes: {missing_strata}; stratum_sizes must cover all strata "
+            f"referenced by entry_strata (see Plan 8e)"
+        )
 
     # If below meaningful kappa N, report N/A
     if measurable_count < meaningful_kappa_n:
@@ -134,7 +195,9 @@ def compute_concordance(
     kappas: list[float] = []
 
     for s in range(n_draws):
-        inc_ranks = _ranks_from_lambda(inference_result.lambda_samples[s], inf_idx, common)
+        inc_ranks = _ranks_from_incidence(
+            inference_result.lambda_samples[s], inf_idx, common, entry_strata, stratum_sizes
+        )
         vote_draw = vote_posterior.rank_samples[s]
         vote_ranks = np.array([vote_draw[vote_idx[e]] for e in common])
 
@@ -154,7 +217,9 @@ def compute_concordance(
     for e in common:
         mismatch_count = 0
         for s in range(n_draws):
-            inc_ranks = _ranks_from_lambda(inference_result.lambda_samples[s], inf_idx, common)
+            inc_ranks = _ranks_from_incidence(
+                inference_result.lambda_samples[s], inf_idx, common, entry_strata, stratum_sizes
+            )
             vote_draw = vote_posterior.rank_samples[s]
             vote_ranks = np.array([vote_draw[vote_idx[c]] for c in common])
 
@@ -169,7 +234,9 @@ def compute_concordance(
             # Determine direction from median ranks
             median_inc_samples = []
             for s in range(min(n_draws, 100)):
-                r = _ranks_from_lambda(inference_result.lambda_samples[s], inf_idx, common)
+                r = _ranks_from_incidence(
+                    inference_result.lambda_samples[s], inf_idx, common, entry_strata, stratum_sizes
+                )
                 median_inc_samples.append(r[common.index(e)])
             median_inc_rank = float(np.median(median_inc_samples))
             median_vote_rank = float(np.median(vote_posterior.rank_samples[:, vote_idx[e]]))
@@ -191,7 +258,9 @@ def compute_concordance(
         inc_rank_samples = []
         vote_rank_samples = []
         for s in range(n_draws):
-            inc_r = _ranks_from_lambda(inference_result.lambda_samples[s], inf_idx, common)
+            inc_r = _ranks_from_incidence(
+                inference_result.lambda_samples[s], inf_idx, common, entry_strata, stratum_sizes
+            )
             inc_rank_samples.append(inc_r[e_pos])
             vote_rank_samples.append(vote_posterior.rank_samples[s][vote_idx[e]])
 

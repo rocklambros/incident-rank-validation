@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -18,12 +18,30 @@ from engine.classify.stub import Classification, ClassificationResult
 
 if TYPE_CHECKING:
     from engine.calibrate.beta import Calibration
+    from engine.calibrate.gold_schema import GoldCalibration
     from engine.decide.concordance import ConcordanceResult
     from engine.decide.rollup import RollupResult
     from engine.decide.selection_bias import SelectionBiasDisclosure
     from engine.model.inference import InferenceResult
     from engine.monitoring.wandb_logger import WandBLogger
     from engine.prereg.manifest import PreregManifest
+
+
+def _verify_goldset_hash(manifest: PreregManifest, gold: GoldCalibration) -> None:
+    """Fail loud if a pre-registered goldset_hash doesn't match the loaded goldset.
+
+    No-op when goldset_hash is unbound (schema_version 1 / None). When bound, the
+    goldset drives BOTH recall posteriors AND the overlap matrix W, so a silent
+    mismatch corrupts the result (premortem F1)."""
+    expected = manifest.goldset_hash
+    if expected in (None, "", "none"):
+        return
+    if gold.provenance_hash != expected:
+        raise RuntimeError(
+            f"goldset hash mismatch: manifest pre-registered {expected!r} but the "
+            f"loaded goldset hashes to {gold.provenance_hash!r}. The goldset changed "
+            f"after pre-registration; refusing to run inference on unverified inputs."
+        )
 
 
 def route_to_stage2(
@@ -169,6 +187,25 @@ def _load_manifest(manifest_path: Path) -> PreregManifest:
     return PreregManifest(**filtered)
 
 
+def _verify_manifest_lock(prereg_dir: Path) -> None:
+    """Verify the pre-registration manifest.lock canonical hash.
+
+    Raises FileNotFoundError if manifest.lock is absent.
+    Raises ValueError (propagated from verify_lock) if the stored hash
+    does not match the current manifest — indicating manifest tampering
+    after pre-registration.  Called on the real inference path (R5).
+    """
+    from engine.prereg.lock import verify_lock
+
+    lock_path = prereg_dir / "manifest.lock"
+    if not lock_path.exists():
+        raise FileNotFoundError(
+            f"manifest.lock not found: {lock_path}. Run 'prereg' to lock the manifest."
+        )
+    manifest = _load_manifest(prereg_dir / "manifest.json")
+    verify_lock(manifest, lock_path)
+
+
 def _build_counts_from_labeled(
     labeled: list[dict[str, object]],
 ) -> tuple[dict[tuple[str, str], int], dict[str, int], tuple[str, ...], tuple[str, ...]]:
@@ -211,6 +248,13 @@ def execute_infer_phase(
     os.environ.setdefault("JAX_PLATFORM_NAME", "cpu")
     os.environ.setdefault("JAX_ENABLE_X64", "true")
 
+    import jax
+    if jax.default_backend() != "cpu":
+        raise RuntimeError(
+            f"JAX backend is {jax.default_backend()!r}, expected 'cpu'. "
+            "Set JAX_PLATFORM_NAME=cpu before launch (reproducibility)."
+        )
+
     cal_path = cycle / "calibration" / "posteriors.json"
     if not cal_path.exists():
         raise FileNotFoundError(
@@ -233,8 +277,9 @@ def execute_infer_phase(
             "Vote enters only at decide (HANDOFF §6 control 2)."
         )
 
-    # Load manifest
+    # Load manifest — verify lock hash first (R5: lock-before-numbers).
     prereg = cycle / "prereg"
+    _verify_manifest_lock(prereg)
     manifest = _load_manifest(prereg / "manifest.json")
 
     # Load calibration posteriors
@@ -243,6 +288,12 @@ def execute_infer_phase(
     # Load labeled incidents
     labeled = json.loads(labeled_path.read_text())
 
+    # Guard: labeled_incidents.json must cover the full pinned corpus snapshot.
+    from engine.calibrate.coverage import verify_labeled_completeness
+
+    _labeled_ids = {str(item["incident_id"]) for item in labeled}
+    verify_labeled_completeness(cycle, manifest.snapshot_hash, _labeled_ids)
+
     # Build observation arrays
     from engine.model.overlap import OverlapWeights
 
@@ -250,7 +301,49 @@ def execute_infer_phase(
         labeled
     )
 
+    # Build FP-leakage overlap matrix W from the goldset confusion (Plan 8a Task 5).
+    # The calibration dir holds manual_curated_incidents.json / adjudicated_goldset.jsonl /
+    # precision_verification.jsonl for real cycles.  Synthetic cycles and any cycle whose
+    # calibration dir has no goldset files fall back to an empty W (precision term inert).
     overlap = OverlapWeights(weights={})
+    _gold_dir = cycle / "calibration"
+    _has_gold_files = (
+        (_gold_dir / "manual_curated_incidents.json").exists()
+        or (_gold_dir / "adjudicated_goldset.jsonl").exists()
+    )
+    if _has_gold_files:
+        from engine.calibrate.confusion import build_overlap_from_confusion
+        from engine.calibrate.gold_loader import load_classifier_labels, load_gold_calibration
+
+        _rubric_hash = manifest.rubric_hash or ""
+        try:
+            _classifier_labels = load_classifier_labels(labeled_path)
+            _gold = load_gold_calibration(
+                gold_dir=_gold_dir,
+                valid_entry_ids=set(measurable_entries),
+                rubric_hash=_rubric_hash,
+                adjudicator_id="executor",
+                classifier_labels=_classifier_labels,
+            )
+            _verify_goldset_hash(manifest, _gold)
+            _infer_dir = cycle / "infer"
+            _infer_dir.mkdir(parents=True, exist_ok=True)
+            (_infer_dir / "goldset_hash.txt").write_text(_gold.provenance_hash + "\n")
+            verify_labeled_completeness(
+                cycle, manifest.snapshot_hash, _labeled_ids,
+                goldset_recall_ids={
+                    lbl.incident_id for lbl in _gold.recall_labels
+                    if lbl.classifier_entry_id is not None
+                },
+            )
+            overlap = build_overlap_from_confusion(
+                _gold, measurable_entries, min_fp_count=manifest.overlap_min_fp,
+            )
+        except (ValueError, OSError, json.JSONDecodeError) as exc:
+            raise RuntimeError(
+                f"gold calibration present but failed to load: "
+                f"{type(exc).__name__}: {exc}"
+            ) from exc
 
     # Run NUTS inference
     import time
@@ -279,6 +372,14 @@ def execute_infer_phase(
             num_warmup=num_warmup,
             num_samples=num_samples,
             num_chains=num_chains,
+            # F6 (U2-3): thread manifest recall floor.  The schema<3 gate keeps
+            # recall_floor_epsilon at 0.0 for all pre-existing cycles even though
+            # PreregManifest.__post_init__ already enforces that invariant — the
+            # explicit gate here is defense-in-depth and makes the byte-identity
+            # guarantee visible at the call site.
+            recall_floor_epsilon=(
+                manifest.recall_floor_epsilon if manifest.schema_version >= 3 else 0.0
+            ),
         )
         wall_seconds = time.monotonic() - t0
 
@@ -290,31 +391,117 @@ def execute_infer_phase(
                 wall_seconds=wall_seconds,
             )
 
-        write_infer_artifacts(result, out_dir)
+        write_infer_artifacts(
+            result, out_dir, primary_spec=manifest.primary_spec, num_chains=num_chains
+        )
     except DiagnosticsFailure as e:
         write_nuts_failure(out_dir, str(e), None)
         raise
+
+    # Plan 8a Task 6: run each declared robustness spec next to the primary,
+    # where all inference inputs are in scope, and persist its lambda samples
+    # + summary for the decide phase to reload and assemble into the spread.
+    # Synthetic/parity cycles declare robustness_specs=() so this loop is inert.
+    # Robustness loop is OUTSIDE the primary try/except so a robustness
+    # DiagnosticsFailure writes ONLY robustness_<spec>_failure.txt, never
+    # diagnostics_failure.txt (which would falsely imply the primary run failed).
+    if manifest.robustness_specs:
+        from engine.model.robustness import run_robustness_inference
+
+        for spec_name in manifest.robustness_specs:
+            try:
+                r_result = run_robustness_inference(
+                    manifest=manifest,
+                    spec_name=spec_name,
+                    measurable_entries=measurable_entries,
+                    strata=strata,
+                    observed_counts=observed_counts,
+                    stratum_sizes=stratum_sizes,
+                    calibration=calibration,
+                    overlap=overlap,
+                    num_warmup=num_warmup,
+                    num_samples=num_samples,
+                    num_chains=num_chains,
+                    # F6 (U2 fix #1): thread manifest recall floor identically to the
+                    # primary run_inference call so robustness specs use the same floored
+                    # recall distribution — keeps primary and robustness apples-to-apples.
+                    # Schema<3 gate is defense-in-depth (PreregManifest.__post_init__
+                    # already enforces recall_floor_epsilon==0.0 for schema<3).
+                    recall_floor_epsilon=(
+                        manifest.recall_floor_epsilon if manifest.schema_version >= 3 else 0.0
+                    ),
+                )
+                write_robustness_artifacts(r_result, out_dir, spec_name)
+            except Exception as e:
+                write_robustness_failure(out_dir, spec_name, f"{type(e).__name__}: {e}")
+                raise
 
 
 def write_infer_artifacts(
     result: InferenceResult,
     out_dir: Path,
+    primary_spec: str = "negative_binomial_per_stratum",
+    num_chains: int = 4,
 ) -> None:
     from engine.model.inference import InferenceResult  # noqa: F401
 
     out_dir.mkdir(parents=True, exist_ok=True)
     np.save(out_dir / "lambda_samples.npy", result.lambda_samples)
     summary = {
+        # Plan 8a Task 6: record the EXECUTED primary spec so the report's
+        # prereg drift-diff compares declared-vs-actual honestly instead of
+        # comparing the declared literal to itself.
+        "primary_spec": primary_spec,
         "entry_ids": list(result.entry_ids),
         "r_hat": result.r_hat,
         "ess": result.ess,
         "divergences": result.divergences,
         "num_warmup": result.num_warmup,
         "num_samples": result.num_samples,
-        "num_chains": 4,
+        "num_chains": num_chains,
     }
     (out_dir / "inference_summary.json").write_text(
         json.dumps(summary, indent=2) + "\n"
+    )
+
+
+def write_robustness_artifacts(
+    result: InferenceResult,
+    out_dir: Path,
+    spec_name: str,
+) -> None:
+    """Persist one robustness spec's NUTS output (Plan 8a Task 6).
+
+    The decide phase reloads these (robustness_<spec>_lambda.npy +
+    robustness_<spec>_summary.json) to compute per-spec concordance and
+    assemble the RobustnessSpread.
+    """
+    if Path(spec_name).name != spec_name or not spec_name:
+        raise ValueError(f"unsafe spec_name for artifact path: {spec_name!r}")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    np.save(out_dir / f"robustness_{spec_name}_lambda.npy", result.lambda_samples)
+    summary = {
+        "spec_name": spec_name,
+        "sigma_u": result.sigma_u,
+        "entry_ids": list(result.entry_ids),
+        "r_hat": result.r_hat,
+        "ess": result.ess,
+        "divergences": result.divergences,
+        "num_warmup": result.num_warmup,
+        "num_samples": result.num_samples,
+    }
+    (out_dir / f"robustness_{spec_name}_summary.json").write_text(
+        json.dumps(summary, indent=2) + "\n"
+    )
+
+
+def write_robustness_failure(out_dir: Path, spec_name: str, message: str) -> None:
+    """Record which robustness spec failed and why (premortem F9)."""
+    if Path(spec_name).name != spec_name or not spec_name:
+        raise ValueError(f"unsafe spec_name for artifact path: {spec_name!r}")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / f"robustness_{spec_name}_failure.txt").write_text(
+        f"Robustness spec '{spec_name}' failed:\n{message}\n"
     )
 
 
@@ -391,6 +578,44 @@ def write_decide_artifacts(
             }, indent=2) + "\n"
         )
 
+    if robustness is not None:
+        from engine.decide.robustness_multiplicity import RobustnessSpread, SpecResult
+
+        spread = cast(RobustnessSpread, robustness)
+
+        def _spec_to_dict(s: SpecResult) -> dict[str, object]:
+            return {
+                "spec_name": s.spec_name,
+                "weighted_kappa_median": s.weighted_kappa_median,
+                "weighted_kappa_ci": (
+                    list(s.weighted_kappa_ci) if s.weighted_kappa_ci else None
+                ),
+                "flags": [
+                    {
+                        "entry_id": f.entry_id,
+                        "probability": f.probability,
+                        "direction": f.direction.value,
+                    }
+                    for f in s.flags
+                ],
+                "sigma_u": s.sigma_u,
+                "extra_rankings": (
+                    {k: list(v) for k, v in s.extra_rankings.items()}
+                    if s.extra_rankings else None
+                ),
+            }
+
+        (out_dir / "robustness_spread.json").write_text(
+            json.dumps(
+                {
+                    "primary": _spec_to_dict(spread.primary),
+                    "robustness": [_spec_to_dict(s) for s in spread.robustness],
+                },
+                indent=2,
+            )
+            + "\n"
+        )
+
 
 def write_reproduction_bundle(
     out_dir: Path,
@@ -402,6 +627,7 @@ def write_reproduction_bundle(
     stage2_manifest_hash: str = "",
     calibration_hash: str = "",
     vote_data_hash: str = "",
+    goldset_hash: str = "",
 ) -> None:
     from engine.repro.bundle import ReproductionBundle
 
@@ -411,6 +637,7 @@ def write_reproduction_bundle(
         snapshot_hash=snapshot_hash,
         manifest_hash=manifest_hash,
         lockfile_hash=lockfile_hash,
+        goldset_hash=goldset_hash,
         provenance={
             "stage2_manifest_hash": stage2_manifest_hash,
             "calibration_hash": calibration_hash,
