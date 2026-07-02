@@ -395,7 +395,7 @@ def render_bump_chart(data: dict[str, Any], figures_dir: Path) -> None:
     def _decollide(entries: list[str], ycol: dict[str, float]) -> dict[str, float]:
         # greedy: sort by y, push apart to >= min_gap in label space
         order = sorted(entries, key=lambda e: ycol[e])
-        min_gap = 0.62
+        min_gap = 0.9
         placed: dict[str, float] = {}
         last = -1e9
         for e in order:
@@ -404,8 +404,14 @@ def render_bump_chart(data: dict[str, Any], figures_dir: Path) -> None:
             last = y
         return placed
 
-    left_lab = _decollide(common, lambda_ranks)
-    right_lab = _decollide(common, vote_ranks)
+    # Only flagged (drawn) entries get labels, so only they should consume
+    # the de-collision spacing budget — otherwise undrawn entries can push
+    # flagged labels further apart than necessary, or leave co-located
+    # flagged labels (e.g. two entries sharing the same incident rank)
+    # nearly overlapping.
+    flagged_common = [e for e in common if e in flagged]
+    left_lab = _decollide(flagged_common, lambda_ranks)
+    right_lab = _decollide(flagged_common, vote_ranks)
 
     fig, ax = plt.subplots(figsize=(11, 7.2))
     for eid in common:
@@ -831,7 +837,7 @@ def render_sankey_confusion(data: dict[str, Any], figures_dir: Path) -> None:
     fig.update_layout(
         title="Model votes → consensus at the confusion boundary",
         font=dict(size=18), title_font_size=26,
-        width=1600, height=1000, margin=dict(t=80, l=10, r=10, b=10),
+        width=1600, height=1000, margin=dict(t=80, l=10, r=10, b=60),
     )
     _plotly_write_image(fig, str(figures_dir / "sankey_confusion.png"), width=1600, height=1000)
 
