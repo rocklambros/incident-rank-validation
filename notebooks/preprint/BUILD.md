@@ -24,9 +24,10 @@ tlmgr install fancyhdr
 ```bash
 python tools/build_preprint.py \
   --notebook notebooks/2026_top_10_llm_update_what_the_data_says.ipynb \
-  --out-dir notebooks/preprint
+  --out-dir notebooks/preprint \
+  --output-name Incident_Data_Robustness_Analysis_of_the_OWASP_Top_10_for_LLM_Applications_2026
 ```
-This executes a COPY of the notebook (never mutates the committed `.ipynb`), exports markdown with outputs stripped, prepends the YAML front-matter, and compiles via `pandoc --template=notebooks/preprint/arxiv-template.latex --pdf-engine=xelatex`.
+This executes a COPY of the notebook (never mutates the committed `.ipynb`), exports markdown with outputs stripped, prepends the YAML front-matter, and compiles via `pandoc --template=notebooks/preprint/arxiv-template.latex --pdf-engine=xelatex`. Emits `<output-name>.{md,pdf,tex}`; submit the `.tex` + `figures/` to arXiv.
 
 ## arXiv submission
 Submit the generated LaTeX **source** (`.tex` + `figures/`), not PDF-only, so arXiv can recompile.

@@ -15,9 +15,12 @@ Steps executed by :func:`build_preprint`:
 4. Export the cleaned copy to Markdown via ``jupyter nbconvert --no-input`` (code inputs
    hidden; prose cells and ``![…](figures/…){width=85%}`` refs preserved).
 5. Prepend *front_matter_md* (the YAML front-matter block) to the exported ``.md``.
-6. Compile via ``pandoc --pdf-engine=xelatex --template=<template> --toc``.
+6. Compile to PDF via ``pandoc --pdf-engine=xelatex --template=<template> --toc``,
+   and to a standalone ``.tex`` via ``pandoc --standalone``, both routed through the
+   ``figure-layout.lua`` filter (or *lua_filter* override) so figures wrap/center.
 
-Returns the path to the generated PDF.
+Emits ``<stem>.md``, ``<stem>.pdf``, and ``<stem>.tex`` where ``stem`` is *output_name*
+(falling back to the notebook's stem). Returns the path to the generated PDF.
 """
 
 from __future__ import annotations
@@ -34,15 +37,21 @@ def build_preprint(
     out_dir: Path,
     front_matter_md: Path,
     template: Path,
+    output_name: str | None = None,
+    lua_filter: Path | None = None,
 ) -> Path:
     """Execute notebook copy, export stripped markdown, prepend front-matter, compile PDF.
 
     Args:
         notebook: Path to the source ``.ipynb`` (never mutated).
-        out_dir: Output directory; receives the executed copy, markdown, and PDF.
+        out_dir: Output directory; receives the executed copy, markdown, PDF, and TeX.
         front_matter_md: Markdown file whose content (YAML ``---`` block) is prepended to
             the nbconvert output before pandoc compilation.
         template: LaTeX template passed to ``pandoc --template``.
+        output_name: Stem for the emitted ``.md``/``.pdf``/``.tex`` files. Defaults to
+            ``notebook.stem`` when omitted.
+        lua_filter: Pandoc Lua filter applied to both the PDF and ``.tex`` builds.
+            Defaults to ``figure-layout.lua`` alongside *template*.
 
     Returns:
         Path to the generated PDF file.
@@ -98,7 +107,8 @@ def build_preprint(
     # ------------------------------------------------------------------
     # Step 3 — Export to Markdown (no code inputs, no outputs)
     # ------------------------------------------------------------------
-    md_name = notebook.stem + ".md"
+    stem = output_name or notebook.stem
+    md_name = stem + ".md"
     subprocess.run(
         [
             "jupyter",
@@ -125,21 +135,25 @@ def build_preprint(
     md_path.write_text(front_matter_text + "\n" + existing_md)
 
     # ------------------------------------------------------------------
-    # Step 5 — pandoc → PDF
+    # Step 5 — pandoc → PDF, pandoc → TeX (both via the shared Lua filter)
     # ------------------------------------------------------------------
-    pdf_path = out_dir / (notebook.stem + ".pdf")
+    pdf_path = out_dir / (stem + ".pdf")
+    tex_path = out_dir / (stem + ".tex")
+    lf = lua_filter or (template.parent / "figure-layout.lua")
+    common = [
+        "--from=markdown+yaml_metadata_block",
+        f"--template={template}",
+        f"--lua-filter={lf}",
+        "--toc",
+        "--toc-depth=2",
+    ]
     subprocess.run(
-        [
-            "pandoc",
-            str(md_path),
-            "-o",
-            str(pdf_path),
-            "--pdf-engine=xelatex",
-            f"--template={template}",
-            "--from=markdown+yaml_metadata_block",
-            "--toc",
-            "--toc-depth=2",
-        ],
+        ["pandoc", str(md_path), "-o", str(pdf_path), "--pdf-engine=xelatex", *common],
+        check=True,
+        cwd=str(out_dir),
+    )
+    subprocess.run(
+        ["pandoc", str(md_path), "-o", str(tex_path), "--standalone", *common],
         check=True,
         cwd=str(out_dir),
     )
@@ -180,12 +194,20 @@ def _cli() -> None:
         metavar="FILE",
         help="LaTeX template (default: notebooks/preprint/arxiv-template.latex).",
     )
+    parser.add_argument(
+        "--output-name",
+        type=str,
+        default=None,
+        metavar="STEM",
+        help="Stem for the emitted .md/.pdf/.tex files (default: notebook stem).",
+    )
     args = parser.parse_args()
     pdf = build_preprint(
         notebook=args.notebook.resolve(),
         out_dir=args.out_dir.resolve(),
         front_matter_md=args.front_matter.resolve(),
         template=args.template.resolve(),
+        output_name=args.output_name,
     )
     print(f"PDF written to: {pdf}")
 

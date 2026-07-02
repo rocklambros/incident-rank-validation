@@ -131,13 +131,11 @@ def test_stub_compiles_with_template(tmp_path: Path) -> None:
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.skipif(
-    not _TOOLCHAIN_OK,
-    reason="toolchain (pandoc/xelatex/preprint-build kernel) not available",
-)
-def test_build_preprint_fixture(tmp_path: Path) -> None:
-    """Execute a 3-cell fixture notebook through the full pipeline; assert PDF > 10 KB."""
-    # Arrange: fixture notebook in its own subdirectory
+def _make_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
+    """Build the shared 3-cell fixture notebook + front-matter + out_dir.
+
+    Returns (fixture_nb, front_matter, out_dir).
+    """
     nb_dir = tmp_path / "nb"
     nb_dir.mkdir()
     fixture_nb = nb_dir / "fixture.ipynb"
@@ -148,6 +146,17 @@ def test_build_preprint_fixture(tmp_path: Path) -> None:
     front_matter = tmp_path / "front_matter.md"
     front_matter.write_text(_FRONT_MATTER)
 
+    return fixture_nb, front_matter, out_dir
+
+
+@pytest.mark.skipif(
+    not _TOOLCHAIN_OK,
+    reason="toolchain (pandoc/xelatex/preprint-build kernel) not available",
+)
+def test_build_preprint_fixture(tmp_path: Path) -> None:
+    """Execute a 3-cell fixture notebook through the full pipeline; assert PDF > 10 KB."""
+    # Arrange
+    fixture_nb, front_matter, out_dir = _make_fixture(tmp_path)
     template = PRE / "arxiv-template.latex"
 
     # Act
@@ -162,3 +171,24 @@ def test_build_preprint_fixture(tmp_path: Path) -> None:
     assert pdf.exists(), f"PDF not produced at {pdf}"
     size = pdf.stat().st_size
     assert size > 10 * 1024, f"PDF too small: {size} bytes"
+
+
+@pytest.mark.skipif(
+    not _TOOLCHAIN_OK,
+    reason="toolchain (pandoc/xelatex/preprint-build kernel) not available",
+)
+def test_build_with_output_name(tmp_path: Path) -> None:
+    """Fixture build with output_name → renamed PDF + TeX both produced."""
+    fixture_nb, front_matter, out_dir = _make_fixture(tmp_path)
+
+    pdf = build_preprint(
+        notebook=fixture_nb,
+        out_dir=out_dir,
+        front_matter_md=front_matter,
+        template=PRE / "arxiv-template.latex",
+        output_name="Renamed_Doc",
+    )
+    assert pdf == out_dir / "Renamed_Doc.pdf"
+    assert pdf.exists() and pdf.stat().st_size > 10 * 1024
+    assert (out_dir / "Renamed_Doc.tex").exists()
+    assert (out_dir / "Renamed_Doc.md").exists()
