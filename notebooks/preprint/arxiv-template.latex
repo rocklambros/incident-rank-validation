@@ -10,6 +10,15 @@ $endif$
 \usepackage{wrapfig}
 \usepackage{float}
 \usepackage{amsmath,amssymb}
+% The Latin Modern text font lacks these Greek/math glyphs used in prose and
+% figure captions; render each via math mode so they are not silently dropped.
+\usepackage{newunicodechar}
+\newunicodechar{κ}{\ensuremath{\kappa}}
+\newunicodechar{λ}{\ensuremath{\lambda}}
+\newunicodechar{ρ}{\ensuremath{\rho}}
+\newunicodechar{≈}{\ensuremath{\approx}}
+\newunicodechar{×}{\ensuremath{\times}}
+\newunicodechar{−}{\ensuremath{-}}
 $if(cancel)$
 \usepackage{cancel}
 $endif$

@@ -12,13 +12,16 @@ uv run python -m ipykernel install --user --name preprint-build --display-name "
 **Do NOT use the anaconda `python3` kernel** — its kernelspec is hand-crippled: it stubs out `kaleido`/`tensorflow`/`jax` (`sys.modules[m]=None`) and rewrites `sys.argv`, which (a) breaks under `nbconvert --execute` (`--IPKernelApp.connection_file: expected one argument` → "Kernel died"), and (b) would break the 3 plotly charts (they need kaleido for PNG export). The `preprint-build` kernel (uv env) has the full stack **plus a working kaleido and the importable `engine` package**.
 
 ## LaTeX packages
-`fancyhdr` is required by `arxiv-template.latex` and is NOT pre-installed in the local TeX tree:
+`arxiv-template.latex` requires `fancyhdr`, `wrapfig`, `float`, and `newunicodechar`, none guaranteed in a minimal local TeX tree:
 
 ```bash
-tlmgr install fancyhdr
+tlmgr install fancyhdr wrapfig float newunicodechar
 ```
 
-(arXiv's own TeXLive has `fancyhdr`, so LaTeX-source submission compiles there.)
+- `wrapfig`/`float` — figure placement (the `figure-layout.lua` filter emits `wrapfigure` and `figure[H/htbp]`).
+- `newunicodechar` — maps the Greek/math glyphs used in prose and captions (κ λ ρ ≈ × −) to math mode; the Latin Modern text font lacks them and xelatex would otherwise drop them silently.
+
+(arXiv's TeXLive has all four, so LaTeX-source submission compiles there.)
 
 ## Build command
 ```bash
