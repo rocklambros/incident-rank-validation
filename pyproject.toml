@@ -43,6 +43,14 @@ narrative = [
   "kaleido>=1.0",
   "pandas>=2.0",
 ]
+# Notebook execution + markdown export stack for the arXiv preprint build
+# (tools/build_preprint.py; see notebooks/preprint/BUILD.md). Previously installed
+# by hand, so `uv sync` would silently remove it and break the build — declared
+# here so the build environment is tracked and reproducible.
+preprint = [
+  "nbconvert>=7.16",
+  "ipykernel>=6.29",
+]
 
 [tool.uv]
 package = true
