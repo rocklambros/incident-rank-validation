@@ -229,3 +229,86 @@ class TestRenderRarrRobustness:
 
         out = render_rarr_robustness(minimal_robustness, figures_dir)
         assert isinstance(out, Path)
+
+
+# ---------------------------------------------------------------------------
+# _rank_change_rows (slopegraph row model)
+# ---------------------------------------------------------------------------
+class TestRankChangeRows:
+    def _blended(self) -> list[dict[str, Any]]:
+        # incumbent-only blended list with a mix of moves incl. LLM07 (nc, renamed)
+        # published rank = int(LLMkk); move = published - blend_rank
+        return [
+            {"entry_id": "LLM02", "blend_rank": 1},  # pub 2 -> +1  hold
+            {"entry_id": "LLM01", "blend_rank": 2},  # pub 1 -> -1  hold
+            {"entry_id": "LLM06", "blend_rank": 3},  # pub 6 -> +3  mover
+            {"entry_id": "LLM04", "blend_rank": 4},  # pub 4 -> 0   nc
+            {"entry_id": "LLM03", "blend_rank": 5},  # pub 3 -> -2  mover
+            {"entry_id": "LLM10", "blend_rank": 6},  # pub 10 -> +4 mover
+            {"entry_id": "LLM07", "blend_rank": 7},  # pub 7 -> 0   nc + renamed
+            {"entry_id": "LLM09", "blend_rank": 8},  # pub 9 -> +1  hold
+            {"entry_id": "LLM08", "blend_rank": 9},  # pub 8 -> -1  hold
+            {"entry_id": "LLM05", "blend_rank": 10}, # pub 5 -> -5  mover
+        ]
+
+    def _names(self) -> dict[str, str]:
+        return {
+            "LLM01": "Prompt Injection", "LLM02": "Sensitive Information Disclosure",
+            "LLM03": "Supply Chain", "LLM04": "Data and Model Poisoning",
+            "LLM05": "Improper Output Handling", "LLM06": "Excessive Agency",
+            "LLM07": "Hidden Context Exposure", "LLM08": "Vector and Embedding Weaknesses",
+            "LLM09": "Misinformation", "LLM10": "Unbounded Consumption",
+        }
+
+    def test_new_code_equals_blend_position_and_moves(self) -> None:
+        from engine.report.narrative_charts import _rank_change_rows
+        rows = {r["right_code"]: r for r in _rank_change_rows(self._blended(), self._names())}
+        assert rows["LLM01"]["right_name"] == "Sensitive Information Disclosure"
+        assert rows["LLM01"]["move"] == 1
+        # right_code is keyed by blend position, not by the original entry_id:
+        # LLM06 (pub 6) blends to rank 3 -> right_code "LLM03"; LLM10 (pub 10)
+        # blends to rank 6 -> right_code "LLM06". (Brief had these two swapped
+        # to the original entry_id; corrected here — see task-1-report.md.)
+        assert rows["LLM03"]["move"] == 3 and rows["LLM03"]["style"] == "mover"
+        assert rows["LLM06"]["move"] == 4 and rows["LLM06"]["style"] == "mover"
+        assert rows["LLM06"]["right_name"] == "Unbounded Consumption"
+
+    def test_renamed_only_llm07(self) -> None:
+        from engine.report.narrative_charts import _rank_change_rows
+        rows = _rank_change_rows(self._blended(), self._names())
+        renamed = {r["right_code"] for r in rows if r["renamed"]}
+        assert renamed == {"LLM07"}
+
+    def test_style_bands(self) -> None:
+        from engine.report.narrative_charts import _rank_change_rows
+        rows = {r["right_code"]: r for r in _rank_change_rows(self._blended(), self._names())}
+        assert rows["LLM04"]["style"] == "nc"      # move 0
+        assert rows["LLM02"]["style"] == "hold"    # |move| == 1
+        assert rows["LLM05"]["style"] == "mover"   # |move| == 5
+
+    def test_left_side_uses_published_2025_name_and_rank(self) -> None:
+        from engine.report.narrative_charts import _rank_change_rows
+        rows = {r["right_code"]: r for r in _rank_change_rows(self._blended(), self._names())}
+        # LLM07 published 2025 name is "System Prompt Leakage"; left_num == published rank
+        assert rows["LLM07"]["left_code"] == "LLM07"
+        assert rows["LLM07"]["left_name"] == "System Prompt Leakage"
+        assert rows["LLM07"]["left_num"] == 7
+
+
+class TestRankChangeShape:
+    def test_landscape_not_tall(
+        self,
+        minimal_blended: list[dict[str, Any]],
+        minimal_entry_names: dict[str, str],
+        figures_dir: Path,
+    ) -> None:
+        from PIL import Image
+
+        from engine.report.narrative_charts import render_rank_change_2025_2026
+        out = render_rank_change_2025_2026(minimal_blended, minimal_entry_names, figures_dir)
+        # Context manager avoids a dangling FileIO handle — this repo's pytest
+        # config runs with filterwarnings = ["error"], which turns the
+        # ResourceWarning from an unclosed Image.open() into a hard failure.
+        with Image.open(out) as img:
+            w, h = img.size
+        assert h / w <= 0.85, f"slopegraph too tall: h/w={h/w:.2f}"
