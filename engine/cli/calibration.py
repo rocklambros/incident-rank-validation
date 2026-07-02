@@ -45,7 +45,12 @@ def cal_classify(
     rb = read_rubric(rubric)
     rules = build_rules_from_rubric(rb, confidence_threshold)
 
-    mreg = PreregManifest(**manifest_data)
+    import dataclasses as _dc
+    _known = {f.name for f in _dc.fields(PreregManifest)}
+    _filtered = {k: v for k, v in manifest_data.items() if k in _known}
+    if "robustness_specs" in _filtered and isinstance(_filtered["robustness_specs"], list):
+        _filtered["robustness_specs"] = tuple(_filtered["robustness_specs"])
+    mreg = PreregManifest(**_filtered)
     require_classifier_rule_hash_match(mreg, rules.rule_hash)
 
     from engine.adapters.genai_agentic import GenAIAgenticAdapter
@@ -379,7 +384,7 @@ def cal_tally(cycle: Path, manifest: Path, rubric: Path, gold_calibration: Path 
     )
 
     if gold_calibration is not None:
-        from engine.calibrate.gold_loader import load_gold_calibration
+        from engine.calibrate.gold_loader import load_classifier_labels, load_gold_calibration
 
         gold_path = Path(gold_calibration)
         gold_kwargs: dict[str, Any] = {}
@@ -393,12 +398,42 @@ def cal_tally(cycle: Path, manifest: Path, rubric: Path, gold_calibration: Path 
         else:
             gold_kwargs["curation_path"] = gold_path
 
+        _labeled = cycle / "classify" / "labeled_incidents.json"
+        _classifier_labels = (
+            load_classifier_labels(_labeled) if _labeled.exists() else None
+        )
         gold = load_gold_calibration(
             **gold_kwargs,
             valid_entry_ids=all_entry_ids,
             rubric_hash=rubric_hash,
             adjudicator_id="cli",
+            classifier_labels=_classifier_labels,
         )
+
+        if _classifier_labels is not None:
+            from engine.calibrate.coverage import verify_labeled_completeness
+
+            # Read snapshot_hash from manifest.json (not from manifest.lock — the
+            # lock file only stores the canonical hash, not manifest fields).
+            _manifest_json = cycle / "prereg" / "manifest.json"
+            _manifest_data = (
+                json.loads(_manifest_json.read_text(encoding="utf-8"))
+                if _manifest_json.exists()
+                else {}
+            )
+            verify_labeled_completeness(
+                cycle,
+                str(_manifest_data.get("snapshot_hash", "")),
+                set(_classifier_labels.keys()),
+                goldset_recall_ids={
+                    lbl.incident_id for lbl in gold.recall_labels
+                    if lbl.classifier_entry_id is not None
+                },
+            )
+            click.echo(
+                f"Completeness check passed: {len(_classifier_labels)} classifier "
+                "labels reconcile to the pinned corpus snapshot."
+            )
 
         from engine.calibrate.tally import calibrate_with_gold
 
@@ -513,8 +548,23 @@ def cal_calibrate(cycle: Path, rubric: Path) -> None:
     samples_data = json.loads((cal_dir / "samples.json").read_text())
     frame_blind_ids: set[str] = set(samples_data.get("frame_blind_ids", []))
 
+    # Thread F6 params from manifest (schema_version >= 3 only; else defaults = F6 off).
+    # Read schema_version and recall_min_denominator directly from the raw JSON dict
+    # rather than reconstructing PreregManifest(**...) — avoids running __post_init__
+    # validation, which could raise on a validation-tripping field combo that would
+    # not have caused cal calibrate to fail before the F6 schema guard was added (U2 fix #4).
+    _recall_min_denom = 0
+    manifest_path = cycle / "prereg" / "manifest.json"
+    if manifest_path.exists():
+        _mdata = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if int(_mdata.get("schema_version", 1)) >= 3:
+            _recall_min_denom = int(_mdata.get("recall_min_denominator", 0))
+
     cal, diag = compute_calibration(
-        tally, all_entry_ids=all_entry_ids, frame_blind_ids=frame_blind_ids,
+        tally,
+        all_entry_ids=all_entry_ids,
+        frame_blind_ids=frame_blind_ids,
+        recall_min_denominator=_recall_min_denom,
     )
 
     posteriors_data: dict[str, dict[str, dict[str, float]]] = {
@@ -548,16 +598,29 @@ def cal_calibrate(cycle: Path, rubric: Path) -> None:
                 "min_fold_count": r.min_fold_count,
                 "flag": r.flag,
                 "reason": r.reason,
+                # F6 recall-cell diagnostic flags (U2-2, additive — do not reorder above).
+                "thin_denominator": r.thin_denominator,
+                "under_detected": r.under_detected,
+                "min_recall_denominator": min(
+                    (v.total_in_sample for k, v in tally.recall_counts.items() if k[0] == eid),
+                    default=0,
+                ),
             }
             for eid, r in diag.entry_reports.items()
         },
     }
     (cal_dir / "diagnostic.json").write_text(json.dumps(diag_data, indent=2) + "\n")
 
+    input_hashes: dict[str, str] = {"tally": tally_prov.output_hash}
+    labeled_path = cycle / "classify" / "labeled_incidents.json"
+    if labeled_path.exists():
+        labeled = json.loads(labeled_path.read_text())
+        input_hashes["classifier_labels"] = hash_json(labeled)
+
     prov = StageProvenance(
         stage_name="calibrate",
         manifest_lock_hash=tally_prov.manifest_lock_hash,
-        input_hashes={"tally": tally_prov.output_hash},
+        input_hashes=input_hashes,
         output_hash=hash_json(posteriors_data),
         timestamp=datetime.now(UTC).isoformat(),
         engine_version=__version__,

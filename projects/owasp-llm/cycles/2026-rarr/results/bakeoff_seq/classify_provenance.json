@@ -1,0 +1,105 @@
+{
+  "alpha": 0.05,
+  "config_balanced_accuracy": {
+    "deepseek-v3": 0.7114434656570596,
+    "llama-405b": 0.744319010786253,
+    "mistral-large-2411": 0.6905484354607112,
+    "qwen3-235b": 0.7327362938680981
+  },
+  "eligible_configs": [],
+  "floor_balanced_accuracy": 0.8633140671384526,
+  "goldset": {
+    "adjudicated_counts": {
+      "accept": 645,
+      "multi-label": 2,
+      "override": 553
+    },
+    "adjudicator": "single-author",
+    "blind_consensus_disagreement_rate": 0.7533333333333333,
+    "corpus_tv_divergence": 0.46848639825325006,
+    "n_records": 1200,
+    "sha256": "f3091eb0a98ce4198e012efc029cb568d90e8c4751fe1803d8d05295abbc418f"
+  },
+  "label_file": "labeled_incidents.json",
+  "label_file_sha256": "61736c0890c1dc64fb2c011326c29ea86f5feba204c5d7af3d07ac0eb949a333",
+  "lockbox_cell_sizes": {
+    "LLM01": 14,
+    "LLM02": 17,
+    "LLM03": 29,
+    "LLM04": 13,
+    "LLM05": 23,
+    "LLM06": 18,
+    "LLM07": 2,
+    "LLM08": 1,
+    "LLM09": 34,
+    "LLM10": 14,
+    "NEW-ITSCD": 1,
+    "NEW-MA": 14,
+    "NEW-MSDA": 2,
+    "NEW-MTIE": 8,
+    "NEW-PMP": 2,
+    "NEW-WLA": 20,
+    "ROLL-CMSB": 6,
+    "ROLL-SICG": 5,
+    "out-of-scope": 138
+  },
+  "lockbox_fraction": 0.3,
+  "min_cell": 5,
+  "models": [
+    {
+      "gpu_count": 4,
+      "gpu_type": "NVIDIA H200",
+      "model_id": "Qwen/Qwen3-235B-A22B",
+      "name": "qwen3-235b",
+      "revision_sha": "8efa61729e24bd65b1d152b5ab5409052aa80e65"
+    },
+    {
+      "gpu_count": 4,
+      "gpu_type": "NVIDIA H200",
+      "model_id": "meta-llama/Llama-3.1-405B-Instruct-FP8",
+      "name": "llama-405b",
+      "revision_sha": "64a54b704768dfd589a3e4ac05d546052f67f4fd"
+    },
+    {
+      "gpu_count": 8,
+      "gpu_type": "NVIDIA H200",
+      "model_id": "deepseek-ai/DeepSeek-V3",
+      "name": "deepseek-v3",
+      "revision_sha": "e815299b0bcbac849fa540c768ef21845365c9eb"
+    },
+    {
+      "gpu_count": 4,
+      "gpu_type": "NVIDIA H200",
+      "model_id": "mistralai/Mistral-Large-Instruct-2411",
+      "name": "mistral-large-2411",
+      "revision_sha": "ba78820945ae22361b0274cf0ae6d696c967c1a4"
+    }
+  ],
+  "seed": 42,
+  "selection_classes": [
+    "LLM01",
+    "LLM02",
+    "LLM03",
+    "LLM04",
+    "LLM05",
+    "LLM06",
+    "LLM07",
+    "LLM09",
+    "LLM10",
+    "NEW-MA",
+    "NEW-MSDA",
+    "NEW-MTIE",
+    "NEW-PMP",
+    "NEW-WLA",
+    "ROLL-CMSB",
+    "ROLL-SICG",
+    "out-of-scope"
+  ],
+  "sparse_classes": [
+    "LLM08",
+    "NEW-ITSCD",
+    "ROLL-CFAS",
+    "ROLL-LAPTF"
+  ],
+  "winner": null
+}

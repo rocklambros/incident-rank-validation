@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from engine.repro.bundle import ReproductionBundle
 
 
@@ -15,6 +17,7 @@ def _make_bundle() -> ReproductionBundle:
         snapshot_hash="sha256:abc123",
         manifest_hash="sha256:def456",
         lockfile_hash="sha256:ghi789",
+        goldset_hash="none",
         provenance={"adapter": "synthetic", "timestamp": "2026-01-01T00:00:00Z"},
     )
 
@@ -66,6 +69,7 @@ class TestReproductionBundle:
             snapshot_hash="snap123",
             manifest_hash="man456",
             lockfile_hash="lock789",
+            goldset_hash="none",
             provenance={
                 "stage2_manifest_hash": "s2hash",
                 "calibration_hash": "calhash",
@@ -78,3 +82,55 @@ class TestReproductionBundle:
         assert loaded.provenance["stage2_manifest_hash"] == "s2hash"
         assert loaded.provenance["calibration_hash"] == "calhash"
         assert loaded.provenance["vote_data_hash"] == "votehash"
+
+
+# ---------------------------------------------------------------------------
+# U2-4 tests
+# ---------------------------------------------------------------------------
+
+_COMMITTED_2026_BUNDLE = (
+    Path(__file__).parent.parent.parent
+    / "projects/owasp-llm/cycles/2026/results/reproduction_bundle.json"
+)
+
+
+class TestU24GoldsetHashSentinel:
+    def test_write_bundle_goldset_hash_default_empty(self, tmp_path: Path) -> None:
+        """write_reproduction_bundle default goldset_hash must be '' not 'none'."""
+        from engine.cli.pipeline_executor import write_reproduction_bundle
+
+        write_reproduction_bundle(
+            out_dir=tmp_path / "out",
+            cycle_id="test",
+            engine_version="0.0.0",
+            snapshot_hash="snap",
+            manifest_hash="man",
+            lockfile_hash="lock",
+        )
+        data = json.loads((tmp_path / "out" / "repro_bundle.json").read_text())
+        assert data["goldset_hash"] == "", (
+            "write_reproduction_bundle default must be '' (not 'none')"
+        )
+
+    def test_legacy_bundle_read_handles_missing_goldset_key(self) -> None:
+        """ReproductionBundle.read() must handle legacy bundles that lack goldset_hash."""
+        if not _COMMITTED_2026_BUNDLE.exists():
+            pytest.skip("committed 2026 bundle not present")
+        bundle = ReproductionBundle.read(_COMMITTED_2026_BUNDLE)
+        # Legacy bundle has no goldset_hash key → defaulted to "none"
+        assert bundle.goldset_hash == "none"
+        assert bundle.cycle_id == "2026"
+
+    def test_2026_bundle_bytes_unchanged(self) -> None:
+        """U2 must NOT rewrite the committed 2026 reproduction bundle."""
+        if not _COMMITTED_2026_BUNDLE.exists():
+            pytest.skip("committed 2026 bundle not present")
+        raw = _COMMITTED_2026_BUNDLE.read_text()
+        data = json.loads(raw)
+        # The 2026 bundle has no goldset_hash key — U2 must leave it absent.
+        assert "goldset_hash" not in data, (
+            "U2 must not add goldset_hash to the committed 2026 bundle bytes"
+        )
+        # snapshot_hash sentinel must be "none" — unchanged by U2
+        assert data["snapshot_hash"] == "none"
+        assert data["lockfile_hash"] != ""

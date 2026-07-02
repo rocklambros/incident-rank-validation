@@ -8,6 +8,15 @@ from engine.model.inference import InferenceResult
 from engine.vote.bootstrap import VoteRankPosterior
 
 
+def _make_entry_strata(
+    entries: tuple[str, ...],
+) -> tuple[dict[str, tuple[str, ...]], dict[str, int]]:
+    """Build minimal single-stratum entry_strata and stratum_sizes for tests."""
+    entry_strata: dict[str, tuple[str, ...]] = {e: ("default",) for e in entries}
+    stratum_sizes = {"default": max(len(entries) * 10, 1)}
+    return entry_strata, stratum_sizes
+
+
 def _make_inference(
     entry_ids: tuple[str, ...],
     n_samples: int = 100,
@@ -55,6 +64,7 @@ class TestDrawCapRemoval:
         entries = tuple(f"E{i}" for i in range(10))
         inf = _make_inference(entries, n_samples=800)
         vote = _make_vote_posterior(entries, n_bootstrap=800)
+        entry_strata, stratum_sizes = _make_entry_strata(entries)
 
         result = compute_concordance(
             inference_result=inf,
@@ -65,6 +75,8 @@ class TestDrawCapRemoval:
             total_count=15,
             meaningful_kappa_n=5,
             measurability_minimum=5,
+            entry_strata=entry_strata,
+            stratum_sizes=stratum_sizes,
         )
 
         assert result.weighted_kappa_median is not None
@@ -78,6 +90,7 @@ class TestVoteRecyclingFix:
         entries = tuple(f"E{i}" for i in range(10))
         inf = _make_inference(entries, n_samples=1000)
         vote = _make_vote_posterior(entries, n_bootstrap=600)
+        entry_strata, stratum_sizes = _make_entry_strata(entries)
 
         result = compute_concordance(
             inference_result=inf,
@@ -88,6 +101,8 @@ class TestVoteRecyclingFix:
             total_count=15,
             meaningful_kappa_n=5,
             measurability_minimum=5,
+            entry_strata=entry_strata,
+            stratum_sizes=stratum_sizes,
         )
 
         assert result.weighted_kappa_median is not None
@@ -96,6 +111,7 @@ class TestVoteRecyclingFix:
         entries = tuple(f"E{i}" for i in range(6))
         inf = _make_inference(entries, n_samples=200)
         vote = _make_vote_posterior(entries, n_bootstrap=150)
+        entry_strata, stratum_sizes = _make_entry_strata(entries)
 
         result = compute_concordance(
             inference_result=inf,
@@ -106,6 +122,8 @@ class TestVoteRecyclingFix:
             total_count=6,
             meaningful_kappa_n=3,
             measurability_minimum=3,
+            entry_strata=entry_strata,
+            stratum_sizes=stratum_sizes,
         )
 
         assert result.weighted_kappa_median is not None

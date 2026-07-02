@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from engine.calibrate.batch import CodingBatch, ValidationError, validate_coded_batch
-from engine.calibrate.gold_schema import GoldCalibration
+from engine.calibrate.gold_schema import OUT_OF_SCOPE, GoldCalibration
 
 
 @dataclass(frozen=True, slots=True)
@@ -213,7 +213,11 @@ def calibrate_with_gold(
     ``_build_observation_arrays`` picks it up when iterating corpus strata.
     """
     precision_counts = dict(base_tally.precision_counts)
-    recall_counts = dict(base_tally.recall_counts)
+    # Recall posteriors derive SOLELY from gold truth-vs-prediction (per-entry
+    # truth-cell denominators). The recall-frame tally has no classifier
+    # prediction, so its frame-size-padded recall counts are not real recall and
+    # are intentionally dropped here. (Plan 8a, SD1/RM2.)
+    recall_counts: dict[tuple[str, str], RecallTally] = {}
     rollup_counts = dict(base_tally.rollup_counts)
     gold_coded = 0
 
@@ -224,6 +228,19 @@ def calibrate_with_gold(
     precision_fp: dict[tuple[str, str], int] = {}
     precision_total: dict[tuple[str, str], int] = {}
 
+    # F-A: a claim that already carries an EXPLICIT precision verdict (a
+    # GoldPrecisionLabel — e.g. every adjudicated in-scope claim on a truth-
+    # labeled incident) is scored for precision via that label below; deriving a
+    # second precision FP from the recall label would double-count.  Key on
+    # (incident_id, claimed_entry) — NOT incident_id alone — so the recall-
+    # derived FP is suppressed only for the SAME claim, never for a different
+    # entry an incident might also be misclassified as.  The recall-derived FP
+    # still fires for claims with no explicit precision verdict (the curation /
+    # F4 path, and in-scope claims on truth-OOS incidents).
+    precision_label_keys = {
+        (p.incident_id, p.claimed_entry_id) for p in gold.precision_labels
+    }
+
     for label in gold.recall_labels:
         if label.incident_id in base_incident_ids:
             continue
@@ -232,6 +249,18 @@ def calibrate_with_gold(
         if label.classifier_entry_id is None:
             continue
 
+        # Single-label recall semantics (INTENTIONAL — Plan 8ab-remediation F4).
+        # The classifier emits ONE entry_id per incident, but truth may be
+        # multi-label. Recall here is the *detection rate* the measurement-error
+        # model consumes (true_count ~= observed_count / recall): for entry X it
+        # is "of incidents truly X, what fraction did the classifier label X?".
+        # An incident truly {A, B} that the classifier labels A is in A's observed
+        # count, NOT B's, so it is a genuine detection MISS for B (recall FN for
+        # B), even though A is a true label. Crediting B as a hit here would
+        # inflate B's recall and under-correct B's incidence for incidents absent
+        # from B's observed count. Co-occurring entries therefore get inherently
+        # lower recall — a real single-label-classifier limitation, honestly
+        # reflected, not a bug. (Pinned by tests/unit/test_recall_single_label_semantics.py.)
         for true_eid in label.true_entry_ids:
             rk = (true_eid, merge_stratum)
             recall_total[rk] = recall_total.get(rk, 0) + 1
@@ -241,7 +270,12 @@ def calibrate_with_gold(
             else:
                 recall_fn[rk] = recall_fn.get(rk, 0) + 1
 
-        if label.classifier_entry_id not in label.true_entry_ids:
+        if (
+            label.classifier_entry_id not in label.true_entry_ids
+            and label.classifier_entry_id != OUT_OF_SCOPE
+            and (label.incident_id, label.classifier_entry_id)
+            not in precision_label_keys
+        ):
             pk = (label.classifier_entry_id, merge_stratum)
             precision_fp[pk] = precision_fp.get(pk, 0) + 1
             precision_total[pk] = precision_total.get(pk, 0) + 1
@@ -255,19 +289,11 @@ def calibrate_with_gold(
             precision_fp[pk] = precision_fp.get(pk, 0) + 1
 
     for k in recall_total:
-        existing = recall_counts.get(k)
-        if existing:
-            recall_counts[k] = RecallTally(
-                true_positives=existing.true_positives + recall_tp.get(k, 0),
-                false_negatives=existing.false_negatives + recall_fn.get(k, 0),
-                total_in_sample=existing.total_in_sample + recall_total[k],
-            )
-        else:
-            recall_counts[k] = RecallTally(
-                true_positives=recall_tp.get(k, 0),
-                false_negatives=recall_fn.get(k, 0),
-                total_in_sample=recall_total[k],
-            )
+        recall_counts[k] = RecallTally(
+            true_positives=recall_tp.get(k, 0),
+            false_negatives=recall_fn.get(k, 0),
+            total_in_sample=recall_total[k],
+        )
 
     for k in precision_total:
         existing_p = precision_counts.get(k)

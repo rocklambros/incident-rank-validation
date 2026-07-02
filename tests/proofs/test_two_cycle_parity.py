@@ -67,6 +67,12 @@ def test_two_cycle_parity_headline_shape(tmp_path: Path) -> None:
     assert s1["non_publishable"] == s2["non_publishable"]
     assert s1["nuts_succeeded"] == s2["nuts_succeeded"]
 
+    # Plan 8a Task 6: the executed primary spec must match the declared manifest
+    # spec and be identical across the two runs — a silent fallback to a
+    # different model would fail this proof.
+    assert s1["primary_spec"] == "negative_binomial_per_stratum"
+    assert s1["primary_spec"] == s2["primary_spec"]
+
     if s1["nuts_succeeded"] and s2["nuts_succeeded"]:
         k1 = s1.get("weighted_kappa_median")
         k2 = s2.get("weighted_kappa_median")

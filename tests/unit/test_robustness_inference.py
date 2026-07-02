@@ -30,7 +30,7 @@ def _make_manifest() -> PreregManifest:
         prior_scale=0.5,
         concentration_shape=5.0,
         concentration_rate=0.1,
-        ess_fraction=0.4,
+        ess_fraction=0.1,
         meaningful_kappa_n=4,
         prng_seed=42,
         confidence_threshold=0.3,
@@ -66,9 +66,9 @@ class TestRobustnessInference:
             stratum_sizes=sizes,
             calibration=cal,
             overlap=overlap,
-            num_warmup=100,
-            num_samples=200,
-            num_chains=1,
+            num_warmup=1000,
+            num_samples=1000,
+            num_chains=2,
         )
-        assert result.lambda_samples.shape == (200, 2)
+        assert result.lambda_samples.shape == (2000, 2)
         assert result.entry_ids == entries

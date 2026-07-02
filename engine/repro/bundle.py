@@ -12,6 +12,7 @@ class ReproductionBundle:
     snapshot_hash: str
     manifest_hash: str
     lockfile_hash: str
+    goldset_hash: str
     provenance: dict[str, str]
 
     def to_json(self) -> str:
@@ -23,6 +24,7 @@ class ReproductionBundle:
                     "snapshot_hash": self.snapshot_hash,
                     "manifest_hash": self.manifest_hash,
                     "lockfile_hash": self.lockfile_hash,
+                    "goldset_hash": self.goldset_hash,
                     "provenance": self.provenance,
                 },
                 sort_keys=True,
@@ -38,4 +40,7 @@ class ReproductionBundle:
     @classmethod
     def read(cls, path: Path) -> ReproductionBundle:
         d = json.loads(path.read_text())
+        # Legacy bundles (pre-U2) may not have a goldset_hash key; default to
+        # "none" so _verify_goldset_hash treats them as unbound.
+        d.setdefault("goldset_hash", "none")
         return cls(**d)

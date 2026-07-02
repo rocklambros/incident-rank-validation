@@ -67,6 +67,13 @@ _USER_CONTENT = (
 )
 
 
+def _neutralize_delimiters(text: str) -> str:
+    """Strip attacker-forged copies of the fence tokens from incident text."""
+    return text.replace(INCIDENT_DELIMITER_BEGIN, "[redacted-delimiter]").replace(
+        INCIDENT_DELIMITER_END, "[redacted-delimiter]"
+    )
+
+
 def build_messages(
     incident: IncidentRecord, rubric_json: str
 ) -> list[dict[str, str]]:
@@ -79,7 +86,7 @@ def build_messages(
     user_content = _USER_CONTENT.format(
         begin=INCIDENT_DELIMITER_BEGIN,
         end=INCIDENT_DELIMITER_END,
-        incident_text=incident.text,
+        incident_text=_neutralize_delimiters(incident.text),
     )
     return [
         {"role": "system", "content": system_content},
@@ -92,7 +99,7 @@ def build_prompt(incident: IncidentRecord, rubric_json: str) -> str:
         begin=INCIDENT_DELIMITER_BEGIN,
         end=INCIDENT_DELIMITER_END,
         rubric=compact_rubric(rubric_json),
-        incident_text=incident.text,
+        incident_text=_neutralize_delimiters(incident.text),
     )
 
 

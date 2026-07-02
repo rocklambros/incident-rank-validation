@@ -15,6 +15,15 @@ from click.testing import CliRunner
 from engine.cli.main import cli
 
 
+def _write_valid_lock(prereg: Path) -> None:
+    """Write manifest.lock that passes the R5 _verify_manifest_lock guard."""
+    from engine.cli.pipeline_executor import _load_manifest
+    from engine.prereg.lock import write_lock
+
+    manifest = _load_manifest(prereg / "manifest.json")
+    write_lock(manifest, prereg / "manifest.lock")
+
+
 def _build_fixture_cycle(tmp_path: Path) -> Path:
     """Build a minimal cycle directory with 5 incidents, rubric, manifest, and calibration."""
     cycle = tmp_path / "cycle"
@@ -50,7 +59,7 @@ def _build_fixture_cycle(tmp_path: Path) -> Path:
         "post_hoc_register_path": None,
     }
     (prereg / "manifest.json").write_text(json.dumps(manifest, indent=2))
-    (prereg / "manifest.lock").write_text(json.dumps({"hash": "locked"}))
+    _write_valid_lock(prereg)
 
     rubric = {
         "cycle_id": "integration-test-2026",
@@ -185,5 +194,5 @@ def test_full_classify_infer_pipeline(tmp_path: Path) -> None:
     else:
         lambda_path = cycle / "infer" / "lambda_samples.npy"
         assert lambda_path.exists(), "lambda_samples.npy not created"
-        samples = np.load(lambda_path)
+        samples = np.load(lambda_path, allow_pickle=False)
         assert samples.ndim == 2

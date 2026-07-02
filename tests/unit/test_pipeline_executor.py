@@ -113,6 +113,23 @@ class TestClassifyPhase:
         assert len(data) == 1
         assert data[0]["incident_id"] == "INC-001"
 
+    def test_write_classify_coverage_marker(self, tmp_path: Path) -> None:
+        from engine.calibrate.coverage import COVERAGE_FILENAME, write_classify_coverage
+
+        out_dir = tmp_path / "classify"
+        cov = write_classify_coverage(
+            out_dir,
+            snapshot_hash="snap123",
+            corpus_incident_ids={"INC-001", "INC-002", "INC-003"},
+            in_scope_incident_ids={"INC-001", "INC-002"},
+        )
+        assert cov.n_corpus == 3
+        assert cov.n_in_scope == 2
+        assert cov.n_oos == 1
+        data = json.loads((out_dir / COVERAGE_FILENAME).read_text())
+        assert data["snapshot_hash"] == "snap123"
+        assert data["n_in_scope"] == 2
+
 
 class TestInferPhase:
     def test_rejects_missing_calibration(self, tmp_path: Path) -> None:

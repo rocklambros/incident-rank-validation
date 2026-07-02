@@ -1,0 +1,183 @@
+{
+  "created_at_utc": "2026-05-25T00:45:41.024264+00:00",
+  "frame1_checks": {
+    "records": 1200,
+    "schema_error_count": 0,
+    "schema_errors": [],
+    "duplicate_incident_id_count": 0,
+    "duplicate_incident_ids": [],
+    "coverage_top10_final_labels": {
+      "LLM09": 114,
+      "NEW-WLA": 66,
+      "out-of-scope": 444,
+      "LLM02": 58,
+      "LLM05": 83,
+      "LLM03": 103,
+      "LLM06": 61,
+      "NEW-MA": 45,
+      "LLM04": 43,
+      "LLM01": 45
+    },
+    "top10_min_30_pass": true,
+    "tier_counts": {
+      "agree": 363,
+      "split": 406,
+      "disagree": 431
+    },
+    "tier_adjudication_counts": {
+      "agree": {
+        "accept": 360,
+        "multi-label": 2,
+        "override": 1
+      },
+      "split": {
+        "override": 121,
+        "accept": 285
+      },
+      "disagree": {
+        "override": 431
+      }
+    },
+    "agree_accept_rate": 0.9917355371900827,
+    "agree_override_rate": 0.0027548209366391185,
+    "agree_entries_with_override_rate_over_50": {},
+    "spot_check_10_percent_agree_accept_sample_size": 36,
+    "spot_check_10_percent_agree_accept_incident_ids": [
+      "INC-02470",
+      "INC-06812",
+      "INC-07551",
+      "INC-01591",
+      "INC-04065",
+      "INC-00978",
+      "INC-02300",
+      "INC-04188",
+      "INC-01121",
+      "INC-03973",
+      "INC-02782",
+      "INC-04027",
+      "INC-07219",
+      "INC-01343",
+      "INC-01038",
+      "INC-03447",
+      "INC-04838",
+      "INC-03056",
+      "INC-03678",
+      "INC-03335",
+      "INC-01503",
+      "INC-02822",
+      "INC-02610",
+      "INC-04667",
+      "INC-03606",
+      "INC-02075",
+      "INC-03573",
+      "INC-00188",
+      "INC-07369",
+      "INC-02849",
+      "INC-04539",
+      "INC-04106",
+      "INC-05162",
+      "INC-00126",
+      "INC-00370",
+      "INC-03910"
+    ]
+  },
+  "frame2_checks": {
+    "records": 323,
+    "schema_error_count": 0,
+    "schema_errors": [],
+    "duplicate_pair_count": 0,
+    "duplicate_incident_claimed_entry_pairs": [],
+    "entry_counts": {
+      "LLM04": 30,
+      "LLM06": 30,
+      "LLM08": 10,
+      "LLM10": 30,
+      "NEW-MTIE": 30,
+      "NEW-ITSCD": 3,
+      "ROLL-CMSB": 30,
+      "ROLL-LAPTF": 1,
+      "ROLL-CFAS": 1,
+      "LLM03": 30,
+      "LLM07": 30,
+      "NEW-PMP": 6,
+      "NEW-MA": 30,
+      "NEW-WLA": 30,
+      "NEW-MSDA": 11,
+      "ROLL-SICG": 21
+    },
+    "correct_counts": {
+      "LLM04": 26,
+      "LLM06": 9,
+      "LLM08": 0,
+      "LLM10": 25,
+      "NEW-MTIE": 9,
+      "NEW-ITSCD": 2,
+      "ROLL-CMSB": 8,
+      "ROLL-LAPTF": 1,
+      "ROLL-CFAS": 0,
+      "LLM03": 28,
+      "LLM07": 4,
+      "NEW-PMP": 6,
+      "NEW-MA": 23,
+      "NEW-WLA": 17,
+      "NEW-MSDA": 8,
+      "ROLL-SICG": 7
+    },
+    "precision_estimate_by_entry": {
+      "LLM04": 0.8666666666666667,
+      "LLM06": 0.3,
+      "LLM08": 0.0,
+      "LLM10": 0.8333333333333334,
+      "NEW-MTIE": 0.3,
+      "NEW-ITSCD": 0.6666666666666666,
+      "ROLL-CMSB": 0.26666666666666666,
+      "ROLL-LAPTF": 1.0,
+      "ROLL-CFAS": 0.0,
+      "LLM03": 0.9333333333333333,
+      "LLM07": 0.13333333333333333,
+      "NEW-PMP": 1.0,
+      "NEW-MA": 0.7666666666666667,
+      "NEW-WLA": 0.5666666666666667,
+      "NEW-MSDA": 0.7272727272727273,
+      "ROLL-SICG": 0.3333333333333333
+    },
+    "matched_source_availability_by_entry": {
+      "LLM04": 184,
+      "LLM06": 408,
+      "LLM08": 10,
+      "LLM10": 94,
+      "NEW-MTIE": 32,
+      "NEW-ITSCD": 3,
+      "ROLL-CMSB": 131,
+      "ROLL-LAPTF": 1,
+      "ROLL-CFAS": 1,
+      "LLM03": 584,
+      "LLM07": 38,
+      "NEW-PMP": 6,
+      "NEW-MA": 133,
+      "NEW-WLA": 909,
+      "NEW-MSDA": 11,
+      "ROLL-SICG": 21
+    },
+    "entries_below_30_due_to_matched_source_availability": {
+      "LLM08": 10,
+      "NEW-ITSCD": 3,
+      "ROLL-LAPTF": 1,
+      "ROLL-CFAS": 1,
+      "NEW-PMP": 6,
+      "NEW-MSDA": 11,
+      "ROLL-SICG": 21
+    }
+  },
+  "output_files": {
+    "root_precision_verification": "/mnt/data/precision_verification.jsonl",
+    "project_precision_verification": "/mnt/data/projects/owasp-llm/cycles/2026/calibration/precision_verification.jsonl",
+    "project_adjudicated_goldset": "/mnt/data/projects/owasp-llm/cycles/2026/calibration/adjudicated_goldset.jsonl",
+    "sha256": {
+      "adjudicated_goldset.jsonl": "f3091eb0a98ce4198e012efc029cb568d90e8c4751fe1803d8d05295abbc418f",
+      "precision_verification.jsonl": "7a7e050da6a7837764905bde59eaf37848d2dd212fce7f2dc5a8b9f2308da5d2",
+      "project_adjudicated_goldset.jsonl": "f3091eb0a98ce4198e012efc029cb568d90e8c4751fe1803d8d05295abbc418f",
+      "project_precision_verification.jsonl": "7a7e050da6a7837764905bde59eaf37848d2dd212fce7f2dc5a8b9f2308da5d2"
+    }
+  }
+}

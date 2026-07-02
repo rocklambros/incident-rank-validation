@@ -83,14 +83,18 @@ class HttpRunPodClient:
         client = self._get_client()
         messages: list[dict[str, str]]
         messages = [{"role": "user", "content": prompt}] if isinstance(prompt, str) else prompt
-        payload = {
+        payload: dict[str, object] = {
             "model": self._model_name,
             "messages": messages,
             "max_tokens": 512,
             "temperature": 0.0,
             "seed": seed,
-            "chat_template_kwargs": {"enable_thinking": False},
         }
+        # ``enable_thinking`` is a Qwen3-specific chat-template kwarg. Other
+        # models (Mistral, Llama, DeepSeek) reject unknown template kwargs with
+        # HTTP 400, so send it only to Qwen3.
+        if "qwen3" in self._model_name.lower():
+            payload["chat_template_kwargs"] = {"enable_thinking": False}
         try:
             resp = client.post(
                 f"{self._base_url}{self._chat_path}",

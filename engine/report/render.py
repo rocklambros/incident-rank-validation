@@ -29,6 +29,93 @@ class ReportInputs:
     runpod_cost_usd: float | None = None
     cost_ceiling_usd: float | None = None
     corpus_b_corroboration: dict[str, object] | None = None
+    vote_plackett_luce: dict[str, object] | None = None
+    oracle_verdict: dict[str, object] | None = None
+
+
+def _render_robustness_lines(spread: RobustnessSpread) -> list[str]:
+    lines: list[str] = ["\n## Robustness\n"]
+    all_specs = [spread.primary, *spread.robustness]
+    for sr in all_specs:
+        if sr.weighted_kappa_median is not None and sr.weighted_kappa_ci is not None:
+            line = (
+                f"- {sr.spec_name}: kappa = {sr.weighted_kappa_median:.2f} "
+                f"[{sr.weighted_kappa_ci[0]:.2f}, {sr.weighted_kappa_ci[1]:.2f}]"
+            )
+        else:
+            line = f"- {sr.spec_name}: kappa = N/A"
+        if sr.sigma_u is not None:
+            line += f"  (σ_u = {sr.sigma_u:.2f})"
+        lines.append(line + "\n")
+        if sr.extra_rankings:
+            for name, ranking in sorted(sr.extra_rankings.items()):
+                top = " > ".join(ranking[:5])
+                suffix = " > ..." if len(ranking) > 5 else ""
+                lines.append(f"  - {name} ranking: {top}{suffix}\n")
+    spread_val = spread.spread
+    if spread_val is not None:
+        lines.append(f"Spread: {spread_val:.3f}\n")
+    if not spread.is_consistent_in_direction():
+        lines.append("**WARNING: Specs disagree on flag direction.**\n")
+    return lines
+
+
+def _render_vote_pl_lines(vote_pl: dict[str, object] | None) -> list[str]:
+    """Render the Davidson tie-aware vote-aggregation robustness section."""
+    if vote_pl is None:
+        return []
+    lines: list[str] = ["\n## Vote Aggregation (Plackett-Luce / Davidson)\n"]
+    ranking = vote_pl.get("ranking", [])
+    if isinstance(ranking, list) and ranking:
+        top = " > ".join(str(e) for e in ranking[:5])
+        suffix = " > ..." if len(ranking) > 5 else ""
+        lines.append(f"- Worth ranking: {top}{suffix}\n")
+    if vote_pl.get("converged") is False:
+        lines.append(
+            "- **WARNING: Davidson point fit did not converge; "
+            "interpret the worth ranking with caution.**\n"
+        )
+    n_nonconv = vote_pl.get("n_nonconverged_bootstrap")
+    if isinstance(n_nonconv, int) and not isinstance(n_nonconv, bool) and n_nonconv > 0:
+        lines.append(
+            f"- Note: {n_nonconv} bootstrap replicate(s) did not converge.\n"
+        )
+    tie_param = vote_pl.get("tie_param")
+    if isinstance(tie_param, int | float):
+        lines.append(f"- Tie parameter (nu): {tie_param:.2f}\n")
+    tau_mean = vote_pl.get("kendall_tau_vs_meanrank")
+    if isinstance(tau_mean, int | float):
+        lines.append(f"- Kendall tau vs mean-rank vote ranking: {tau_mean:.2f}\n")
+    tau_drop = vote_pl.get("kendall_tau_withties_vs_dropties")
+    if isinstance(tau_drop, int | float):
+        lines.append(f"- Kendall tau with-ties vs drop-ties: {tau_drop:.2f}\n")
+    boot = vote_pl.get("mean_kendall_tau_vs_point")
+    if isinstance(boot, int | float):
+        lines.append(f"- Bootstrap stability (mean Kendall tau vs point): {boot:.2f}\n")
+    return lines
+
+
+def _render_oracle_lines(oracle: dict[str, object] | None) -> list[str]:
+    """Render the independent oracle consistency check + provisional banner."""
+    if oracle is None:
+        return []
+    lines: list[str] = ["\n## Oracle Consistency Check\n"]
+    if oracle.get("provisional") is True:
+        lines.append(
+            "**PROVISIONAL: the independent oracle disagrees with the engine on "
+            "one or more deliverables (see FAIL rows). Treat results as "
+            "un-cross-checked.**\n"
+        )
+    deliverables = oracle.get("deliverables", [])
+    if isinstance(deliverables, list):
+        for d in deliverables:
+            if isinstance(d, dict):
+                line = f"- [{d.get('status')}] {d.get('name')}: {d.get('metric')}"
+                detail = d.get("detail")
+                if d.get("status") != "PASS" and detail:
+                    line += f" — {detail}"
+                lines.append(line + "\n")
+    return lines
 
 
 def render_report(inputs: ReportInputs) -> str:
@@ -92,21 +179,9 @@ def render_report(inputs: ReportInputs) -> str:
 
     # Robustness spread (R2: HANDOFF §6 control 11(g))
     if inputs.robustness is not None:
-        lines.append("\n## Robustness\n")
-        all_specs = [inputs.robustness.primary, *inputs.robustness.robustness]
-        for sr in all_specs:
-            if sr.weighted_kappa_median is not None and sr.weighted_kappa_ci is not None:
-                lines.append(
-                    f"- {sr.spec_name}: kappa = {sr.weighted_kappa_median:.2f} "
-                    f"[{sr.weighted_kappa_ci[0]:.2f}, {sr.weighted_kappa_ci[1]:.2f}]\n"
-                )
-            else:
-                lines.append(f"- {sr.spec_name}: kappa = N/A\n")
-        spread_val = inputs.robustness.spread
-        if spread_val is not None:
-            lines.append(f"Spread: {spread_val:.3f}\n")
-        if not inputs.robustness.is_consistent_in_direction():
-            lines.append("**WARNING: Specs disagree on flag direction.**\n")
+        lines.extend(_render_robustness_lines(inputs.robustness))
+    lines.extend(_render_vote_pl_lines(inputs.vote_plackett_luce))
+    lines.extend(_render_oracle_lines(inputs.oracle_verdict))
 
     # Rollup sub-test
     if inputs.rollup_results:
