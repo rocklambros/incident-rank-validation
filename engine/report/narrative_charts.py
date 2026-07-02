@@ -266,28 +266,50 @@ def render_precision_posteriors(data: dict[str, Any], figures_dir: Path) -> None
 
 
 def render_ridge_plot(data: dict[str, Any], figures_dir: Path) -> None:
-    """Act 5: Ridge plot of posterior lambda for all 20 entries."""
+    """Act 5: overlapping ridgeline (joyplot) of posterior lambda for 20 entries."""
+    from scipy.stats import gaussian_kde
     lambda_samples = data["lambda_samples"]
     entry_ids = data["entry_ids"]
-    medians = {eid: float(np.median(lambda_samples[:, i])) for i, eid in enumerate(entry_ids)}
-    sorted_entries = sorted(entry_ids, key=lambda e: medians[e], reverse=True)
+    medians = {e: float(np.median(lambda_samples[:, i])) for i, e in enumerate(entry_ids)}
+    order = sorted(entry_ids, key=lambda e: medians[e])  # low at bottom, high at top
 
-    fig, axes = plt.subplots(len(sorted_entries), 1, figsize=(10, 16), sharex=True)
-    for ax, eid in zip(axes, sorted_entries, strict=False):
+    n = len(order)
+    fig, ax = plt.subplots(figsize=(10, 6.8))
+    x_lo = float(lambda_samples.min())
+    x_hi = float(np.percentile(lambda_samples, 99.5))
+    xs = np.linspace(x_lo, x_hi, 400)
+    pitch = 1.0            # vertical spacing between baselines
+    scale = 2.1 * pitch    # KDE height (>pitch => overlap)
+    for row, eid in enumerate(order):
         idx = entry_ids.index(eid)
         vals = lambda_samples[:, idx]
+        # A near-degenerate column (near-zero variance) makes gaussian_kde's
+        # internal covariance matrix singular, raising LinAlgError. Real cycle
+        # data has not hit this (min column variance ~0.038 as of 2026-07),
+        # but guard defensively: skip the KDE curve for that entry rather than
+        # letting the whole chart fail, and still draw its label.
+        try:
+            with warnings.catch_warnings():
+                warnings.filterwarnings("error", category=RuntimeWarning)
+                kde = gaussian_kde(vals, bw_method=0.25)
+                dens = kde(xs)
+        except (np.linalg.LinAlgError, RuntimeWarning, ValueError):
+            dens = None
+        base = row * pitch
         color = ENTRY_COLORS.get(eid, "#999999")
-        from scipy.stats import gaussian_kde
-        kde = gaussian_kde(vals, bw_method=0.2)
-        x_grid = np.linspace(vals.min(), vals.max(), 200)
-        density = kde(x_grid)
-        ax.fill_between(x_grid, density, alpha=0.6, color=color)
-        ax.set_ylabel(eid, rotation=0, ha="right", fontsize=9)
-        ax.set_yticks([])
-        for spine in ax.spines.values():
-            spine.set_visible(False)
-    axes[-1].set_xlabel("λ (incident rate)")
-    fig.suptitle("Posterior λ Distributions (sorted by median)")
+        if dens is not None:
+            dens = dens / dens.max() * scale
+            ax.fill_between(xs, base, base + dens, color=color, alpha=0.85,
+                            zorder=n - row, lw=0)
+            ax.plot(xs, base + dens, color="white", lw=0.6, zorder=n - row)
+        ax.text(x_lo, base + 0.15, eid, ha="right", va="bottom", fontsize=9,
+                color=color, fontweight="bold")
+    ax.set_yticks([])
+    ax.set_xlabel("λ  (latent incidence)", fontsize=12)
+    for side in ("left", "top", "right"):
+        ax.spines[side].set_visible(False)
+    ax.set_xlim(x_lo - (x_hi - x_lo) * 0.12, x_hi)
+    ax.set_title("Posterior λ by entry (sorted by median)", fontsize=13)
     fig.tight_layout()
     fig.savefig(figures_dir / "ridge_plot.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
