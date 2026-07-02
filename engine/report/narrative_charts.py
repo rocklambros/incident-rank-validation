@@ -333,9 +333,8 @@ def render_dumbbell_chart(data: dict[str, Any], figures_dir: Path) -> None:
 
 
 def render_bump_chart(data: dict[str, Any], figures_dir: Path) -> None:
-    """Act 7: Bump chart comparing expert and incident ranks."""
+    """Act 7: expert-vs-incident slopegraph; only flagged mismatches highlighted."""
     rank_md = data["rank_comparison_md"]
-
     vote_ranks: dict[str, float] = {}
     lambda_ranks: dict[str, float] = {}
     for line in rank_md.split("\n"):
@@ -344,10 +343,8 @@ def render_bump_chart(data: dict[str, Any], figures_dir: Path) -> None:
             if len(parts) >= 3:
                 eid = parts[0]
                 try:
-                    lam_med = float(parts[1].split("(")[0].strip())
-                    vote_med = float(parts[2].split("(")[0].strip())
-                    lambda_ranks[eid] = lam_med
-                    vote_ranks[eid] = vote_med
+                    lambda_ranks[eid] = float(parts[1].split("(")[0].strip())
+                    vote_ranks[eid] = float(parts[2].split("(")[0].strip())
                 except (ValueError, IndexError):
                     continue
 
@@ -359,22 +356,48 @@ def render_bump_chart(data: dict[str, Any], figures_dir: Path) -> None:
         plt.close(fig)
         return
 
-    fig, ax = plt.subplots(figsize=(10, 12))
+    flagged = {f["entry_id"] for f in data.get("concordance", {}).get("flags", [])}
+
+    def _decollide(entries: list[str], ycol: dict[str, float]) -> dict[str, float]:
+        # greedy: sort by y, push apart to >= min_gap in label space
+        order = sorted(entries, key=lambda e: ycol[e])
+        min_gap = 0.62
+        placed: dict[str, float] = {}
+        last = -1e9
+        for e in order:
+            y = max(ycol[e], last + min_gap)
+            placed[e] = y
+            last = y
+        return placed
+
+    left_lab = _decollide(common, lambda_ranks)
+    right_lab = _decollide(common, vote_ranks)
+
+    fig, ax = plt.subplots(figsize=(11, 7.2))
     for eid in common:
-        color = ENTRY_COLORS.get(eid, "#999999")
-        ax.plot(
-            [0, 1], [lambda_ranks[eid], vote_ranks[eid]],
-            marker="o", color=color, linewidth=2, markersize=8,
-        )
-        ax.annotate(eid, (0, lambda_ranks[eid]), textcoords="offset points",
-                     xytext=(-50, 0), fontsize=9, ha="right")
-        ax.annotate(eid, (1, vote_ranks[eid]), textcoords="offset points",
-                     xytext=(10, 0), fontsize=9, ha="left")
+        hot = eid in flagged
+        color = ENTRY_COLORS.get(eid, "#666666") if hot else "#D4D7DC"
+        ax.plot([0, 1], [lambda_ranks[eid], vote_ranks[eid]],
+                color=color, lw=2.6 if hot else 1.1, alpha=0.95 if hot else 0.6,
+                zorder=3 if hot else 1, solid_capstyle="round")
+        if hot:
+            ax.scatter([0, 1], [lambda_ranks[eid], vote_ranks[eid]],
+                       color=color, s=42, zorder=4)
+            ax.annotate(eid, (0, left_lab[eid]), textcoords="offset points",
+                        xytext=(-10, 0), ha="right", va="center",
+                        fontsize=11, color=color, fontweight="bold")
+            ax.annotate(eid, (1, right_lab[eid]), textcoords="offset points",
+                        xytext=(10, 0), ha="left", va="center",
+                        fontsize=11, color=color, fontweight="bold")
+    ax.set_xlim(-0.5, 1.5)
+    ax.set_ylim(max(list(vote_ranks.values()) + list(lambda_ranks.values())) + 0.6, 0.4)
     ax.set_xticks([0, 1])
-    ax.set_xticklabels(["Incident Rank", "Expert Rank"])
-    ax.set_ylabel("Rank")
-    ax.invert_yaxis()
-    ax.set_title("Expert vs Incident Rankings")
+    ax.set_xticklabels(["Incident rank", "Expert rank"], fontsize=13, fontweight="bold")
+    ax.set_ylabel("Rank", fontsize=12)
+    for side in ("top", "right"):
+        ax.spines[side].set_visible(False)
+    ax.set_title("Expert vs incident rank — the five flagged disagreements highlighted",
+                 fontsize=13)
     fig.tight_layout()
     fig.savefig(figures_dir / "bump_chart.png", dpi=300, bbox_inches="tight")
     plt.close(fig)

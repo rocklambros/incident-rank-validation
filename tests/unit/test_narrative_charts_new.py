@@ -11,6 +11,9 @@ from typing import Any
 
 import pytest
 
+REPO = Path(__file__).resolve().parents[2]
+CYCLE = REPO / "projects" / "owasp-llm" / "cycles" / "2026"
+
 # ---------------------------------------------------------------------------
 # Shared fixtures
 # ---------------------------------------------------------------------------
@@ -312,3 +315,26 @@ class TestRankChangeShape:
         with Image.open(out) as img:
             w, h = img.size
         assert h / w <= 0.85, f"slopegraph too tall: h/w={h/w:.2f}"
+
+
+@pytest.mark.integration
+class TestBumpChartFocused:
+    """Fig 9: focused expert-vs-incident slopegraph, real cycle data."""
+
+    def _data(self) -> dict[str, Any]:
+        from engine.report.narrative_data import load_narrative_data
+        return load_narrative_data(CYCLE)
+
+    def test_renders_and_is_not_tall(self, figures_dir: Path) -> None:
+        from PIL import Image
+
+        from engine.report.narrative_charts import render_bump_chart
+        render_bump_chart(self._data(), figures_dir)
+        out = figures_dir / "bump_chart.png"
+        assert out.exists() and out.stat().st_size > 1024
+        # Context manager avoids a dangling FileIO handle — this repo's pytest
+        # config runs with filterwarnings = ["error"], which turns the
+        # ResourceWarning from an unclosed Image.open() into a hard failure.
+        with Image.open(out) as img:
+            w, h = img.size
+        assert h / w <= 0.90, f"bump chart too tall: h/w={h/w:.2f}"
