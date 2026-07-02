@@ -6,7 +6,7 @@ author:
   - name: "Kyriakos \"Rock\" Lambros"
     affiliation: "OWASP GenAI Security Project — Top 10 for LLM Applications, Co-Lead"
   - name: "Steve Wilson"
-    affiliation: "OWASP GenAI Security Project — Top 10 for LLM Applications, Founder & Co-Lead"
+    affiliation: "OWASP GenAI Security Project — Top 10 for LLM Applications, Founder & Lead"
 numbersections: true
 abstract: |
   The OWASP Top 10 for LLM Applications ranks the risks that a community of
