@@ -343,10 +343,12 @@ def render_bump_chart(data: dict[str, Any], figures_dir: Path) -> None:
             if len(parts) >= 3:
                 eid = parts[0]
                 try:
-                    lambda_ranks[eid] = float(parts[1].split("(")[0].strip())
-                    vote_ranks[eid] = float(parts[2].split("(")[0].strip())
+                    lam_med = float(parts[1].split("(")[0].strip())
+                    vote_med = float(parts[2].split("(")[0].strip())
                 except (ValueError, IndexError):
                     continue
+                lambda_ranks[eid] = lam_med
+                vote_ranks[eid] = vote_med
 
     common = sorted(set(lambda_ranks) & set(vote_ranks))
     if not common:
@@ -396,8 +398,10 @@ def render_bump_chart(data: dict[str, Any], figures_dir: Path) -> None:
     ax.set_ylabel("Rank", fontsize=12)
     for side in ("top", "right"):
         ax.spines[side].set_visible(False)
-    ax.set_title("Expert vs incident rank — the five flagged disagreements highlighted",
-                 fontsize=13)
+    ax.set_title(
+        f"Expert vs incident rank — the {len(flagged)} flagged disagreements highlighted",
+        fontsize=13,
+    )
     fig.tight_layout()
     fig.savefig(figures_dir / "bump_chart.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
