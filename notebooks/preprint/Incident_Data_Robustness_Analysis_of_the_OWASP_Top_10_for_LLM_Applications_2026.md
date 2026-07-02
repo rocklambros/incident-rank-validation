@@ -6,7 +6,7 @@ author:
   - name: "Kyriakos \"Rock\" Lambros"
     affiliation: "OWASP GenAI Security Project — Top 10 for LLM Applications, Co-Lead"
   - name: "Steve Wilson"
-    affiliation: "OWASP GenAI Security Project — Top 10 for LLM Applications, Founder & Co-Lead"
+    affiliation: "OWASP GenAI Security Project — Top 10 for LLM Applications, Founder & Lead"
 numbersections: true
 abstract: |
   The OWASP Top 10 for LLM Applications ranks the risks that a community of
@@ -74,9 +74,7 @@ The 2026 cycle works from a field of 20 candidate entries, not 10. Ten are incum
 
 ![The 2026 candidate field: ten incumbents, six new candidates, and four rollups, each rollup arrowed to the incumbent it folds into.](figures/entry_expansion_map.png){width=85%}
 
-Blending the two signals reorders the ten incumbents from their published 2025 positions. Three moves are large. Improper Output Handling falls five places, the biggest drop on the board. Unbounded Consumption rises four. Excessive Agency rises three. The rest move by a place or hold. The figure below traces every incumbent from its 2025 position to its blended 2026 position.
-
-![Rank change from the published 2025 order to the blended 2026 order; the largest moves are Improper Output Handling (−5), Unbounded Consumption (+4), and Excessive Agency (+3).](figures/rank_change_2025_2026.png){width=85%}
+Blending the two signals reorders the ten incumbents from their published 2025 positions. Three moves are large. Improper Output Handling falls five places, the biggest drop on the board. Unbounded Consumption rises four. Excessive Agency rises three. The rest move by a place or hold. The slopegraph in the blended Top-10 section traces every incumbent from its 2025 position to its blended 2026 position.
 
 # Part II — What the Incident Data Says
 
@@ -96,7 +94,7 @@ The corpus holds 6,639 labeled incidents in two strata that read very differentl
 
 The split matters for what follows. The classifier reads the two strata differently, and, as Act 4 shows, we could hand-verify its precision only on the security stratum. Counts and corrections for ai-harm categories therefore rest on weaker measurement than those for security categories.
 
-![Labeled incidents by stratum: the security sources (CVE, GHSA, OSV) against the ai-harm source (AIAAIC).](figures/stratum_bar.png){width=85%}
+![Labeled incidents by stratum: the security sources (CVE, GHSA, OSV) against the ai-harm source (AIAAIC).](figures/stratum_bar.png){width=42% wrap=right}
 
 ## Act 3: Classifying 6,639 incidents
 
@@ -108,9 +106,9 @@ Three large language models classified each incident independently: Qwen 235B, L
 
 When all three models agreed on the same entry, we call it the agree tier. When two agreed and one differed, the split tier. When all three picked different entries, the disagree tier. The tier is a confidence signal: agree-tier incidents have strong three-model consensus; disagree-tier incidents sit in ambiguous territory where three independent classifiers could not converge.
 
-![Consensus tiers across the corpus: agree, split, and disagree.](figures/tier_donut.png){width=85%}
+![Consensus tiers across the corpus: agree, split, and disagree.](figures/tier_donut.png){width=40% wrap=right}
 
-![Where the three classifiers disagree, by entry pair, across the taxonomy.](figures/confusion_heatmap.png){width=85%}
+![Where the three classifiers disagree, by entry pair, across the taxonomy.](figures/confusion_heatmap.png){width=72%}
 
 ## Act 4: How good is the classifier?
 
@@ -135,9 +133,9 @@ Precision below 50% means the classifier is wrong more often than right for that
 
 One coverage caveat. All 323 precision checks came from the security stratum. The ai-harm stratum has no precision measurements, so the Bayesian model uses a flat Beta(1,1) prior (prior mean 0.5) for ai-harm precision. Error correction for ai-harm incidents rests on that uninformative prior, not on direct measurement.
 
-![Classifier precision by entry, with the 50% line marked; precision ranges from 93% down to 13%.](figures/precision_bars.png){width=85%}
+![Classifier precision by entry, with the 50% line marked; precision ranges from 93% down to 13%.](figures/precision_bars.png){width=60%}
 
-![Beta posteriors for per-entry precision; prior-dominated entries show wide, flat curves.](figures/precision_posteriors.png){width=85%}
+![Beta posteriors for per-entry precision; prior-dominated entries show wide, flat curves.](figures/precision_posteriors.png){width=62%}
 
 ## Act 5: From counts to rankings — the Bayesian model
 
@@ -159,7 +157,7 @@ Three entries (LLM04, LLM08, LLM10) are frame-blind: their incidents come almost
 
 Two measurement gaps widen the intervals further. For 16 of 20 entries the ai-harm recall is not measured directly, so the model uses a conservative prior (roughly 1% recall, a Beta(1, 101)) and corrects upward accordingly. And ai-harm precision is unmeasured, so the model uses a flat Beta(1,1) prior there. Both choices are honest about missing data, and both add width to the posteriors in Act 6.
 
-![Posterior distributions of latent incidence (λ) by entry.](figures/ridge_plot.png){width=85%}
+![Posterior distributions of latent incidence (λ) by entry.](figures/ridge_plot.png){width=70%}
 
 ## Act 6: The incident-derived ranking
 
@@ -169,11 +167,9 @@ For each entry the model gives a posterior over its true incidence, and we rank 
 
 > **Sidebar — credible interval.** A credible interval is the Bayesian answer to "how sure are we?" A 90% credible interval is the range holding 90% of the posterior's plausible values, so there is a 90% chance the true value sits inside it, given the model and the data. Wide intervals mean low certainty. When an entry's rank interval spans ten positions, the data barely constrains where it belongs.
 
-How to read the chart: each row is an entry, the diamond marks its median rank, and the bar spans the 90% credible interval on that rank. Tight intervals (LLM02 spans roughly 1–6) mean the data constrains the position well. Wide intervals (spanning 6–20) mean the data is compatible with many positions, which happens when precision is low, observations are few, or recall is unmeasured. Grey entries (LLM04, LLM08, LLM10) are frame-blind and carry extra structural uncertainty. The interactive companion below the static chart shows each entry's median, interval, and flags on hover.
+How to read the chart: each row is an entry, the diamond marks its median rank, and the bar spans the 90% credible interval on that rank. Tight intervals (LLM02 spans roughly 1–6) mean the data constrains the position well. Wide intervals (spanning 6–20) mean the data is compatible with many positions, which happens when precision is low, observations are few, or recall is unmeasured. Grey entries (LLM04, LLM08, LLM10) are frame-blind and carry extra structural uncertainty.
 
-![Incident-derived rank by entry: median rank (diamond) and 90% credible interval (bar).](figures/dumbbell_chart.png){width=85%}
-
-![Incident-derived ranks, interactive companion rendered static: median, interval, and frame-blind flag per entry.](figures/plotly_rankings.png){width=85%}
+![Incident-derived rank by entry: median rank (diamond) and 90% credible interval (bar).](figures/dumbbell_chart.png){width=68%}
 
 ## Act 7: Do the experts and the incidents agree?
 
@@ -191,9 +187,9 @@ Five entries disagree the most. Across the joint posterior, the two signals plac
 - **NEW-PMP Persistent Memory Poisoning:** experts #4 (2–7), incidents #16 (6–20).
 - **NEW-WLA Weaponized LLM Abuse:** incidents #8 (3–15), experts #17 (13–20).
 
-![Expert rank against incident rank, entry by entry.](figures/bump_chart.png){width=85%}
+![Expert rank against incident rank, entry by entry.](figures/bump_chart.png){width=72%}
 
-![Overlap of the expert and incident rank intervals, per entry.](figures/ci_overlap.png){width=85%}
+![Overlap of the expert and incident rank intervals, per entry.](figures/ci_overlap.png){width=72%}
 
 ## Act 8: Where the experts and the incidents disagree
 
@@ -207,11 +203,11 @@ Each of the five mismatches has a plausible cause. Reading them is more useful t
 
 **NEW-WLA (Weaponized LLM Abuse): 863 incidents, expert #17.** The large count follows from a broad definition that absorbs AI-generated disinformation, synthetic-media abuse, and deepfake harm. Experts rank it low because most of these describe harm from an AI system rather than an exploitable weakness in an LLM.
 
-![The five largest expert-versus-incident tier mismatches.](figures/paired_dots.png){width=85%}
+![The five largest expert-versus-incident tier mismatches.](figures/paired_dots.png){width=46% wrap=right}
 
-![Frequent keywords in LLM09 (Misinformation) incidents.](figures/theme_bars_llm09.png){width=85%}
+![Frequent keywords in LLM09 (Misinformation) incidents.](figures/theme_bars_llm09.png){width=42% wrap=left}
 
-![Frequent keywords in NEW-WLA (Weaponized LLM Abuse) incidents.](figures/theme_bars_new_wla.png){width=85%}
+![Frequent keywords in NEW-WLA (Weaponized LLM Abuse) incidents.](figures/theme_bars_new_wla.png){width=42% wrap=right}
 
 ## Act 9: What the data cannot see
 
@@ -233,9 +229,9 @@ Some categories overlap enough that neither classifiers nor humans can reliably 
 
 A deepfake video spreading political disinformation is all three at once: misleading content, created as a weapon, through a visual modality. The overlap is genuine ambiguity in the taxonomy, not a labeling mistake. So when the incident data ranks LLM09 second, part of that signal comes from incidents that could as easily have been filed under NEW-WLA or ROLL-CMSB. The boundary inflates whichever entry the classifier happens to prefer and deflates the others. The Bayesian model corrects for measured precision, but it cannot correct for ambiguity the human reviewers themselves found hard to resolve.
 
-![Flow of incidents across the LLM09 / NEW-WLA / ROLL-CMSB confusion boundary.](figures/sankey_confusion.png){width=85%}
+![Flow of incidents across the LLM09 / NEW-WLA / ROLL-CMSB confusion boundary.](figures/sankey_confusion.png){width=90%}
 
-![Three-by-three confusion among LLM09, NEW-WLA, and ROLL-CMSB.](figures/confusion_matrix_3x3.png){width=85%}
+![Three-by-three confusion among LLM09, NEW-WLA, and ROLL-CMSB.](figures/confusion_matrix_3x3.png){width=42% wrap=right}
 
 ## Act 10: What Part II shows
 
@@ -269,7 +265,7 @@ Every frontier model's apparent edge over the floor dissolves under a bootstrap.
 
 The paired-bootstrap interval for each model's ranking-fidelity gain over the floor crosses zero: llama-405b +0.001 (95% interval −0.047 to +0.055), the ensemble +0.009 (−0.032 to +0.050), mistral-large-2411 −0.012 (−0.053 to +0.028). Reweighting the gold set to the corpus's class mix raises the floor to ρ = 0.971 and leaves the best frontier configuration statistically tied (interval −0.025 to +0.024). The figure shows each classifier's ranking fidelity against the floor.
 
-![Ranking fidelity (Spearman ρ against held-out truth) for each frontier classifier and the ensemble, against the 2026 incidence floor. Every frontier gain over the floor has a bootstrap interval that crosses zero.](figures/rarr_robustness.png){width=85%}
+![Ranking fidelity (Spearman ρ against held-out truth) for each frontier classifier and the ensemble, against the 2026 incidence floor. Every frontier gain over the floor has a bootstrap interval that crosses zero.](figures/rarr_robustness.png){width=48% wrap=left}
 
 ### The recall correction, and its one honest limit
 
@@ -283,18 +279,7 @@ The conclusion of Part III is narrow and firm. No frontier classifier reorders t
 
 The blend produces the order below for the ten incumbents, each with its move from the published 2025 position. Every position is computed by the code in this section from the committed vote and incidence ranks; the prose reads the result.
 
-| Blended # | Entry | Move from 2025 |
-|---|---|---|
-| 1 | LLM02 Sensitive Information Disclosure | +1 |
-| 2 | LLM01 Prompt Injection | −1 |
-| 3 | LLM06 Excessive Agency | +3 |
-| 4 | LLM04 Data and Model Poisoning | 0 |
-| 5 | LLM03 Supply Chain | −2 |
-| 6 | LLM10 Unbounded Consumption | +4 |
-| 7 | LLM07 Hidden Context Exposure | 0 |
-| 8 | LLM09 Misinformation | +1 |
-| 9 | LLM08 Vector and Embedding Weaknesses | −1 |
-| 10 | LLM05 Improper Output Handling | −5 |
+![Published 2025 order to blended 2026 order for the ten incumbents; orange marks the large movers, dashed lines mark no-change.](figures/rank_change_2025_2026.png){width=92%}
 
 Agreement is the strongest signal. LLM02 (Sensitive Information Disclosure) sits first because both witnesses put it at the top: the experts rank it second, the incident data ranks it second. Four of the top five blended entries are agreements or near-agreements between the vote and the data, and those are the positions to trust most.
 
@@ -302,7 +287,7 @@ The consensus leads where the data sits mid-pack. Prompt Injection is the cleare
 
 The data flags what the consensus underweights. Misinformation is the widest gap on the board — near the bottom of the vote, near the top of the incident data, with the engine flagging the disagreement at high probability. The blend still seats it eighth because the data carries a quarter weight. The flag, not the final position, is the point: this is the entry the incident record says is most underrated, and the one most likely to move once the measurement improves.
 
-Two structural caveats sit under the table. Three entries — LLM04, LLM08, LLM10 — are frame-blind, so their data rank is soft by construction. And the overall agreement between the vote and the data is weak (Cohen's κ ≈ 0.20, interval crossing zero). The blended order is a defensible working ranking that reconciles two imperfect signals, not a verdict from either one.
+Two structural caveats sit under the figure. Three entries — LLM04, LLM08, LLM10 — are frame-blind, so their data rank is soft by construction. And the overall agreement between the vote and the data is weak (Cohen's κ ≈ 0.20, interval crossing zero). The blended order is a defensible working ranking that reconciles two imperfect signals, not a verdict from either one.
 
 ## Glossary
 
