@@ -4,7 +4,7 @@
 
 **Goal:** Produce a beautiful, publication-quality arXiv preprint (PDF + LaTeX source) telling the full OWASP-2026-LLM-Top-10 incident-data robustness story, built notebook-first, with every statistic computed from committed data.
 
-**Architecture:** The notebook (`notebooks/2026_top_10_llm_update_what_the_data_says.ipynb`) is the single authored source. New charts + the 0.75/0.25 blend + the 2025→2026 changelog live in tested engine modules the notebook imports. Executing the notebook saves all figures at 300 dpi and runs a consistency check. The PDF is built: execute → `jupyter nbconvert --to markdown --no-input` → prepend calibrated YAML front-matter → `pandoc --template=arxiv-template.latex --pdf-engine=xelatex`. `engine/report/narrative.py` (the internal auto-report) is **left untouched** — the preprint is a separate, notebook-driven artifact.
+**Architecture:** The notebook (`notebooks/2026_top_10_llm_update_what_the_data_says.ipynb`) is the single authored source. ALL charts (existing + 3 new) go through the tested `engine/report/narrative_charts.py` library at 300 dpi — the notebook's figure cells **import and call those functions** (they do NOT keep bespoke inline chart code); each figure cell calls `savefig()`/`plt.close()` (no `plt.show()`, no bare DataFrame display) and writes to `notebooks/preprint/figures/`. The 0.75/0.25 blend + 2025→2026 changelog live in tested engine modules the notebook imports. The PDF is built on a **copy** of the notebook (the committed `.ipynb` is never mutated): execute copy → `nbconvert --to markdown` with a `TagRemovePreprocessor` (strip ALL outputs) → prepend calibrated YAML front-matter → `pandoc --template=arxiv-template.latex --pdf-engine=xelatex`. `engine/report/narrative.py` (the internal auto-report) is **left untouched**.
 
 **Tech Stack:** Python 3.13 (conda-base-py kernel), numpy/pandas/matplotlib/seaborn/plotly/kaleido/scipy, jupyter+nbconvert, pandoc 3.9 + xelatex (TeXLive 2026), pytest/ruff/mypy.
 
@@ -19,7 +19,22 @@
 - Gates before every push: `uv run pytest -q`, `uv run ruff check .`, `uv run mypy engine tests`.
 - Work on branch `docs/arxiv-preprint`; never write into immutable `cycles/2026/`.
 
+## Premortem Remediations (BINDING — apply across all tasks)
+1. **[#1] One chart library.** The notebook's existing figures are currently bespoke inline code; refactor every figure cell to call `narrative_charts.py` (300 dpi). Bumping the library alone is insufficient — the notebook must be rewired to use it. (Amends T3, T8.)
+2. **[#2] Clean export.** `nbconvert --to markdown` MUST run a `TagRemovePreprocessor(remove_all_outputs_tags)` (or `--no-input` plus an outputs-strip) so no base64 images / DataFrame dumps leak into the markdown; figure cells produce no display output (savefig+close only). (Amends T5, T7, T8.)
+3. **[#3] Prose by one author.** The 20–30 pp prose spine (Tasks 6–10) is authored by a **single capable agent** (or the controller) against a short style guide (voice, boxed-sidebar format, no-slop rules, novice-first) — NOT fragmented across cheap subagents. Code tasks (T1–T5) stay as separate TDD subagents. (Amends the execution model.)
+4. **[#4] Number-source authority.** Published ranking + Cohen's κ ← the FROZEN `baselines/2026/` artifacts (these ARE the published 2026 values); robustness numbers ← `cycles/2026-rarr/results/`; the incident-only analysis figures ← `cycles/2026/`. The blend recompute (T2) MUST reproduce the methodology doc's blended order + movers (assert in T2 test + the T10 consistency cell). Supersedes the spec §5 "reconcile stale→current" line: the preprint reports the frozen/published values, not a fresh re-run of the 2026 ranking.
+5. **[#5] Execute-early smoke.** New Task 4.5 executes the CURRENT notebook as-is in the build env before any content is added.
+6. **[#6] Never mutate the committed notebook.** Build executes on a temp copy (or clears outputs pre-commit); the tracked `.ipynb` is committed with cleared outputs.
+7. **[#7] Separate figures dir.** Preprint figures → `notebooks/preprint/figures/` (not `notebooks/narrative/figures/`, which `narrative.py` owns).
+
 ---
+
+### Task 4.5: Execute-current-notebook smoke test (build-env validation) — *[remediation #5]*
+**Files:** none created; validates the environment before content work.
+- [ ] **Step 1:** in the build env, run `jupyter nbconvert --to notebook --execute --output /tmp/_smoke.ipynb notebooks/2026_top_10_llm_update_what_the_data_says.ipynb --ExecutePreprocessor.timeout=1200 --ExecutePreprocessor.kernel_name=python3`.
+- [ ] **Step 2:** Expected: exit 0. If it fails, resolve the kernel/deps mismatch (install `notebooks/requirements.txt` into the kernel; reconcile Python 3.13 conda-base-py vs the active env) BEFORE proceeding — do NOT author content against an un-executable notebook.
+- [ ] **Step 3:** record the working execute command + env in `notebooks/preprint/BUILD.md`; commit that note.
 
 ### Task 1: Robustness-validation JSON (Act-11 numbers, reproducible)
 
