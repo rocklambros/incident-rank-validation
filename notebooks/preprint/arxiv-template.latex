@@ -6,6 +6,8 @@ $if(beamerarticle)$
 $endif$
 \usepackage{xcolor}
 \usepackage[margin=1in]{geometry}
+\usepackage{wrapfig}
+\usepackage{float}
 \usepackage{amsmath,amssymb}
 $if(cancel)$
 \usepackage{cancel}
