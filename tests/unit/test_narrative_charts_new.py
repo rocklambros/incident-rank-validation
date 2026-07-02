@@ -377,6 +377,31 @@ class TestDumbbellCompact:
         assert h / w <= 0.90, f"dumbbell too tall: h/w={h/w:.2f}"
 
 
+@pytest.mark.integration
+class TestOOSTreemap:
+    """Fig 14: out-of-scope theme treemap, real cycle data.
+
+    Regression guard for the legibility upgrade (larger fonts, count+percent
+    labels) — the aspect ratio already passed before that change, so this
+    test only confirms the render doesn't regress the landscape shape.
+    """
+
+    def test_renders_landscape(self, figures_dir: Path) -> None:
+        from PIL import Image
+
+        from engine.report.narrative_charts import render_oos_treemap
+        from engine.report.narrative_data import load_narrative_data
+        render_oos_treemap(load_narrative_data(CYCLE), figures_dir)
+        out = figures_dir / "oos_treemap.png"
+        assert out.exists() and out.stat().st_size > 1024
+        # Context manager avoids a dangling FileIO handle — this repo's pytest
+        # config runs with filterwarnings = ["error"], which turns the
+        # ResourceWarning from an unclosed Image.open() into a hard failure.
+        with Image.open(out) as img:
+            w, h = img.size
+        assert 0.55 <= h / w <= 0.80, f"treemap aspect out of band: h/w={h / w:.2f}"
+
+
 class TestRidgePlotDegenerateColumn:
     """Fast unit test (synthetic data): a zero-variance lambda column must not
     crash render_ridge_plot. gaussian_kde(...)(xs) silently returns an

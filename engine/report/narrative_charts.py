@@ -727,7 +727,7 @@ def render_oos_treemap(data: dict[str, Any], figures_dir: Path) -> None:
             names=["No OOS data"], parents=[""], values=[1],
             title="Out-of-Scope Incidents (no data)",
         )
-        _plotly_write_image(fig, str(figures_dir / "oos_treemap.png"), width=2000, height=1200)
+        _plotly_write_image(fig, str(figures_dir / "oos_treemap.png"), width=1500, height=1050)
         return
 
     import pandas as pd
@@ -738,10 +738,19 @@ def render_oos_treemap(data: dict[str, Any], figures_dir: Path) -> None:
 
     fig = px.treemap(
         df, path=["parent", "cluster"], values="count",
-        title=f"Out-of-Scope Incidents by Theme ({sum(cluster_counts.values())} total)",
+        title=f"Out-of-scope incidents by theme ({sum(cluster_counts.values())} total)",
     )
-    fig.update_layout(width=2000, height=1200)
-    _plotly_write_image(fig, str(figures_dir / "oos_treemap.png"), width=2000, height=1200)
+    fig.update_traces(
+        textinfo="label+value+percent parent",
+        textfont_size=22,
+        insidetextfont=dict(size=22, color="white"),
+        marker=dict(line=dict(width=2, color="white")),
+    )
+    fig.update_layout(
+        width=1500, height=1050, margin=dict(t=90, l=10, r=10, b=10),
+        title_font_size=30, uniformtext=dict(minsize=16, mode="hide"),
+    )
+    _plotly_write_image(fig, str(figures_dir / "oos_treemap.png"), width=1500, height=1050)
 
 
 def render_sankey_confusion(data: dict[str, Any], figures_dir: Path) -> None:
