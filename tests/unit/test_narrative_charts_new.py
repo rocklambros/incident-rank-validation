@@ -9,6 +9,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pytest
 
 REPO = Path(__file__).resolve().parents[2]
@@ -356,3 +357,36 @@ class TestRidgeJoyplot:
         with Image.open(figures_dir / "ridge_plot.png") as img:
             w, h = img.size
         assert h / w <= 0.90, f"ridge too tall: h/w={h/w:.2f}"
+
+
+class TestRidgePlotDegenerateColumn:
+    """Fast unit test (synthetic data): a zero-variance lambda column must not
+    crash render_ridge_plot. gaussian_kde(...)(xs) silently returns an
+    all-zero density array for a constant column instead of raising, so the
+    normalization `dens / dens.max()` is a 0/0 divide that this repo's
+    filterwarnings=["error"] policy would otherwise turn into a hard crash.
+    """
+
+    def test_zero_variance_column_does_not_crash(self, figures_dir: Path) -> None:
+        from engine.report.narrative_charts import render_ridge_plot
+
+        rng = np.random.default_rng(42)
+        n_samples = 200
+        entry_ids = ["LLM01", "LLM02", "LLM03"]
+        lambda_samples = np.column_stack(
+            [
+                rng.normal(loc=0.4, scale=0.05, size=n_samples),
+                np.full(n_samples, 0.30),  # zero-variance column -> degenerate KDE
+                rng.normal(loc=0.6, scale=0.08, size=n_samples),
+            ]
+        )
+        data: dict[str, Any] = {
+            "lambda_samples": lambda_samples,
+            "entry_ids": entry_ids,
+        }
+
+        render_ridge_plot(data, figures_dir)
+
+        out = figures_dir / "ridge_plot.png"
+        assert out.exists()
+        assert out.stat().st_size > 1024, f"PNG too small: {out.stat().st_size} bytes"
