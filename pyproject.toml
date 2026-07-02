@@ -11,8 +11,8 @@ dependencies = [
   "numpyro==0.16.1",
   "jax==0.4.35",
   "jaxlib==0.4.35",
-  "click==8.1.7",
-  "tomli==2.0.2",
+  "click==8.1.8",
+  "tomli==2.4.1",
   "tomli-w==1.1.0",
   "httpx>=0.27,<1.0",
   "openpyxl>=3.1,<4.0",
@@ -25,14 +25,14 @@ dev = [
   "pytest-xdist==3.6.1",
   "mypy==1.13.0",
   "ruff==0.8.4",
-  "semgrep==1.99.0",
-  "cyclonedx-bom==4.6.1",  # upstream blocker for lxml>=6 (CVE-2026-41066); upgrade requires cyclonedx-bom>=5
+  "semgrep==1.168.0",      # bumped from 1.99.0: opentelemetry-proto>=1.37 allows protobuf>=5.29.6 (clears CVE-2026-0994)
+  "cyclonedx-bom==7.3.0",  # bumped from 4.6.1: cyclonedx-python-lib>=8 allows lxml>=6.1.0 (clears CVE-2026-41066)
   "setuptools==78.1.1",
 ]
-# Known transitive CVE blockers (deferred to a scoped dep-upgrade PR):
-#   lxml 5.4.0 (CVE-2026-41066, HIGH, XXE) — pinned by cyclonedx-python-lib<8 via cyclonedx-bom==4.6.1
-#   protobuf 4.25.9 (CVE-2026-0994, HIGH, recursion bypass) — pinned by opentelemetry-proto v1.25.0 via semgrep==1.99.0
-# Both require multi-package upgrades (cyclonedx-bom + semgrep) and re-validation; tracked as supply-chain residuals.
+# Resolved 2026-07-02: the two transitive HIGH CVEs previously deferred here are cleared by the
+# cyclonedx-bom and semgrep dev-tool upgrades above — the lock now resolves lxml>=6.1.0
+# (CVE-2026-41066, XXE) and protobuf>=5.29.6 (CVE-2026-0994, JSON recursion). Both are dev-only
+# tooling deps (SBOM / SAST); neither is imported by the runtime engine.
 
 [project.optional-dependencies]
 monitoring = ["wandb>=0.19,<1.0"]
