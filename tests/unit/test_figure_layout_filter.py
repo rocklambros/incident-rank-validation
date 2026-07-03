@@ -1,11 +1,20 @@
 from __future__ import annotations
 
+import shutil
 import subprocess
 from pathlib import Path
+
+import pytest
 
 PRE = Path(__file__).resolve().parents[2] / "notebooks" / "preprint"
 LUA = PRE / "figure-layout.lua"
 TEMPLATE = PRE / "arxiv-template.latex"
+
+# pandoc is a system tool, not a Python dep — skip the tests that invoke it when
+# it is absent (e.g. CI runners without pandoc), matching test_preprint_build.py.
+_requires_pandoc = pytest.mark.skipif(
+    shutil.which("pandoc") is None, reason="pandoc not available"
+)
 
 
 def _pandoc_latex(md: str) -> str:
@@ -19,6 +28,7 @@ def _pandoc_latex(md: str) -> str:
     return r.stdout
 
 
+@_requires_pandoc
 def test_wrap_becomes_wrapfigure() -> None:
     out = _pandoc_latex("![Cap with 50% sign](figures/x.png){width=42% wrap=right}\n")
     assert "\\begin{wrapfigure}{R}" in out
@@ -26,6 +36,7 @@ def test_wrap_becomes_wrapfigure() -> None:
     assert "50\\%" in out  # % escaped, not swallowed
 
 
+@_requires_pandoc
 def test_center_becomes_figure_htbp() -> None:
     out = _pandoc_latex("![Latent incidence (λ)](figures/y.png){width=72%}\n")
     assert "\\begin{figure}[htbp]" in out
