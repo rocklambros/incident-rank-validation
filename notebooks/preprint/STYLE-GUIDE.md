@@ -19,6 +19,8 @@ Audience: cybersecurity professionals, DS-novice to DS-expert. Voice: first-pers
 - **Vague attribution**: "studies show", "experts agree" — cite the specific artifact or number.
 - **Trailing participles**: "…, highlighting the importance of…", "…, reflecting a broader trend…".
 - **Em-dash spam** and **over-bolding**. Bold a term at most once (its definition).
+- **Sentence-initial conjunctions**: no sentence starts with and, but, so, or, yet, or because.
+- **Antithesis / contrast framing**: no "not X but Y", no "A rather than B" used as rhetorical contrast, no "reflects A, not B".
 
 ## Positive rules
 - Lead each paragraph with its claim; support with the number. Prefer concrete counts (6,639; κ=0.20; ρ=0.918) to adjectives.
@@ -36,6 +38,6 @@ New: rank_change_2025_2026, entry_expansion_map, rarr_robustness.
 - Corpus: 7,714 incidents snapshotted; 6,639 labeled (security 6,297 / ai-harm 342); Corpus B (OWASP ASI) 46 incidents, 26% label agreement.
 - Cohen's κ = 0.2029, 90% interval [-0.159, 0.565] (from `baselines/2026/rankings_baselines.json` `previous_ranking`).
 - 20 taxonomy entries = 10 incumbents (LLM01–10) + 6 NEW-* + 4 ROLL-*.
-- Blend: 0.75·vote_rank + 0.25·λ_rank; biggest movers: Improper Output Handling −5, Unbounded Consumption +4, Excessive Agency +3.
+- Blend: probabilistic, 0.75 on the vote / 0.25 on the data, computed in score space with a sum-prevalence fold and a frame-blind drop; the result groups into three tiers — a co-leading pair (LLM01, LLM02), a tied band (LLM06, LLM03, LLM04), and an unordered tail. The only stated mover is LLM06, +3.
 - Robustness (from `cycles/2026-rarr/results/robustness_validation.json`): floor Spearman ρ=0.918 vs truth; no frontier model beats it (deltas' intervals cross 0); corpus-reweighted floor ρ=0.971. Bake-off winner = None. deepseek-v3 balanced accuracy 0.711 < floor 0.863.
 - Recall-correction: cite the JSON's values; disclose the nuance — the correction removes the small specific-class distributional gap (interval crosses 0), but it CANNOT recover the floor's 0% out-of-scope recall (a classifier can't be corrected for a class it never predicts), so frontier models are genuinely better at out-of-scope detection. This affects magnitudes, not the rank order.
