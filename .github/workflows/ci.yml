@@ -62,3 +62,25 @@ jobs:
           assert sorted(a["frame_blind"]) == sorted(b["frame_blind"]), "frame_blind set differs"
           print("Cross-platform synthetic outputs agree (M5).")
           PY
+
+  preprint-guard:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+        with: { version: "0.5.11" }
+      - run: uv sync --frozen --extra narrative --extra preprint
+      - name: Register kernel
+        run: uv run python -m ipykernel install --user --name preprint-build
+      - name: Engine + cross-implementation tests
+        run: uv run pytest tests/unit/test_probabilistic_blend.py -q
+      - name: Execute notebook guard
+        shell: bash
+        run: |
+          set -o pipefail
+          uv run jupyter nbconvert --to notebook --execute --stdout \
+            --ExecutePreprocessor.kernel_name=preprint-build \
+            notebooks/2026_top_10_llm_update_what_the_data_says.ipynb \
+            | tee /tmp/nb.out | grep -q "consistency OK"
