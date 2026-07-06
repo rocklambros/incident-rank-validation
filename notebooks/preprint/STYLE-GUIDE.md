@@ -32,7 +32,7 @@ incident corpus; classifier; precision; recall; gold set; blind labeling; Cohen'
 
 ## Figure filenames (prose `![caption](figures/<name>.png){width=85%}` MUST match what the code cells save, into `notebooks/preprint/figures/`)
 Existing (re-saved at 300 dpi): stratum_bar, tier_donut, confusion_heatmap, precision_bars, precision_posteriors, ridge_plot, dumbbell_chart, plotly_rankings, bump_chart, ci_overlap, paired_dots, theme_bars_llm09, theme_bars_new_wla, oos_treemap, sankey_confusion, confusion_matrix_3x3.
-New: rank_change_2025_2026, entry_expansion_map, rarr_robustness.
+New: entry_expansion_map, rarr_robustness, blend_position_intervals, blend_top_k_probs. (rank_change_2025_2026 slopegraph retired in the probabilistic relock.)
 
 ## Key numbers (cite from the artifacts; do not memorize/transcribe — the consistency cell guards them)
 - Corpus: 7,714 incidents snapshotted; 6,639 labeled (security 6,297 / ai-harm 342); Corpus B (OWASP ASI) 46 incidents, 26% label agreement.
