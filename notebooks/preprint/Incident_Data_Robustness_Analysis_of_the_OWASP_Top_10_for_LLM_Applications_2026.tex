@@ -1228,6 +1228,13 @@ would claim precision the data does not carry. The tiers report only
 what the spread supports.
 \end{quote}
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.62\textwidth]{figures/blend_top_k_probs.png}
+\caption{The probability each risk reaches the top three and the top five, per
+tier. The co-leading pair sits near certainty; the tail sits near zero.}
+\end{figure}
+
 A simpler rank-space blend, which uses only the order of each witness
 and discards the magnitudes, gives nearly the same bulk ordering
 (Kendall's tau computed at run time, about 0.87). The one place the two
