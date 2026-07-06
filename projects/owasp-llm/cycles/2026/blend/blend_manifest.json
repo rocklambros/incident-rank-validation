@@ -1,0 +1,42 @@
+{
+  "artifact": "blend_inputs_manifest",
+  "cycle": 2026,
+  "inputs": {
+    "lambda_samples": {
+      "path": "projects/owasp-llm/cycles/2026/infer/lambda_samples.npy",
+      "sha256": "5f655cc687c321f0a7432197317a66cc8fe23074a46820078ae4e9d5b26efb07",
+      "shape": [
+        16000,
+        20
+      ]
+    },
+    "vote_rank_samples": {
+      "path": "projects/owasp-llm/baselines/2026/vote_rank_samples.npy",
+      "sha256": "04b236ba9f0c8deae135934ac93c296d37b11348d993d94a33e9f9aa92c5013e",
+      "shape": [
+        5000,
+        20
+      ]
+    },
+    "inference_summary": {
+      "path": "projects/owasp-llm/cycles/2026/infer/inference_summary.json",
+      "sha256": "6762bfbfa0bd9db731f7b26dafc8726313a079ac8bc8a40a099941837187a786"
+    },
+    "rankings_baselines": {
+      "path": "projects/owasp-llm/baselines/2026/rankings_baselines.json",
+      "sha256": "afc8eb99f6af017b859c64fe4d262dde96ee0f0ba974e8d30d3ef99c4d27d528"
+    },
+    "taxonomy": {
+      "path": "projects/owasp-llm/cycles/2026/taxonomy/taxonomy.json",
+      "sha256": "9923cf610f9df1d61c96dd4f98d8a12548503dd3aae1f9c55509985a7dca6664"
+    },
+    "vote_entry_ids": {
+      "path": "tests/unit/fixtures/vote_entry_ids_2026.json",
+      "sha256": "17ab54f772e8c605ab4568e2151634929a9b7035d2c3c215dc7a31f3dda60ff1"
+    },
+    "prototype_reference": {
+      "path": "engine/decide/blend_prototype_reference.py",
+      "sha256": "fde7c880f4ac6de53f91046e4e2ca5fdd2cff0e10144f127e804bce360794573"
+    }
+  }
+}
