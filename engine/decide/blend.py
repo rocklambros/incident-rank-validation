@@ -97,3 +97,82 @@ def load_inputs(manifest_path: Path) -> BlendInputs:
         raise ValueError(f"frame-blind drift: {frame_blind} != {EXPECTED_FRAME_BLIND}")
 
     return BlendInputs(lam, vote, entry_ids, rollup, frame_blind)
+
+
+@dataclass(frozen=True)
+class BlendResult:
+    order: tuple[str, ...]
+    mean_position: dict[str, float]
+    p_top3: dict[str, float]
+    p_top5: dict[str, float]
+    interval: dict[str, tuple[int, int]]
+    tiers: dict[str, tuple[str, ...]]
+
+
+def _zscore(a: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    std = a.std(axis=1, keepdims=True)
+    std = np.where(std == 0.0, 1.0, std)
+    z: npt.NDArray[np.float64] = (a - a.mean(axis=1, keepdims=True)) / std
+    return z
+
+
+def _fold(
+    inputs: BlendInputs, lam_p: npt.NDArray[np.float64], vote_p: npt.NDArray[np.float64]
+) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+    idx = {e: i for i, e in enumerate(inputs.entry_ids)}
+    lam = {e: lam_p[:, idx[e]].copy() for e in INCUMBENTS}
+    vote = {e: vote_p[:, idx[e]].copy() for e in INCUMBENTS}
+    for child, parent in inputs.rollup.items():
+        lam[parent] = lam[parent] + lam_p[:, idx[child]]          # sum-prevalence
+        vote[parent] = np.minimum(vote[parent], vote_p[:, idx[child]])  # min-rank
+    lam_arr = np.stack([lam[e] for e in INCUMBENTS], axis=1)
+    vote_arr = np.stack([vote[e] for e in INCUMBENTS], axis=1)
+    return lam_arr, vote_arr
+
+
+def _positions(
+    inputs: BlendInputs, n: int, seed: int, measurable_z: bool = False
+) -> npt.NDArray[np.int64]:
+    rng = np.random.default_rng(seed)
+    li = rng.integers(0, inputs.lambda_samples.shape[0], size=n)
+    vi = rng.integers(0, inputs.vote_rank_samples.shape[0], size=n)
+    lam_arr, vote_arr = _fold(inputs, inputs.lambda_samples[li], inputs.vote_rank_samples[vi])
+    fb_mask = np.array([e in inputs.frame_blind for e in INCUMBENTS])
+    if measurable_z:
+        keep = ~fb_mask
+        ds = np.zeros_like(lam_arr)
+        ds[:, keep] = _zscore(lam_arr[:, keep])
+        data_score = ds
+    else:
+        data_score = _zscore(lam_arr)
+    vote_score = _zscore(-vote_arr.astype(np.float64))
+    w_vote = np.where(fb_mask, 1.0, W_VOTE)
+    w_data = np.where(fb_mask, 0.0, 1.0 - W_VOTE)
+    blended = w_vote * vote_score + w_data * data_score
+    order_idx = np.argsort(-blended, axis=1, kind="stable")  # (score desc, entry_id asc)
+    pos = np.empty_like(order_idx)
+    pos[np.arange(n)[:, None], order_idx] = np.arange(1, 11)[None, :]
+    return pos
+
+
+def _summarize(pos: npt.NDArray[np.int64]) -> BlendResult:
+    col = {e: i for i, e in enumerate(INCUMBENTS)}
+    mean = {e: float(pos[:, col[e]].mean()) for e in INCUMBENTS}
+    order = tuple(sorted(INCUMBENTS, key=lambda e: (mean[e], e)))
+    p3 = {e: float((pos[:, col[e]] <= 3).mean()) for e in INCUMBENTS}
+    p5 = {e: float((pos[:, col[e]] <= 5).mean()) for e in INCUMBENTS}
+    interval = {
+        e: (int(np.percentile(pos[:, col[e]], 5)), int(np.percentile(pos[:, col[e]], 95)))
+        for e in INCUMBENTS
+    }
+    tiers = {"pair": order[:2], "band": order[2:5], "tail": order[5:]}
+    return BlendResult(order, mean, p3, p5, interval, tiers)
+
+
+def blend(inputs: BlendInputs, n: int = DEFAULT_N, seed: int = SEED) -> BlendResult:
+    return _summarize(_positions(inputs, n, seed))
+
+
+def _blend_measurable_z(inputs: BlendInputs, n: int = DEFAULT_N, seed: int = SEED) -> BlendResult:
+    """Disclosed alternative: z-score over the measurable entries only (sensitivity check)."""
+    return _summarize(_positions(inputs, n, seed, measurable_z=True))
