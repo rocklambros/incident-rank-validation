@@ -45,3 +45,9 @@ Submit the generated LaTeX **source** (`.tex` + `figures/`), not PDF-only, so ar
 - Kernel: use `preprint-build` (uv env); anaconda `python3` kernel is crippled (kaleido/jax/tf stubbed).
 - Installed: jinja2 (pandas .style). fancyhdr via tlmgr.
 - Current notebook executes through data-load + matplotlib cells; the 3 INLINE plotly cells fail on plotly-6/kaleido-1 API change. FIX = remediation #1 (refactor chart cells to narrative_charts.py `_plotly_write_image`, which works) in T8. Env otherwise clean.
+
+## Toolchain versions used for the adopted build (2026-07-05)
+
+- pandoc: pandoc 3.8.2
+- xelatex: XeTeX 3.141592653-2.6-0.999997 (TeX Live 2025)
+- Build shim: `notebooks/preprint/document-metadata.latex` supplies the pandoc partial that pandoc 3.8.2 no longer ships (reproduces the empty output of the prior build).
