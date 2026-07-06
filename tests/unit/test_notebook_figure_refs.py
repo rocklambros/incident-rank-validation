@@ -26,14 +26,17 @@ def test_plotly_rankings_fully_removed() -> None:
     assert "interactive companion" not in a
 
 
-def test_slopegraph_in_blend_section_not_part1() -> None:
+def test_ranking_figures_in_blend_section() -> None:
+    # The probabilistic relock retired the rank_change slopegraph and the interim
+    # "Blended #" table; the ranking is now shown by the two uncertainty figures.
     srcs = _sources()
     blend = [s for s in srcs if "The 2026 blended Top 10" in s][0]
     part1 = [s for s in srcs if "What changed from 2025 to 2026" in s][0]
-    assert "rank_change_2025_2026.png" in blend
-    assert "| Blended # |" not in blend  # table removed
-    assert "under the figure" in blend  # reworded from "under the table"
-    assert "rank_change_2025_2026.png" not in part1  # moved out of Part I
+    assert "blend_position_intervals.png" in blend
+    assert "blend_top_k_probs.png" in blend
+    assert "| Blended # |" not in blend  # interim table removed
+    assert "rank_change_2025_2026.png" not in _all()  # slopegraph fully retired
+    assert "blend_position_intervals.png" not in part1  # ranking figures live in the blend section
 
 
 def test_layout_attributes_applied() -> None:
@@ -46,7 +49,8 @@ def test_layout_attributes_applied() -> None:
         "theme_bars_llm09.png": "width=42% wrap=left",
         "sankey_confusion.png": "width=90%",
         "rarr_robustness.png": "width=48% wrap=left",
-        "rank_change_2025_2026.png": "width=92%",
+        "blend_position_intervals.png": "width=70% wrap=left",
+        "blend_top_k_probs.png": "width=62%",
     }
     for fname, attr in expected.items():
         assert f"{fname}){{{attr}}}" in a, f"missing/incorrect attrs for {fname}"
