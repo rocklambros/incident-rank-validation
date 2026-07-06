@@ -8,6 +8,7 @@ author:
   - name: "Steve Wilson"
     affiliation: "OWASP GenAI Security Project — Top 10 for LLM Applications, Founder & Lead"
 numbersections: true
+method: probabilistic-blend
 abstract: |
   The OWASP Top 10 for LLM Applications ranks the risks that a community of
   security practitioners judges most important. We ask a narrower question: checked
