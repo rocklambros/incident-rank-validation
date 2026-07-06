@@ -8,6 +8,7 @@ author:
   - name: "Steve Wilson"
     affiliation: "OWASP GenAI Security Project — Top 10 for LLM Applications, Founder & Lead"
 numbersections: true
+method: probabilistic-blend
 abstract: |
   The OWASP Top 10 for LLM Applications ranks the risks that a community of
   security practitioners judges most important. We ask a narrower question: checked
@@ -64,7 +65,7 @@ A second corpus corroborates the first at smaller scale. The OWASP Agentic Secur
 
 The 2026 list comes from neither signal alone. It comes from a weighted blend of the two. The expert signal is a practitioner survey: about 29 respondents scored each candidate risk on importance, and the scores aggregate to a median rank per entry. The data signal is the incident-derived rank that Part II builds. The blend combines them at fixed weights.
 
-> **Sidebar — the 0.75 / 0.25 blend.** A blend merges two rankings into one by weighted average. Here the expert vote gets three-quarters of the weight and the incident data one quarter. Concretely, blended score = 0.75 × (expert rank) + 0.25 × (data rank), and the risks are re-sorted from lowest score (highest priority) up. A risk the experts rank third and the data ranks eleventh lands at 0.75 × 3 + 0.25 × 11 = 5.0. The weights are a deliberate choice, not a fitted parameter.
+The two witnesses are combined in score space. Each risk's expert rank and incident rate are put on a common scale, weighted three-quarters to the vote and one quarter to the data, and blended per posterior draw. On the data side the rates of a rolled-up child add to their parent, since incidents accumulate. Three risks whose incident recall the corpus cannot estimate — Data and Model Poisoning, Vector and Embedding Weaknesses, and Unbounded Consumption — take their position from the vote alone. The result is a distribution over positions, reported as three tiers in the final section.
 
 The weighting is deliberately lopsided, for a reason this report builds toward. The list is a practitioner-consensus artifact, so the consensus leads. The incident data is a useful but noisy corrective: it under-detects unevenly, it is drawn from whatever reaches public databases, and it agrees with the expert ranking only weakly. At a quarter weight, the data is strong enough to move a risk a full tier when the gap between the two signals is large, and too weak to overturn the consensus on one imperfect corpus. That balance is the point of the split: the data tugs, the consensus holds.
 
@@ -74,7 +75,7 @@ The 2026 cycle works from a field of 20 candidate entries, not 10. Ten are incum
 
 ![The 2026 candidate field: ten incumbents, six new candidates, and four rollups, each rollup arrowed to the incumbent it folds into.](figures/entry_expansion_map.png){width=85%}
 
-Blending the two signals reorders the ten incumbents from their published 2025 positions. Three moves are large. Improper Output Handling falls five places, the biggest drop on the board. Unbounded Consumption rises four. Excessive Agency rises three. The rest move by a place or hold. The slopegraph in the blended Top-10 section traces every incumbent from its 2025 position to its blended 2026 position.
+Blending the two signals reorders the ten incumbents from their published 2025 positions, and the reordering settles into the three tiers this report uses throughout: a co-leading pair, a tied middle band, and a wide tail. Excessive Agency is the one entry with a clear stated move, entering the tied band. Every other incumbent's position shifts inside its tier or holds; the model reports that movement as a spread of plausible ranks per risk. The position chart in the blended Top-10 section shows every incumbent's tier and its range of plausible placements.
 
 # Part II — What the Incident Data Says
 
@@ -199,6 +200,8 @@ Each of the five mismatches has a plausible cause. Reading them is more useful t
 
 **LLM09 (Misinformation): incident #2, expert #13.** The corpus carries a large volume of deepfake and AI-generated disinformation from the AIAAIC harm database. Experts may rank it lower because the category overlaps others (NEW-WLA, ROLL-CMSB) and because many of these incidents describe harm produced by an AI rather than a vulnerability inside an LLM. Act 9B examines that overlap.
 
+Misinformation is the widest disagreement between the two witnesses. The incident record ranks it near the top; the expert vote ranks it near the bottom. The engine's concordance flag puts the probability that the two signals disagree at 99 percent. That number quantifies disagreement between the two signals. It does not quantify how underrated the risk is, and the incident signal behind it rests on the ai-harm stratum, whose precision the corpus does not measure directly. Read it as the entry the incident record most disputes, and the one a better-measured corpus is most likely to move.
+
 **NEW-PMP (Persistent Memory Poisoning) and NEW-MTIE (MCP Tool Interface Exploitation): expert top-5, almost no incidents.** These are emerging threats whose public incident record has not caught up. If the list exists to warn practitioners, expert signal should outweigh incident counts for threats that are new by definition.
 
 **NEW-WLA (Weaponized LLM Abuse): 863 incidents, expert #17.** The large count follows from a broad definition that absorbs AI-generated disinformation, synthetic-media abuse, and deepfake harm. Experts rank it low because most of these describe harm from an AI system rather than an exploitable weakness in an LLM.
@@ -277,23 +280,27 @@ The conclusion of Part III is narrow and firm. No frontier classifier reorders t
 
 ## The 2026 blended Top 10
 
-The blend produces the order below for the ten incumbents, each with its move from the published 2025 position. Every position is computed by the code in this section from the committed vote and incidence ranks; the prose reads the result.
+The blend combines two witnesses into a distribution over each risk's final position. The expert vote carries three-quarters weight, the incident data one quarter. Each risk gets a spread of plausible positions, and the ten fall into three tiers.
 
-![Published 2025 order to blended 2026 order for the ten incumbents; orange marks the large movers, dashed lines mark no-change.](figures/rank_change_2025_2026.png){width=92%}
+> **Sidebar — distribution over positions.** Each posterior draw pairs one sample of the incident rates with one sample of the expert ranking, blends them, and reads off a position. Sixteen thousand draws give a distribution over positions for each risk, so a firm placement and a coin flip look different on the page.
 
-Agreement is the strongest signal. LLM02 (Sensitive Information Disclosure) sits first because both witnesses put it at the top: the experts rank it second, the incident data ranks it second. Four of the top five blended entries are agreements or near-agreements between the vote and the data, and those are the positions to trust most.
+![Each risk at its mean position, with a bar spanning the 5th to 95th percentile. Three tiers read directly: a tight pair, an overlapping band, and a wide tail.](figures/blend_position_intervals.png){width=70% wrap=left}
 
-The consensus leads where the data sits mid-pack. Prompt Injection is the clearest case. Practitioners rank it first; the incident record ranks it twelfth of twenty. At three-quarters weight the vote keeps it second, nudged down one place rather than dropped. This is the 0.75 / 0.25 split behaving as designed: the data tugs, the consensus holds.
+**The co-leading pair.** Sensitive Information Disclosure and Prompt Injection hold the top, each a near-certain top-three risk (P(top-3) 0.99 and 0.95). The two blends disagree on which ranks first: the simpler rank-space blend puts Sensitive Information Disclosure ahead, the probabilistic blend puts Prompt Injection ahead, and their intervals overlap. We report them as co-leading, with no method-independent first place.
 
-The data flags what the consensus underweights. Misinformation is the widest gap on the board — near the bottom of the vote, near the top of the incident data, with the engine flagging the disagreement at high probability. The blend still seats it eighth because the data carries a quarter weight. The flag, not the final position, is the point: this is the entry the incident record says is most underrated, and the one most likely to move once the measurement improves.
+**The tied band.** Excessive Agency, Supply Chain, and Data and Model Poisoning form a middle band with overlapping intervals. Excessive Agency moves up into the band from its published position, the one clear mover here.
 
-Two structural caveats sit under the figure. Three entries — LLM04, LLM08, LLM10 — are frame-blind, so their data rank is soft by construction. And the overall agreement between the vote and the data is weak (Cohen's κ ≈ 0.20, interval crossing zero). The blended order is a defensible working ranking that reconciles two imperfect signals, not a verdict from either one.
+**The tail.** Unbounded Consumption sits at the top of the tail, placed by the expert vote alone (its incident recall the corpus cannot estimate), and it reaches the top five in about a third of the draws. The remaining four — Misinformation, Hidden Context Exposure, Vector and Embedding Weaknesses, Improper Output Handling — reach the top five in under one draw in twenty. We present the tail as a group and do not report an order inside it.
+
+> **Sidebar — why a distribution beats a single rank number.** A single rank hides its own uncertainty. Two adjacent tail positions differ by a fraction of a place across the draws, so a printed rank would claim precision the data does not carry. The tiers report only what the spread supports.
+
+A simpler rank-space blend, which uses only the order of each witness and discards the magnitudes, gives nearly the same bulk ordering (Kendall's tau computed at run time, about 0.87). The one place the two methods disagree is the top, which is why we present the top two as a pair.
 
 ## Glossary
 
 Every term defined in a sidebar, collected here for reference.
 
-**0.75 / 0.25 blend.** The rule that combines the two rankings into one: blended score = 0.75 × (expert rank) + 0.25 × (data rank), re-sorted lowest-first. The expert vote leads at three-quarters weight; the incident data enters as a quarter-weight corrective.
+**0.75 / 0.25 blend.** The rule that combines the expert vote and the incident data into one ranking. Each risk's expert rank and incident rate are placed on a common scale (a z-score) and combined at fixed weights, three-quarters vote and one quarter data, once per posterior draw. Sorting the resulting scores highest-first for each draw produces a distribution over positions for every risk, summarized here as three tiers.
 
 **Balanced accuracy.** Accuracy that averages the recall within each class, so a rare category counts as much as a common one. It avoids the trap of plain accuracy, which a model can inflate by always guessing the common class. On this task it runs from about 0.5 (chance) to 1.0 (perfect).
 
@@ -307,9 +314,17 @@ Every term defined in a sidebar, collected here for reference.
 
 **Credible interval.** The Bayesian range of plausible values for a quantity. A 90% credible interval holds 90% of the posterior's probability, so the true value sits inside it with 90% probability given the model and data. Wide means uncertain.
 
+**Credible interval over a rank.** A credible interval computed on an entry's rank position, the same idea used elsewhere in this report for a count-scale quantity like λ. It gives the middle span of plausible ranks a risk could hold under the model and the data. The interval assumes a single correct rank is the value it brackets, an assumption that holds less firmly for the three frame-blind entries, whose rank comes from the vote alone.
+
+**Distribution over positions.** The spread of positions a risk can land at across many posterior draws. Each draw pairs one incident-rate sample with one expert-rank sample, blends them, and places the risk at a position. Collecting the position from all 16,000 draws produces a full spread for each risk, from a tight cluster near one place to a wide scatter across many.
+
+**Frame-blind drop.** The adjustment applied to the three frame-blind entries (Data and Model Poisoning, Vector and Embedding Weaknesses, Unbounded Consumption): their weight shifts from three-quarters vote and one quarter data to full vote weight, so the blend places them from the expert rank alone. Their incident rates still enter the shared scale used to score every other risk. The shift changes where a frame-blind entry lands, and the report states that plainly.
+
 **Gold set.** A batch of records labeled carefully by a human to serve as the answer key — here, 1,200 adjudicated incidents used both to calibrate the classifier and as the ground truth for the robustness check.
 
 **Incident corpus.** A fixed, documented collection of incident records assembled for analysis. Ours is a dated snapshot of publicly reported LLM-security incidents, each a short text description, drawn from public databases.
+
+**Kendall's tau.** A second measure of how well two rankings agree on order, alongside Spearman's ρ. It checks every pair of entries and counts how often the two rankings place them in the same relative order, turning that count into a score from −1 (every pair reversed) through 0 (no relationship) to +1 (every pair agrees). This report uses it to compare the probabilistic blend's bulk order against a simpler rank-space blend that keeps only the ranks and discards the underlying scores.
 
 **Latent incidence (λ).** The true, unobserved underlying rate at which incidents of a category occur, as distinct from the raw count the classifier reported. The model infers λ from the noisy counts after correcting for precision and recall.
 
@@ -319,13 +334,21 @@ Every term defined in a sidebar, collected here for reference.
 
 **Out-of-scope.** The category for incidents that belong to none of the 20 taxonomy entries: a real AI harm that is not a vulnerability in a large language model. Marking an incident out of scope is a correct classification.
 
+**P(top-k).** Across the 16,000 posterior draws, the share that place a risk within the top k positions (k = 3 or 5 in this report). A risk that is near-certain to rank highly shows a P(top-3) close to 1. The three-quarters vote weight dominates this probability wherever the vote and the data point the same direction, so a high P(top-k) usually traces back to a strong expert-vote placement that the incident data does not contradict.
+
 **Precision.** Of the incidents the classifier files under a category, the fraction that truly belong there. Low precision means most of what lands in a category does not belong to it.
 
 **Prior and posterior.** The prior is what the model assumes before seeing this data; the posterior is the updated belief after combining prior and data. The posterior is a distribution of plausible values, not a single number.
 
+**Probabilistic blend.** The method this report uses for the 2026 ranking: combine the incident-rate posterior and the expert-vote posterior in score space, once per posterior draw, and read off a position for each risk. Repeating this over 16,000 draws produces a distribution over positions for each risk. The report summarizes that distribution as a mean position, a P(top-k), a credible interval over each rank, and three tiers.
+
 **Recall.** Of the incidents that truly belong to a category, the fraction the classifier finds. A classifier can have high precision and low recall, or the reverse; the two are measured separately.
 
 **Spearman ρ (rho).** How well two rankings agree on order, ignoring exact scores. It runs from −1 (reversed) through 0 (unrelated) to +1 (identical order).
+
+**Sum-prevalence fold.** The rule for combining a rolled-up child entry's incident rate into its parent on the data axis: the child's rate adds to the parent's, so incidents recorded against the child still count toward the parent's total. Four entries fold this way in the 2026 blend. The vote axis folds by a separate rule: the parent keeps the better of its own rank and its child's rank, since votes do not add the way rates do.
+
+**Tied tier.** A group of entries whose plausible-position intervals overlap enough to fold into one block for reporting purposes. The 2026 blend sorts the ten incumbents into three such tiers: a co-leading pair at the top, a tied band in the middle, and a wide tail with no defended order inside it. Membership in a tier comes from the posterior draws themselves, a data-driven grouping.
 
 ## Limitations and Independent-Review Status
 
