@@ -53,3 +53,48 @@ def test_load_inputs_rejects_frame_blind_drift(tmp_path: Path) -> None:
     bad_m.write_text(json.dumps(src))
     with pytest.raises(ValueError, match="frame-blind drift"):
         load_inputs(bad_m)
+
+
+def test_blend_reproduces_approved_order() -> None:
+    from engine.decide.blend import blend
+    r = blend(load_inputs(MANIFEST))
+    assert r.order == (
+        "LLM01", "LLM02", "LLM06", "LLM03", "LLM04",
+        "LLM10", "LLM09", "LLM07", "LLM08", "LLM05",
+    )
+    assert r.tiers["pair"] == ("LLM01", "LLM02")
+    assert r.tiers["band"] == ("LLM06", "LLM03", "LLM04")
+    assert r.tiers["tail"] == ("LLM10", "LLM09", "LLM07", "LLM08", "LLM05")
+
+
+def test_blend_uncertainty_numbers() -> None:
+    from engine.decide.blend import blend
+    r = blend(load_inputs(MANIFEST))
+    assert r.p_top3["LLM01"] == pytest.approx(0.99, abs=0.02)
+    assert r.p_top3["LLM02"] == pytest.approx(0.95, abs=0.03)
+    assert r.p_top5["LLM04"] == pytest.approx(0.76, abs=0.03)
+    assert r.mean_position["LLM03"] < r.mean_position["LLM04"]
+    assert r.p_top5["LLM10"] == pytest.approx(0.33, abs=0.05)  # borderline tail
+    for e in ("LLM09", "LLM07", "LLM08", "LLM05"):
+        assert r.p_top5[e] < 0.05  # deep blur
+
+
+def test_fold_sum_prevalence_and_min_rank() -> None:
+    # Exercise the real _fold: LLM01 folds in ROLL-CMSB (sum on data, min on vote).
+    from engine.decide.blend import _fold
+    inp = load_inputs(MANIFEST)
+    idx = {e: i for i, e in enumerate(inp.entry_ids)}
+    lam_arr, vote_arr = _fold(inp, inp.lambda_samples, inp.vote_rank_samples)
+    assert lam_arr[0, 0] == pytest.approx(
+        inp.lambda_samples[0, idx["LLM01"]] + inp.lambda_samples[0, idx["ROLL-CMSB"]])
+    assert vote_arr[0, 0] == min(
+        inp.vote_rank_samples[0, idx["LLM01"]], inp.vote_rank_samples[0, idx["ROLL-CMSB"]])
+
+
+def test_zpopulation_alternative_bounded() -> None:
+    # Order-neutral, P(top-k) shift under measurable-only z is small (< 0.05).
+    from engine.decide.blend import _blend_measurable_z, blend
+    r10 = blend(load_inputs(MANIFEST))
+    r7 = _blend_measurable_z(load_inputs(MANIFEST))
+    assert r10.order == r7.order
+    assert max(abs(r10.p_top5[e] - r7.p_top5[e]) for e in INCUMBENTS) < 0.05
