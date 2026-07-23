@@ -27,7 +27,7 @@ dev = [
   "ruff==0.8.4",
   "semgrep==1.168.0",      # bumped from 1.99.0: opentelemetry-proto>=1.37 allows protobuf>=5.29.6 (clears CVE-2026-0994)
   "cyclonedx-bom==7.3.0",  # bumped from 4.6.1: cyclonedx-python-lib>=8 allows lxml>=6.1.0 (clears CVE-2026-41066)
-  "setuptools==78.1.1",
+  "setuptools==83.0.0",
 ]
 # Resolved 2026-07-02: the two transitive HIGH CVEs previously deferred here are cleared by the
 # cyclonedx-bom and semgrep dev-tool upgrades above — the lock now resolves lxml>=6.1.0
