@@ -147,8 +147,8 @@ The structure:
   \textbf{Part III} stress-tests the ranking against four frontier
   classifiers and a ground-truth check.
 \item
-  \textbf{Limitations}, \textbf{Glossary}, and \textbf{Scope} close the
-  report.
+  \textbf{Glossary}, \textbf{Limitations}, \textbf{Data and Code
+  Availability}, and \textbf{Scope} close the report.
 \end{itemize}
 
 \section{Part I --- The List and How It's
@@ -1211,6 +1211,47 @@ external publication would require an independent adjudicated gold set,
 independent statistical review, and a broader corpus that narrows the κ
 interval. Until then the blended ranking is a working reconciliation of
 two imperfect signals, offered for scrutiny.
+
+\subsection{Data and Code
+Availability}\label{data-and-code-availability}
+
+The engine, the analysis notebook, and the artifacts behind every number
+in this report are public at
+https://github.com/rocklambros/incident-rank-validation . The repository
+licenses in three parts: the software under Apache-2.0, this report and
+the notebooks under CC BY-SA 4.0, and the data artifacts under CC BY
+4.0. Every file falls into exactly one part, and the repository NOTICE
+is the authoritative statement.
+
+\textbf{What is published.} The labeled corpus holds 6,639 records in
+\texttt{projects/owasp-llm/cycles/2026/classify/labeled\_incidents.json},
+each carrying its taxonomy entry, the classifier's confidence and
+rationale, and its stratum. Incident text for 6,142 of those records is
+committed in \texttt{calibration/llm\_prelabels.jsonl} alongside the
+three-model votes. The gold set is published in full at
+\texttt{calibration/adjudicated\_goldset.jsonl}: all 1,200 incidents,
+with the reviewer's blind label, the model consensus, and the final
+adjudication as separate fields, so the disagreement rates reported
+above can be recomputed rather than taken on trust. Per-incident
+predictions from the four frontier classifiers in Part III are under
+\texttt{cycles/2026-rarr/classify/seq/}.
+
+\textbf{What reproduces.} The pre-registration manifest
+(\texttt{cycles/2026/prereg/manifest.json}) fixes the model
+specification, the taxonomy hash, the corpus snapshot hash, and the PRNG
+seed, all recorded before any result was read. Posteriors, precision
+verification, and the blended ranking are committed as computed
+artifacts, so every figure and statistic regenerates from the repository
+without re-running the classifier against paid APIs. Build instructions
+are in \texttt{notebooks/preprint/BUILD.md}.
+
+\textbf{What is not published.} Incident records carry internal
+identifiers of the form \texttt{INC-04490}, not upstream CVE, GHSA, OSV,
+or AIAAIC keys. A reader cannot join these labels back to the source
+databases record by record. Text is absent for 497 of the labeled
+records. The source databases retain their own terms and remain the
+authority for the underlying incident descriptions; what we redistribute
+is derived labels and snapshots.
 
 \subsection{Scope and Authority}\label{scope-and-authority}
 
