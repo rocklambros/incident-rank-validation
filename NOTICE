@@ -2,11 +2,17 @@ incident-rank-validation
 Copyright 2026 Rock Lambros
 
 This repository is licensed in three parts, by what the file is rather than
-where it sits. Each part is stated in full below.
+where it sits. Each part is stated in full below, and every tracked file falls
+into exactly one of them.
 
 ---
 
-Software (engine/, tools/, scripts/, tests/)
+Software
+
+Source code, tests, packaging metadata, scanner configuration, CI workflows,
+and git hooks: engine/, tools/, scripts/, tests/, .github/, .githooks/,
+pyproject.toml, uv.lock, .gitignore, .gitleaks.toml, .semgrep.yml, and the
+reproduce.py helpers vendored beside the baselines under projects/.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -24,8 +30,11 @@ Full text: LICENSE-CODE
 
 ---
 
-Published content (the preprint and notebooks under notebooks/, the
-documentation under docs/, and the figures they reference)
+Published content
+
+The preprint and notebooks under notebooks/, the documentation under docs/,
+the figures they reference, and the repository's own prose: README.md,
+CONTRIBUTING.md, SECURITY.md, and this NOTICE.
 
 Licensed under the Creative Commons Attribution-ShareAlike 4.0 International
 License (CC BY-SA 4.0). See https://creativecommons.org/licenses/by-sa/4.0/
@@ -40,11 +49,29 @@ Full text: LICENSE
 
 ---
 
-Vendored corpus data (projects/*/cycles/*/corpora/)
+Data artifacts
+
+Everything else under projects/: the vendored incident corpora, the derived
+labels and gold sets, the calibration outputs, posteriors, and blended
+rankings, the baselines and taxonomies, and the provenance and
+pre-registration manifests that describe them.
 
 Derived from publicly available incident datasets and distributed under the
 Creative Commons Attribution 4.0 International License (CC-BY-4.0).
 See https://creativecommons.org/licenses/by/4.0/ for details.
 
 Note that this is CC-BY-4.0, not the CC BY-SA 4.0 that covers the published
-content. The corpus carries no ShareAlike obligation.
+content. The data carries no ShareAlike obligation, so a downstream analysis
+may reuse the corpus and labels under terms of its own choosing.
+
+Incident records in these artifacts carry internal identifiers of the form
+INC-04490 rather than upstream CVE, GHSA, OSV, or AIAAIC keys. The source
+databases retain their own terms and remain the authority for the underlying
+incident descriptions. What this repository redistributes is derived labels
+and snapshots.
+
+---
+
+LICENSE and LICENSE-CODE are verbatim license texts. They carry the terms of
+their respective stewards, Creative Commons and the Apache Software
+Foundation, and are reproduced unmodified.
