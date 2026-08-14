@@ -1,16 +1,3 @@
-Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
-Copyright 2026 Rock Lambros
-
-Scope: the published content of this repository, which is the preprint and
-notebooks under notebooks/, the documentation under docs/, and the figures
-they reference. This mirrors the license of the OWASP GenAI Security Project
-Top 10 for LLM Applications, the work this analysis examines.
-
-Software is licensed separately under Apache-2.0 (see LICENSE-CODE). Vendored
-corpus data is licensed separately under CC-BY-4.0 (see NOTICE).
-
-=======================================================================
-
 Attribution-ShareAlike 4.0 International
 
 =======================================================================
