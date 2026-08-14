@@ -43,7 +43,7 @@ The structure:
 - **Part I** explains what the OWASP LLM Top 10 is, where the incident corpus comes from, and how the expert vote and the data combine into one ranking.
 - **Part II** walks through what the incident data says, one step at a time: the corpus, the classifier, its measured accuracy, the Bayesian model, the incident-derived ranking, and where that ranking agrees and disagrees with the experts.
 - **Part III** stress-tests the ranking against four frontier classifiers and a ground-truth check.
-- **Limitations**, **Glossary**, and **Scope** close the report.
+- **Glossary**, **Limitations**, **Data and Code Availability**, and **Scope** close the report.
 
 # Part I — The List and How It's Made
 
@@ -369,6 +369,16 @@ This is an internally rigorous analysis with real limits. We state them plainly 
 - *Frame-blind entries.* Three entries — LLM04, LLM08, LLM10 — draw their signal from a single stratum, so the corpus cannot cross-check their recall, and their data ranks are soft by construction. Several broad categories (LLM09, NEW-WLA, ROLL-CMSB) also sit on confusion boundaries the classifier cannot cleanly resolve, so their counts are less reliable than entries with sharp definitions.
 
 **Status.** This report is exploratory and internally rigorous. It is not peer-reviewed, and it is not the official OWASP release. Full external publication would require an independent adjudicated gold set, independent statistical review, and a broader corpus that narrows the κ interval. Until then the blended ranking is a working reconciliation of two imperfect signals, offered for scrutiny.
+
+## Data and Code Availability
+
+The engine, the analysis notebook, and the artifacts behind every number in this report are public at https://github.com/rocklambros/incident-rank-validation . The repository licenses in three parts: the software under Apache-2.0, this report and the notebooks under CC BY-SA 4.0, and the data artifacts under CC BY 4.0. Every file falls into exactly one part, and the repository NOTICE is the authoritative statement.
+
+**What is published.** The labeled corpus holds 6,639 records in `projects/owasp-llm/cycles/2026/classify/labeled_incidents.json`, each carrying its taxonomy entry, the classifier's confidence and rationale, and its stratum. Incident text for 6,142 of those records is committed in `calibration/llm_prelabels.jsonl` alongside the three-model votes. The gold set is published in full at `calibration/adjudicated_goldset.jsonl`: all 1,200 incidents, with the reviewer's blind label, the model consensus, and the final adjudication as separate fields, so the disagreement rates reported above can be recomputed rather than taken on trust. Per-incident predictions from the four frontier classifiers in Part III are under `cycles/2026-rarr/classify/seq/`.
+
+**What reproduces.** The pre-registration manifest (`cycles/2026/prereg/manifest.json`) fixes the model specification, the taxonomy hash, the corpus snapshot hash, and the PRNG seed, all recorded before any result was read. Posteriors, precision verification, and the blended ranking are committed as computed artifacts, so every figure and statistic regenerates from the repository without re-running the classifier against paid APIs. Build instructions are in `notebooks/preprint/BUILD.md`.
+
+**What is not published.** Incident records carry internal identifiers of the form `INC-04490`, not upstream CVE, GHSA, OSV, or AIAAIC keys. A reader cannot join these labels back to the source databases record by record. Text is absent for 497 of the labeled records. The source databases retain their own terms and remain the authority for the underlying incident descriptions; what we redistribute is derived labels and snapshots.
 
 ## Scope and Authority
 
