@@ -445,9 +445,13 @@ work this analysis examines, so the preprint carries the same terms as its
 subject. The software stays under Apache-2.0 because ShareAlike is a poor fit
 for code and Creative Commons advises against CC licenses for software.
 
-See [`NOTICE`](NOTICE) for attribution details. The `license` field in
-`pyproject.toml` reads Apache-2.0 and is correct as written: it describes the
-Python distribution, which contains only the software.
+See [`NOTICE`](NOTICE) for the three parts stated in full. The `license` field
+in `pyproject.toml` reads Apache-2.0 and is correct as written: it describes
+the Python distribution, which contains only the software.
+
+`LICENSE` holds the verbatim CC BY-SA 4.0 text with no preamble, which is what
+lets GitHub detect the repository license. The scope of each part is recorded
+here and in `NOTICE` rather than inside `LICENSE` itself.
 
 ## Links
 
