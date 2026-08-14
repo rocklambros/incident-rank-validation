@@ -5,7 +5,7 @@
 > adversarial premortem on it, remediating all findings per my recommendation, then implementing in the
 > most parallelized-yet-safe way with full integration/testing/verification, committing along the way,
 > going with my recommendation on any question. This file is the resumable contract; on resume, read it +
-> `LESSONS-rarr.md` + `.superpowers/sdd/progress.md` and continue at the first unit not marked DONE.
+> `LESSONS-rarr.md` + `.superpowers/sdd/progress.md` (local-only, not tracked in this repository) and continue at the first unit not marked DONE.
 
 ## Per-unit loop (rigid — applies to every unit U1..U9)
 1. **Plan** — `superpowers:writing-plans` → `docs/superpowers/plans/2026-06-30-<unit>.md` (bite-sized TDD tasks, exact code).

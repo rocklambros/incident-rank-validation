@@ -4,7 +4,7 @@
 - **Date:** 2026-06-22
 - **Branch:** `plan7/engine-upgrade-recall-pl`
 - **Phase label:** *Plan 8 — Recall-Aware Robustness Re-analysis* (confirmed; PRD reserves "Plan 7" for the frame-coverage audit, so a new Plan 8 phase-map entry is added)
-- **Source prompt:** `claudedocs/engine-upgrade-runpod.md`
+- **Source prompt:** `claudedocs/engine-upgrade-runpod.md` (local-only, not tracked in this repository)
 - **Lineage:** Revised by two adversarial premortems — one on the original recommendations (14 remediations RM1-RM14), one on Revision 1 of this spec (17 spec-deltas SD1-SD17). Both traced in §13.
 
 ### Revision 2 changes (what the spec-premortem caught in R1)
