@@ -430,10 +430,24 @@ The engine enforces several structural integrity controls:
 
 ## License
 
-Apache-2.0. See [`NOTICE`](NOTICE) for attribution details.
+This repository is licensed in three parts, by what the file is rather than
+where it sits.
 
-Vendored corpus data under `projects/*/cycles/*/corpora/` is distributed under
-[CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
+| What | License | File |
+| --- | --- | --- |
+| Published content: the preprint and notebooks under `notebooks/`, the documentation under `docs/`, and the figures they reference | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | [`LICENSE`](LICENSE) |
+| Software: `engine/`, `tools/`, `scripts/`, `tests/` | Apache-2.0 | [`LICENSE-CODE`](LICENSE-CODE) |
+| Vendored corpus data under `projects/*/cycles/*/corpora/` | [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/) | [`NOTICE`](NOTICE) |
+
+The content license mirrors the [OWASP GenAI Security Project Top 10 for LLM
+Applications](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10), the
+work this analysis examines, so the preprint carries the same terms as its
+subject. The software stays under Apache-2.0 because ShareAlike is a poor fit
+for code and Creative Commons advises against CC licenses for software.
+
+See [`NOTICE`](NOTICE) for attribution details. The `license` field in
+`pyproject.toml` reads Apache-2.0 and is correct as written: it describes the
+Python distribution, which contains only the software.
 
 ## Links
 
