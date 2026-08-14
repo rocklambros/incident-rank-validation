@@ -431,13 +431,13 @@ The engine enforces several structural integrity controls:
 ## License
 
 This repository is licensed in three parts, by what the file is rather than
-where it sits.
+where it sits. Every tracked file falls into exactly one of them.
 
 | What | License | File |
 | --- | --- | --- |
-| Published content: the preprint and notebooks under `notebooks/`, the documentation under `docs/`, and the figures they reference | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | [`LICENSE`](LICENSE) |
-| Software: `engine/`, `tools/`, `scripts/`, `tests/` | Apache-2.0 | [`LICENSE-CODE`](LICENSE-CODE) |
-| Vendored corpus data under `projects/*/cycles/*/corpora/` | [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/) | [`NOTICE`](NOTICE) |
+| Published content: the preprint and notebooks under `notebooks/`, the documentation under `docs/`, the figures they reference, and this repository's own prose (`README.md`, `CONTRIBUTING.md`, `SECURITY.md`, `NOTICE`) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | [`LICENSE`](LICENSE) |
+| Software: `engine/`, `tools/`, `scripts/`, `tests/`, `.github/`, `.githooks/`, `pyproject.toml`, `uv.lock`, `.gitignore`, `.gitleaks.toml`, `.semgrep.yml`, and the `reproduce.py` helpers under `projects/` | Apache-2.0 | [`LICENSE-CODE`](LICENSE-CODE) |
+| Data artifacts: everything else under `projects/` -- vendored corpora, derived labels and gold sets, calibration outputs, posteriors, blended rankings, baselines, taxonomies, and the provenance and pre-registration manifests | [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/) | [`NOTICE`](NOTICE) |
 
 The content license mirrors the [OWASP GenAI Security Project Top 10 for LLM
 Applications](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10), the
