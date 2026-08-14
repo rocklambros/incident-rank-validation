@@ -11,7 +11,7 @@ dependencies = [
   "numpyro==0.16.1",
   "jax==0.4.35",
   "jaxlib==0.4.35",
-  "click==8.1.8",
+  "click==8.4.2",
   "tomli==2.4.1",
   "tomli-w==1.1.0",
   "httpx>=0.27,<1.0",
@@ -25,14 +25,22 @@ dev = [
   "pytest-xdist==3.6.1",
   "mypy==1.13.0",
   "ruff==0.8.4",
-  "semgrep==1.168.0",      # bumped from 1.99.0: opentelemetry-proto>=1.37 allows protobuf>=5.29.6 (clears CVE-2026-0994)
+  "semgrep==1.173.0",      # bumped from 1.168.0: pins mcp==1.29.0, the first release past the mcp advisories (<= 1.27.1, < 1.28.1)
   "cyclonedx-bom==7.3.0",  # bumped from 4.6.1: cyclonedx-python-lib>=8 allows lxml>=6.1.0 (clears CVE-2026-41066)
-  "setuptools==78.1.1",
+  "setuptools==83.0.0",    # bumped from 78.1.1: clears GHSA path-traversal advisory (< 83.0.0)
 ]
 # Resolved 2026-07-02: the two transitive HIGH CVEs previously deferred here are cleared by the
 # cyclonedx-bom and semgrep dev-tool upgrades above — the lock now resolves lxml>=6.1.0
 # (CVE-2026-41066, XXE) and protobuf>=5.29.6 (CVE-2026-0994, JSON recursion). Both are dev-only
 # tooling deps (SBOM / SAST); neither is imported by the runtime engine.
+#
+# Resolved 2026-08-13: all 36 open Dependabot alerts, spanning five packages. Four moved on the
+# lock alone (pillow 12.3.0, gitpython 3.1.59, cryptography 50.0.0, setuptools 83.0.0). mcp needed
+# the semgrep bump above, because semgrep hard-pins an exact mcp version, and semgrep 1.173.0 is
+# the first release carrying a patched one. That bump in turn required click>=8.4.2, so the runtime
+# click pin moved 8.1.8 -> 8.4.2. click is the CLI argument parser and touches no numerical path,
+# so results are unaffected; the engine uses only @click.command/option/group/argument, all stable
+# across the bump, and the CLI test suites cover it.
 
 [project.optional-dependencies]
 monitoring = ["wandb>=0.19,<1.0"]
