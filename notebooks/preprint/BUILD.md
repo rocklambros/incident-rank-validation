@@ -36,10 +36,38 @@ python tools/build_preprint.py \
   --out-dir notebooks/preprint \
   --output-name Incident_Data_Robustness_Analysis_of_the_OWASP_Top_10_for_LLM_Applications_2026
 ```
-This executes a COPY of the notebook (never mutates the committed `.ipynb`), exports markdown with outputs stripped, prepends the YAML front-matter, and compiles via `pandoc --template=notebooks/preprint/arxiv-template.latex --pdf-engine=xelatex`. Emits `<output-name>.{md,pdf,tex}`; submit the `.tex` + `figures/` to arXiv.
+This executes a COPY of the notebook (never mutates the committed `.ipynb`), exports markdown with outputs stripped, prepends the YAML front-matter, and compiles via `pandoc --template=notebooks/preprint/arxiv-template.latex --pdf-engine=xelatex`. Emits `<output-name>.{md,pdf,tex}`.
 
 ## arXiv submission
-Submit the generated LaTeX **source** (`.tex` + `figures/`), not PDF-only, so arXiv can recompile.
+
+Submit the generated LaTeX **source**, not PDF-only, so arXiv can recompile.
+
+Upload a single `.tar.gz`. arXiv's uploader takes one archive and unpacks it, which preserves the `figures/` directory the `\includegraphics` paths depend on. Uploading files one at a time would flatten them and break every figure reference.
+
+The archive holds exactly two things, with no wrapper directory:
+
+1. `<output-name>.tex` at the archive root
+2. `figures/` with the 19 PNGs the `.tex` references
+
+Do **not** include `<output-name>.pdf` (arXiv rejects `foo.pdf` shipped alongside `foo.tex`), `<output-name>.md`, `arxiv-template.latex`, `document-metadata.latex`, `figure-layout.lua`, `front_matter.md`, `_stub.md`, or `figures/rank_change_2025_2026.png` (retired slopegraph, unreferenced). No `.bbl`/`.bib` is needed; the document has no bibliography environment.
+
+Build the archive from `notebooks/preprint/`:
+
+```bash
+STEM=<output-name>
+STAGE=$(mktemp -d) && mkdir -p "$STAGE/figures"
+cp "$STEM.tex" "$STAGE/"
+grep -o 'includegraphics\[[^]]*\]{figures/[a-z0-9_]*\.png}' "$STEM.tex" \
+  | sed 's|.*{figures/||;s/}//' | sort -u \
+  | while read -r f; do cp "figures/$f" "$STAGE/figures/$f"; done
+# COPYFILE_DISABLE stops macOS tar from writing ._ AppleDouble xattr sidecars
+( cd "$STAGE" && COPYFILE_DISABLE=1 tar --exclude='.DS_Store' --exclude='._*' \
+    -czf "$OLDPWD/arxiv-submission.tar.gz" "$STEM.tex" figures )
+```
+
+Verify before uploading: `tar -tzf arxiv-submission.tar.gz` should list 21 entries (one `.tex`, `figures/`, 19 PNGs) and nothing else. Then extract to an empty directory and run `xelatex` three times; it must reach 23 pages with no `File ... not found`.
+
+Engine: arXiv runs TeX Live 2025 and has supported `xelatex` since November 2025. The `.tex` also compiles under `pdflatex` (the `\ifPDFTeX` branch plus the `\newunicodechar` maps cover every non-ASCII glyph), so either processor selection works.
 
 ## T4.5 outcome (env gate)
 - Kernel: use `preprint-build` (uv env); anaconda `python3` kernel is crippled (kaleido/jax/tf stubbed).
