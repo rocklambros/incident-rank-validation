@@ -1,6 +1,14 @@
-% document-metadata.latex — build shim. Owner: incident-rank-validation preprint build.
-% pandoc <=3.x shipped a built-in `document-metadata.latex` partial; pandoc 3.8.2 dropped it,
-% which breaks `$document-metadata.latex()$` in arxiv-template.latex. This partial reproduces
-% the last-good (2026-07-02) build, where the reference resolved to empty output. The title,
-% author, and date are set by arxiv-template.latex itself (\title/\author/\maketitle), so an
-% empty partial changes nothing in the rendered PDF.
+$-- document-metadata.latex — build shim. Owner: incident-rank-validation preprint build.
+$-- pandoc <=3.x shipped a built-in document-metadata.latex partial; pandoc 3.8.2 dropped it,
+$-- which breaks the partial reference in arxiv-template.latex. This file reproduces the
+$-- last-good (2026-07-02) build, where that reference resolved to empty output. Title,
+$-- author, and date are set by arxiv-template.latex itself (\title/\author/\maketitle), so
+$-- an empty partial changes nothing in the rendered PDF.
+$--
+$-- Two rules for editing this file:
+$--   1. Use $-- template comments, not % LaTeX comments. pandoc strips the former and
+$--      copies the latter into the generated .tex, where it becomes preamble noise in the
+$--      arXiv source package.
+$--   2. Never write pandoc partial-call syntax here, not even inside a comment. pandoc
+$--      renders a partial as a template, so a self-reference expands recursively until it
+$--      hits the recursion limit and dumps ~250 duplicated lines into the generated .tex.
