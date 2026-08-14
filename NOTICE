@@ -1,6 +1,13 @@
 incident-rank-validation
 Copyright 2026 Rock Lambros
 
+This repository is licensed in three parts, by what the file is rather than
+where it sits. Each part is stated in full below.
+
+---
+
+Software (engine/, tools/, scripts/, tests/)
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -13,9 +20,31 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+Full text: LICENSE-CODE
+
 ---
 
-Vendored corpus data (projects/*/cycles/*/corpus/) is derived from
-publicly available incident datasets and is distributed under the
+Published content (the preprint and notebooks under notebooks/, the
+documentation under docs/, and the figures they reference)
+
+Licensed under the Creative Commons Attribution-ShareAlike 4.0 International
+License (CC BY-SA 4.0). See https://creativecommons.org/licenses/by-sa/4.0/
+for details.
+
+This mirrors the license of the OWASP GenAI Security Project Top 10 for LLM
+Applications (https://github.com/GenAI-Security-Project/GenAI-LLM-Top10), the
+work this analysis examines, so the preprint carries the same terms as its
+subject.
+
+Full text: LICENSE
+
+---
+
+Vendored corpus data (projects/*/cycles/*/corpora/)
+
+Derived from publicly available incident datasets and distributed under the
 Creative Commons Attribution 4.0 International License (CC-BY-4.0).
 See https://creativecommons.org/licenses/by/4.0/ for details.
+
+Note that this is CC-BY-4.0, not the CC BY-SA 4.0 that covers the published
+content. The corpus carries no ShareAlike obligation.
