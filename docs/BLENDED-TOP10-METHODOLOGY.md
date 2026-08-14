@@ -135,7 +135,7 @@ This section names what remains uncertain under the adopted method.
 - Adopted blend computation: `engine/decide/blend.py`. Golden output and input manifest: `projects/owasp-llm/cycles/2026/blend/blend_golden.json`, `projects/owasp-llm/cycles/2026/blend/blend_manifest.json`
 - Adoption decision and reconstruction provenance: `docs/decisions/2026-07-05-probabilistic-blend-adoption.md`, `docs/provenance/2026-07-05-probabilistic-blend-reconstruction.md`
 - RARR classifier-robustness result (Section 7): `projects/owasp-llm/cycles/2026-rarr/results/RARR-conclusion.md`
-- Planned engine upgrade whose recall correction is the parked retrain tail risk (Section 7): `claudedocs/engine-upgrade-runpod.md`
+- Planned engine upgrade whose recall correction is the parked retrain tail risk (Section 7): `claudedocs/engine-upgrade-runpod.md` (local-only, not tracked in this repository)
 
 ---
 

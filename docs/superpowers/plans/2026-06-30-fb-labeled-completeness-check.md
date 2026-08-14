@@ -16,7 +16,7 @@
 - **F4 pin `tests/unit/test_recall_single_label_semantics.py` MUST stay green.** This plan does NOT touch `engine/calibrate/tally.py` recall semantics; if any step would, stop and reconsider.
 - **`labeled_incidents.json` stays in-scope-only** (OOS = absence). This plan does NOT add OOS rows and does NOT change `_build_counts_from_labeled`. The count-form marker is the coverage record.
 - **Two-stage review per task** (SPEC + QUALITY), then push to **PR #22** and verify **CI green**.
-- Branch: `plan7/engine-upgrade-recall-pl`. Ledger: `docs/superpowers/plans/LESSONS-rarr.md`; progress: `.superpowers/sdd/progress.md`.
+- Branch: `plan7/engine-upgrade-recall-pl`. Ledger: `docs/superpowers/plans/LESSONS-rarr.md`; progress: `.superpowers/sdd/progress.md` (local-only, not tracked in this repository).
 
 ---
 

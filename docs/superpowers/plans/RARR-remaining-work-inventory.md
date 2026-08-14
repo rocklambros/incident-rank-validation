@@ -3,7 +3,7 @@
 > Branch `plan7/engine-upgrade-recall-pl`, PR #22. Generated 2026-06-30 by a 4-reader survey workflow
 > (lessons ledger + RARR design spec + open plan/spec docs + in-code stubs) cross-verified against
 > `docs/superpowers/specs/2026-06-22-recall-aware-robustness-reanalysis-design.md`, `LESSONS-rarr.md`,
-> and `.superpowers/sdd/progress.md`. The authoritative live docket remains `LESSONS-rarr.md`; this file
+> and `.superpowers/sdd/progress.md` (local-only, not tracked in this repository). The authoritative live docket remains `LESSONS-rarr.md`; this file
 > is the point-in-time map the campaign in `RARR-campaign-execution.md` executes against.
 
 ## IMMEDIATE NEXT ACTION
