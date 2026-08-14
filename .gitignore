@@ -47,3 +47,7 @@ notebook.log
 notebook.out
 notebook.toc
 notebooks/preprint/*_executed.ipynb
+
+# Internal working notes — local-only, carry no public license
+claudedocs/
+.superpowers/
