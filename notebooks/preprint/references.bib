@@ -1,0 +1,352 @@
+% references.bib — bibliography for the arXiv preprint
+% Owner: incident-rank-validation / OWASP GenAI Security Project working-group analysis
+%
+% Every entry below was verified against a primary source (publisher record, arXiv
+% listing, or the vendor's own documentation) before being added. Do not add an
+% entry from memory: arXiv rejects submissions whose references do not resolve, and
+% a wrong volume or identifier is worse than an omitted citation.
+%
+% Rendering: pandoc --citeproc resolves these into a static CSLReferences block
+% inside the generated .tex, so the arXiv tarball needs no .bib and no .bbl.
+
+% ---------------------------------------------------------------------------
+% The artifact under study, and the taxonomy source
+% ---------------------------------------------------------------------------
+
+@misc{owasp2025llmtop10,
+  author       = {{OWASP GenAI Security Project}},
+  title        = {{OWASP} Top 10 for Large Language Model Applications, v2.0 (2025)},
+  year         = {2024},
+  month        = nov,
+  howpublished = {OWASP Foundation},
+  note         = {Accessed 2026-08-17},
+  url          = {https://genai.owasp.org/resource/owasp-top-10-for-llm-applications-2025/}
+}
+
+@misc{owasp2026llmtop10,
+  author       = {{OWASP GenAI Security Project}},
+  title        = {{OWASP} {GenAI} {LLM} Top 10 (2026)},
+  year         = {2026},
+  month        = aug,
+  howpublished = {OWASP Foundation},
+  note         = {Accessed 2026-08-17},
+  url          = {https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/}
+}
+
+@misc{owaspagentic2025,
+  author       = {{OWASP GenAI Security Project}},
+  title        = {Agentic {AI}: Threats and Mitigations},
+  year         = {2025},
+  howpublished = {OWASP Foundation, Agentic Security Initiative},
+  note         = {Accessed 2026-08-17},
+  url          = {https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/}
+}
+
+% ---------------------------------------------------------------------------
+% Incident and vulnerability data sources
+% ---------------------------------------------------------------------------
+
+@misc{cveprogram,
+  year         = {2026},
+  author       = {{MITRE Corporation}},
+  title        = {{CVE} Program},
+  howpublished = {Common Vulnerabilities and Exposures},
+  note         = {Accessed 2026-08-17},
+  url          = {https://www.cve.org/}
+}
+
+@misc{ghsa,
+  year         = {2026},
+  author       = {{GitHub}},
+  title        = {{GitHub} Advisory Database},
+  note         = {Accessed 2026-08-17},
+  url          = {https://github.com/advisories}
+}
+
+@misc{osv,
+  year         = {2026},
+  author       = {{Open Source Security Foundation}},
+  title        = {{OSV}: Open Source Vulnerabilities Database},
+  note         = {Accessed 2026-08-17},
+  url          = {https://osv.dev/}
+}
+
+@misc{aiaaic,
+  year         = {2026},
+  author       = {{AIAAIC}},
+  title        = {{AIAAIC} Repository: {AI}, Algorithmic, and Automation Incidents and Controversies},
+  note         = {Accessed 2026-08-17},
+  url          = {https://www.aiaaic.org/aiaaic-repository}
+}
+
+% ---------------------------------------------------------------------------
+% Prior work on cataloging AI incidents and risks
+% ---------------------------------------------------------------------------
+
+@inproceedings{mcgregor2021,
+  author    = {McGregor, Sean},
+  title     = {Preventing Repeated Real World {AI} Failures by Cataloging Incidents:
+               The {AI} Incident Database},
+  booktitle = {Proceedings of the {AAAI} Conference on Artificial Intelligence},
+  volume    = {35},
+  number    = {17},
+  pages     = {15458--15463},
+  year      = {2021},
+  doi       = {10.1609/aaai.v35i17.17817}
+}
+
+@misc{slattery2024,
+  author  = {Slattery, Peter and Saeri, Alexander K. and Grundy, Emily A. C. and
+             Graham, Jess and Noetel, Michael and Uuk, Risto and Dao, James and
+             Pour, Soroush and Casper, Stephen and Thompson, Neil},
+  title   = {The {AI} Risk Repository: A Comprehensive Meta-Review, Database, and
+             Taxonomy of Risks From Artificial Intelligence},
+  year    = {2024},
+  doi     = {10.48550/arXiv.2408.12622},
+  howpublished = {arXiv:2408.12622}
+}
+
+% ---------------------------------------------------------------------------
+% LLM security: prompt injection
+% ---------------------------------------------------------------------------
+
+@inproceedings{greshake2023,
+  author    = {Greshake, Kai and Abdelnabi, Sahar and Mishra, Shailesh and
+               Endres, Christoph and Holz, Thorsten and Fritz, Mario},
+  title     = {Not What You've Signed Up For: Compromising Real-World
+               {LLM}-Integrated Applications with Indirect Prompt Injection},
+  booktitle = {Proceedings of the 16th {ACM} Workshop on Artificial Intelligence
+               and Security ({AISec} '23)},
+  pages     = {79--90},
+  year      = {2023},
+  doi       = {10.1145/3605764.3623985}
+}
+
+@misc{perez2022,
+  author  = {Perez, F{\'a}bio and Ribeiro, Ian},
+  title   = {Ignore Previous Prompt: Attack Techniques for Language Models},
+  year    = {2022},
+  doi     = {10.48550/arXiv.2211.09527},
+  howpublished = {arXiv:2211.09527}
+}
+
+% ---------------------------------------------------------------------------
+% The classifiers used to label the corpus and to run the bake-off
+% ---------------------------------------------------------------------------
+
+@misc{qwen3,
+  author  = {Yang, An and Li, Anfeng and Yang, Baosong and Zhang, Beichen and
+             Hui, Binyuan and others},
+  title   = {Qwen3 Technical Report},
+  year    = {2025},
+  doi     = {10.48550/arXiv.2505.09388},
+  howpublished = {arXiv:2505.09388}
+}
+
+@misc{llama3,
+  author  = {Grattafiori, Aaron and Dubey, Abhimanyu and Jauhri, Abhinav and
+             Pandey, Abhinav and others},
+  title   = {The Llama 3 Herd of Models},
+  year    = {2024},
+  doi     = {10.48550/arXiv.2407.21783},
+  howpublished = {arXiv:2407.21783}
+}
+
+@misc{deepseekv3,
+  author  = {{DeepSeek-AI}},
+  title   = {{DeepSeek-V3} Technical Report},
+  year    = {2024},
+  doi     = {10.48550/arXiv.2412.19437},
+  howpublished = {arXiv:2412.19437}
+}
+
+@misc{mistrallarge2411,
+  author       = {{Mistral AI}},
+  title        = {Mistral Large 24.11 ({mistral-large-2411}) Model Card},
+  year         = {2024},
+  month        = nov,
+  note         = {Accessed 2026-08-17},
+  url          = {https://huggingface.co/mistralai/Mistral-Large-Instruct-2411}
+}
+
+% ---------------------------------------------------------------------------
+% Language models as annotators
+% ---------------------------------------------------------------------------
+
+@article{gilardi2023,
+  author  = {Gilardi, Fabrizio and Alizadeh, Meysam and Kubli, Ma{\"e}l},
+  title   = {{ChatGPT} Outperforms Crowd Workers for Text-Annotation Tasks},
+  journal = {Proceedings of the National Academy of Sciences},
+  volume  = {120},
+  number  = {30},
+  pages   = {e2305016120},
+  year    = {2023},
+  doi     = {10.1073/pnas.2305016120}
+}
+
+@inproceedings{zheng2023,
+  author    = {Zheng, Lianmin and Chiang, Wei-Lin and Sheng, Ying and
+               Zhuang, Siyuan and Wu, Zhanghao and Zhuang, Yonghao and
+               Lin, Zi and Li, Zhuohan and Li, Dacheng and Xing, Eric P. and
+               Zhang, Hao and Gonzalez, Joseph E. and Stoica, Ion},
+  title     = {Judging {LLM}-as-a-Judge with {MT-Bench} and Chatbot Arena},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {36},
+  year      = {2023},
+  doi       = {10.48550/arXiv.2306.05685}
+}
+
+% ---------------------------------------------------------------------------
+% Agreement statistics
+% ---------------------------------------------------------------------------
+
+@article{cohen1960,
+  author  = {Cohen, Jacob},
+  title   = {A Coefficient of Agreement for Nominal Scales},
+  journal = {Educational and Psychological Measurement},
+  volume  = {20},
+  number  = {1},
+  pages   = {37--46},
+  year    = {1960},
+  doi     = {10.1177/001316446002000104}
+}
+
+@article{cohen1968,
+  author  = {Cohen, Jacob},
+  title   = {Weighted Kappa: Nominal Scale Agreement with Provision for Scaled
+             Disagreement or Partial Credit},
+  journal = {Psychological Bulletin},
+  volume  = {70},
+  number  = {4},
+  pages   = {213--220},
+  year    = {1968},
+  doi     = {10.1037/h0026256}
+}
+
+@article{landis1977,
+  author  = {Landis, J. Richard and Koch, Gary G.},
+  title   = {The Measurement of Observer Agreement for Categorical Data},
+  journal = {Biometrics},
+  volume  = {33},
+  number  = {1},
+  pages   = {159--174},
+  year    = {1977},
+  doi     = {10.2307/2529310}
+}
+
+@article{spearman1904,
+  author  = {Spearman, Charles},
+  title   = {The Proof and Measurement of Association Between Two Things},
+  journal = {The American Journal of Psychology},
+  volume  = {15},
+  number  = {1},
+  pages   = {72--101},
+  year    = {1904},
+  doi     = {10.2307/1412159}
+}
+
+@article{kendall1938,
+  author  = {Kendall, Maurice G.},
+  title   = {A New Measure of Rank Correlation},
+  journal = {Biometrika},
+  volume  = {30},
+  number  = {1-2},
+  pages   = {81--93},
+  year    = {1938},
+  doi     = {10.1093/biomet/30.1-2.81}
+}
+
+% ---------------------------------------------------------------------------
+% Classification metrics, resampling, and Bayesian methods
+% ---------------------------------------------------------------------------
+
+@inproceedings{brodersen2010,
+  author    = {Brodersen, Kay Henning and Ong, Cheng Soon and
+               Stephan, Klaas Enno and Buhmann, Joachim M.},
+  title     = {The Balanced Accuracy and Its Posterior Distribution},
+  booktitle = {2010 20th International Conference on Pattern Recognition ({ICPR})},
+  pages     = {3121--3124},
+  year      = {2010},
+  doi       = {10.1109/ICPR.2010.764}
+}
+
+@article{efron1979,
+  author  = {Efron, Bradley},
+  title   = {Bootstrap Methods: Another Look at the Jackknife},
+  journal = {The Annals of Statistics},
+  volume  = {7},
+  number  = {1},
+  pages   = {1--26},
+  year    = {1979},
+  doi     = {10.1214/aos/1176344552}
+}
+
+@book{gelman2013,
+  author    = {Gelman, Andrew and Carlin, John B. and Stern, Hal S. and
+               Dunson, David B. and Vehtari, Aki and Rubin, Donald B.},
+  title     = {Bayesian Data Analysis},
+  edition   = {3},
+  publisher = {Chapman and Hall/CRC},
+  year      = {2013},
+  doi       = {10.1201/b16018}
+}
+
+@book{carroll2006,
+  author    = {Carroll, Raymond J. and Ruppert, David and
+               Stefanski, Leonard A. and Crainiceanu, Ciprian M.},
+  title     = {Measurement Error in Nonlinear Models: A Modern Perspective},
+  edition   = {2},
+  publisher = {Chapman and Hall/CRC},
+  year      = {2006},
+  doi       = {10.1201/9781420010138}
+}
+
+@article{hoffman2014,
+  author  = {Hoffman, Matthew D. and Gelman, Andrew},
+  title   = {The No-{U}-Turn Sampler: Adaptively Setting Path Lengths in
+             Hamiltonian {M}onte {C}arlo},
+  journal = {Journal of Machine Learning Research},
+  volume  = {15},
+  number  = {47},
+  pages   = {1593--1623},
+  year    = {2014},
+  url     = {https://jmlr.org/papers/v15/hoffman14a.html}
+}
+
+@article{vehtari2021,
+  author  = {Vehtari, Aki and Gelman, Andrew and Simpson, Daniel and
+             Carpenter, Bob and B{\"u}rkner, Paul-Christian},
+  title   = {Rank-Normalization, Folding, and Localization: An Improved
+             $\widehat{R}$ for Assessing Convergence of {MCMC} (with Discussion)},
+  journal = {Bayesian Analysis},
+  volume  = {16},
+  number  = {2},
+  pages   = {667--718},
+  year    = {2021},
+  doi     = {10.1214/20-BA1221}
+}
+
+@misc{phan2019,
+  author  = {Phan, Du and Pradhan, Neeraj and Jankowiak, Martin},
+  title   = {Composable Effects for Flexible and Accelerated Probabilistic
+             Programming in {NumPyro}},
+  year    = {2019},
+  doi     = {10.48550/arXiv.1912.11554},
+  howpublished = {arXiv:1912.11554}
+}
+
+% ---------------------------------------------------------------------------
+% Study design
+% ---------------------------------------------------------------------------
+
+@article{nosek2018,
+  author  = {Nosek, Brian A. and Ebersole, Charles R. and DeHaven, Alexander C. and
+             Mellor, David T.},
+  title   = {The Preregistration Revolution},
+  journal = {Proceedings of the National Academy of Sciences},
+  volume  = {115},
+  number  = {11},
+  pages   = {2600--2606},
+  year    = {2018},
+  doi     = {10.1073/pnas.1708274114}
+}

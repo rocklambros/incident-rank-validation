@@ -49,7 +49,19 @@ The archive holds exactly two things, with no wrapper directory:
 1. `<output-name>.tex` at the archive root
 2. `figures/` with the 19 PNGs the `.tex` references
 
-Do **not** include `<output-name>.pdf` (arXiv rejects `foo.pdf` shipped alongside `foo.tex`), `<output-name>.md`, `arxiv-template.latex`, `document-metadata.latex`, `figure-layout.lua`, `front_matter.md`, `_stub.md`, or `figures/rank_change_2025_2026.png` (retired slopegraph, unreferenced). No `.bbl`/`.bib` is needed; the document has no bibliography environment.
+Do **not** include `<output-name>.pdf` (arXiv rejects `foo.pdf` shipped alongside `foo.tex`), `<output-name>.md`, `arxiv-template.latex`, `document-metadata.latex`, `figure-layout.lua`, `front_matter.md`, `_stub.md`, `references.bib`, or `figures/rank_change_2025_2026.png` (retired slopegraph, unreferenced).
+
+### Citations and the reference list
+
+arXiv rejects submissions whose references are missing or fail to resolve, so the document must carry a real bibliography. This one does, and it does not use BibTeX.
+
+Citations live in the notebook prose as pandoc `[@key]` markers and resolve against `references.bib` through `--citeproc` at build time. citeproc renders the formatted reference list directly into the `.tex` as a `CSLReferences` block, so:
+
+- **No `.bbl` and no `.bib` belong in the tarball.** The `.tex` is self-contained. arXiv never runs BibTeX on it, which removes the whole class of missing-`.bbl` failures. (The first submission attempt was returned as "Incomplete — missing references" because the document had no bibliography at all, not because a `.bbl` was left out.)
+- The `CSLReferences` environment is defined by pandoc's `common.latex` partial, which `arxiv-template.latex` already pulls in at `$common.latex()$`. No template change is needed.
+- Adding a source means adding a verified entry to `references.bib` and a `[@key]` in the notebook, then rebuilding. Never add an entry from memory: a wrong volume or identifier is worse than an omitted citation.
+
+Verify after a build: `grep -o '\\citeproc' <output-name>.tex | wc -l` must be well above zero (in-text citations resolved), `grep -o 'ref-[a-z0-9]*' <output-name>.tex | sort -u | wc -l` must equal the number of entries actually cited, and `grep -c 'section\*{References}' <output-name>.tex` must return 1. A stray `[@key]` left in the `.tex` means the key is missing from `references.bib`.
 
 Build the archive from `notebooks/preprint/`:
 
@@ -65,7 +77,7 @@ grep -o 'includegraphics\[[^]]*\]{figures/[a-z0-9_]*\.png}' "$STEM.tex" \
     -czf "$OLDPWD/arxiv-submission.tar.gz" "$STEM.tex" figures )
 ```
 
-Verify before uploading: `tar -tzf arxiv-submission.tar.gz` should list 21 entries (one `.tex`, `figures/`, 19 PNGs) and nothing else. Then extract to an empty directory and run `xelatex` three times; it must reach 23 pages with no `File ... not found`.
+Verify before uploading: `tar -tzf arxiv-submission.tar.gz` should list 21 entries (one `.tex`, `figures/`, 19 PNGs) and nothing else. Then extract to an empty directory and run `xelatex` three times; it must reach 26 pages with no `File ... not found` and no `Citation ... undefined`. (23 pages before the bibliography was added; the reference list and the related-work paragraph account for the rest.)
 
 Engine: arXiv runs TeX Live 2025 and has supported `xelatex` since November 2025. The `.tex` also compiles under `pdflatex` (the `\ifPDFTeX` branch plus the `\newunicodechar` maps cover every non-ASCII glyph), so either processor selection works.
 

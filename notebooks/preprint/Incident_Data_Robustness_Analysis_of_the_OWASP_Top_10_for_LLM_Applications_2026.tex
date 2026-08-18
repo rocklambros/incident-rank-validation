@@ -48,6 +48,39 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
@@ -91,17 +124,18 @@ LLM-security incidents --- 7,714 snapshotted and 6,639 labeled against
 the 20-entry taxonomy --- drawn from CVE, GHSA, OSV, and AIAAIC, and
 derived an incident-based ranking with a Bayesian measurement-error
 model that corrects each category's count for classifier precision and
-recall. The 2026 candidate list blends the two signals at fixed weights,
-0.75 on the expert vote and 0.25 on the data, so the corpus corrects the
-consensus without overturning it. The agreement between the two rankings
-is weak: Cohen's κ ≈ 0.20, with a 90\% interval that crosses zero. The
-expert ranking is nonetheless robust. A pre-registered bake-off of four
-frontier classifiers returns no winner --- none beats the incidence
-floor's balanced accuracy of 0.863 --- and a ground-truth check leaves
-the floor's ordering (Spearman ρ = 0.918 against held-out truth) in
-place. This is an exploratory analysis by two working-group members, not
-the official OWASP release, and it does not supersede the official list
-or process.
+recall. The 2026 list, published in August 2026 after this analysis was
+run, blends the two signals at fixed weights, 0.75 on the expert vote
+and 0.25 on the data, so the corpus corrects the consensus without
+overturning it. The agreement between the two rankings is weak: Cohen's
+κ ≈ 0.20, with a 90\% interval that crosses zero. The expert ranking is
+nonetheless robust. A pre-registered bake-off of four frontier
+classifiers returns no winner --- none beats the incidence floor's
+balanced accuracy of 0.863 --- and a ground-truth check leaves the
+floor's ordering (Spearman ρ = 0.918 against held-out truth) in place.
+This is an exploratory analysis by two working-group members, not the
+official OWASP release, and it does not supersede the official list or
+process.
 \end{abstract}
 
 {
@@ -126,9 +160,11 @@ Every term defined in a sidebar reappears in the Glossary at the end, so
 this doubles as a reference.
 
 \textbf{Scope, in one line.} This is an incident-data analysis by two
-working-group members. It is not the official OWASP release and does not
-set or supersede the official list. The full scope statement is at the
-end.
+working-group members. The OWASP GenAI LLM Top 10 2026 published in
+August 2026 (\citeproc{ref-owasp2026llmtop10}{OWASP GenAI Security
+Project 2026}). This report is the analysis that ran during that cycle,
+not the published document, and it does not set or supersede the
+official list. The full scope statement is at the end.
 
 The structure:
 
@@ -158,7 +194,8 @@ Made}\label{part-i-the-list-and-how-its-made}
 incidents}\label{what-the-list-is-and-why-check-it-against-incidents}
 
 The OWASP Top 10 for LLM Applications is a ranked list of the security
-risks that matter most when software is built on large language models.
+risks that matter most when software is built on large language models
+(\citeproc{ref-owasp2025llmtop10}{OWASP GenAI Security Project 2024}).
 It is an expert-consensus product: practitioners score each candidate
 risk, and the scores aggregate into an ordered list, from Prompt
 Injection at the top down to the tenth entry. Organizations use the list
@@ -177,6 +214,15 @@ incident data agrees with the expert ranking only weakly (Cohen's κ ≈
 robust: four frontier classifiers and a ground-truth check do not move
 it.
 
+Cataloging AI failures so the field can learn from them is established
+practice. The AI Incident Database collects real-world AI harms to stop
+the same mistakes recurring (\citeproc{ref-mcgregor2021}{McGregor
+2021}), and the AI Risk Repository consolidates 777 risks drawn from 43
+published taxonomies (\citeproc{ref-slattery2024}{Slattery et al.
+2024}). Both describe the risk landscape. Neither scores an
+expert-consensus ranking against the incident record, which is the gap
+this report addresses.
+
 \begin{quote}
 \textbf{Sidebar --- incident corpus.} A corpus is a fixed, documented
 collection of records assembled for analysis. Our incident corpus is a
@@ -191,20 +237,23 @@ from}\label{where-the-corpus-comes-from}
 The corpus holds 7,714 incidents as snapshotted, of which 6,639 carry a
 usable label against the taxonomy. Those 6,639 divide into two strata:
 6,297 security incidents and 342 ai-harm incidents. The security stratum
-comes from three public vulnerability databases (CVE, GHSA, and OSV) and
-reads like engineering: advisory and patch text for exploits and
-data-leakage bugs. The ai-harm stratum comes from AIAAIC, a database of
+comes from three public vulnerability databases (CVE
+(\citeproc{ref-cveprogram}{MITRE Corporation 2026}), GHSA
+(\citeproc{ref-ghsa}{GitHub 2026}), and OSV (\citeproc{ref-osv}{Open
+Source Security Foundation 2026})) and reads like engineering: advisory
+and patch text for exploits and data-leakage bugs. The ai-harm stratum
+comes from AIAAIC (\citeproc{ref-aiaaic}{AIAAIC 2026}), a database of
 AI-related harms and controversies, and reads like journalism: news
 summaries of algorithmic discrimination and deepfake misuse.
 
 A second corpus corroborates the first at smaller scale. The OWASP
-Agentic Security Initiative contributed 46 independently curated
-agentic-AI incidents; classifying them against the same taxonomy
-reproduced 26\% of the label assignments. That is a modest agreement
-rate on a small, differently sourced set, and we report it as
-corroboration, not proof. We describe the main corpus as large-scale
-(7,714 incidents is a large sample for this field) and make no claim to
-being first.
+Agentic Security Initiative (\citeproc{ref-owaspagentic2025}{OWASP GenAI
+Security Project 2025}) contributed 46 independently curated agentic-AI
+incidents; classifying them against the same taxonomy reproduced 26\% of
+the label assignments. That is a modest agreement rate on a small,
+differently sourced set, and we report it as corroboration, not proof.
+We describe the main corpus as large-scale (7,714 incidents is a large
+sample for this field) and make no claim to being first.
 
 \subsection{The 0.75 / 0.25 blend}\label{the-0.75-0.25-blend}
 
@@ -239,12 +288,13 @@ split: the data tugs, the consensus holds.
 2026}\label{what-changed-from-2025-to-2026}
 
 The 2026 cycle works from a field of 20 candidate entries, not 10. Ten
-are incumbents carried over from 2025 (LLM01 through LLM10). Six are new
-candidates the working group is tracking but has held off the published
-list (the NEW-* entries). Four are narrower risks the group folded into
-a broader incumbent rather than list separately (the ROLL-* rollups);
-the incidents belonging to a rolled-up child still count, now toward its
-parent.
+are incumbents carried over from 2025 (LLM01 through LLM10)
+(\citeproc{ref-owasp2025llmtop10}{OWASP GenAI Security Project 2024}).
+Six are new candidates the working group is tracking but has held off
+the published ten (the NEW-* entries). Four are narrower risks the group
+folded into a broader incumbent rather than list separately (the ROLL-*
+rollups); the incidents belonging to a rolled-up child still count, now
+toward its parent.
 
 \begin{figure}[htbp]
 \centering
@@ -316,9 +366,15 @@ against the ai-harm source (AIAAIC).}
 incidents}\label{act-3-classifying-6639-incidents}
 
 Three large language models classified each incident independently: Qwen
-235B, Llama 405B, and DeepSeek V3. Each read the incident text and
-assigned it to one of the 20 taxonomy entries, or marked it out of scope
-when none fit.
+235B (\citeproc{ref-qwen3}{{Yang et al.} 2025}), Llama 405B
+(\citeproc{ref-llama3}{{Grattafiori et al.} 2024}), and DeepSeek V3
+(\citeproc{ref-deepseekv3}{DeepSeek-AI 2024}). Each read the incident
+text and assigned it to one of the 20 taxonomy entries, or marked it out
+of scope when none fit. Using language models as annotators is now
+common practice: on comparable labeling tasks they match or beat crowd
+workers (\citeproc{ref-gilardi2023}{Gilardi et al. 2023}), and their
+biases when used as judges are themselves documented
+(\citeproc{ref-zheng2023}{Zheng et al. 2023}).
 
 \begin{quote}
 \textbf{Sidebar --- classifier.} A classifier is any procedure that
@@ -475,7 +531,10 @@ Raw incident counts would mislead. An entry whose classifier runs at
 30\% precision looks busy, but two-thirds of what lands there was
 misclassified from somewhere else. We need a model that adjusts each
 entry's observed count for its known classifier error and carries the
-uncertainty of that adjustment through to the result.
+uncertainty of that adjustment through to the result. That is a
+measurement-error model, the standard construction for inference when
+the observed variable is a noisy proxy for the quantity of interest
+(\citeproc{ref-carroll2006}{Carroll et al. 2006}).
 
 The idea is a bathroom scale that reads two pounds heavy: you subtract
 two pounds from every reading, and if the scale itself is uncertain (two
@@ -498,7 +557,8 @@ assumes about a quantity before looking at this data; the posterior is
 the updated belief after combining the prior with the data. The
 posterior is not a single number but a distribution, a range of
 plausible values with more weight on the likelier ones. A wide posterior
-means the data left the answer uncertain.
+means the data left the answer uncertain
+(\citeproc{ref-gelman2013}{Gelman et al. 2013}).
 \end{quote}
 
 \begin{quote}
@@ -528,8 +588,12 @@ a probability distribution too complex to write down in closed form. It
 takes a guided random walk through the space of possible answers,
 spending more time where the answer is more plausible; the collected
 steps approximate the posterior. We drew 16,000 samples this way (four
-chains of 4,000, after 2,000 warm-up steps each). The convergence checks
-sit in the boxes beside the model output.
+chains of 4,000, after 2,000 warm-up steps each), using the No-U-Turn
+sampler (\citeproc{ref-hoffman2014}{Hoffman and Gelman 2014}) as
+implemented in NumPyro (\citeproc{ref-phan2019}{Phan et al. 2019}). The
+convergence checks beside the model output use the rank-normalized R-hat
+and effective-sample-size diagnostics
+(\citeproc{ref-vehtari2021}{Vehtari et al. 2021}).
 \end{quote}
 
 Three entries (LLM04, LLM08, LLM10) are frame-blind: their incidents
@@ -593,9 +657,10 @@ agree?}\label{act-7-do-the-experts-and-the-incidents-agree}
 \begin{quote}
 \textbf{Sidebar --- Cohen's κ.} Cohen's kappa (κ) measures agreement
 between two labelings after subtracting the agreement expected from
-chance alone. κ = 1 is perfect agreement, κ = 0 is no better than
-chance, and negative κ is systematic disagreement. The weighted version
-used here penalizes near-misses less than far-misses. κ comes with an
+chance alone (\citeproc{ref-cohen1960}{Cohen 1960}). κ = 1 is perfect
+agreement, κ = 0 is no better than chance, and negative κ is systematic
+disagreement. The weighted version used here penalizes near-misses less
+than far-misses (\citeproc{ref-cohen1968}{Cohen 1968}). κ comes with an
 uncertainty interval, and that is the part that matters most: when the
 interval crosses zero, the data cannot rule out chance-level agreement,
 so the agreement is weak whatever the point estimate says.
@@ -605,8 +670,10 @@ The agreement is weak. Comparing the expert ranking with the incident
 ranking gives Cohen's weighted κ = 0.20, with a 90\% interval of −0.16
 to 0.57. The interval crosses zero. We cannot exclude chance-level
 agreement, and the point estimate of 0.20 sits only in the ``slight''
-band. This is the honest headline of the whole analysis: the incident
-data agrees with the expert ranking only weakly.
+band of the conventional interpretation scale
+(\citeproc{ref-landis1977}{Landis and Koch 1977}). This is the honest
+headline of the whole analysis: the incident data agrees with the expert
+ranking only weakly.
 
 Two things make the interval wide. Only 17 of the 20 entries are
 measurable (three are frame-blind), and agreement statistics need larger
@@ -656,8 +723,10 @@ Each of the five mismatches has a plausible cause. Reading them is more
 useful than averaging them away.
 
 \textbf{LLM01 (Prompt Injection): expert \#1, incident \#12.} Prompt
-injection is the best-understood LLM attack, and deployed systems defend
-against it actively. Successful, publicly reported exploits are
+injection is the best-understood LLM attack
+(\citeproc{ref-perez2022}{Perez and Ribeiro 2022};
+\citeproc{ref-greshake2023}{Greshake et al. 2023}), and deployed systems
+defend against it actively. Successful, publicly reported exploits are
 correspondingly rarer, so the incident record sees fewer of them.
 Experts rank it first because the attack surface stays enormous even
 when the defenses mostly hold; the data sees the successes that got
@@ -830,10 +899,11 @@ ranking?}\label{act-11-does-a-better-classifier-change-the-ranking}
 The incident-derived ranking depends on the classifier that labeled the
 corpus. If a stronger model would reorder the list, the ranking is an
 artifact of a weak classifier and should not be trusted. So we
-pre-registered a bake-off: four frontier models re-labeled the
-evaluation set, and the rule for declaring a winner was fixed before any
-model ran. A model had to beat the 2026 incidence floor on balanced
-accuracy and clear a significance test.
+pre-registered a bake-off (\citeproc{ref-nosek2018}{Nosek et al. 2018}):
+four frontier models re-labeled the evaluation set, and the rule for
+declaring a winner was fixed before any model ran. A model had to beat
+the 2026 incidence floor on balanced accuracy and clear a significance
+test.
 
 \begin{quote}
 \textbf{Sidebar --- balanced accuracy.} Plain accuracy flatters a
@@ -841,14 +911,17 @@ classifier on lopsided data: a model that always guesses the common
 class scores high while missing every rare one. Balanced accuracy
 averages the recall within each class, so a rare category counts as much
 as a common one. On this kind of task it runs from about 0.5 (chance) to
-1.0 (perfect).
+1.0 (perfect) (\citeproc{ref-brodersen2010}{Brodersen et al. 2010}).
 \end{quote}
 
 The bake-off returned no winner. The 2026 floor scored balanced accuracy
-0.863. All four frontier models scored below it: llama-405b 0.744,
-qwen3-235b 0.733, deepseek-v3 0.711, mistral-large-2411 0.691. None
-cleared the floor, so under the pre-registration the 2026 ranking
-stands. (Every number in this section is read from
+0.863. All four frontier models scored below it: llama-405b 0.744
+(\citeproc{ref-llama3}{{Grattafiori et al.} 2024}), qwen3-235b 0.733
+(\citeproc{ref-qwen3}{{Yang et al.} 2025}), deepseek-v3 0.711
+(\citeproc{ref-deepseekv3}{DeepSeek-AI 2024}), mistral-large-2411 0.691
+(\citeproc{ref-mistrallarge2411}{Mistral AI 2024}). None cleared the
+floor, so under the pre-registration the 2026 ranking stands. (Every
+number in this section is read from
 \texttt{cycles/2026-rarr/results/robustness\_validation.json} and the
 RARR conclusion beside it.)
 
@@ -863,7 +936,7 @@ Spearman ρ = 0.918.
 rankings agree on order, ignoring the exact scores. It runs from −1 (one
 ranking is the reverse of the other) through 0 (no relationship) to +1
 (identical order). A ρ of 0.918 means the floor's ordering is very close
-to the true ordering.
+to the true ordering (\citeproc{ref-spearman1904}{Spearman 1904}).
 \end{quote}
 
 Every frontier model's apparent edge over the floor dissolves under a
@@ -874,7 +947,8 @@ bootstrap.
 number would wobble if the data had come out slightly differently. It
 re-samples the observations with replacement many times, recomputes the
 number on each re-sample, and reads the spread as a confidence interval.
-When that interval crosses zero, the apparent effect is within noise.
+When that interval crosses zero, the apparent effect is within noise
+(\citeproc{ref-efron1979}{Efron 1979}).
 \end{quote}
 
 The paired-bootstrap interval for each model's ranking-fidelity gain
@@ -959,8 +1033,8 @@ place.
 
 \textbf{The tied band.} Excessive Agency, Supply Chain, and Data and
 Model Poisoning form a middle band with overlapping intervals. Excessive
-Agency moves up into the band from its published position, the one clear
-mover here.
+Agency moves up into the band from its published 2025 position, the one
+clear mover here.
 
 \textbf{The tail.} Unbounded Consumption sits at the top of the tail,
 placed by the expert vote alone (its incident recall the corpus cannot
@@ -987,9 +1061,21 @@ tier. The co-leading pair sits near certainty; the tail sits near zero.}
 
 A simpler rank-space blend, which uses only the order of each witness
 and discards the magnitudes, gives nearly the same bulk ordering
-(Kendall's tau computed at run time, about 0.87). The one place the two
-methods disagree is the top, which is why we present the top two as a
-pair.
+(Kendall's tau (\citeproc{ref-kendall1938}{Kendall 1938}) computed at
+run time, about 0.87). The one place the two methods disagree is the
+top, which is why we present the top two as a pair.
+
+\textbf{Against the published list.} The OWASP GenAI LLM Top 10 2026
+published in August 2026, after this analysis was run
+(\citeproc{ref-owasp2026llmtop10}{OWASP GenAI Security Project 2026}).
+Its ten entries follow the tiers reported here: Prompt Injection and
+Sensitive Information Disclosure at the top, then Excessive Agency,
+Supply Chain, and Data and Model Poisoning, then Unbounded Consumption
+ahead of Misinformation, Hidden Context Exposure, Vector and Embedding
+Weaknesses, and Improper Output Handling. The published list assigns a
+position inside the tail. This report does not, because the draws do not
+separate those four risks. That difference is one of presentation, and
+it does not touch the tiers above it.
 
 \subsection{Glossary}\label{glossary}
 
@@ -1162,10 +1248,11 @@ independent blind label disagreed with the model consensus at a rate of
 0.75, and the final adjudication overrode the consensus on 553 of the
 1,200 incidents. Those rates are high, and they reflect genuinely
 ambiguous categories rather than a broken pipeline. A single annotator
-cannot measure inter-rater reliability; a second independent adjudicator
-would harden the truth target. The ranking-fidelity bootstrap median of
-exactly 0.000 makes a hidden improvement unlikely regardless, but the
-single-author gold set remains the central limitation.
+cannot measure inter-rater reliability (\citeproc{ref-cohen1960}{Cohen
+1960}); a second independent adjudicator would harden the truth target.
+The ranking-fidelity bootstrap median of exactly 0.000 makes a hidden
+improvement unlikely regardless, but the single-author gold set remains
+the central limitation.
 
 \textbf{The reviewers are interim.} The rubric reviewer and the
 statistical reviewer for this analysis are, at this stage, the ranking
@@ -1260,11 +1347,14 @@ OWASP working group. It is not the official OWASP Top 10 for LLM
 Applications, it does not supersede the official list or the process
 that produces it, and it does not speak for OWASP.
 
-``The 2026 list'' here means the working group's expert-driven candidate
-ranking. This report stress-tests that ranking against incident data; it
-does not set it. Where the blend reorders the incumbents, that
-reordering is an analytical result for discussion, not a change to any
-published list.
+The OWASP GenAI LLM Top 10 2026 published in August 2026
+(\citeproc{ref-owasp2026llmtop10}{OWASP GenAI Security Project 2026}).
+This analysis ran during that cycle, against the working group's ranking
+as it stood before publication, and ``the 2026 list'' throughout this
+report means that ranking. This report stress-tests it against incident
+data. It does not set it. Where the two coincide, the published document
+is the authority: it is the official artifact, and this report is a
+robustness check on the reasoning behind it, not a substitute for it.
 
 The work is exploratory and internally rigorous, not a peer-reviewed
 finding. Its value is transparency and a robustness check: it shows how
@@ -1272,5 +1362,174 @@ a community-expert ranking holds up when confronted with a large-scale
 incident corpus, and it is candid about where the data is weak. Read it
 as a stress test offered for scrutiny, not as an authority on the
 ranking.
+
+\section*{References}\label{bibliography}
+\addcontentsline{toc}{section}{References}
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{1}{1}
+\bibitem[\citeproctext]{ref-aiaaic}
+AIAAIC. 2026. \emph{{AIAAIC} Repository: {AI}, Algorithmic, and
+Automation Incidents and Controversies}.
+\url{https://www.aiaaic.org/aiaaic-repository}.
+
+\bibitem[\citeproctext]{ref-brodersen2010}
+Brodersen, Kay Henning, Cheng Soon Ong, Klaas Enno Stephan, and Joachim
+M. Buhmann. 2010. {``The Balanced Accuracy and Its Posterior
+Distribution.''} \emph{2010 20th International Conference on Pattern
+Recognition ({ICPR})}, 3121--24.
+\url{https://doi.org/10.1109/ICPR.2010.764}.
+
+\bibitem[\citeproctext]{ref-carroll2006}
+Carroll, Raymond J., David Ruppert, Leonard A. Stefanski, and Ciprian M.
+Crainiceanu. 2006. \emph{Measurement Error in Nonlinear Models: A Modern
+Perspective}. 2nd ed. Chapman; Hall/CRC.
+\url{https://doi.org/10.1201/9781420010138}.
+
+\bibitem[\citeproctext]{ref-cohen1960}
+Cohen, Jacob. 1960. {``A Coefficient of Agreement for Nominal Scales.''}
+\emph{Educational and Psychological Measurement} 20 (1): 37--46.
+\url{https://doi.org/10.1177/001316446002000104}.
+
+\bibitem[\citeproctext]{ref-cohen1968}
+Cohen, Jacob. 1968. {``Weighted Kappa: Nominal Scale Agreement with
+Provision for Scaled Disagreement or Partial Credit.''}
+\emph{Psychological Bulletin} 70 (4): 213--20.
+\url{https://doi.org/10.1037/h0026256}.
+
+\bibitem[\citeproctext]{ref-deepseekv3}
+DeepSeek-AI. 2024. \emph{{DeepSeek-V3} Technical Report}.
+arXiv:2412.19437. \url{https://doi.org/10.48550/arXiv.2412.19437}.
+
+\bibitem[\citeproctext]{ref-efron1979}
+Efron, Bradley. 1979. {``Bootstrap Methods: Another Look at the
+Jackknife.''} \emph{The Annals of Statistics} 7 (1): 1--26.
+\url{https://doi.org/10.1214/aos/1176344552}.
+
+\bibitem[\citeproctext]{ref-gelman2013}
+Gelman, Andrew, John B. Carlin, Hal S. Stern, David B. Dunson, Aki
+Vehtari, and Donald B. Rubin. 2013. \emph{Bayesian Data Analysis}. 3rd
+ed. Chapman; Hall/CRC. \url{https://doi.org/10.1201/b16018}.
+
+\bibitem[\citeproctext]{ref-gilardi2023}
+Gilardi, Fabrizio, Meysam Alizadeh, and Maël Kubli. 2023. {``{ChatGPT}
+Outperforms Crowd Workers for Text-Annotation Tasks.''}
+\emph{Proceedings of the National Academy of Sciences} 120 (30):
+e2305016120. \url{https://doi.org/10.1073/pnas.2305016120}.
+
+\bibitem[\citeproctext]{ref-ghsa}
+GitHub. 2026. \emph{{GitHub} Advisory Database}.
+\url{https://github.com/advisories}.
+
+\bibitem[\citeproctext]{ref-llama3}
+{Grattafiori, Aaron, Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, et
+al.} 2024. \emph{The Llama 3 Herd of Models}. arXiv:2407.21783.
+\url{https://doi.org/10.48550/arXiv.2407.21783}.
+
+\bibitem[\citeproctext]{ref-greshake2023}
+Greshake, Kai, Sahar Abdelnabi, Shailesh Mishra, Christoph Endres,
+Thorsten Holz, and Mario Fritz. 2023. {``Not What You've Signed up for:
+Compromising Real-World {LLM}-Integrated Applications with Indirect
+Prompt Injection.''} \emph{Proceedings of the 16th {ACM} Workshop on
+Artificial Intelligence and Security ({AISec} '23)}, 79--90.
+\url{https://doi.org/10.1145/3605764.3623985}.
+
+\bibitem[\citeproctext]{ref-hoffman2014}
+Hoffman, Matthew D., and Andrew Gelman. 2014. {``The No-{U}-Turn
+Sampler: Adaptively Setting Path Lengths in Hamiltonian {M}onte
+{C}arlo.''} \emph{Journal of Machine Learning Research} 15 (47):
+1593--623. \url{https://jmlr.org/papers/v15/hoffman14a.html}.
+
+\bibitem[\citeproctext]{ref-kendall1938}
+Kendall, Maurice G. 1938. {``A New Measure of Rank Correlation.''}
+\emph{Biometrika} 30 (1-2): 81--93.
+\url{https://doi.org/10.1093/biomet/30.1-2.81}.
+
+\bibitem[\citeproctext]{ref-landis1977}
+Landis, J. Richard, and Gary G. Koch. 1977. {``The Measurement of
+Observer Agreement for Categorical Data.''} \emph{Biometrics} 33 (1):
+159--74. \url{https://doi.org/10.2307/2529310}.
+
+\bibitem[\citeproctext]{ref-mcgregor2021}
+McGregor, Sean. 2021. {``Preventing Repeated Real World {AI} Failures by
+Cataloging Incidents: The {AI} Incident Database.''} \emph{Proceedings
+of the {AAAI} Conference on Artificial Intelligence} 35: 15458--63.
+\url{https://doi.org/10.1609/aaai.v35i17.17817}.
+
+\bibitem[\citeproctext]{ref-mistrallarge2411}
+Mistral AI. 2024. \emph{Mistral Large 24.11 ({mistral-large-2411}) Model
+Card}.
+\url{https://huggingface.co/mistralai/Mistral-Large-Instruct-2411}.
+
+\bibitem[\citeproctext]{ref-cveprogram}
+MITRE Corporation. 2026. \emph{{CVE} Program}. Common Vulnerabilities
+and Exposures. \url{https://www.cve.org/}.
+
+\bibitem[\citeproctext]{ref-nosek2018}
+Nosek, Brian A., Charles R. Ebersole, Alexander C. DeHaven, and David T.
+Mellor. 2018. {``The Preregistration Revolution.''} \emph{Proceedings of
+the National Academy of Sciences} 115 (11): 2600--2606.
+\url{https://doi.org/10.1073/pnas.1708274114}.
+
+\bibitem[\citeproctext]{ref-osv}
+Open Source Security Foundation. 2026. \emph{{OSV}: Open Source
+Vulnerabilities Database}. \url{https://osv.dev/}.
+
+\bibitem[\citeproctext]{ref-owasp2025llmtop10}
+OWASP GenAI Security Project. 2024. \emph{{OWASP} Top 10 for Large
+Language Model Applications, V2.0 (2025)}. OWASP Foundation.
+\url{https://genai.owasp.org/resource/owasp-top-10-for-llm-applications-2025/}.
+
+\bibitem[\citeproctext]{ref-owaspagentic2025}
+OWASP GenAI Security Project. 2025. \emph{Agentic {AI}: Threats and
+Mitigations}. OWASP Foundation, Agentic Security Initiative.
+\url{https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/}.
+
+\bibitem[\citeproctext]{ref-owasp2026llmtop10}
+OWASP GenAI Security Project. 2026. \emph{{OWASP} {GenAI} {LLM} Top 10
+(2026)}. OWASP Foundation.
+\url{https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/}.
+
+\bibitem[\citeproctext]{ref-perez2022}
+Perez, Fábio, and Ian Ribeiro. 2022. \emph{Ignore Previous Prompt:
+Attack Techniques for Language Models}. arXiv:2211.09527.
+\url{https://doi.org/10.48550/arXiv.2211.09527}.
+
+\bibitem[\citeproctext]{ref-phan2019}
+Phan, Du, Neeraj Pradhan, and Martin Jankowiak. 2019. \emph{Composable
+Effects for Flexible and Accelerated Probabilistic Programming in
+{NumPyro}}. arXiv:1912.11554.
+\url{https://doi.org/10.48550/arXiv.1912.11554}.
+
+\bibitem[\citeproctext]{ref-slattery2024}
+Slattery, Peter, Alexander K. Saeri, Emily A. C. Grundy, et al. 2024.
+\emph{The {AI} Risk Repository: A Comprehensive Meta-Review, Database,
+and Taxonomy of Risks from Artificial Intelligence}. arXiv:2408.12622.
+\url{https://doi.org/10.48550/arXiv.2408.12622}.
+
+\bibitem[\citeproctext]{ref-spearman1904}
+Spearman, Charles. 1904. {``The Proof and Measurement of Association
+Between Two Things.''} \emph{The American Journal of Psychology} 15 (1):
+72--101. \url{https://doi.org/10.2307/1412159}.
+
+\bibitem[\citeproctext]{ref-vehtari2021}
+Vehtari, Aki, Andrew Gelman, Daniel Simpson, Bob Carpenter, and
+Paul-Christian Bürkner. 2021. {``Rank-Normalization, Folding, and
+Localization: An Improved \(\widehat{R}\) for Assessing Convergence of
+{MCMC} (with Discussion).''} \emph{Bayesian Analysis} 16 (2): 667--718.
+\url{https://doi.org/10.1214/20-BA1221}.
+
+\bibitem[\citeproctext]{ref-qwen3}
+{Yang, An, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, et al.}
+2025. \emph{Qwen3 Technical Report}. arXiv:2505.09388.
+\url{https://doi.org/10.48550/arXiv.2505.09388}.
+
+\bibitem[\citeproctext]{ref-zheng2023}
+Zheng, Lianmin, Wei-Lin Chiang, Ying Sheng, et al. 2023. {``Judging
+{LLM}-as-a-Judge with {MT-Bench} and Chatbot Arena.''} \emph{Advances in
+Neural Information Processing Systems} 36.
+\url{https://doi.org/10.48550/arXiv.2306.05685}.
+
+\end{CSLReferences}
 
 \end{document}
