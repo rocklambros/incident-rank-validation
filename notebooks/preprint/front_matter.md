@@ -9,6 +9,11 @@ author:
     affiliation: "OWASP GenAI Security Project — Top 10 for LLM Applications, Founder & Lead"
 numbersections: true
 method: probabilistic-blend
+# Citations resolve through pandoc --citeproc at build time, so the generated .tex
+# carries a static reference list and the arXiv tarball needs no .bib and no .bbl.
+bibliography: references.bib
+reference-section-title: "References"
+link-citations: true
 abstract: |
   The OWASP Top 10 for LLM Applications ranks the risks that a community of
   security practitioners judges most important. We ask a narrower question: checked
@@ -17,7 +22,8 @@ abstract: |
   6,639 labeled against the 20-entry taxonomy — drawn from CVE, GHSA, OSV, and AIAAIC,
   and derived an incident-based ranking with a Bayesian measurement-error model that
   corrects each category's count for classifier precision and recall. The 2026
-  candidate list blends the two signals at fixed weights, 0.75 on the expert vote and
+  list, published in August 2026 after this analysis was run, blends the two signals
+  at fixed weights, 0.75 on the expert vote and
   0.25 on the data, so the corpus corrects the consensus without overturning it. The
   agreement between the two rankings is weak: Cohen's κ ≈ 0.20, with a 90% interval
   that crosses zero. The expert ranking is nonetheless robust. A pre-registered

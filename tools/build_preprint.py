@@ -144,6 +144,10 @@ def build_preprint(
         "--from=markdown+yaml_metadata_block",
         f"--template={template}",
         f"--lua-filter={lf}",
+        # Resolve [@key] citations against the bibliography named in the front-matter.
+        # citeproc renders the reference list into the output itself, so the .tex is
+        # self-contained: arXiv needs no .bib and no .bbl alongside it.
+        "--citeproc",
         "--toc",
         "--toc-depth=2",
     ]
